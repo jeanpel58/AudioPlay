@@ -41,3 +41,24 @@ Le dépôt contient .editorconfig et .gitattributes qui indiquent l'encodage et 
 - Le commit automatique depuis l'agent n'a pas pu être effectué ici (git absents de l'environnement). Les fichiers ont été créés dans le dépôt local ; effectuez commit/push depuis votre machine.
 
 Si vous voulez, j’ajoute un script PowerShell pour vérifier l'absence de caractères invalides dans les .resx avant commit.
+
+---
+
+Note sur la migration Git LFS
+----------------------------
+Le dépôt a été migré pour utiliser Git LFS sur certains binaires volumineux (installers et dlls). Conséquences et recommandations :
+
+- Les fichiers volumineux sont maintenant suivis par Git LFS (ex. installer/EXE/AudioPlay-Setup.exe).
+- L'historique a été réécrit pour convertir ces fichiers en pointeurs LFS. Après le push forcé, il est recommandé que tous les contributeurs reclonent le dépôt pour éviter des conflits historiques.
+
+Recommandation pour les contributeurs :
+
+1) Sauvegarder vos modifications locales non commit.
+2) Supprimer votre clone local et recloner :
+   git clone https://github.com/<votre-compte>/AudioPlay.git
+
+Si vous ne pouvez pas recloner, vous pouvez resynchroniser avec :
+   git fetch origin
+   git reset --hard origin/main
+
+La sauvegarde miroir créée pendant la migration (AudioPlay-mirror-backup) peut être supprimée si tout est validé.
