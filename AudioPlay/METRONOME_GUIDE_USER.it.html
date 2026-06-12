@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guida al metronomo - AudioPlay</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #e74c3c;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            border-left: 4px solid #e74c3c;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 20px;
+        }
+        .step {
+            background-color: #ffebee;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #e74c3c;
+        }
+        .warning {
+            background-color: #fff3cd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #ffc107;
+        }
+        .info {
+            background-color: #d1ecf1;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #17a2b8;
+        }
+        .success {
+            background-color: #d4edda;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #28a745;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #e74c3c;
+            color: white;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        .emoji {
+            font-size: 1.2em;
+        }
+        .visual-example {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border: 2px dashed #e74c3c;
+            text-align: center;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 AudioPlay - Guida al metronomo pre-roll</h1>
+
+        <div class="info">
+            <strong>🎯 Cos'è il metronomo pre-roll?</strong><br>
+            Il metronomo pre-roll è un conto alla rovescia ritmico che suona <strong>prima</strong> di ogni canzone. 
+            Ti aiuta a prepararti per il tempo della musica, ideale per musicisti, ballerini, 
+            o semplicemente per entrare nel ritmo prima che la canzone inizi!
+        </div>
+
+        <h2>🚀 Configurazione rapida</h2>
+
+        <h3>Come attivare il metronomo?</h3>
+        <div class="step">
+            <ol>
+                <li>Apri <strong>Impostazioni</strong> (pulsante ⚙️ nell'interfaccia)</li>
+                <li>Trova la sezione <strong>"Riproduzione"</strong></li>
+                <li>Spunta la casella <strong>"Metronomo prima della riproduzione"</strong></li>
+                <li>Imposta il <strong>numero di battiti</strong> (da 1 a 16, consigliato: 4)</li>
+                <li>Fai clic su <strong>"Salva"</strong></li>
+                <li>✅ Il metronomo è ora attivo!</li>
+            </ol>
+        </div>
+
+        <h2>⚙️ Configurazione del numero di battiti</h2>
+
+        <h3>Cos'è un "battito"?</h3>
+        <div class="info">
+            <p>Un <strong>battito</strong> (o beat) è un clic del metronomo. Per esempio:</p>
+            <ul>
+                <li><strong>4 battiti</strong> = 4 clic prima della canzone (il più comune)</li>
+                <li><strong>8 battiti</strong> = 8 clic (per più tempo di preparazione)</li>
+                <li><strong>1 battito</strong> = Un singolo clic rapido</li>
+            </ul>
+        </div>
+
+        <h3>Esempi di configurazione</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Numero di Battiti</th>
+                    <th>Uso consigliato</th>
+                    <th>Esempio</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>1-2 battiti</strong></td>
+                    <td>Avvio rapido, musica lenta</td>
+                    <td>Ballata, musica ambient</td>
+                </tr>
+                <tr>
+                    <td><strong>4 battiti</strong> ⭐</td>
+                    <td>Standard, musica 4/4</td>
+                    <td>Pop, rock, la maggior parte delle canzoni</td>
+                </tr>
+                <tr>
+                    <td><strong>6-8 battiti</strong></td>
+                    <td>Musica complessa, valzer (3/4)</td>
+                    <td>Jazz, musica classica</td>
+                </tr>
+                <tr>
+                    <td><strong>16 battiti</strong></td>
+                    <td>Preparazione lunga, pratica strumentale</td>
+                    <td>Esercizi musicali, prove</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>🎼 Sincronizzazione automatica con i BPM</h2>
+
+        <div class="info">
+            <strong>🎵 Sincronizzazione intelligente</strong><br>
+            Il metronomo si adatta automaticamente ai <strong>BPM (Battiti Per Minuto)</strong> 
+            di ogni canzone. Ciò significa che una canzone veloce avrà un metronomo veloce, 
+            e una canzone lenta avrà un metronomo lento!
+        </div>
+
+        <h3>Come fa il metronomo a conoscere i BPM?</h3>
+        <div class="step">
+            <p><strong>I BPM devono essere calcolati e salvati in anticipo:</strong></p>
+            <ol>
+                <li>Apri AudioPlay e carica i tuoi file audio</li>
+                <li>Seleziona una o più canzoni dall'elenco</li>
+                <li>Clic destro → <strong>"Calcola BPM"</strong></li>
+                <li>⏳ AudioPlay analizza la canzone (può richiedere alcuni secondi)</li>
+                <li>✅ I BPM vengono rilevati e salvati nei metadati</li>
+                <li>🎵 Il metronomo userà ora questi BPM!</li>
+            </ol>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ Importante:</strong> Se una canzone non ha i BPM calcolati, il metronomo 
+            userà <strong>120 BPM per impostazione predefinita</strong> (tempo medio). Per la migliore esperienza, 
+            calcola i BPM di tutte le tue canzoni!
+        </div>
+
+        <h3>Esempio visivo</h3>
+        <div class="visual-example">
+            <strong>Canzone lenta (80 BPM)</strong><br>
+            🥁 .... 🥁 .... 🥁 .... 🥁 .... ♪♪ MUSICA ♪♪<br>
+            <em>(clic distanziati, tempo lento)</em><br><br>
+
+            <strong>Canzone veloce (160 BPM)</strong><br>
+            🥁 . 🥁 . 🥁 . 🥁 . ♪♪ MUSICA ♪♪<br>
+            <em>(clic ravvicinati, tempo veloce)</em>
+        </div>
+
+        <h2>🎯 Funzionamento dettagliato</h2>
+
+        <h3>Sequenza di riproduzione con metronomo</h3>
+        <div class="step">
+            <ol>
+                <li><strong>Fai clic su "Riproduci"</strong> o doppio clic su una canzone</li>
+                <li><strong>Il metronomo inizia</strong>
+                    <ul>
+                        <li>Primo battito: tono più acuto (🔊 1000 Hz) per segnare l'inizio</li>
+                        <li>Battiti successivi: tono standard (🔊 800 Hz)</li>
+                        <li>Tempo sincronizzato con i BPM della canzone</li>
+                    </ul>
+                </li>
+                <li><strong>Rimozione automatica del silenzio</strong>
+                    <ul>
+                        <li>AudioPlay rileva il silenzio all'inizio della canzone</li>
+                        <li>Il silenzio viene automaticamente rimosso</li>
+                    </ul>
+                </li>
+                <li><strong>La musica inizia immediatamente</strong> dopo l'ultimo battito</li>
+            </ol>
+        </div>
+
+        <h3>Dettagli tecnici del suono</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Caratteristica</th>
+                    <th>Valore</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Primo battito (inizio)</td>
+                    <td>1000 Hz (tono acuto)</td>
+                </tr>
+                <tr>
+                    <td>Battiti successivi</td>
+                    <td>800 Hz (tono standard)</td>
+                </tr>
+                <tr>
+                    <td>Durata di ogni clic</td>
+                    <td>50 millisecondi</td>
+                </tr>
+                <tr>
+                    <td>Volume</td>
+                    <td>30% dell'ampiezza massima</td>
+                </tr>
+                <tr>
+                    <td>BPM predefiniti</td>
+                    <td>120 BPM (se non calcolati)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>🎼 Calcolo dei BPM</h2>
+
+        <div class="info">
+            <strong>📊 Perché calcolare i BPM?</strong><br>
+            Il calcolo dei BPM consente al metronomo di adattarsi perfettamente al tempo di ogni canzone. 
+            Senza BPM calcolati, il metronomo usa 120 BPM (tempo medio) che potrebbe non corrispondere 
+            alla tua musica.
+        </div>
+
+        <h3>Come calcolare i BPM?</h3>
+        <div class="step">
+            <strong>Metodo 1: Calcolo manuale di una canzone</strong>
+            <ol>
+                <li>Seleziona una canzone dall'elenco</li>
+                <li>Clic destro sulla canzone</li>
+                <li>Scegli <strong>"Calcola BPM"</strong></li>
+                <li>⏳ Attendi durante l'analisi (alcuni secondi)</li>
+                <li>✅ I BPM compaiono nella colonna "BPM"</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <strong>Metodo 2: Calcolo automatico</strong>
+            <ol>
+                <li>In <strong>Impostazioni</strong> > <strong>Riproduzione</strong></li>
+                <li>Seleziona il <strong>metodo di calcolo BPM</strong>:
+                    <ul>
+                        <li><strong>Manuale</strong> - Decidi tu quando calcolare</li>
+                        <li><strong>Prima riproduzione</strong> - Calcola automaticamente alla prima riproduzione</li>
+                        <li><strong>In background</strong> - Calcola tutte le canzoni progressivamente</li>
+                    </ul>
+                </li>
+                <li>Fai clic su <strong>"Salva"</strong></li>
+            </ol>
+        </div>
+
+        <h2>✅ Vantaggi del metronomo</h2>
+
+        <div class="success">
+            <ul>
+                <li>🎸 <strong>Per i musicisti</strong>: Prepararsi al tempo prima di suonare insieme</li>
+                <li>💃 <strong>Per i ballerini</strong>: Entrare nel ritmo prima che inizi la danza</li>
+                <li>🎤 <strong>Per i cantanti</strong>: Sintonizzarsi sul tempo prima di cantare</li>
+                <li>🏃 <strong>Per lo sport</strong>: Sincronizzare i movimenti con la musica</li>
+                <li>📚 <strong>Per l'apprendimento</strong>: Comprendere e sentire il tempo di una canzone</li>
+            </ul>
+        </div>
+
+        <h2>❓ Domande frequenti</h2>
+
+        <h3>Il metronomo è troppo alto o troppo basso</h3>
+        <div class="warning">
+            <p><strong>Soluzione:</strong> Il volume del metronomo è fissato al 30% dell'ampiezza massima. 
+            Per regolarlo, modifica il volume generale del sistema prima che inizi la musica.</p>
+        </div>
+
+        <h3>Il metronomo non si adatta al tempo della mia canzone</h3>
+        <div class="warning">
+            <p><strong>Soluzione:</strong> Assicurati che i BPM siano stati calcolati per questa canzone. 
+            Clic destro sulla canzone → "Calcola BPM". Senza BPM calcolati, il metronomo 
+            usa 120 BPM per impostazione predefinita.</p>
+        </div>
+
+        <h3>Non sento il metronomo</h3>
+        <div class="warning">
+            <p><strong>Verifica:</strong></p>
+            <ul>
+                <li>✅ La casella "Metronomo prima della riproduzione" è spuntata nelle impostazioni</li>
+                <li>✅ Il numero di battiti è maggiore di 0</li>
+                <li>✅ Il volume del sistema è sufficiente</li>
+                <li>✅ Hai fatto clic su "Salva" dopo aver modificato le impostazioni</li>
+            </ul>
+        </div>
+
+        <h3>Posso disattivare temporaneamente il metronomo?</h3>
+        <div class="info">
+            <p><strong>Sì!</strong> Basta deselezionare la casella "Metronomo prima della riproduzione" nelle impostazioni 
+            e fare clic su "Salva". Il metronomo sarà disattivato finché non lo riattiverai.</p>
+        </div>
+
+        <h2>🎯 Consigli per l'uso</h2>
+
+        <div class="step">
+            <ul>
+                <li><strong>Inizia con 4 battiti</strong>: È la configurazione più comune e naturale</li>
+                <li><strong>Calcola i tuoi BPM</strong>: Prenditi il tempo di calcolare i BPM della tua libreria musicale</li>
+                <li><strong>Adatta in base all'uso</strong>: Più battiti per la pratica, meno per l'ascolto rilassato</li>
+                <li><strong>Ascolta il primo battito</strong>: Il tono acuto del primo battito segnala l'inizio</li>
+                <li><strong>Usa il metodo automatico</strong>: Lascia che AudioPlay calcoli i BPM in background</li>
+            </ul>
+        </div>
+
+        <div class="success" style="margin-top: 40px;">
+            <strong>🎵 Goditi la tua musica con il metronomo di AudioPlay!</strong><br>
+            Il metronomo pre-roll ti aiuta a entrare nel ritmo e goderti pienamente la tua musica. 
+            Che tu sia un musicista, un ballerino o semplicemente un amante della musica, questa funzione arricchisce la tua esperienza di ascolto!
+        </div>
+    </div>
+</body>
+</html>

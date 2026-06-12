@@ -1,0 +1,19 @@
+#!/bin/sh
+# Hook pre-commit to ensure .resx files are UTF-8 without BOM and normalized
+# Requires: iconv, powershell (on Windows) or native tools
+
+# On Windows with Git for Windows, running a PowerShell script is more reliable
+if [ -f "$(pwd)/tools/convert-resx-utf8.ps1" ]; then
+  if command -v pwsh >/dev/null 2>&1; then
+	pwsh -NoProfile -ExecutionPolicy Bypass -File "$(pwd)/tools/convert-resx-utf8.ps1"
+  elif command -v powershell >/dev/null 2>&1; then
+	powershell -NoProfile -ExecutionPolicy Bypass -File "$(pwd)/tools/convert-resx-utf8.ps1"
+  else
+	echo "PowerShell not found, skipping .resx conversion"
+  fi
+fi
+
+# Add any modified .resx back to the index
+git add *.resx || true
+
+exit 0

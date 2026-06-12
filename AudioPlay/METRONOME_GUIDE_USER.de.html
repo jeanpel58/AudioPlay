@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metronom-Anleitung - AudioPlay</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #e74c3c;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            border-left: 4px solid #e74c3c;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 20px;
+        }
+        .step {
+            background-color: #ffebee;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #e74c3c;
+        }
+        .warning {
+            background-color: #fff3cd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #ffc107;
+        }
+        .info {
+            background-color: #d1ecf1;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #17a2b8;
+        }
+        .success {
+            background-color: #d4edda;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #28a745;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #e74c3c;
+            color: white;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        .emoji {
+            font-size: 1.2em;
+        }
+        .visual-example {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border: 2px dashed #e74c3c;
+            text-align: center;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 AudioPlay - Pre-Roll-Metronom-Anleitung</h1>
+
+        <div class="info">
+            <strong>🎯 Was ist das Pre-Roll-Metronom?</strong><br>
+            Das Pre-Roll-Metronom ist ein rhythmischer Countdown, der <strong>vor</strong> jedem Song abgespielt wird. 
+            Es hilft Ihnen, sich auf das Tempo der Musik vorzubereiten, ideal für Musiker, Tänzer, 
+            oder einfach um in den Rhythmus zu kommen, bevor das Lied beginnt!
+        </div>
+
+        <h2>🚀 Schnelleinrichtung</h2>
+
+        <h3>Wie aktiviert man das Metronom?</h3>
+        <div class="step">
+            <ol>
+                <li>Öffnen Sie <strong>Einstellungen</strong> (⚙️-Schaltfläche in der Oberfläche)</li>
+                <li>Finden Sie den Abschnitt <strong>"Wiedergabe"</strong></li>
+                <li>Aktivieren Sie das Kontrollkästchen <strong>"Metronom vor Wiedergabe"</strong></li>
+                <li>Legen Sie die <strong>Anzahl der Schläge</strong> fest (1 bis 16, empfohlen: 4)</li>
+                <li>Klicken Sie auf <strong>"Speichern"</strong></li>
+                <li>✅ Das Metronom ist jetzt aktiv!</li>
+            </ol>
+        </div>
+
+        <h2>⚙️ Konfiguration der Schlaganzahl</h2>
+
+        <h3>Was ist ein "Schlag"?</h3>
+        <div class="info">
+            <p>Ein <strong>Schlag</strong> (oder Beat) ist ein Klick des Metronoms. Zum Beispiel:</p>
+            <ul>
+                <li><strong>4 Schläge</strong> = 4 Klicks vor dem Song (am häufigsten)</li>
+                <li><strong>8 Schläge</strong> = 8 Klicks (für mehr Vorbereitungszeit)</li>
+                <li><strong>1 Schlag</strong> = Ein einzelner schneller Klick</li>
+            </ul>
+        </div>
+
+        <h3>Konfigurationsbeispiele</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Anzahl der Schläge</th>
+                    <th>Empfohlene Verwendung</th>
+                    <th>Beispiel</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>1-2 Schläge</strong></td>
+                    <td>Schneller Start, langsame Musik</td>
+                    <td>Ballade, Ambient-Musik</td>
+                </tr>
+                <tr>
+                    <td><strong>4 Schläge</strong> ⭐</td>
+                    <td>Standard, 4/4-Musik</td>
+                    <td>Pop, Rock, die meisten Songs</td>
+                </tr>
+                <tr>
+                    <td><strong>6-8 Schläge</strong></td>
+                    <td>Komplexe Musik, Walzer (3/4)</td>
+                    <td>Jazz, klassische Musik</td>
+                </tr>
+                <tr>
+                    <td><strong>16 Schläge</strong></td>
+                    <td>Lange Vorbereitung, instrumentale Übung</td>
+                    <td>Musikübungen, Proben</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>🎼 Automatische BPM-Synchronisation</h2>
+
+        <div class="info">
+            <strong>🎵 Intelligente Synchronisation</strong><br>
+            Das Metronom passt sich automatisch an die <strong>BPM (Beats Pro Minute)</strong> 
+            jedes Songs an. Das bedeutet, ein schneller Song hat ein schnelles Metronom, 
+            und ein langsamer Song hat ein langsames Metronom!
+        </div>
+
+        <h3>Woher kennt das Metronom die BPM?</h3>
+        <div class="step">
+            <p><strong>Die BPM müssen vorher berechnet und gespeichert werden:</strong></p>
+            <ol>
+                <li>Öffnen Sie AudioPlay und laden Sie Ihre Audiodateien</li>
+                <li>Wählen Sie einen oder mehrere Songs aus der Liste</li>
+                <li>Rechtsklick → <strong>"BPM berechnen"</strong></li>
+                <li>⏳ AudioPlay analysiert den Song (kann einige Sekunden dauern)</li>
+                <li>✅ Die BPM werden erkannt und in den Metadaten gespeichert</li>
+                <li>🎵 Das Metronom verwendet nun diese BPM!</li>
+            </ol>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ Wichtig:</strong> Wenn ein Song keine berechneten BPM hat, verwendet das Metronom 
+            <strong>120 BPM als Standard</strong> (durchschnittliches Tempo). Für die beste Erfahrung 
+            berechnen Sie die BPM für alle Ihre Songs!
+        </div>
+
+        <h3>Visuelles Beispiel</h3>
+        <div class="visual-example">
+            <strong>Langsamer Song (80 BPM)</strong><br>
+            🥁 .... 🥁 .... 🥁 .... 🥁 .... ♪♪ MUSIK ♪♪<br>
+            <em>(weit auseinander liegende Klicks, langsames Tempo)</em><br><br>
+
+            <strong>Schneller Song (160 BPM)</strong><br>
+            🥁 . 🥁 . 🥁 . 🥁 . ♪♪ MUSIK ♪♪<br>
+            <em>(nahe beieinander liegende Klicks, schnelles Tempo)</em>
+        </div>
+
+        <h2>🎯 Detaillierter Betrieb</h2>
+
+        <h3>Wiedergabesequenz mit Metronom</h3>
+        <div class="step">
+            <ol>
+                <li><strong>Sie klicken auf "Wiedergabe"</strong> oder doppelklicken auf einen Song</li>
+                <li><strong>Das Metronom startet</strong>
+                    <ul>
+                        <li>Erster Schlag: höherer Ton (🔊 1000 Hz) zum Markieren des Starts</li>
+                        <li>Folgende Schläge: Standard-Ton (🔊 800 Hz)</li>
+                        <li>Tempo synchronisiert mit den BPM des Songs</li>
+                    </ul>
+                </li>
+                <li><strong>Automatische Stille-Entfernung</strong>
+                    <ul>
+                        <li>AudioPlay erkennt Stille am Anfang des Songs</li>
+                        <li>Stille wird automatisch entfernt</li>
+                    </ul>
+                </li>
+                <li><strong>Musik startet sofort</strong> nach dem letzten Schlag</li>
+            </ol>
+        </div>
+
+        <h3>Technische Klangdetails</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Merkmal</th>
+                    <th>Wert</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Erster Schlag (Start)</td>
+                    <td>1000 Hz (hoher Ton)</td>
+                </tr>
+                <tr>
+                    <td>Folgende Schläge</td>
+                    <td>800 Hz (Standard-Ton)</td>
+                </tr>
+                <tr>
+                    <td>Dauer jedes Klicks</td>
+                    <td>50 Millisekunden</td>
+                </tr>
+                <tr>
+                    <td>Lautstärke</td>
+                    <td>30% der maximalen Amplitude</td>
+                </tr>
+                <tr>
+                    <td>Standard-BPM</td>
+                    <td>120 BPM (falls nicht berechnet)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>🎼 BPM-Berechnung</h2>
+
+        <div class="info">
+            <strong>📊 Warum BPM berechnen?</strong><br>
+            Die BPM-Berechnung ermöglicht es dem Metronom, sich perfekt an das Tempo jedes Songs anzupassen. 
+            Ohne berechnete BPM verwendet das Metronom 120 BPM (durchschnittliches Tempo), was möglicherweise nicht 
+            zu Ihrer Musik passt.
+        </div>
+
+        <h3>Wie berechnet man BPM?</h3>
+        <div class="step">
+            <strong>Methode 1: Manuelle Berechnung für einen Song</strong>
+            <ol>
+                <li>Wählen Sie einen Song aus der Liste</li>
+                <li>Rechtsklick auf den Song</li>
+                <li>Wählen Sie <strong>"BPM berechnen"</strong></li>
+                <li>⏳ Warten Sie während der Analyse (einige Sekunden)</li>
+                <li>✅ BPM erscheint in der "BPM"-Spalte</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <strong>Methode 2: Automatische Berechnung</strong>
+            <ol>
+                <li>In <strong>Einstellungen</strong> > <strong>Wiedergabe</strong></li>
+                <li>Wählen Sie die <strong>BPM-Berechnungsmethode</strong>:
+                    <ul>
+                        <li><strong>Manuell</strong> - Sie entscheiden, wann berechnet wird</li>
+                        <li><strong>Erste Wiedergabe</strong> - Berechnet automatisch bei der ersten Wiedergabe</li>
+                        <li><strong>Im Hintergrund</strong> - Berechnet alle Songs schrittweise</li>
+                    </ul>
+                </li>
+                <li>Klicken Sie auf <strong>"Speichern"</strong></li>
+            </ol>
+        </div>
+
+        <h2>✅ Vorteile des Metronoms</h2>
+
+        <div class="success">
+            <ul>
+                <li>🎸 <strong>Für Musiker</strong>: Vorbereitung auf das Tempo vor dem Mitspielen</li>
+                <li>💃 <strong>Für Tänzer</strong>: In den Rhythmus kommen, bevor der Tanz beginnt</li>
+                <li>🎤 <strong>Für Sänger</strong>: Sich auf das Tempo einstellen, bevor man singt</li>
+                <li>🏃 <strong>Für Sport</strong>: Bewegungen mit der Musik synchronisieren</li>
+                <li>📚 <strong>Zum Lernen</strong>: Das Tempo eines Songs verstehen und fühlen</li>
+            </ul>
+        </div>
+
+        <h2>❓ Häufig gestellte Fragen</h2>
+
+        <h3>Das Metronom ist zu laut oder zu leise</h3>
+        <div class="warning">
+            <p><strong>Lösung:</strong> Die Lautstärke des Metronoms ist auf 30% der maximalen Amplitude festgelegt. 
+            Um sie anzupassen, ändern Sie die allgemeine Systemlautstärke, bevor die Musik beginnt.</p>
+        </div>
+
+        <h3>Das Metronom passt sich nicht dem Tempo meines Songs an</h3>
+        <div class="warning">
+            <p><strong>Lösung:</strong> Stellen Sie sicher, dass die BPM für diesen Song berechnet wurden. 
+            Rechtsklick auf den Song → "BPM berechnen". Ohne berechnete BPM verwendet das Metronom 
+            standardmäßig 120 BPM.</p>
+        </div>
+
+        <h3>Ich höre das Metronom nicht</h3>
+        <div class="warning">
+            <p><strong>Überprüfen Sie:</strong></p>
+            <ul>
+                <li>✅ Das Kontrollkästchen "Metronom vor Wiedergabe" ist in den Einstellungen aktiviert</li>
+                <li>✅ Die Anzahl der Schläge ist größer als 0</li>
+                <li>✅ Ihre Systemlautstärke ist ausreichend</li>
+                <li>✅ Sie haben auf "Speichern" geklickt, nachdem Sie die Einstellungen geändert haben</li>
+            </ul>
+        </div>
+
+        <h3>Kann ich das Metronom vorübergehend deaktivieren?</h3>
+        <div class="info">
+            <p><strong>Ja!</strong> Deaktivieren Sie einfach das Kontrollkästchen "Metronom vor Wiedergabe" in den Einstellungen 
+            und klicken Sie auf "Speichern". Das Metronom bleibt deaktiviert, bis Sie es wieder aktivieren.</p>
+        </div>
+
+        <h2>🎯 Verwendungstipps</h2>
+
+        <div class="step">
+            <ul>
+                <li><strong>Beginnen Sie mit 4 Schlägen</strong>: Es ist die häufigste und natürlichste Konfiguration</li>
+                <li><strong>Berechnen Sie Ihre BPM</strong>: Nehmen Sie sich Zeit, die BPM Ihrer Musikbibliothek zu berechnen</li>
+                <li><strong>Passen Sie je nach Verwendung an</strong>: Mehr Schläge zum Üben, weniger zum entspannten Hören</li>
+                <li><strong>Hören Sie auf den ersten Schlag</strong>: Der hohe Ton des ersten Schlags signalisiert den Start</li>
+                <li><strong>Verwenden Sie die automatische Methode</strong>: Lassen Sie AudioPlay BPM im Hintergrund berechnen</li>
+            </ul>
+        </div>
+
+        <div class="success" style="margin-top: 40px;">
+            <strong>🎵 Genießen Sie Ihre Musik mit dem AudioPlay-Metronom!</strong><br>
+            Das Pre-Roll-Metronom hilft Ihnen, in den Rhythmus zu kommen und Ihre Musik voll zu genießen. 
+            Ob Sie Musiker, Tänzer oder einfach Musikliebhaber sind, diese Funktion bereichert Ihr Hörerlebnis!
+        </div>
+    </div>
+</body>
+</html>

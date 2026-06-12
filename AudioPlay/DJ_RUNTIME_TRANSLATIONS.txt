@@ -1,0 +1,86 @@
+===== SPANISH (ES) =====
+  <data name="DJ_Error_LoadingDeck" xml:space="preserve">
+	<value>Error al cargar Plato {0}: {1}</value>
+  </data>
+  <data name="DJ_Error_Title" xml:space="preserve">
+	<value>Error</value>
+  </data>
+  <data name="DJ_Button_Play" xml:space="preserve">
+	<value>▶</value>
+  </data>
+  <data name="DJ_Button_Pause" xml:space="preserve">
+	<value>⏸</value>
+  </data>
+  <data name="DJ_Cue_Set" xml:space="preserve">
+	<value>Punto Cue {0} establecido en {1}</value>
+  </data>
+  <data name="DJ_Cue_Title" xml:space="preserve">
+	<value>Cue</value>
+  </data>
+  <data name="DJ_BPM_Value" xml:space="preserve">
+	<value>BPM: {0:F1}</value>
+  </data>
+  <data name="DJ_Pitch_Value" xml:space="preserve">
+	<value>Pitch: {0:+0.0%;-0.0%;0.0%}</value>
+  </data>
+  <data name="DJ_Duration_Format" xml:space="preserve">
+	<value>{0:mm\:ss} / {1:mm\:ss}</value>
+  </data>
+
+===== GERMAN (DE) =====
+  <data name="DJ_Error_LoadingDeck" xml:space="preserve">
+	<value>Fehler beim Laden von Deck {0}: {1}</value>
+  </data>
+  <data name="DJ_Error_Title" xml:space="preserve">
+	<value>Fehler</value>
+  </data>
+  <data name="DJ_Button_Play" xml:space="preserve">
+	<value>▶</value>
+  </data>
+  <data name="DJ_Button_Pause" xml:space="preserve">
+	<value>⏸</value>
+  </data>
+  <data name="DJ_Cue_Set" xml:space="preserve">
+	<value>Cue-Punkt {0} gesetzt auf {1}</value>
+  </data>
+  <data name="DJ_Cue_Title" xml:space="preserve">
+	<value>Cue</value>
+  </data>
+  <data name="DJ_BPM_Value" xml:space="preserve">
+	<value>BPM: {0:F1}</value>
+  </data>
+  <data name="DJ_Pitch_Value" xml:space="preserve">
+	<value>Pitch: {0:+0.0%;-0.0%;0.0%}</value>
+  </data>
+  <data name="DJ_Duration_Format" xml:space="preserve">
+	<value>{0:mm\:ss} / {1:mm\:ss}</value>
+  </data>
+
+===== ITALIAN (IT) =====
+  <data name="DJ_Error_LoadingDeck" xml:space="preserve">
+	<value>Errore caricamento Piatto {0}: {1}</value>
+  </data>
+  <data name="DJ_Error_Title" xml:space="preserve">
+	<value>Errore</value>
+  </data>
+  <data name="DJ_Button_Play" xml:space="preserve">
+	<value>▶</value>
+  </data>
+  <data name="DJ_Button_Pause" xml:space="preserve">
+	<value>⏸</value>
+  </data>
+  <data name="DJ_Cue_Set" xml:space="preserve">
+	<value>Punto Cue {0} impostato a {1}</value>
+  </data>
+  <data name="DJ_Cue_Title" xml:space="preserve">
+	<value>Cue</value>
+  </data>
+  <data name="DJ_BPM_Value" xml:space="preserve">
+	<value>BPM: {0:F1}</value>
+  </data>
+  <data name="DJ_Pitch_Value" xml:space="preserve">
+	<value>Pitch: {0:+0.0%;-0.0%;0.0%}</value>
+  </data>
+  <data name="DJ_Duration_Format" xml:space="preserve">
+	<value>{0:mm\:ss} / {1:mm\:ss}</value>
+  </data>

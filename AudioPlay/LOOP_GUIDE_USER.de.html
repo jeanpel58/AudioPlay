@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hilfe - Loop-Funktion (Schleife)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #3498db;
+            margin-top: 25px;
+        }
+        .step {
+            background-color: #ecf0f1;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #3498db;
+            border-radius: 5px;
+        }
+        .step-number {
+            font-weight: bold;
+            color: #3498db;
+            font-size: 1.2em;
+        }
+        .key {
+            display: inline-block;
+            background-color: #34495e;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            margin: 0 3px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 0 3px;
+        }
+        .marker {
+            display: inline-block;
+            background-color: #e74c3c;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        ul {
+            line-height: 1.8;
+        }
+        .icon {
+            font-size: 1.3em;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="icon">🔁</span>Loop-Funktion (Schleife)</h1>
+
+        <p>Die <strong>Loop</strong>-Taste ermöglicht es, einen bestimmten Abschnitt des aktuellen Songs zu wiederholen, ideal zum Erlernen einer musikalischen Passage oder zum Üben eines Instruments.</p>
+
+        <h2><span class="icon">📝</span>So verwenden Sie die Loop-Funktion</h2>
+
+        <div class="step">
+            <span class="step-number">1️⃣</span> <strong>Wiedergabe starten</strong><br>
+            Starten Sie die Wiedergabe eines Songs mit der <span class="button">Wiedergabe</span>-Taste oder durch Doppelklick auf einen Song in der Liste.
+        </div>
+
+        <div class="step">
+            <span class="step-number">2️⃣</span> <strong>Schleifenbeginn markieren</strong><br>
+            Drücken Sie während der Wiedergabe die Taste <span class="key">I</span> (wie "Anfang") an der Stelle, an der die Schleife beginnen soll.
+        </div>
+
+        <div class="step">
+            <span class="step-number">3️⃣</span> <strong>Schleifenende markieren</strong><br>
+            Hören Sie weiter und drücken Sie die Taste <span class="key">O</span> (wie "Ende") an der Stelle, an der die Schleife enden soll.
+        </div>
+
+        <div class="step">
+            <span class="step-number">4️⃣</span> <strong>Markierungen anzeigen</strong><br>
+            Zwei kleine Markierungen <span class="marker">I</span> und <span class="marker">O</span> erscheinen über dem Fortschrittsbalken, um die Schleifenzone anzuzeigen.
+        </div>
+
+        <div class="step">
+            <span class="step-number">5️⃣</span> <strong>Schleife aktivieren</strong><br>
+            Klicken Sie auf die <span class="button">Loop</span>-Taste. Die Taste wird hellgrün, um anzuzeigen, dass die Schleife aktiv ist.
+        </div>
+
+        <div class="step">
+            <span class="step-number">6️⃣</span> <strong>Der Abschnitt wird in einer Schleife abgespielt</strong><br>
+            Der Teil zwischen <span class="marker">I</span> und <span class="marker">O</span> wiederholt sich automatisch ohne Unterbrechung.
+        </div>
+
+        <h2><span class="icon">🔄</span>Schleife deaktivieren</h2>
+        <p>Um die Schleifenwiedergabe zu stoppen, klicken Sie erneut auf die <span class="button">Loop</span>-Taste. Die Taste kehrt zu ihrer normalen Farbe zurück und die Wiedergabe wird normal fortgesetzt.</p>
+
+        <h2><span class="icon">🗑️</span>Markierungen zurücksetzen</h2>
+        <p>Die Markierungen <span class="marker">I</span> und <span class="marker">O</span> verschwinden automatisch, wenn:</p>
+        <ul>
+            <li>Sie einen neuen Song laden (Doppelklick oder <span class="button">Wiedergabe</span>-Taste)</li>
+            <li>Sie die Wiedergabe vollständig mit der <span class="button">Stopp</span>-Taste oder <span class="key">Strg</span>+<span class="key">Leertaste</span> stoppen</li>
+        </ul>
+        <div class="info">
+            <strong>💡 Hinweis:</strong> Schleifen sind songspezifisch. Jedes Mal, wenn Sie einen neuen Song abspielen, müssen Sie neue Markierungen definieren.
+        </div>
+
+        <h2><span class="icon">⏸️</span>Verhalten mit Pause und Stumm</h2>
+        <ul>
+            <li><strong>Pause/Fortsetzen:</strong> Die Schleife pausiert mit der Wiedergabe und wird am selben Punkt fortgesetzt, wenn Sie auf <span class="button">Pause/Fortsetzen</span> klicken oder <span class="key">Leertaste</span> drücken.</li>
+            <li><strong>Stumm:</strong> Die Schleife läuft stumm weiter. Der Ton kehrt zurück, sobald Sie den Stumm-Modus deaktivieren.</li>
+        </ul>
+
+        <h2><span class="icon">🎨</span>Markierungsfarbe</h2>
+        <div class="info">
+            Die Markierungen <span class="marker">I</span> und <span class="marker">O</span> werden standardmäßig in <strong style="color: #e74c3c;">Rot</strong> angezeigt. Wenn Sie ein Theme mit rotem oder sehr dunklem Hintergrund erstellt haben, werden die Markierungen automatisch in <strong style="color: #f1c40f;">Gelb</strong> angezeigt, um deutlich sichtbar zu bleiben.
+        </div>
+
+        <h2><span class="icon">🚫</span>Einschränkungen</h2>
+        <div class="warning">
+            <strong>⚠️ BPM-Berechnung blockiert:</strong> Die <span class="button">BPM-Berechnung</span>-Taste funktioniert nicht, während eine Schleife aktiv ist. Deaktivieren Sie zuerst die Schleife, wenn Sie das Tempo des Songs berechnen möchten.
+        </div>
+
+        <h2><span class="icon">💡</span>Tipps</h2>
+        <p>Die Loop-Funktion ist besonders nützlich für:</p>
+        <ul>
+            <li>Liedtexte lernen</li>
+            <li>Gitarren- oder Klaviersolo üben</li>
+            <li>Schwierige Passagen bearbeiten</li>
+            <li>Einen musikalischen Abschnitt im Detail analysieren</li>
+        </ul>
+    </div>
+</body>
+</html>

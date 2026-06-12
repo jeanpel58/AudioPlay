@@ -1,0 +1,16 @@
+root = true
+
+[*.resx]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+
+[*.vb]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+
+[*.sln]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true

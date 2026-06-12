@@ -1,0 +1,26 @@
+ESPAGNOL (Resources.es.resx) - Ajouter avant </root>:
+
+  <data name="DJ_ButtonReturnSimple" xml:space="preserve">
+	<value>◀ Modo Simple</value>
+  </data>
+  <data name="DJ_ButtonSettings" xml:space="preserve">
+	<value>⚙️ Configuración</value>
+  </data>
+
+ALLEMAND (Resources.de.resx) - Ajouter avant </root>:
+
+  <data name="DJ_ButtonReturnSimple" xml:space="preserve">
+	<value>◀ Einfacher Modus</value>
+  </data>
+  <data name="DJ_ButtonSettings" xml:space="preserve">
+	<value>⚙️ Einstellungen</value>
+  </data>
+
+ITALIEN (Resources.it.resx) - Ajouter avant </root>:
+
+  <data name="DJ_ButtonReturnSimple" xml:space="preserve">
+	<value>◀ Modalità Semplice</value>
+  </data>
+  <data name="DJ_ButtonSettings" xml:space="preserve">
+	<value>⚙️ Impostazioni</value>
+  </data>

@@ -1,0 +1,8 @@
+#!G:\Visual Studio Projects\Jean\AudioPlay 2026-05-24\AudioPlay\bin\Debug\net8.0-windows\python_embedded\python.exe
+# -*- coding: UTF-8 -*-
+from __future__ import print_function, division, absolute_import
+
+from numba.misc.numba_entry import main
+
+if __name__ == "__main__":
+    main()

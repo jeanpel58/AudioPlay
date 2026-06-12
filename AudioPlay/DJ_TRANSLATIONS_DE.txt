@@ -1,0 +1,63 @@
+﻿  <data name="DJ_SyncToA" xml:space="preserve">
+    <value>🔄 SYNC → A</value>
+  </data>
+  <data name="DJ_SyncToB" xml:space="preserve">
+    <value>🔄 SYNC → B</value>
+  </data>
+  <data name="DJ_PlaylistTitle" xml:space="preserve">
+    <value>📋 DJ-PLAYLIST</value>
+  </data>
+  <data name="DJ_ColumnNumber" xml:space="preserve">
+    <value>#</value>
+  </data>
+  <data name="DJ_ColumnSong" xml:space="preserve">
+    <value>Lieder</value>
+  </data>
+  <data name="DJ_ColumnBPM" xml:space="preserve">
+    <value>BPM</value>
+  </data>
+  <data name="DJ_ColumnDuration" xml:space="preserve">
+    <value>Dauer</value>
+  </data>
+  <data name="DJ_ButtonAddTrack" xml:space="preserve">
+    <value>➕ Hinzufügen</value>
+  </data>
+  <data name="DJ_ButtonManagePlaylist" xml:space="preserve">
+    <value>📋 Verwalten</value>
+  </data>
+  <data name="DJ_DeckATitle" xml:space="preserve">
+    <value>🎧 DECK A</value>
+  </data>
+  <data name="DJ_DeckBTitle" xml:space="preserve">
+    <value>🎧 DECK B</value>
+  </data>
+  <data name="DJ_MixerTitle" xml:space="preserve">
+    <value>🎚️ MIXER</value>
+  </data>
+  <data name="DJ_DragTrackHere" xml:space="preserve">
+    <value>Ziehen Sie einen Track hierher ⬇</value>
+  </data>
+  <data name="DJ_VolumeLabel" xml:space="preserve">
+    <value>Lautst. {0}: {1}%</value>
+  </data>
+  <data name="DJ_PitchLabel" xml:space="preserve">
+    <value>Tonhöhe: {0}%</value>
+  </data>
+  <data name="DJ_BPMLabel" xml:space="preserve">
+    <value>BPM: {0}</value>
+  </data>
+  <data name="DJ_CrossfaderLabel" xml:space="preserve">
+    <value>Crossfader: {0}%</value>
+  </data>
+  <data name="DJ_EffectPhaser" xml:space="preserve">
+    <value>🌀 PHASER</value>
+  </data>
+  <data name="DJ_EffectReverb" xml:space="preserve">
+    <value>🎵 REVERB</value>
+  </data>
+  <data name="DJ_EffectEcho" xml:space="preserve">
+    <value>📢 ECHO</value>
+  </data>
+  <data name="DJ_ButtonReturnSimple" xml:space="preserve">
+    <value>◀ Einfacher Modus</value>
+  </data>

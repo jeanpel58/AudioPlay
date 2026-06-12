@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide d'enregistrement - Mode DJ - AudioPlay</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #667eea;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #764ba2;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #667eea;
+            margin-top: 20px;
+        }
+        .feature-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .tip {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        li {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+        }
+        li:before {
+            content: "▶ ";
+            color: #667eea;
+            font-weight: bold;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+        }
+        .button-demo {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .rec-button {
+            background: #dc3545;
+            color: white;
+        }
+        .stop-button {
+            background: #6c757d;
+            color: white;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #667eea;
+            color: white;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎙️ Guide d'enregistrement - Mode DJ</h1>
+        <p style="text-align: center; color: #666; font-style: italic;">
+            Enregistrez vos sessions de mixage en toute simplicité
+        </p>
+
+        <h2>📋 Vue d'ensemble</h2>
+        <div class="feature-box">
+            <p>La fonction d'enregistrement DJ vous permet de capturer vos sessions de mixage en temps réel, dans plusieurs formats audio de haute qualité. Que vous créiez un podcast, un set DJ ou simplement que vous souhaitiez conserver vos meilleurs mixes, cette fonctionnalité est conçue pour vous.</p>
+        </div>
+
+        <h2>🎯 Formats disponibles</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Format</th>
+                    <th>Qualité</th>
+                    <th>Taille</th>
+                    <th>Recommandation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>WAV (Sans perte)</strong></td>
+                    <td>⭐⭐⭐⭐⭐</td>
+                    <td>Très élevée</td>
+                    <td>Archive, mastering professionnel</td>
+                </tr>
+                <tr>
+                    <td><strong>MP3 320 kbps</strong></td>
+                    <td>⭐⭐⭐⭐</td>
+                    <td>Moyenne</td>
+                    <td>Partage en ligne, excellente qualité</td>
+                </tr>
+                <tr>
+                    <td><strong>MP3 256 kbps</strong></td>
+                    <td>⭐⭐⭐⭐</td>
+                    <td>Moyenne</td>
+                    <td>Équilibre qualité/taille</td>
+                </tr>
+                <tr>
+                    <td><strong>MP3 192 kbps</strong></td>
+                    <td>⭐⭐⭐</td>
+                    <td>Faible</td>
+                    <td>Podcasts, diffusion streaming</td>
+                </tr>
+                <tr>
+                    <td><strong>MP3 128 kbps</strong></td>
+                    <td>⭐⭐</td>
+                    <td>Très faible</td>
+                    <td>Tests rapides</td>
+                </tr>
+                <tr>
+                    <td><strong>FLAC</strong></td>
+                    <td colspan="3" style="color: #999; font-style: italic;">À venir prochainement</td>
+                </tr>
+                <tr>
+                    <td><strong>WMA</strong></td>
+                    <td colspan="3" style="color: #999; font-style: italic;">À venir prochainement</td>
+                </tr>
+                <tr>
+                    <td><strong>AAC</strong></td>
+                    <td colspan="3" style="color: #999; font-style: italic;">À venir prochainement</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>🚀 Démarrage rapide</h2>
+
+        <h3>1. Préparation</h3>
+        <ul>
+            <li>Chargez au moins une piste sur l'un des decks (A ou B)</li>
+            <li>Sélectionnez le format d'enregistrement souhaité dans la liste déroulante</li>
+            <li>Le format par défaut est <strong>MP3 320 kbps</strong></li>
+        </ul>
+
+        <h3>2. Démarrage de l'enregistrement</h3>
+        <div class="feature-box">
+            <p><strong>Étape par étape :</strong></p>
+            <ol style="padding-left: 20px;">
+                <li>Cliquez sur le bouton <span class="button-demo rec-button">⬤ REC</span></li>
+                <li>Sélectionnez le répertoire de destination pour votre mix</li>
+                <li>Un message de confirmation s'affiche avec le nom du fichier</li>
+                <li>Le bouton devient <span class="button-demo stop-button">⬛ STOP</span></li>
+                <li>La durée d'enregistrement s'affiche en temps réel</li>
+            </ol>
+        </div>
+
+        <div class="tip">
+            <strong>💡 Astuce :</strong> Le répertoire de destination est mémorisé entre les sessions. Vous n'aurez à le sélectionner qu'une seule fois !
+        </div>
+
+        <h3>3. Enregistrement en cours</h3>
+        <div class="feature-box">
+            <p><strong>Pendant l'enregistrement :</strong></p>
+            <ul>
+                <li>Mixez normalement avec vos deux decks</li>
+                <li>Utilisez le crossfader, les effets, le pitch</li>
+                <li>La durée s'affiche au format <code>HH:MM:SS</code></li>
+                <li>Tout le son sortant de votre système est capturé</li>
+            </ul>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ Attention :</strong> L'enregistrement capture TOUTE la sortie audio de votre système. Évitez les notifications système ou autres sons parasites pendant l'enregistrement.
+        </div>
+
+        <h3>4. Arrêt de l'enregistrement</h3>
+        <ul>
+            <li>Cliquez sur le bouton <span class="button-demo stop-button">⬛ STOP</span></li>
+            <li>Un message de confirmation affiche la durée totale et l'emplacement du fichier</li>
+            <li>Vous pouvez ouvrir directement le dossier contenant votre mix</li>
+        </ul>
+
+        <h2>📁 Organisation des fichiers</h2>
+        <div class="feature-box">
+            <p><strong>Nom des fichiers :</strong></p>
+            <p>Les enregistrements sont automatiquement nommés avec un horodatage :</p>
+            <code>DJMix_AAAA-MM-JJ_HH-MM-SS.extension</code>
+            <p style="margin-top: 10px;"><em>Exemple :</em> <code>DJMix_2026-06-02_15-30-45.mp3</code></p>
+        </div>
+
+        <h2>🛠️ Conseils et bonnes pratiques</h2>
+
+        <h3>Qualité optimale</h3>
+        <ul>
+            <li><strong>Pour l'archivage :</strong> Utilisez le format WAV</li>
+            <li><strong>Pour le partage :</strong> MP3 320 kbps offre un excellent compromis</li>
+            <li><strong>Pour les podcasts :</strong> MP3 192 kbps est suffisant</li>
+        </ul>
+
+        <h3>Espace disque</h3>
+        <div class="tip">
+            <strong>💡 Estimation de taille (pour 1 heure) :</strong>
+            <ul>
+                <li><strong>WAV :</strong> ~600 MB</li>
+                <li><strong>MP3 320 kbps :</strong> ~144 MB</li>
+                <li><strong>MP3 192 kbps :</strong> ~86 MB</li>
+                <li><strong>MP3 128 kbps :</strong> ~58 MB</li>
+            </ul>
+        </div>
+
+        <h3>Performance</h3>
+        <ul>
+            <li>L'enregistrement n'affecte pas les performances de lecture</li>
+            <li>L'encodage MP3 est optimisé pour un usage temps réel</li>
+            <li>Assurez-vous d'avoir suffisamment d'espace disque disponible</li>
+        </ul>
+
+        <h2>❓ Dépannage</h2>
+
+        <h3>L'enregistrement ne démarre pas</h3>
+        <div class="warning">
+            <p><strong>Solutions possibles :</strong></p>
+            <ul>
+                <li>Vérifiez qu'au moins une piste est chargée</li>
+                <li>Assurez-vous d'avoir les droits d'écriture dans le dossier de destination</li>
+                <li>Vérifiez qu'il y a suffisamment d'espace disque disponible</li>
+            </ul>
+        </div>
+
+        <h3>Pas de son enregistré</h3>
+        <div class="warning">
+            <p><strong>Solutions possibles :</strong></p>
+            <ul>
+                <li>Vérifiez que le volume principal n'est pas à zéro</li>
+                <li>Vérifiez les paramètres audio de Windows (périphérique de sortie)</li>
+                <li>Redémarrez AudioPlay et réessayez</li>
+            </ul>
+        </div>
+
+        <h3>Le fichier est corrompu</h3>
+        <div class="warning">
+            <p><strong>Solutions possibles :</strong></p>
+            <ul>
+                <li>Arrêtez correctement l'enregistrement avec le bouton STOP</li>
+                <li>Ne fermez pas AudioPlay pendant un enregistrement</li>
+                <li>Vérifiez l'intégrité de votre disque dur</li>
+            </ul>
+        </div>
+
+        <h2>🎓 Techniques avancées</h2>
+
+        <h3>Enregistrement de sets longs</h3>
+        <div class="success">
+            <p>Pour les sessions de plusieurs heures :</p>
+            <ul>
+                <li>Privilégiez le format MP3 320 kbps pour économiser de l'espace</li>
+                <li>Surveillez l'espace disque disponible</li>
+                <li>Prévoyez des pauses pour sauvegarder et redémarrer</li>
+            </ul>
+        </div>
+
+        <h3>Post-production</h3>
+        <div class="tip">
+            <p>Après l'enregistrement :</p>
+            <ul>
+                <li><strong>Normalisez le volume</strong> avec un logiciel audio (Audacity, etc.)</li>
+                <li><strong>Ajoutez des tags ID3</strong> pour organiser vos mixes</li>
+                <li><strong>Découpez les silences</strong> au début et à la fin si nécessaire</li>
+            </ul>
+        </div>
+
+        <h2>🔮 Futures améliorations</h2>
+        <div class="feature-box">
+            <p><strong>Prochainement disponibles :</strong></p>
+            <ul>
+                <li><strong>FLAC :</strong> Compression sans perte pour archivage optimisé</li>
+                <li><strong>WMA :</strong> Compatibilité Windows Media</li>
+                <li><strong>AAC :</strong> Format moderne avec excellente compression</li>
+                <li><strong>Métadonnées automatiques :</strong> Tags avec date, durée, BPM</li>
+                <li><strong>Enregistrement programmé :</strong> Démarrage/arrêt automatique</li>
+            </ul>
+        </div>
+
+        <div class="success" style="margin-top: 40px; text-align: center;">
+            <h3>✅ Vous êtes prêt !</h3>
+            <p>Lancez-vous et créez vos meilleurs mixes. Bon enregistrement ! 🎵</p>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 2px solid #eee;">
+
+        <p style="text-align: center; color: #999; font-size: 0.9em;">
+            <strong>AudioPlay</strong> - Mode DJ<br>
+            Documentation mise à jour : Juin 2026
+        </p>
+    </div>
+</body>
+</html>

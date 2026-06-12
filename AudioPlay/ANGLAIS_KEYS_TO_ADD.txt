@@ -1,0 +1,96 @@
+  <!-- === MISSING KEYS - DJ MODE === -->
+  <data name="Params_DJMixerMode" xml:space="preserve">
+	<value>DJ Mixer Mode (2 decks with crossfader and DJ controls)</value>
+  </data>
+  <data name="CheckBox_EffacerChansons" xml:space="preserve">
+	<value>Message to confirm removal of a selection from the list</value>
+  </data>
+  <data name="Info_DJModeEnabled" xml:space="preserve">
+	<value>DJ Mode enabled - Use 2 decks with crossfader</value>
+  </data>
+  <data name="Confirm_ReturnSimpleMode" xml:space="preserve">
+	<value>Do you want to return to simple mode?</value>
+  </data>
+  <data name="DJMode_Title" xml:space="preserve">
+	<value>DJ Mode</value>
+  </data>
+  <data name="Search_Placeholder" xml:space="preserve">
+	<value>Search...</value>
+  </data>
+  <data name="Search_ByFileName" xml:space="preserve">
+	<value>By file name</value>
+  </data>
+  <data name="Search_ByBPM" xml:space="preserve">
+	<value>By BPM</value>
+  </data>
+  <data name="Search_ByDuration" xml:space="preserve">
+	<value>By duration</value>
+  </data>
+
+  <!-- === AUDIO EFFECTS === -->
+  <data name="AudioEffects_GroupTitle" xml:space="preserve">
+	<value>Audio Effects</value>
+  </data>
+  <data name="AudioEffects_Reverb" xml:space="preserve">
+	<value>Reverb</value>
+  </data>
+  <data name="AudioEffects_ReverbMix" xml:space="preserve">
+	<value>Mix:</value>
+  </data>
+  <data name="AudioEffects_Echo" xml:space="preserve">
+	<value>Echo</value>
+  </data>
+  <data name="AudioEffects_EchoMix" xml:space="preserve">
+	<value>Mix:</value>
+  </data>
+  <data name="AudioEffects_EchoDelay" xml:space="preserve">
+	<value>Delay:</value>
+  </data>
+  <data name="AudioEffects_EchoFeedback" xml:space="preserve">
+	<value>Feedback:</value>
+  </data>
+  <data name="AudioEffects_TimeStretch" xml:space="preserve">
+	<value>Time Stretch</value>
+  </data>
+  <data name="AudioEffects_TimeStretchRatio" xml:space="preserve">
+	<value>Speed:</value>
+  </data>
+  <data name="AudioEffects_PitchShift" xml:space="preserve">
+	<value>Pitch Shift (Change Pitch)</value>
+  </data>
+  <data name="AudioEffects_PitchSemitones" xml:space="preserve">
+	<value>Pitch (semitones):</value>
+  </data>
+  <data name="AudioEffects_PitchShift_Reset" xml:space="preserve">
+	<value>Reset</value>
+  </data>
+  <data name="AudioEffects_Phaser" xml:space="preserve">
+	<value>Phaser (spatial effect)</value>
+  </data>
+  <data name="AudioEffects_PhaserRate" xml:space="preserve">
+	<value>Rate (Hz):</value>
+  </data>
+  <data name="AudioEffects_PhaserDepth" xml:space="preserve">
+	<value>Depth:</value>
+  </data>
+  <data name="AudioEffects_PhaserFeedback" xml:space="preserve">
+	<value>Resonance (Feedback):</value>
+  </data>
+  <data name="AudioEffects_PhaserMix" xml:space="preserve">
+	<value>Mix:</value>
+  </data>
+  <data name="AudioEffects_PhaserStages" xml:space="preserve">
+	<value>Stages:</value>
+  </data>
+  <data name="AudioEffects_Phaser_Reset" xml:space="preserve">
+	<value>Reset</value>
+  </data>
+  <data name="AudioEffects_ResetButton" xml:space="preserve">
+	<value>Reset Effects</value>
+  </data>
+  <data name="AudioTypes_GroupTitle" xml:space="preserve">
+	<value>Default Audio Types</value>
+  </data>
+  <data name="AudioTypes_Label" xml:space="preserve">
+	<value>Check default audio types:</value>
+  </data>

@@ -1,0 +1,92 @@
+﻿DJ_AutoCue_Detected|Auto-Cue détecté à : {0}
+DJ_AutoCue_Disable|Désactiver Auto-Cue
+DJ_AutoCue_Enable|Activer Auto-Cue
+DJ_AutoCue|Auto-Cue
+DJ_BPM_NotDetected|BPM non détecté sur les deux platines.
+DJ_BPM_Unknown|BPM: --
+DJ_BPM_Value|BPM: {0:F1}
+DJ_BPM|BPM: {0}
+DJ_BPMLabel|BPM: {0}
+DJ_Button_Cue|CUE
+DJ_Button_Pause|⏸
+DJ_Button_Play|▶
+DJ_Button_Stop|⏹
+DJ_ButtonAddTrack|➕ Ajouter
+DJ_ButtonManagePlaylist|📋 Gérer
+DJ_ButtonReturnSimple|◀ Mode Simple
+DJ_ColumnBPM|BPM
+DJ_ColumnDuration|Durée
+DJ_ColumnNumber|#
+DJ_ColumnSong|Chansons
+DJ_Confirm_Title|Confirmation
+DJ_Crossfader|Crossfader
+DJ_CrossfaderLabel|Crossfader: {0}%
+DJ_Cue|Cue
+DJ_DeckA|Deck A
+DJ_DeckATitle|🎧 PLATINE A
+DJ_DeckB|Deck B
+DJ_DeckBTitle|🎧 PLATINE B
+DJ_DragTrackHere|Glissez une piste ici ⬇
+DJ_Duration_Format|{0:mm\:ss} / {1:mm\:ss}
+DJ_EffectEcho|📢 ECHO
+DJ_EffectPhaser|🌀 PHASER
+DJ_EffectReverb|🎵 REVERB
+DJ_Effects|Effets
+DJ_Error_LoadingDeck|Erreur chargement Deck {0} : {1}
+DJ_Error_Title|Erreur
+DJ_Help_Shortcuts|Raccourcis Clavier
+DJ_Help_Title|Aide - Mode DJ
+DJ_HotCue_ClearAll|Tous les HotCues ont été effacés
+DJ_HotCue_Delete|HotCue {0} supprimé
+DJ_HotCue_Set|HotCue {0} défini à {1}
+DJ_HotCue_Trigger|Saut au HotCue {0}
+DJ_HotCues|HotCues
+DJ_LoadTrack|Charger Piste
+DJ_Loop_16Beats|16 Beats
+DJ_Loop_2Beats|2 Beats
+DJ_Loop_4Beats|4 Beats
+DJ_Loop_8Beats|8 Beats
+DJ_Loop_Active|Boucle active : {0} - {1}
+DJ_Loop_Inactive|Boucle désactivée
+DJ_Loop|Boucle
+DJ_LoopIn|Loop In
+DJ_LoopOut|Loop Out
+DJ_LoopToggle|Loop On/Off
+DJ_Mixer|Mixeur
+DJ_MixerTitle|🎚️ MIXEUR
+DJ_Pause|Pause
+DJ_Pitch_Value|Pitch: {0:+0.0%;-0.0%;0.0%}
+DJ_Pitch|Pitch
+DJ_PitchLabel|Pitch: {0}%
+DJ_Play|Play
+DJ_Playlist_ClearConfirm|Voulez-vous vraiment vider la liste?
+DJ_Playlist_LoadError|Erreur lors du chargement: {0}
+DJ_Playlist_LoadSuccess|Playlist chargée avec succès!
+DJ_Playlist_SaveError|Erreur lors de la sauvegarde: {0}
+DJ_Playlist_SaveSuccess|Playlist sauvegardée avec succès!
+DJ_PlaylistTitle|📋 PLAYLIST DJ
+DJ_Position|Position
+DJ_Recording_Duration|Durée : {0}
+DJ_Recording_Error|Erreur d'enregistrement : {0}
+DJ_Recording_Started|Enregistrement démarré :{0}{1}
+DJ_Recording_Stopped|Enregistrement sauvegardé :{0}{1}
+DJ_Recording|Enregistrement
+DJ_RecordStart|● REC
+DJ_RecordStop|■ STOP
+DJ_Sampler_ClearAll|Effacer tous les pads
+DJ_Sampler_LoadSample|Charger un sample pour Pad {0}
+DJ_Sampler_Pad|Pad {0}
+DJ_Sampler_SampleLoaded|Sample chargé : {0}
+DJ_Sampler_StopAll|Arrêter tous les pads
+DJ_Sampler|Sampler
+DJ_Stop|Stop
+DJ_Success_Title|Succès
+DJ_Sync_TitleAtoB|Sync A → B
+DJ_Sync_TitleBtoA|Sync B → A
+DJ_Sync|SYNC
+DJ_SyncToA|🔄 SYNC → A
+DJ_SyncToB|🔄 SYNC → B
+DJ_Volume|Volume
+DJ_VolumeLabel|Vol {0}: {1}%
+DJ_VUMeter|VU-Mètre
+DJ_Waveform|Forme d'onde

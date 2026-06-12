@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide Karaoke CDG - AudioPlay</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #764ba2;
+            margin-top: 35px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            color: #667eea;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        .feature-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .success-box {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .info-box {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+        }
+        ul, ol {
+            line-height: 1.8;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #667eea;
+            color: white;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+        .emoji {
+            font-size: 1.3em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 Guide d'utilisation du Karaoke CDG</h1>
+
+        <div class="info-box">
+            <strong>📌 Qu'est-ce que le CDG ?</strong><br>
+            CDG (CD+Graphics) est un format standard de karaoke qui affiche les paroles synchronisées avec la musique. Les fichiers <code>.cdg</code> contiennent les graphiques et le texte qui apparaissent à l'écran pendant la chanson.
+        </div>
+
+        <h2>🚀 Démarrage rapide</h2>
+
+        <h3>1️⃣ Préparation des fichiers</h3>
+        <p>Pour utiliser le karaoke, vous devez avoir :</p>
+        <ul>
+            <li><strong>Un fichier audio</strong> (MP3, WAV, FLAC, etc.)</li>
+            <li><strong>Un fichier CDG</strong> portant le <strong>même nom</strong> que votre fichier audio</li>
+            <li>Les deux fichiers doivent être dans le <strong>même répertoire</strong></li>
+        </ul>
+
+        <div class="feature-box">
+            <strong>📁 Exemple de structure :</strong>
+            <pre>
+C:\Musique\Karaoke\
+  ├── Ma Chanson Préférée.mp3
+  └── Ma Chanson Préférée.cdg  ← Même nom que le fichier audio
+            </pre>
+        </div>
+
+        <h3>2️⃣ Utilisation automatique</h3>
+        <ol>
+            <li>Ajoutez votre chanson à la playlist d'AudioPlay</li>
+            <li>Sélectionnez la chanson dans la liste</li>
+            <li>Lancez la lecture avec le bouton <strong>▶</strong></li>
+            <li>Si un fichier CDG est détecté, la fenêtre karaoke <strong>s'ouvre automatiquement</strong></li>
+        </ol>
+
+        <div class="success-box">
+            <strong>✅ C'est prêt !</strong><br>
+            Les paroles s'affichent automatiquement, synchronisées avec la musique. Vous pouvez déplacer et redimensionner la fenêtre karaoke selon vos besoins. Quand vous passez à une chanson sans fichier CDG, la fenêtre se ferme automatiquement.
+        </div>
+
+        <h2>🎛️ Fonctionnalités</h2>
+
+        <h3>Contrôles de lecture</h3>
+        <table>
+            <tr>
+                <th>Bouton</th>
+                <th>Action</th>
+                <th>Effet sur le karaoke</th>
+            </tr>
+            <tr>
+                <td><strong>▶ Lecture</strong></td>
+                <td>Démarre la chanson</td>
+                <td>Affiche les paroles synchronisées</td>
+            </tr>
+            <tr>
+                <td><strong>⏸ Pause</strong></td>
+                <td>Met en pause</td>
+                <td>Fige l'affichage des paroles</td>
+            </tr>
+            <tr>
+                <td><strong>⏹ Arrêt</strong></td>
+                <td>Arrête la lecture</td>
+                <td>Réinitialise l'affichage karaoke</td>
+            </tr>
+            <tr>
+                <td><strong>⏭ Suivant</strong></td>
+                <td>Chanson suivante</td>
+                <td>Charge le CDG suivant (si disponible)</td>
+            </tr>
+            <tr>
+                <td><strong>⏮ Précédent</strong></td>
+                <td>Chanson précédente</td>
+                <td>Charge le CDG précédent (si disponible)</td>
+            </tr>
+            <tr>
+                <td><strong>K Karaoke</strong></td>
+                <td>Active/Désactive</td>
+                <td>Ouvre/Ferme la fenêtre karaoke</td>
+            </tr>
+        </table>
+
+        <h3>Fenêtre karaoke</h3>
+        <ul>
+            <li><strong>Redimensionnable</strong> : Ajustez la taille selon votre écran</li>
+            <li><strong>Détachable</strong> : Déplacez-la sur un autre écran</li>
+            <li><strong>Zoom automatique</strong> : Les graphiques s'adaptent à la taille de la fenêtre</li>
+            <li><strong>Barre de statut</strong> : Affiche l'état et le nom du fichier CDG chargé</li>
+        </ul>
+
+        <h2>💡 Conseils d'utilisation</h2>
+
+        <div class="feature-box">
+            <h3>🎯 Pour une session karaoke réussie</h3>
+            <ul>
+                <li><strong>Plein écran</strong> : Agrandissez la fenêtre karaoke pour une meilleure lisibilité</li>
+                <li><strong>Second écran</strong> : Déplacez la fenêtre karaoke sur un écran externe ou projecteur</li>
+                <li><strong>Playlist</strong> : Préparez votre playlist à l'avance avec toutes vos chansons karaoke</li>
+                <li><strong>Volume</strong> : Ajustez le volume avec la TrackBar dans AudioPlay</li>
+                <li><strong>Égaliseur</strong> : Utilisez les contrôles Basses/Aigües pour améliorer les voix</li>
+            </ul>
+        </div>
+
+        <h3>🔍 Où trouver des fichiers CDG ?</h3>
+        <ul>
+            <li>Sites de karaoke en ligne (légaux et payants)</li>
+            <li>Collections de karaoke commerciales</li>
+            <li>Logiciels de création de karaoke (pour créer vos propres CDG)</li>
+        </ul>
+
+        <div class="warning-box">
+            <strong>⚠️ Important :</strong> Respectez les droits d'auteur. N'utilisez que des fichiers CDG dont vous possédez les droits ou qui sont libres de droits.
+        </div>
+
+        <h2>🔧 Résolution de problèmes</h2>
+
+        <h3>❌ "Aucun fichier CDG trouvé"</h3>
+        <p><strong>Causes possibles :</strong></p>
+        <ul>
+            <li>Le fichier .cdg n'existe pas dans le même répertoire</li>
+            <li>Le nom du fichier .cdg ne correspond pas exactement au fichier audio</li>
+            <li>Extension de fichier incorrecte (doit être <code>.cdg</code> en minuscules)</li>
+        </ul>
+        <p><strong>Solution :</strong> Vérifiez que les noms de fichiers correspondent exactement (y compris majuscules/minuscules sur certains systèmes).</p>
+
+        <h3>❌ La fenêtre karaoke ne s'affiche pas</h3>
+        <p><strong>Solution :</strong></p>
+        <ol>
+            <li>Vérifiez que le bouton <strong>K</strong> est bien activé (coloré)</li>
+            <li>Essayez de cliquer à nouveau sur le bouton K</li>
+            <li>Redémarrez AudioPlay si nécessaire</li>
+        </ol>
+
+        <h3>❌ Les paroles ne sont pas synchronisées</h3>
+        <p><strong>Causes possibles :</strong></p>
+        <ul>
+            <li>Fichier CDG corrompu ou incompatible</li>
+            <li>Le fichier audio a été modifié (coupé, rallongé) après création du CDG</li>
+        </ul>
+        <p><strong>Solution :</strong> Utilisez un fichier CDG original non modifié, correspondant à la version exacte du fichier audio.</p>
+
+        <h3>❌ L'affichage est déformé ou incorrect</h3>
+        <p><strong>Cause :</strong> Format CDG non standard ou fichier corrompu.</p>
+        <p><strong>Solution :</strong> Obtenez un fichier CDG provenant d'une source fiable.</p>
+
+        <h2>📋 Spécifications techniques</h2>
+
+        <div class="info-box">
+            <h3>Format CDG supporté</h3>
+            <ul>
+                <li><strong>Résolution</strong> : 288×192 pixels (zone d'affichage)</li>
+                <li><strong>Couleurs</strong> : 16 couleurs simultanées</li>
+                <li><strong>Fréquence</strong> : 300 paquets par seconde</li>
+                <li><strong>Synchronisation</strong> : Automatique avec la lecture audio</li>
+                <li><strong>Formats audio compatibles</strong> : MP3, WAV, FLAC, OGG, WMA, etc.</li>
+            </ul>
+        </div>
+
+        <h2>🎵 Exemples d'utilisation</h2>
+
+        <h3>Scénario 1 : Soirée karaoke entre amis</h3>
+        <ol>
+            <li>Créez un dossier <code>Karaoke</code> avec vos chansons + CDG</li>
+            <li>Ajoutez toutes les chansons à AudioPlay</li>
+            <li>Activez le mode karaoke avec le bouton K</li>
+            <li>Connectez votre PC à une TV ou projecteur</li>
+            <li>Déplacez la fenêtre karaoke sur l'écran externe</li>
+            <li>Agrandissez-la en plein écran</li>
+            <li>Profitez de votre soirée karaoke !</li>
+        </ol>
+
+        <h3>Scénario 2 : Entraînement vocal</h3>
+        <ol>
+            <li>Chargez vos exercices vocaux avec CDG</li>
+            <li>Utilisez l'égaliseur pour réduire les voix originales (baisser les aigües)</li>
+            <li>Augmentez le volume pour bien entendre la musique</li>
+            <li>Suivez les paroles à l'écran pour pratiquer</li>
+        </ol>
+
+        <h2>🌍 Langues supportées</h2>
+        <p>L'interface du karaoke est disponible en :</p>
+        <ul>
+            <li>🇫🇷 Français</li>
+            <li>🇬🇧 Anglais</li>
+            <li>🇪🇸 Espagnol</li>
+            <li>🇩🇪 Allemand</li>
+            <li>🇮🇹 Italien</li>
+        </ul>
+        <p>La langue change automatiquement selon les paramètres d'AudioPlay.</p>
+
+        <div class="success-box">
+            <h3>✨ Amusez-vous bien avec le karaoke !</h3>
+            <p>AudioPlay vous souhaite d'excellentes sessions de chant. N'hésitez pas à explorer toutes les fonctionnalités pour personnaliser votre expérience karaoke.</p>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 2px solid #eee;">
+
+        <p style="text-align: center; color: #888; font-size: 0.9em;">
+            <strong>AudioPlay</strong> - Lecteur audio multifonction avec support karaoke CDG<br>
+            Version 2026 | Documentation mise à jour le 28 mai 2025
+        </p>
+    </div>
+</body>
+</html>

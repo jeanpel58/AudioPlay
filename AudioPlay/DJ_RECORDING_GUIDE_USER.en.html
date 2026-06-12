@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recording Guide - DJ Mode - AudioPlay</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #667eea;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #764ba2;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #667eea;
+            margin-top: 20px;
+        }
+        .feature-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .tip {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        li {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+        }
+        li:before {
+            content: "▶ ";
+            color: #667eea;
+            font-weight: bold;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+        }
+        .button-demo {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .rec-button {
+            background: #dc3545;
+            color: white;
+        }
+        .stop-button {
+            background: #6c757d;
+            color: white;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #667eea;
+            color: white;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎙️ Recording Guide - DJ Mode</h1>
+        <p style="text-align: center; color: #666; font-style: italic;">
+            Record your mix sessions with ease
+        </p>
+
+        <h2>📋 Overview</h2>
+        <div class="feature-box">
+            <p>The DJ recording feature allows you to capture your mix sessions in real-time, in multiple high-quality audio formats. Whether you're creating a podcast, a DJ set, or simply want to keep your best mixes, this feature is designed for you.</p>
+        </div>
+
+        <h2>🎯 Available Formats</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Format</th>
+                    <th>Quality</th>
+                    <th>Size</th>
+                    <th>Recommendation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>WAV (Lossless)</strong></td>
+                    <td>⭐⭐⭐⭐⭐</td>
+                    <td>Very High</td>
+                    <td>Archive, professional mastering</td>
+                </tr>
+                <tr>
+                    <td><strong>MP3 320 kbps</strong></td>
+                    <td>⭐⭐⭐⭐</td>
+                    <td>Medium</td>
+                    <td>Online sharing, excellent quality</td>
+                </tr>
+                <tr>
+                    <td><strong>MP3 256 kbps</strong></td>
+                    <td>⭐⭐⭐⭐</td>
+                    <td>Medium</td>
+                    <td>Quality/size balance</td>
+                </tr>
+                <tr>
+                    <td><strong>MP3 192 kbps</strong></td>
+                    <td>⭐⭐⭐</td>
+                    <td>Low</td>
+                    <td>Podcasts, streaming</td>
+                </tr>
+                <tr>
+                    <td><strong>MP3 128 kbps</strong></td>
+                    <td>⭐⭐</td>
+                    <td>Very Low</td>
+                    <td>Quick tests</td>
+                </tr>
+                <tr>
+                    <td><strong>FLAC</strong></td>
+                    <td colspan="3" style="color: #999; font-style: italic;">Coming soon</td>
+                </tr>
+                <tr>
+                    <td><strong>WMA</strong></td>
+                    <td colspan="3" style="color: #999; font-style: italic;">Coming soon</td>
+                </tr>
+                <tr>
+                    <td><strong>AAC</strong></td>
+                    <td colspan="3" style="color: #999; font-style: italic;">Coming soon</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>🚀 Quick Start</h2>
+
+        <h3>1. Preparation</h3>
+        <ul>
+            <li>Load at least one track on either deck (A or B)</li>
+            <li>Select the desired recording format from the dropdown list</li>
+            <li>The default format is <strong>MP3 320 kbps</strong></li>
+        </ul>
+
+        <h3>2. Starting the Recording</h3>
+        <div class="feature-box">
+            <p><strong>Step by step:</strong></p>
+            <ol style="padding-left: 20px;">
+                <li>Click the <span class="button-demo rec-button">⬤ REC</span> button</li>
+                <li>Select the destination folder for your mix</li>
+                <li>A confirmation message displays the file name</li>
+                <li>The button changes to <span class="button-demo stop-button">⬛ STOP</span></li>
+                <li>Recording duration displays in real-time</li>
+            </ol>
+        </div>
+
+        <div class="tip">
+            <strong>💡 Tip:</strong> The destination folder is remembered between sessions. You only need to select it once!
+        </div>
+
+        <h3>3. Recording in Progress</h3>
+        <div class="feature-box">
+            <p><strong>During recording:</strong></p>
+            <ul>
+                <li>Mix normally with your two decks</li>
+                <li>Use the crossfader, effects, pitch</li>
+                <li>Duration displays in <code>HH:MM:SS</code> format</li>
+                <li>All sound output from your system is captured</li>
+            </ul>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ Warning:</strong> Recording captures ALL audio output from your system. Avoid system notifications or other unwanted sounds during recording.
+        </div>
+
+        <h3>4. Stopping the Recording</h3>
+        <ul>
+            <li>Click the <span class="button-demo stop-button">⬛ STOP</span> button</li>
+            <li>A confirmation message shows total duration and file location</li>
+            <li>You can open the folder containing your mix directly</li>
+        </ul>
+
+        <h2>📁 File Organization</h2>
+        <div class="feature-box">
+            <p><strong>File naming:</strong></p>
+            <p>Recordings are automatically named with a timestamp:</p>
+            <code>DJMix_YYYY-MM-DD_HH-MM-SS.extension</code>
+            <p style="margin-top: 10px;"><em>Example:</em> <code>DJMix_2026-06-02_15-30-45.mp3</code></p>
+        </div>
+
+        <h2>🛠️ Tips and Best Practices</h2>
+
+        <h3>Optimal Quality</h3>
+        <ul>
+            <li><strong>For archiving:</strong> Use WAV format</li>
+            <li><strong>For sharing:</strong> MP3 320 kbps offers excellent compromise</li>
+            <li><strong>For podcasts:</strong> MP3 192 kbps is sufficient</li>
+        </ul>
+
+        <h3>Disk Space</h3>
+        <div class="tip">
+            <strong>💡 Size estimation (for 1 hour):</strong>
+            <ul>
+                <li><strong>WAV:</strong> ~600 MB</li>
+                <li><strong>MP3 320 kbps:</strong> ~144 MB</li>
+                <li><strong>MP3 192 kbps:</strong> ~86 MB</li>
+                <li><strong>MP3 128 kbps:</strong> ~58 MB</li>
+            </ul>
+        </div>
+
+        <h3>Performance</h3>
+        <ul>
+            <li>Recording doesn't affect playback performance</li>
+            <li>MP3 encoding is optimized for real-time use</li>
+            <li>Ensure you have enough disk space available</li>
+        </ul>
+
+        <h2>❓ Troubleshooting</h2>
+
+        <h3>Recording Won't Start</h3>
+        <div class="warning">
+            <p><strong>Possible solutions:</strong></p>
+            <ul>
+                <li>Check that at least one track is loaded</li>
+                <li>Ensure you have write permissions in the destination folder</li>
+                <li>Check that sufficient disk space is available</li>
+            </ul>
+        </div>
+
+        <h3>No Sound Recorded</h3>
+        <div class="warning">
+            <p><strong>Possible solutions:</strong></p>
+            <ul>
+                <li>Check that the master volume is not zero</li>
+                <li>Check Windows audio settings (output device)</li>
+                <li>Restart AudioPlay and try again</li>
+            </ul>
+        </div>
+
+        <h3>File is Corrupted</h3>
+        <div class="warning">
+            <p><strong>Possible solutions:</strong></p>
+            <ul>
+                <li>Stop recording properly using the STOP button</li>
+                <li>Don't close AudioPlay during recording</li>
+                <li>Check your hard drive integrity</li>
+            </ul>
+        </div>
+
+        <h2>🎓 Advanced Techniques</h2>
+
+        <h3>Long Set Recording</h3>
+        <div class="success">
+            <p>For multi-hour sessions:</p>
+            <ul>
+                <li>Prefer MP3 320 kbps format to save space</li>
+                <li>Monitor available disk space</li>
+                <li>Plan breaks to save and restart</li>
+            </ul>
+        </div>
+
+        <h3>Post-Production</h3>
+        <div class="tip">
+            <p>After recording:</p>
+            <ul>
+                <li><strong>Normalize volume</strong> with audio software (Audacity, etc.)</li>
+                <li><strong>Add ID3 tags</strong> to organize your mixes</li>
+                <li><strong>Trim silence</strong> at beginning and end if needed</li>
+            </ul>
+        </div>
+
+        <h2>🔮 Future Improvements</h2>
+        <div class="feature-box">
+            <p><strong>Coming soon:</strong></p>
+            <ul>
+                <li><strong>FLAC:</strong> Lossless compression for optimized archiving</li>
+                <li><strong>WMA:</strong> Windows Media compatibility</li>
+                <li><strong>AAC:</strong> Modern format with excellent compression</li>
+                <li><strong>Automatic metadata:</strong> Tags with date, duration, BPM</li>
+                <li><strong>Scheduled recording:</strong> Automatic start/stop</li>
+            </ul>
+        </div>
+
+        <div class="success" style="margin-top: 40px; text-align: center;">
+            <h3>✅ You're Ready!</h3>
+            <p>Get started and create your best mixes. Happy recording! 🎵</p>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 2px solid #eee;">
+
+        <p style="text-align: center; color: #999; font-size: 0.9em;">
+            <strong>AudioPlay</strong> - DJ Mode<br>
+            Documentation updated: June 2026
+        </p>
+    </div>
+</body>
+</html>

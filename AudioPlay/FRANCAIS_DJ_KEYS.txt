@@ -1,0 +1,262 @@
+  <!-- === MODE DJ - TOUTES LES CLÉS === -->
+  <data name="DJ_Waveform" xml:space="preserve">
+	<value>Forme d'onde</value>
+  </data>
+  <data name="DJ_HotCues" xml:space="preserve">
+	<value>HotCues</value>
+  </data>
+  <data name="DJ_HotCue_Set" xml:space="preserve">
+	<value>HotCue {0} défini à {1}</value>
+  </data>
+  <data name="DJ_HotCue_Trigger" xml:space="preserve">
+	<value>Saut au HotCue {0}</value>
+  </data>
+  <data name="DJ_HotCue_Delete" xml:space="preserve">
+	<value>HotCue {0} supprimé</value>
+  </data>
+  <data name="DJ_HotCue_ClearAll" xml:space="preserve">
+	<value>Tous les HotCues ont été effacés</value>
+  </data>
+  <data name="DJ_Loop" xml:space="preserve">
+	<value>Boucle</value>
+  </data>
+  <data name="DJ_LoopIn" xml:space="preserve">
+	<value>Loop In</value>
+  </data>
+  <data name="DJ_LoopOut" xml:space="preserve">
+	<value>Loop Out</value>
+  </data>
+  <data name="DJ_LoopToggle" xml:space="preserve">
+	<value>Loop On/Off</value>
+  </data>
+  <data name="DJ_Loop_Active" xml:space="preserve">
+	<value>Boucle active : {0} - {1}</value>
+  </data>
+  <data name="DJ_Loop_Inactive" xml:space="preserve">
+	<value>Boucle désactivée</value>
+  </data>
+  <data name="DJ_Loop_2Beats" xml:space="preserve">
+	<value>2 Temps</value>
+  </data>
+  <data name="DJ_Loop_4Beats" xml:space="preserve">
+	<value>4 Temps</value>
+  </data>
+  <data name="DJ_Loop_8Beats" xml:space="preserve">
+	<value>8 Temps</value>
+  </data>
+  <data name="DJ_Loop_16Beats" xml:space="preserve">
+	<value>16 Temps</value>
+  </data>
+  <data name="DJ_Recording" xml:space="preserve">
+	<value>Enregistrement</value>
+  </data>
+  <data name="DJ_RecordStart" xml:space="preserve">
+	<value>● REC</value>
+  </data>
+  <data name="DJ_RecordStop" xml:space="preserve">
+	<value>■ STOP</value>
+  </data>
+  <data name="DJ_Recording_Started" xml:space="preserve">
+	<value>Enregistrement démarré :{0}{1}</value>
+  </data>
+  <data name="DJ_Recording_Stopped" xml:space="preserve">
+	<value>Enregistrement sauvegardé :{0}{1}</value>
+  </data>
+  <data name="DJ_Recording_Error" xml:space="preserve">
+	<value>Erreur d'enregistrement : {0}</value>
+  </data>
+  <data name="DJ_Recording_Duration" xml:space="preserve">
+	<value>Durée : {0}</value>
+  </data>
+  <data name="DJ_AutoCue" xml:space="preserve">
+	<value>Auto-Cue</value>
+  </data>
+  <data name="DJ_AutoCue_Detected" xml:space="preserve">
+	<value>Auto-Cue détecté à : {0}</value>
+  </data>
+  <data name="DJ_AutoCue_Enable" xml:space="preserve">
+	<value>Activer l'Auto-Cue</value>
+  </data>
+  <data name="DJ_AutoCue_Disable" xml:space="preserve">
+	<value>Désactiver l'Auto-Cue</value>
+  </data>
+  <data name="DJ_Sampler" xml:space="preserve">
+	<value>Sampler</value>
+  </data>
+  <data name="DJ_Sampler_Pad" xml:space="preserve">
+	<value>Pad {0}</value>
+  </data>
+  <data name="DJ_Sampler_LoadSample" xml:space="preserve">
+	<value>Charger un sample pour le Pad {0}</value>
+  </data>
+  <data name="DJ_Sampler_PlaySample" xml:space="preserve">
+	<value>Jouer le sample {0}</value>
+  </data>
+  <data name="DJ_Sampler_StopSample" xml:space="preserve">
+	<value>Arrêter le sample {0}</value>
+  </data>
+  <data name="DJ_Play" xml:space="preserve">
+	<value>Lecture</value>
+  </data>
+  <data name="DJ_Pause" xml:space="preserve">
+	<value>Pause</value>
+  </data>
+  <data name="DJ_Stop" xml:space="preserve">
+	<value>Stop</value>
+  </data>
+  <data name="DJ_Cue" xml:space="preserve">
+	<value>Cue</value>
+  </data>
+  <data name="DJ_Sync" xml:space="preserve">
+	<value>Sync</value>
+  </data>
+  <data name="DJ_DeckA" xml:space="preserve">
+	<value>Platine A</value>
+  </data>
+  <data name="DJ_DeckB" xml:space="preserve">
+	<value>Platine B</value>
+  </data>
+  <data name="DJ_Mixer" xml:space="preserve">
+	<value>Mixeur</value>
+  </data>
+  <data name="DJ_Crossfader" xml:space="preserve">
+	<value>Crossfader</value>
+  </data>
+  <data name="DJ_Volume" xml:space="preserve">
+	<value>Volume</value>
+  </data>
+  <data name="DJ_Pitch" xml:space="preserve">
+	<value>Pitch</value>
+  </data>
+  <data name="DJ_BPM" xml:space="preserve">
+	<value>BPM</value>
+  </data>
+  <data name="DJ_Duration" xml:space="preserve">
+	<value>Durée</value>
+  </data>
+  <data name="DJ_Position" xml:space="preserve">
+	<value>Position</value>
+  </data>
+  <data name="DJ_LoadTrack" xml:space="preserve">
+	<value>Charger une piste</value>
+  </data>
+  <data name="DJ_Playlist" xml:space="preserve">
+	<value>Playlist</value>
+  </data>
+  <data name="DJ_PlaylistTitle" xml:space="preserve">
+	<value>📋 PLAYLIST DJ</value>
+  </data>
+  <data name="DJ_AddTrack" xml:space="preserve">
+	<value>Ajouter une piste</value>
+  </data>
+  <data name="DJ_RemoveTrack" xml:space="preserve">
+	<value>Retirer la piste</value>
+  </data>
+  <data name="DJ_ClearPlaylist" xml:space="preserve">
+	<value>Vider la playlist</value>
+  </data>
+  <data name="DJ_SavePlaylist" xml:space="preserve">
+	<value>Sauvegarder la playlist</value>
+  </data>
+  <data name="DJ_LoadPlaylist" xml:space="preserve">
+	<value>Charger une playlist</value>
+  </data>
+  <data name="DJ_ManagePlaylist" xml:space="preserve">
+	<value>📋 Gérer</value>
+  </data>
+  <data name="DJ_DeckATitle" xml:space="preserve">
+	<value>🎧 PLATINE A</value>
+  </data>
+  <data name="DJ_DeckBTitle" xml:space="preserve">
+	<value>🎧 PLATINE B</value>
+  </data>
+  <data name="DJ_MixerTitle" xml:space="preserve">
+	<value>🎚️ MIXEUR</value>
+  </data>
+  <data name="DJ_DragTrackHere" xml:space="preserve">
+	<value>Glissez une piste ici ⬇</value>
+  </data>
+  <data name="DJ_VolumeLabel" xml:space="preserve">
+	<value>Vol {0} : {1}%</value>
+  </data>
+  <data name="DJ_PitchLabel" xml:space="preserve">
+	<value>Pitch : {0}%</value>
+  </data>
+  <data name="DJ_BPMLabel" xml:space="preserve">
+	<value>BPM : {0}</value>
+  </data>
+  <data name="DJ_CrossfaderLabel" xml:space="preserve">
+	<value>Crossfader : {0}%</value>
+  </data>
+  <data name="DJ_EffectPhaser" xml:space="preserve">
+	<value>🌀 PHASER</value>
+  </data>
+  <data name="DJ_EffectReverb" xml:space="preserve">
+	<value>🎵 REVERB</value>
+  </data>
+  <data name="DJ_EffectEcho" xml:space="preserve">
+	<value>🔢 ECHO</value>
+  </data>
+  <data name="DJ_ButtonReturnSimple" xml:space="preserve">
+	<value>◀ Mode Simple</value>
+  </data>
+  <data name="DJ_Error_LoadingDeck" xml:space="preserve">
+	<value>Erreur lors du chargement de la Platine {0} : {1}</value>
+  </data>
+  <data name="DJ_Error_Title" xml:space="preserve">
+	<value>Erreur</value>
+  </data>
+  <data name="DJ_BPM_NotDetected" xml:space="preserve">
+	<value>BPM non détecté sur les deux platines.</value>
+  </data>
+  <data name="DJ_Sync_TitleAtoB" xml:space="preserve">
+	<value>Sync A → B</value>
+  </data>
+  <data name="DJ_Sync_TitleBtoA" xml:space="preserve">
+	<value>Sync B → A</value>
+  </data>
+  <data name="DJ_BPM_Unknown" xml:space="preserve">
+	<value>BPM : --</value>
+  </data>
+  <data name="DJ_BPM_Value" xml:space="preserve">
+	<value>BPM : {0:F1}</value>
+  </data>
+  <data name="DJ_Pitch_Value" xml:space="preserve">
+	<value>Pitch : {0:+0.0%;-0.0%;0.0%}</value>
+  </data>
+  <data name="DJ_Duration_Format" xml:space="preserve">
+	<value>{0:mm\:ss} / {1:mm\:ss}</value>
+  </data>
+  <data name="DJ_Button_Play" xml:space="preserve">
+	<value>▶</value>
+  </data>
+  <data name="DJ_Button_Pause" xml:space="preserve">
+	<value>⏸</value>
+  </data>
+  <data name="DJ_Button_Stop" xml:space="preserve">
+	<value>⏹</value>
+  </data>
+  <data name="DJ_Button_Cue" xml:space="preserve">
+	<value>CUE</value>
+  </data>
+  <data name="DJ_Playlist_LoadSuccess" xml:space="preserve">
+	<value>Playlist chargée avec succès !</value>
+  </data>
+  <data name="DJ_Playlist_SaveSuccess" xml:space="preserve">
+	<value>Playlist sauvegardée avec succès !</value>
+  </data>
+  <data name="DJ_Playlist_LoadError" xml:space="preserve">
+	<value>Erreur lors du chargement : {0}</value>
+  </data>
+  <data name="DJ_Playlist_SaveError" xml:space="preserve">
+	<value>Erreur lors de la sauvegarde : {0}</value>
+  </data>
+  <data name="DJ_Playlist_ClearConfirm" xml:space="preserve">
+	<value>Voulez-vous vraiment vider la playlist ?</value>
+  </data>
+  <data name="DJ_Success_Title" xml:space="preserve">
+	<value>Succès</value>
+  </data>
+  <data name="DJ_Confirm_Title" xml:space="preserve">
+	<value>Confirmation</value>
+  </data>

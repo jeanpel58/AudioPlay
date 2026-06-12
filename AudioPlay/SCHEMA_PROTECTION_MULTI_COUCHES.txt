@@ -1,0 +1,236 @@
+# 🛡️ SCHÉMA DE PROTECTION MULTI-COUCHES
+
+## Vue d'ensemble du système de protection
+
+```
+╔═══════════════════════════════════════════════════════════════════════╗
+║                    UTILISATEUR AJUSTE LES TRACKBARS                   ║
+║                   (Volume / Basses / Aigues)                          ║
+╚═══════════════════════════════════════════════════════════════════════╝
+									↓
+╔═══════════════════════════════════════════════════════════════════════╗
+║                 TrackBar_Volume/Basses/Aigues_Scroll()                ║
+║                                                                       ║
+║  IF initialisationEnCours THEN Return  ← [PROTECTION #0]            ║
+║                                                                       ║
+║  dernierVolume = TrackBar_Volume.Value / Maximum                     ║
+║  dernieresBasses = TrackBar_Basses.Value                             ║
+║  dernieresAigues = TrackBar_Aigues.Value                             ║
+║                                                                       ║
+║  SauvegarderParametres() ← Sauvegarde IMMÉDIATE                      ║
+╚═══════════════════════════════════════════════════════════════════════╝
+									↓
+					 [VALEURS EN MÉMOIRE ET SUR DISQUE]
+					 dernierVolume = 0.7
+					 dernieresBasses = 10
+					 dernieresAigues = 8
+					 parametres.txt : Volume=0.7, Basses=10, Aigues=8
+
+
+
+╔═══════════════════════════════════════════════════════════════════════╗
+║              UTILISATEUR OUVRE FORMPARAMETRES                         ║
+║              (Change langue / thème / métronome / etc.)               ║
+╚═══════════════════════════════════════════════════════════════════════╝
+									↓
+╔═══════════════════════════════════════════════════════════════════════╗
+║                    FormParametres.ShowDialog(Me)                      ║
+║                         Me.Owner = Form1                              ║
+╚═══════════════════════════════════════════════════════════════════════╝
+									↓
+╔═══════════════════════════════════════════════════════════════════════╗
+║           UTILISATEUR CLIQUE SUR "SAUVEGARDER"                        ║
+╚═══════════════════════════════════════════════════════════════════════╝
+									↓
+╔═══════════════════════════════════════════════════════════════════════╗
+║            [PROTECTION COUCHE #1 : FORMPARAMETRES]                    ║
+║                ButtonSauvegarder_Click()                              ║
+║                                                                       ║
+║  Dim form1Instance As Form1 = TryCast(Me.Owner, Form1)              ║
+║  IF form1Instance IsNot Nothing THEN                                 ║
+║      volumeActuel = form1Instance.dernierVolume     ← LECTURE        ║
+║      bassesActuelles = form1Instance.dernieresBasses ← LECTURE       ║
+║      aiguesActuelles = form1Instance.dernieresAigues ← LECTURE       ║
+║      Debug: "✅ PROTECTION: Valeurs récupérées depuis Form1"         ║
+║  END IF                                                              ║
+║                                                                       ║
+║  ParametresAudioModifies = False  ← [PROTECTION #2]                  ║
+║                                                                       ║
+║  Écriture parametres.txt avec volumeActuel/bassesActuelles/aigues    ║
+╚═══════════════════════════════════════════════════════════════════════╝
+									↓
+			  [FORMPARAMETRES SE FERME]
+									↓
+╔═══════════════════════════════════════════════════════════════════════╗
+║         [PROTECTION COUCHE #2 : FORM1.BUTTON_PARAMETRES_CLICK]       ║
+║                                                                       ║
+║  ' Sauvegarder les valeurs AVANT rechargement                        ║
+║  volumeAvant = dernierVolume        ← [BACKUP]                       ║
+║  bassesAvant = dernieresBasses      ← [BACKUP]                       ║
+║  aiguesAvant = dernieresAigues      ← [BACKUP]                       ║
+║                                                                       ║
+║  ChargerParametres()  ← Lit parametres.txt                           ║
+║                                                                       ║
+║  ' Restaurer si FormParametres n'a pas modifié                       ║
+║  IF NOT dlg.ParametresAudioModifies THEN  ← [PROTECTION #3]         ║
+║      dernierVolume = volumeAvant     ← [RESTAURATION]                ║
+║      dernieresBasses = bassesAvant   ← [RESTAURATION]                ║
+║      dernieresAigues = aiguesAvant   ← [RESTAURATION]                ║
+║      Debug: "✅ PROTECTION: Valeurs audio restaurées"                ║
+║  END IF                                                              ║
+║                                                                       ║
+║  AppliquerParametresAuxControles()                                    ║
+╚═══════════════════════════════════════════════════════════════════════╝
+									↓
+╔═══════════════════════════════════════════════════════════════════════╗
+║     [PROTECTION COUCHE #3 : APPLIQUERPARAMETRESAUXCONTROLES]         ║
+║                                                                       ║
+║  initialisationEnCours = True  ← [PROTECTION #4]                     ║
+║                                                                       ║
+║  TrackBar_Volume.Value = CInt(dernierVolume * Maximum)               ║
+║  TrackBar_Basses.Value = CInt(dernieresBasses)                       ║
+║  TrackBar_Aigues.Value = CInt(dernieresAigues)                       ║
+║                                                                       ║
+║  initialisationEnCours = False                                       ║
+║                                                                       ║
+║  ' Les événements Scroll sont bloqués pendant l'initialisation       ║
+╚═══════════════════════════════════════════════════════════════════════╝
+									↓
+					 ✅ VALEURS PRÉSERVÉES À 100%
+
+
+
+═══════════════════════════════════════════════════════════════════════════
+						RÉSUMÉ DES 5 PROTECTIONS
+═══════════════════════════════════════════════════════════════════════════
+
+[PROTECTION #0] - initialisationEnCours dans TrackBar_Scroll
+	↳ Bloque les événements Scroll pendant l'application des paramètres
+	↳ Évite les boucles infinies et les sauvegardes intempestives
+
+[PROTECTION #1] - FormParametres récupère depuis Form1
+	↳ FormParametres ne hardcode JAMAIS de valeurs
+	↳ Lecture depuis form1Instance.dernierVolume/Basses/Aigues
+
+[PROTECTION #2] - Flag ParametresAudioModifies
+	↳ FormParametres signale à Form1 s'il a modifié les paramètres audio
+	↳ Permet à Form1 de savoir s'il doit recharger ou restaurer
+
+[PROTECTION #3] - Backup/Restore dans Button_Parametres_Click
+	↳ Sauvegarde des valeurs AVANT ChargerParametres()
+	↳ Restauration si ParametresAudioModifies = False
+	↳ Annule tout écrasement accidentel
+
+[PROTECTION #4] - initialisationEnCours dans AppliquerParametresAuxControles
+	↳ Bloque les événements Scroll pendant la mise à jour des TrackBars
+	↳ Évite que TrackBar.Value déclenche Scroll → SauvegarderParametres()
+
+
+
+═══════════════════════════════════════════════════════════════════════════
+						   FLUX DE DONNÉES
+═══════════════════════════════════════════════════════════════════════════
+
+SOURCE DE VÉRITÉ                    COPIES/SYNCHRONISATIONS
+───────────────────                 ───────────────────────
+
+Form1.dernierVolume         →       TrackBar_Volume.Value
+Form1.dernieresBasses       →       TrackBar_Basses.Value
+Form1.dernieresAigues       →       TrackBar_Aigues.Value
+							→       parametres.txt (Volume=...)
+							→       volumeProvider.Volume (NAudio)
+							→       equalizerProvider.BassGain (NAudio)
+							→       equalizerProvider.TrebleGain (NAudio)
+
+				   ↑
+				   └─ FormParametres lit DEPUIS Form1 (jamais l'inverse)
+
+
+
+═══════════════════════════════════════════════════════════════════════════
+						SCÉNARIO DE PANNE ÉVITÉ
+═══════════════════════════════════════════════════════════════════════════
+
+ANCIEN CODE (BUGUÉ) :
+	FormParametres.ButtonSauvegarder_Click()
+		"Basses=0",         ← HARDCODÉ ❌
+		"Aigues=0",         ← HARDCODÉ ❌
+		File.WriteAllLines(parametres.txt)
+
+	Form1.Button_Parametres_Click()
+		ChargerParametres()           ← Lit Basses=0, Aigues=0 ❌
+		AppliquerParametresAuxControles()  ← Applique 0 aux TrackBars ❌
+		→ L'utilisateur perd ses réglages ! ❌
+
+
+NOUVEAU CODE (PROTÉGÉ) :
+	FormParametres.ButtonSauvegarder_Click()
+		volumeActuel = form1Instance.dernierVolume     ← LIT depuis Form1 ✅
+		bassesActuelles = form1Instance.dernieresBasses ← LIT depuis Form1 ✅
+		aiguesActuelles = form1Instance.dernieresAigues ← LIT depuis Form1 ✅
+		ParametresAudioModifies = False                 ← SIGNALE pas touché ✅
+		File.WriteAllLines(parametres.txt)
+
+	Form1.Button_Parametres_Click()
+		volumeAvant = dernierVolume                     ← BACKUP ✅
+		bassesAvant = dernieresBasses                   ← BACKUP ✅
+		aiguesAvant = dernieresAigues                   ← BACKUP ✅
+		ChargerParametres()
+		IF NOT dlg.ParametresAudioModifies THEN         ← CHECK ✅
+			dernierVolume = volumeAvant                 ← RESTORE ✅
+			dernieresBasses = bassesAvant               ← RESTORE ✅
+			dernieresAigues = aiguesAvant               ← RESTORE ✅
+		END IF
+		AppliquerParametresAuxControles()
+		→ L'utilisateur conserve ses réglages ! ✅
+
+
+
+═══════════════════════════════════════════════════════════════════════════
+						CAS D'UTILISATION TESTÉS
+═══════════════════════════════════════════════════════════════════════════
+
+✅ Changement de langue                → Valeurs préservées
+✅ Changement de thème                 → Valeurs préservées
+✅ Activation métronome                → Valeurs préservées
+✅ Activation effets audio             → Valeurs préservées
+✅ Changement méthode BPM              → Valeurs préservées
+✅ Activation normalisation volume     → Valeurs préservées
+✅ Activation suppression silence      → Valeurs préservées
+✅ Activation mode DJ                  → Valeurs préservées
+✅ Redémarrage d'AudioPlay             → Valeurs chargées correctement
+✅ Modification associations fichiers  → Valeurs préservées
+
+
+
+═══════════════════════════════════════════════════════════════════════════
+						   LOGS DE DÉBOGAGE
+═══════════════════════════════════════════════════════════════════════════
+
+Lors d'une sauvegarde de paramètres, vous verrez dans la Console :
+
+[FormParametres] ✅ PROTECTION: Valeurs récupérées depuis Form1: Volume=0.700, Basses=10.0, Aigues=8.0
+[Form1] ✅ PROTECTION: Valeurs audio restaurées après ChargerParametres: Volume=0.700, Basses=10.0, Aigues=8.0
+
+Si ces logs n'apparaissent pas :
+	⚠️ Vérifier que FormParametres.ShowDialog(Me) est bien appelé avec Me = Form1
+	⚠️ Vérifier que Me.Owner n'est pas Nothing dans FormParametres
+
+
+
+═══════════════════════════════════════════════════════════════════════════
+						GARANTIE DE ROBUSTESSE
+═══════════════════════════════════════════════════════════════════════════
+
+Cette solution est ULTRA-ROBUSTE car :
+
+1. ✅ Triple couche de protection (FormParametres + Flag + Form1)
+2. ✅ Aucune valeur hardcodée
+3. ✅ Source unique de vérité (Form1)
+4. ✅ Communication explicite entre formulaires (Owner + Flag)
+5. ✅ Logs détaillés pour le débogage
+6. ✅ Backup/Restore automatique
+7. ✅ Protection contre les événements Scroll parasites
+
+═══════════════════════════════════════════════════════════════════════════
+```

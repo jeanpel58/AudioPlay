@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AudioPlay - DJ Mode Guide</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 1000px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .container { background: white; border-radius: 10px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+        h1 { color: #667eea; border-bottom: 3px solid #667eea; padding-bottom: 10px; font-size: 2.5em; }
+        h2 { color: #764ba2; margin-top: 30px; font-size: 1.8em; }
+        h3 { color: #667eea; margin-top: 20px; }
+        .feature-box { background: #f8f9fa; border-left: 4px solid #667eea; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .shortcut { background: #e9ecef; padding: 3px 8px; border-radius: 3px; font-family: 'Courier New', monospace; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px; text-left; border-bottom: 1px solid #ddd; }
+        th { background-color: #667eea; color: white; }
+        tr:hover { background-color: #f5f5f5; }
+        .note { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .success { background: #d4edda; border-left: 4px solid #28a745; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        ul { line-height: 2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎧 AudioPlay - DJ Mode Guide</h1>
+
+        <div class="success">
+            <strong>Professional DJ Mode</strong><br>
+            Transform AudioPlay into a complete DJ mixing station with 2 decks, crossfader, effects and recording!
+        </div>
+
+        <h2>⚙️ Activating DJ Mode</h2>
+        <div class="feature-box">
+            <ol>
+                <li>Open <strong>Settings</strong> in AudioPlay</li>
+                <li>Check <strong>"DJ Mixer Mode"</strong></li>
+                <li>Click <strong>Save</strong></li>
+                <li><strong>Restart</strong> AudioPlay</li>
+                <li>The DJ interface opens automatically</li>
+            </ol>
+        </div>
+
+        <h2>🎛️ Main Features</h2>
+
+        <h3>1. Deck Control</h3>
+        <div class="feature-box">
+            <p><strong>Deck A and Deck B</strong> - Two independent decks with:</p>
+            <ul>
+                <li><strong>Load Track</strong>, <strong>Play/Pause/Stop</strong>, <strong>Cue</strong></li>
+                <li><strong>Volume</strong> and <strong>Position</strong> sliders</li>
+                <li>Interactive TrackBar for seeking and scratching</li>
+            </ul>
+        </div>
+
+        <h3>2. Crossfader & Mixing</h3>
+        <div class="feature-box">
+            <ul>
+                <li>Three curve modes: <strong>Linear</strong>, <strong>DJ</strong>, <strong>Sharp</strong></li>
+                <li><strong>VU-Meters</strong>: LED-style display with peak-hold</li>
+            </ul>
+        </div>
+
+        <h3>3. Pitch & Tempo</h3>
+        <div class="feature-box">
+            <ul>
+                <li><strong>Pitch Bend</strong>: ±8% real-time adjustment</li>
+                <li><strong>BPM Detection</strong>: Automatic tempo analysis</li>
+                <li><strong>SYNC Button</strong>: Auto-sync between decks</li>
+            </ul>
+        </div>
+
+        <h3>4. Waveform Visualization</h3>
+        <div class="feature-box">
+            <ul>
+                <li>Real-time audio amplitude display</li>
+                <li>Cue markers (red dots) and position indicator (yellow line)</li>
+                <li>Click on waveform to jump to position</li>
+            </ul>
+        </div>
+
+        <h3>5. HotCues (8 per deck)</h3>
+        <div class="feature-box">
+            <table>
+                <tr><th>Action</th><th>Shortcut</th></tr>
+                <tr><td>Trigger</td><td><span class="shortcut">Left Click</span></td></tr>
+                <tr><td>Set</td><td><span class="shortcut">Shift + Click</span></td></tr>
+                <tr><td>Delete</td><td><span class="shortcut">Right Click</span></td></tr>
+            </table>
+            <p><strong>Colors:</strong> Red, Orange, Yellow, Green, Cyan, Blue, Magenta, Pink</p>
+        </div>
+
+        <h3>6. Loop</h3>
+        <div class="feature-box">
+            <ul>
+                <li><strong>Auto loops:</strong> 2, 4, 8, 16 beats (BPM-based)</li>
+                <li><strong>Manual loops:</strong> Loop In, Loop Out, Loop On/Off</li>
+            </ul>
+        </div>
+
+        <h3>7. Mix Recording</h3>
+        <div class="feature-box">
+            <ul>
+                <li><strong>WAV format</strong>: High-fidelity audio quality</li>
+                <li>Saved to: <code>Documents\AudioPlay\Recordings\</code></li>
+                <li>Filename: <code>Mix_YYYYMMDD_HHmmss.wav</code></li>
+            </ul>
+        </div>
+
+        <h3>8. Auto-Cue</h3>
+        <div class="feature-box">
+            <ul>
+                <li>Automatically detects first audio signal</li>
+                <li>Skips silence at track start</li>
+                <li>Adaptive RMS threshold</li>
+            </ul>
+        </div>
+
+        <h3>9. Sampler (8 Pads)</h3>
+        <div class="feature-box">
+            <ul>
+                <li><strong>Load:</strong> Right-click on pad → Choose audio file</li>
+                <li><strong>Trigger:</strong> Left-click to play</li>
+                <li>Multiple pads can play simultaneously</li>
+            </ul>
+        </div>
+
+        <h3>10. Audio Effects</h3>
+        <div class="feature-box">
+            <p><strong>Per-deck effects:</strong> Phaser, Reverb, Echo</p>
+            <p>Check/uncheck boxes to enable/disable. Effects can be combined!</p>
+        </div>
+
+        <h2>⌨️ Main Keyboard Shortcuts</h2>
+        <table>
+            <tr><th>Shortcut</th><th>Action</th></tr>
+            <tr><td><span class="shortcut">Space</span></td><td>Play/Pause Deck A</td></tr>
+            <tr><td><span class="shortcut">Shift + Space</span></td><td>Play/Pause Deck B</td></tr>
+            <tr><td><span class="shortcut">C</span></td><td>Cue Deck A</td></tr>
+            <tr><td><span class="shortcut">1-8</span></td><td>Trigger HotCues Deck A</td></tr>
+            <tr><td><span class="shortcut">Shift + 1-8</span></td><td>Set HotCues Deck A</td></tr>
+            <tr><td><span class="shortcut">F1-F8</span></td><td>Trigger HotCues Deck B</td></tr>
+            <tr><td><span class="shortcut">L</span></td><td>Loop On/Off Deck A</td></tr>
+            <tr><td><span class="shortcut">Y</span></td><td>SYNC (synchronize decks)</td></tr>
+            <tr><td><span class="shortcut">Ctrl + R</span></td><td>Start/Stop Recording</td></tr>
+            <tr><td><span class="shortcut">← / →</span></td><td>Move Crossfader</td></tr>
+        </table>
+
+        <h2>💡 Pro Tips</h2>
+        <div class="feature-box">
+            <ul>
+                <li><strong>Beat Matching:</strong> Use waveform to visually align beats</li>
+                <li><strong>Strategic HotCues:</strong> Place cues at key points (intro, drop, outro)</li>
+                <li><strong>Creative Loops:</strong> Use short loops to build transitions</li>
+                <li><strong>VU-Meters:</strong> Keep levels in green/yellow zone (avoid red)</li>
+            </ul>
+        </div>
+
+        <div class="success">
+            <h3>🎉 Have Fun!</h3>
+            <p>AudioPlay DJ Mode gives you all the tools for professional mixing. Experiment, practice and unleash your creativity!</p>
+        </div>
+
+        <hr>
+        <p style="text-align: center; color: #888;"><strong>AudioPlay - DJ Mode</strong> | Version 1.0 | © 2025</p>
+    </div>
+</body>
+</html>

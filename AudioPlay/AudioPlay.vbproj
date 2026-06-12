@@ -1,0 +1,112 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <RootNamespace>AudioPlay</RootNamespace>
+    <UseWindowsForms>true</UseWindowsForms>
+    <MyType>WindowsForms</MyType>
+    <AssemblyTitle>AudioPlay</AssemblyTitle>
+    <ApplicationIcon>Assets\AudioPlay.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Form1.vb.corrupted.bak" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="My Project\Settings.settings">
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+    <None Update="NORMALISATION_README.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="NORMALISATION_README.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="NORMALISATION_README.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="THEMES_GUIDE_USER.*.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="THEMES_GUIDE_USER.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="METRONOME_GUIDE_USER.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="LOOP_GUIDE_USER.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AUDIOPLAY_GUIDE_COMPLET.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Themes\*.theme">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Import Include="System.Data" />
+    <Import Include="System.Drawing" />
+    <Import Include="System.Windows.Forms" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="My Project\Application.Designer.vb">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+    </Compile>
+    <Compile Update="My Project\Settings.Designer.vb">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Update="Resources.Designer.vb">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio" Version="2.3.0" />
+    <PackageReference Include="NAudio.Lame" Version="2.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="SoundTouchSharp" Version="2.3.2" />
+    <PackageReference Include="TagLibSharp" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <!-- Copier automatiquement SoundTouch.dll natif après la compilation -->
+  <Target Name="CopySoundTouchDll" AfterTargets="Build">
+    <PropertyGroup>
+      <SoundTouchArchitecture Condition="'$(Platform)' == 'x64' Or '$(PlatformTarget)' == 'x64'">win-x64</SoundTouchArchitecture>
+      <SoundTouchArchitecture Condition="'$(Platform)' == 'x86' Or '$(PlatformTarget)' == 'x86'">win-x86</SoundTouchArchitecture>
+      <SoundTouchArchitecture Condition="'$(SoundTouchArchitecture)' == ''">win-x64</SoundTouchArchitecture>
+      <SoundTouchSourcePath>$(OutputPath)runtimes\$(SoundTouchArchitecture)\native\SoundTouch.dll</SoundTouchSourcePath>
+      <SoundTouchDestPath>$(OutputPath)SoundTouch.dll</SoundTouchDestPath>
+    </PropertyGroup>
+    <Message Text="Copie de SoundTouch.dll depuis $(SoundTouchSourcePath)" Importance="high" />
+    <Copy SourceFiles="$(SoundTouchSourcePath)" DestinationFiles="$(SoundTouchDestPath)" Condition="Exists('$(SoundTouchSourcePath)')" SkipUnchangedFiles="true" />
+    <Warning Text="SoundTouch.dll introuvable dans $(SoundTouchSourcePath) - Time Stretch fonctionnera en mode bypass" Condition="!Exists('$(SoundTouchSourcePath)')" />
+  </Target>
+
+</Project>

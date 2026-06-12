@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aiuto - Normalizzazione del Volume</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 20px;
+        }
+        .info-box {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .warning-box {
+            background-color: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .step {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 3px solid #3498db;
+        }
+        ul {
+            line-height: 1.8;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Normalizzazione del Volume - Opzione 1</h1>
+
+        <h2>📋 Funzionalità</h2>
+        <p>Questa funzione consente di <strong>normalizzare automaticamente il volume</strong> di tutti i file audio in modo che abbiano un livello di volume percepito simile durante la riproduzione.</p>
+
+        <h2>⚙️ Come Funziona</h2>
+
+        <h3>1. Analisi Automatica</h3>
+        <div class="step">
+            <p>Quando un file audio viene riprodotto per la prima volta, il sistema analizza rapidamente il suo volume (primi 30 secondi)</p>
+            <p>L'analisi calcola:</p>
+            <ul>
+                <li><strong>Volume RMS (Root Mean Square)</strong>: Il volume medio percepito</li>
+                <li><strong>Volume di Picco</strong>: Il volume massimo</li>
+                <li><strong>Guadagno Suggerito</strong>: Il moltiplicatore da applicare per la normalizzazione</li>
+            </ul>
+        </div>
+
+        <h3>2. Regolazione Automatica</h3>
+        <div class="step">
+            <p>Il sistema regola automaticamente il volume in base al guadagno calcolato</p>
+            <p>La regolazione viene applicata in tempo reale senza modificare il file originale</p>
+        </div>
+
+        <h3>3. Archiviazione dei Dati</h3>
+        <div class="step">
+            <p>I risultati dell'analisi vengono memorizzati in un database in modo da non doverli ricalcolare ad ogni riproduzione</p>
+            <p>Posizione del database: <code>%AppData%\AudioPlay\audioplay.db</code></p>
+        </div>
+
+        <h2>🎯 Volume Obiettivo</h2>
+        <div class="info-box">
+            <p><strong>Obiettivo predefinito:</strong> -23 LUFS (Loudness Units Full Scale)</p>
+            <p>Questo è lo standard utilizzato dalle piattaforme di streaming come Spotify e YouTube</p>
+        </div>
+
+        <h2>✅ Vantaggi</h2>
+        <ul>
+            <li>✅ <strong>Volume coerente</strong> tra tutte le tracce</li>
+            <li>✅ <strong>Nessuna regolazione manuale del volume</strong> necessaria</li>
+            <li>✅ <strong>File originali invariati</strong></li>
+            <li>✅ <strong>Veloce e automatico</strong></li>
+            <li>✅ <strong>Funziona con tutti i formati audio</strong></li>
+        </ul>
+
+        <h2>⚙️ Come Attivare/Disattivare</h2>
+        <div class="step">
+            <ol>
+                <li>Aprire le <strong>Impostazioni</strong></li>
+                <li>Trovare la sezione <strong>"Normalizzazione del Volume"</strong></li>
+                <li>Selezionare o deselezionare la casella di normalizzazione</li>
+                <li>L'impostazione ha effetto immediato</li>
+            </ol>
+        </div>
+
+        <h2>🔍 Dettagli Tecnici</h2>
+
+        <h3>Metodo di Analisi</h3>
+        <div class="info-box">
+            <ul>
+                <li><strong>Campione analizzato:</strong> Primi 30 secondi del file</li>
+                <li><strong>Calcolo RMS:</strong> Radice quadrata della media dei campioni al quadrato</li>
+                <li><strong>Rilevamento dei picchi:</strong> Valore assoluto massimo di tutti i campioni</li>
+                <li><strong>Calcolo del guadagno:</strong> Rapporto tra l'obiettivo e l'RMS misurato</li>
+            </ul>
+        </div>
+
+        <h3>Limiti</h3>
+        <div class="warning-box">
+            <ul>
+                <li><strong>Guadagno massimo:</strong> +20 dB (per evitare clipping)</li>
+                <li><strong>Guadagno minimo:</strong> -20 dB (per evitare audio troppo basso)</li>
+                <li><strong>Protezione dei picchi:</strong> Riduce automaticamente il guadagno se causerebbe clipping</li>
+            </ul>
+        </div>
+
+        <h2>❓ Domande Frequenti</h2>
+
+        <h3>Perché a volte il primo secondo di riproduzione ha un volume errato?</h3>
+        <div class="info-box">
+            <p>L'analisi viene eseguita durante la riproduzione. Il volume corretto viene applicato dopo il primo secondo.</p>
+        </div>
+
+        <h3>Posso modificare il volume obiettivo?</h3>
+        <div class="info-box">
+            <p>La versione attuale utilizza un obiettivo fisso di -23 LUFS, che è lo standard del settore.</p>
+        </div>
+
+        <h3>I miei file originali vengono modificati?</h3>
+        <div class="warning-box">
+            <p><strong>No!</strong> La regolazione del volume viene applicata solo durante la riproduzione. I file originali rimangono invariati.</p>
+        </div>
+
+        <h3>Cosa succede se disattivo la normalizzazione?</h3>
+        <div class="info-box">
+            <p>I file verranno riprodotti al loro volume originale. I dati di analisi vengono conservati e verranno riutilizzati se si riattiva la normalizzazione.</p>
+        </div>
+
+        <h2>🔧 Risoluzione dei Problemi</h2>
+
+        <h3>La normalizzazione non sembra funzionare</h3>
+        <div class="step">
+            <ol>
+                <li>Verificare che la normalizzazione sia attivata nelle impostazioni</li>
+                <li>Riavviare AudioPlay</li>
+                <li>Provare a riprodurre un nuovo file</li>
+            </ol>
+        </div>
+
+        <h3>Alcuni file sono ancora troppo forti o troppo bassi</h3>
+        <div class="warning-box">
+            <p>Questo può accadere con file che hanno:</p>
+            <ul>
+                <li>Un silenzio molto lungo all'inizio</li>
+                <li>Audio molto dinamico (ad esempio musica classica)</li>
+                <li>Clipping o distorsione nel file originale</li>
+            </ul>
+        </div>
+
+        <div class="info-box" style="margin-top: 40px;">
+            <strong>💡 Suggerimento:</strong> Per risultati ottimali, lasciare che AudioPlay analizzi tutti i file alla prima riproduzione. 
+            Le riproduzioni successive utilizzeranno automaticamente il volume corretto!
+        </div>
+    </div>
+</body>
+</html>

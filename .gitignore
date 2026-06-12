@@ -1,0 +1,26 @@
+## Visual Studio
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Build results
+*.log
+*.tmp
+*.cache
+
+## Rider / ReSharper
+_ReSharper*/
+*.ReSharper*
+
+## Others
+.vscode/
+node_modules/
+packages/
+*.ncb
+*.sdf
+*.db
+*.bak

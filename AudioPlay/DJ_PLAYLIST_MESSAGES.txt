@@ -1,0 +1,124 @@
+===== NOUVELLES CLÉS PLAYLIST =====
+
+DJ_Playlist_LoadSuccess
+DJ_Playlist_SaveSuccess  
+DJ_Playlist_LoadError
+DJ_Playlist_SaveError
+DJ_Playlist_ClearConfirm
+DJ_Success_Title
+DJ_Confirm_Title
+
+===== FRANÇAIS (Resources.resx) =====
+  <data name="DJ_Playlist_LoadSuccess" xml:space="preserve">
+	<value>Playlist chargée avec succès!</value>
+  </data>
+  <data name="DJ_Playlist_SaveSuccess" xml:space="preserve">
+	<value>Playlist sauvegardée avec succès!</value>
+  </data>
+  <data name="DJ_Playlist_LoadError" xml:space="preserve">
+	<value>Erreur lors du chargement: {0}</value>
+  </data>
+  <data name="DJ_Playlist_SaveError" xml:space="preserve">
+	<value>Erreur lors de la sauvegarde: {0}</value>
+  </data>
+  <data name="DJ_Playlist_ClearConfirm" xml:space="preserve">
+	<value>Voulez-vous vraiment vider la liste?</value>
+  </data>
+  <data name="DJ_Success_Title" xml:space="preserve">
+	<value>Succès</value>
+  </data>
+  <data name="DJ_Confirm_Title" xml:space="preserve">
+	<value>Confirmation</value>
+  </data>
+
+===== ANGLAIS (Resources.en.resx) =====
+  <data name="DJ_Playlist_LoadSuccess" xml:space="preserve">
+	<value>Playlist loaded successfully!</value>
+  </data>
+  <data name="DJ_Playlist_SaveSuccess" xml:space="preserve">
+	<value>Playlist saved successfully!</value>
+  </data>
+  <data name="DJ_Playlist_LoadError" xml:space="preserve">
+	<value>Error loading: {0}</value>
+  </data>
+  <data name="DJ_Playlist_SaveError" xml:space="preserve">
+	<value>Error saving: {0}</value>
+  </data>
+  <data name="DJ_Playlist_ClearConfirm" xml:space="preserve">
+	<value>Do you really want to clear the list?</value>
+  </data>
+  <data name="DJ_Success_Title" xml:space="preserve">
+	<value>Success</value>
+  </data>
+  <data name="DJ_Confirm_Title" xml:space="preserve">
+	<value>Confirmation</value>
+  </data>
+
+===== ESPAGNOL (Resources.es.resx) =====
+  <data name="DJ_Playlist_LoadSuccess" xml:space="preserve">
+	<value>¡Playlist cargada con éxito!</value>
+  </data>
+  <data name="DJ_Playlist_SaveSuccess" xml:space="preserve">
+	<value>¡Playlist guardada con éxito!</value>
+  </data>
+  <data name="DJ_Playlist_LoadError" xml:space="preserve">
+	<value>Error al cargar: {0}</value>
+  </data>
+  <data name="DJ_Playlist_SaveError" xml:space="preserve">
+	<value>Error al guardar: {0}</value>
+  </data>
+  <data name="DJ_Playlist_ClearConfirm" xml:space="preserve">
+	<value>¿Realmente desea vaciar la lista?</value>
+  </data>
+  <data name="DJ_Success_Title" xml:space="preserve">
+	<value>Éxito</value>
+  </data>
+  <data name="DJ_Confirm_Title" xml:space="preserve">
+	<value>Confirmación</value>
+  </data>
+
+===== ALLEMAND (Resources.de.resx) =====
+  <data name="DJ_Playlist_LoadSuccess" xml:space="preserve">
+	<value>Playlist erfolgreich geladen!</value>
+  </data>
+  <data name="DJ_Playlist_SaveSuccess" xml:space="preserve">
+	<value>Playlist erfolgreich gespeichert!</value>
+  </data>
+  <data name="DJ_Playlist_LoadError" xml:space="preserve">
+	<value>Fehler beim Laden: {0}</value>
+  </data>
+  <data name="DJ_Playlist_SaveError" xml:space="preserve">
+	<value>Fehler beim Speichern: {0}</value>
+  </data>
+  <data name="DJ_Playlist_ClearConfirm" xml:space="preserve">
+	<value>Möchten Sie die Liste wirklich leeren?</value>
+  </data>
+  <data name="DJ_Success_Title" xml:space="preserve">
+	<value>Erfolg</value>
+  </data>
+  <data name="DJ_Confirm_Title" xml:space="preserve">
+	<value>Bestätigung</value>
+  </data>
+
+===== ITALIEN (Resources.it.resx) =====
+  <data name="DJ_Playlist_LoadSuccess" xml:space="preserve">
+	<value>Playlist caricata con successo!</value>
+  </data>
+  <data name="DJ_Playlist_SaveSuccess" xml:space="preserve">
+	<value>Playlist salvata con successo!</value>
+  </data>
+  <data name="DJ_Playlist_LoadError" xml:space="preserve">
+	<value>Errore durante il caricamento: {0}</value>
+  </data>
+  <data name="DJ_Playlist_SaveError" xml:space="preserve">
+	<value>Errore durante il salvataggio: {0}</value>
+  </data>
+  <data name="DJ_Playlist_ClearConfirm" xml:space="preserve">
+	<value>Vuoi davvero svuotare la lista?</value>
+  </data>
+  <data name="DJ_Success_Title" xml:space="preserve">
+	<value>Successo</value>
+  </data>
+  <data name="DJ_Confirm_Title" xml:space="preserve">
+	<value>Conferma</value>
+  </data>

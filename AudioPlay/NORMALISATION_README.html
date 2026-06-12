@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aide - Normalisation du Volume</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 20px;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        pre {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            padding: 10px;
+            border-left: 4px solid #ffc107;
+            margin: 15px 0;
+        }
+        .success {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        ul {
+            line-height: 1.8;
+        }
+        .info-box {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .warning-box {
+            background-color: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .step {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 3px solid #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Normalisation du Volume - Option 1</h1>
+
+        <h2>📋 Fonctionnalité</h2>
+        <p>Cette fonctionnalité permet de <strong>normaliser automatiquement le volume</strong> de tous les fichiers audio pour qu'ils aient un niveau de volume perçu similaire lors de la lecture.</p>
+
+        <h2>⚙️ Comment ça fonctionne</h2>
+
+        <h3>1. Analyse automatique</h3>
+        <div class="step">
+            <p>Quand un fichier audio est joué pour la première fois, le système analyse rapidement son volume (les 30 premières secondes)</p>
+            <p>L'analyse calcule :</p>
+            <ul>
+                <li><strong>Volume RMS (Root Mean Square)</strong> : Le volume moyen perçu</li>
+                <li><strong>Volume Peak</strong> : Le volume maximum</li>
+                <li><strong>Gain suggéré</strong> : Le multiplicateur à appliquer pour normaliser</li>
+            </ul>
+        </div>
+
+        <h3>2. Application du gain</h3>
+        <div class="step">
+            <ul>
+                <li>Le gain calculé est appliqué en temps réel pendant la lecture</li>
+                <li>Le gain est stocké dans la mémoire de l'application pour ne pas avoir à recalculer</li>
+                <li>Le volume principal (trackbar) continue de fonctionner normalement</li>
+            </ul>
+        </div>
+
+        <h3>3. Limites de sécurité</h3>
+        <div class="warning-box">
+            <ul>
+                <li><strong>Volume cible</strong> : 80% du maximum (pour éviter la saturation)</li>
+                <li><strong>Gain maximum</strong> : 3x (pour éviter d'amplifier trop le bruit de fond)</li>
+                <li><strong>Protection contre la saturation</strong> : Si le peak × gain dépasse 95%, le gain est réduit</li>
+            </ul>
+        </div>
+
+        <h2>🎛️ Activation/Désactivation</h2>
+
+        <h3>Dans les paramètres</h3>
+        <div class="step">
+            <ol>
+                <li>Cliquez sur le bouton <strong>Paramètres</strong></li>
+                <li>Dans la section "Paramètres de lecture"</li>
+                <li>Cochez ou décochez <strong>"Normalisation du volume - Option 1"</strong></li>
+                <li>Cliquez sur <strong>Sauvegarder</strong></li>
+            </ol>
+        </div>
+
+        <div class="info-box">
+            <strong>Par défaut :</strong> La normalisation est <span class="success">activée par défaut</span>.
+        </div>
+
+        <h2>⚡ Performance</h2>
+
+        <h3>Analyse rapide</h3>
+        <ul>
+            <li>L'analyse se fait sur les <strong>30 premières secondes</strong> du fichier</li>
+            <li>Impact minimal sur le temps de démarrage de la lecture</li>
+            <li>Le résultat est mis en cache pour les lectures suivantes</li>
+        </ul>
+
+        <h3>Analyse complète (optionnel)</h3>
+        <p>Une méthode <code>AnalyserFichier</code> existe pour analyser tout le fichier, mais elle n'est pas utilisée par défaut pour des raisons de performance.</p>
+
+        <h2>🏗️ Architecture technique</h2>
+
+        <h3>Pipeline audio</h3>
+        <pre>
+AudioFileReader 
+  → ToSampleProvider
+  → SimpleEqualizerProvider (Basses/Aigues)
+  → VolumeSampleProvider (Volume × Gain de normalisation)
+  → WaveOutEvent
+        </pre>
+
+        <h3>Stockage du gain</h3>
+        <div class="info-box">
+            <p>Le gain calculé est stocké dans le <code>Tag</code> de chaque <code>ListViewItem</code></p>
+            <p>Format : <code>Dictionary(Of String, Object)</code> avec les clés :</p>
+            <ul>
+                <li><code>"Chemin"</code> : Chemin du fichier</li>
+                <li><code>"GainNormalisation"</code> : Gain calculé (Single)</li>
+            </ul>
+        </div>
+
+        <h2>✅ Avantages de cette approche</h2>
+
+        <div class="highlight">
+            <ul>
+                <li><span class="success">✓</span> <strong>Temps réel</strong> : Pas besoin de modifier les fichiers MP3 originaux</li>
+                <li><span class="success">✓</span> <strong>Rapide</strong> : Analyse seulement les 30 premières secondes</li>
+                <li><span class="success">✓</span> <strong>Sûr</strong> : Limitations pour éviter la saturation et le bruit</li>
+                <li><span class="success">✓</span> <strong>Persistant</strong> : Le gain est recalculé seulement si nécessaire</li>
+                <li><span class="success">✓</span> <strong>Compatible</strong> : Fonctionne avec le volume principal et l'égaliseur</li>
+            </ul>
+        </div>
+
+        <h2>🔧 Notes pour le développeur</h2>
+
+        <h3>Personnalisation</h3>
+        <p>Vous pouvez ajuster les constantes dans <code>VolumeNormalizer.vb</code> :</p>
+        <ul>
+            <li><code>VOLUME_CIBLE</code> : Volume cible (actuellement 0.8 = 80%)</li>
+            <li>Limite de gain maximum (actuellement 3.0)</li>
+            <li>Durée d'analyse rapide (actuellement 30 secondes)</li>
+        </ul>
+
+        <h3>Extensions futures possibles</h3>
+        <ul>
+            <li>Ajouter une analyse en arrière-plan de tous les fichiers de la playlist</li>
+            <li>Sauvegarder les gains dans un fichier cache pour les sessions futures</li>
+            <li>Permettre à l'utilisateur de choisir entre analyse rapide et complète</li>
+            <li>Afficher le gain calculé dans les métadonnées du fichier</li>
+        </ul>
+    </div>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help - Volume Normalization</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 20px;
+        }
+        .info-box {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .warning-box {
+            background-color: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .step {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 3px solid #3498db;
+        }
+        ul {
+            line-height: 1.8;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Volume Normalization - Option 1</h1>
+
+        <h2>📋 Feature</h2>
+        <p>This feature allows you to <strong>automatically normalize the volume</strong> of all audio files so they have a similar perceived volume level during playback.</p>
+
+        <h2>⚙️ How It Works</h2>
+
+        <h3>1. Automatic Analysis</h3>
+        <div class="step">
+            <p>When an audio file is played for the first time, the system quickly analyzes its volume (first 30 seconds)</p>
+            <p>The analysis calculates:</p>
+            <ul>
+                <li><strong>RMS Volume (Root Mean Square)</strong>: The average perceived volume</li>
+                <li><strong>Peak Volume</strong>: The maximum volume</li>
+                <li><strong>Suggested Gain</strong>: The multiplier to apply for normalization</li>
+            </ul>
+        </div>
+
+        <h3>2. Automatic Adjustment</h3>
+        <div class="step">
+            <p>The system automatically adjusts the volume based on the calculated gain</p>
+            <p>The adjustment is applied in real time without modifying the original file</p>
+        </div>
+
+        <h3>3. Data Storage</h3>
+        <div class="step">
+            <p>Analysis results are stored in a database so they don't need to be recalculated on each playback</p>
+            <p>Database location: <code>%AppData%\AudioPlay\audioplay.db</code></p>
+        </div>
+
+        <h2>🎯 Target Volume</h2>
+        <div class="info-box">
+            <p><strong>Default target:</strong> -23 LUFS (Loudness Units Full Scale)</p>
+            <p>This is the standard used by streaming platforms like Spotify and YouTube</p>
+        </div>
+
+        <h2>✅ Benefits</h2>
+        <ul>
+            <li>✅ <strong>Consistent volume</strong> between all tracks</li>
+            <li>✅ <strong>No manual volume adjustment</strong> needed</li>
+            <li>✅ <strong>Original files unchanged</strong></li>
+            <li>✅ <strong>Fast and automatic</strong></li>
+            <li>✅ <strong>Works with all audio formats</strong></li>
+        </ul>
+
+        <h2>⚙️ How to Enable/Disable</h2>
+        <div class="step">
+            <ol>
+                <li>Open <strong>Settings</strong></li>
+                <li>Find the <strong>"Volume Normalization"</strong> section</li>
+                <li>Check or uncheck the normalization checkbox</li>
+                <li>The setting takes effect immediately</li>
+            </ol>
+        </div>
+
+        <h2>🔍 Technical Details</h2>
+
+        <h3>Analysis Method</h3>
+        <div class="info-box">
+            <ul>
+                <li><strong>Sample analyzed:</strong> First 30 seconds of the file</li>
+                <li><strong>RMS calculation:</strong> Square root of the mean of squared samples</li>
+                <li><strong>Peak detection:</strong> Maximum absolute value of all samples</li>
+                <li><strong>Gain calculation:</strong> Ratio between target and measured RMS</li>
+            </ul>
+        </div>
+
+        <h3>Limits</h3>
+        <div class="warning-box">
+            <ul>
+                <li><strong>Maximum gain:</strong> +20 dB (to avoid clipping)</li>
+                <li><strong>Minimum gain:</strong> -20 dB (to avoid audio too quiet)</li>
+                <li><strong>Peak protection:</strong> Automatically reduces gain if it would cause clipping</li>
+            </ul>
+        </div>
+
+        <h2>❓ FAQ</h2>
+
+        <h3>Why does the first second of playback sometimes have incorrect volume?</h3>
+        <div class="info-box">
+            <p>The analysis is done during playback. The correct volume is applied after the first second.</p>
+        </div>
+
+        <h3>Can I change the target volume?</h3>
+        <div class="info-box">
+            <p>The current version uses a fixed target of -23 LUFS, which is the industry standard.</p>
+        </div>
+
+        <h3>Are my original files modified?</h3>
+        <div class="warning-box">
+            <p><strong>No!</strong> Volume adjustment is applied only during playback. Your original files remain unchanged.</p>
+        </div>
+
+        <h3>What happens if I disable normalization?</h3>
+        <div class="info-box">
+            <p>Files will play at their original volume. Analysis data is preserved and will be reused if you re-enable normalization.</p>
+        </div>
+
+        <h2>🔧 Troubleshooting</h2>
+
+        <h3>Normalization doesn't seem to work</h3>
+        <div class="step">
+            <ol>
+                <li>Check that normalization is enabled in settings</li>
+                <li>Restart AudioPlay</li>
+                <li>Try playing a new file</li>
+            </ol>
+        </div>
+
+        <h3>Some files are still too loud or too quiet</h3>
+        <div class="warning-box">
+            <p>This can happen with files that have:</p>
+            <ul>
+                <li>A very long silence at the beginning</li>
+                <li>Very dynamic audio (classical music, for example)</li>
+                <li>Clipping or distortion in the original file</li>
+            </ul>
+        </div>
+
+        <div class="info-box" style="margin-top: 40px;">
+            <strong>💡 Tip:</strong> For optimal results, let AudioPlay analyze all your files on first playback. 
+            Subsequent playbacks will automatically use the correct volume!
+        </div>
+    </div>
+</body>
+</html>

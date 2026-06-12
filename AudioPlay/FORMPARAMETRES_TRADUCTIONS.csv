@@ -1,0 +1,13 @@
+Clé;Français (Référence);Anglais (EN);Espagnol (ES);Allemand (DE);Italien (IT);Instructions
+CheckBox_EffacerChansons;Effacer les chansons de la liste après lecture;Clear songs from list after playback;;;;"Traduire - comportement de playlist"
+GroupBoxEffetsAudio_Title;Effets Audio;Audio Effects;;;;"Traduire - titre de groupe"
+GroupBox_TypesAudioDefaut_Title;Types Audio par Défaut;Default Audio Types;;;;"Traduire - titre de groupe"
+CheckBoxModeMixeurDJ;Activer le mode Mixeur DJ;Enable DJ Mixer Mode;;;;"Traduire - mode DJ"
+LabelPitchShift;Pitch Shift;Pitch Shift;;;;"Peut rester identique (terme technique)"
+LabelPhaser;Phaser;Phaser;;;;"Peut rester identique"
+LabelReverb;Reverb;Reverb;;;;"Peut rester identique"
+LabelEcho;Echo;Echo;;;;"Peut rester identique"
+CheckBoxPitchShift;Activer Pitch Shift;Enable Pitch Shift;;;;"Traduire 'Activer'"
+CheckBoxPhaser;Activer Phaser;Enable Phaser;;;;"Traduire 'Activer'"
+CheckBoxReverb;Activer Reverb;Enable Reverb;;;;"Traduire 'Activer'"
+CheckBoxEcho;Activer Echo;Enable Echo;;;;"Traduire 'Activer'"

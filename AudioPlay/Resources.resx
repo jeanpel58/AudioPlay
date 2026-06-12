@@ -1,0 +1,1866 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="APropos_Title" xml:space="preserve">
+    <value>À propos...</value>
+  </data>
+  <data name="APropos_Ligne01" xml:space="preserve">
+    <value>Bienvenue dans l'application AudioPlay!</value>
+  </data>
+  <data name="APropos_Ligne02" xml:space="preserve">
+    <value>AudioPlay est un lecteur audio avancé pour Windows, conçu pour la simplicité, la rapidité et la qualité sonore. Il prend en charge de nombreux formats audio, propose la gestion de playlists, l'analyse BPM, la normalisation du volume, et bien plus encore.</value>
+  </data>
+  <data name="APropos_Ligne03" xml:space="preserve">
+    <value>Vous pouvez aussi envoyer votre don en utilisant le bouton Paypal suivant --&gt;</value>
+  </data>
+  <data name="APropos_DonTitre" xml:space="preserve">
+    <value>DON</value>
+  </data>
+  <data name="APropos_DonTexte" xml:space="preserve">
+    <value>Si vous utilisez AudioPlay régulièrement, il serait très apprécié que vous puissiez envoyer un petit don à Jean Pelletier par virement bancaire à l'adresse suivante --&gt; jeanpel58@gmail.com</value>
+  </data>
+  <data name="APropos_Paypal" xml:space="preserve">
+    <value>Paypal</value>
+  </data>
+  <data name="APropos_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="APropos_Error_BrowserOpen" xml:space="preserve">
+    <value>Impossible d'ouvrir le navigateur.</value>
+  </data>
+  <data name="Button_APropos" xml:space="preserve">
+    <value>À propos...</value>
+  </data>
+  <data name="Button_Parametres" xml:space="preserve">
+    <value>Paramètres</value>
+  </data>
+  <data name="Button_InfoSelect" xml:space="preserve">
+    <value>Infos chanson</value>
+  </data>
+  <data name="Button_CalculBPM" xml:space="preserve">
+    <value>Calcul BPM</value>
+  </data>
+  <data name="Label_Treble" xml:space="preserve">
+    <value>Aigues</value>
+  </data>
+  <data name="Label_Bass" xml:space="preserve">
+    <value>Basses</value>
+  </data>
+  <data name="Label_Volume" xml:space="preserve">
+    <value>Volume</value>
+  </data>
+  <data name="Label_RemainingTime" xml:space="preserve">
+    <value>Durée restante </value>
+  </data>
+  <data name="Label_SampleRate" xml:space="preserve">
+    <value>Échantillonnage :</value>
+  </data>
+  <data name="Label_Bitrate" xml:space="preserve">
+    <value>Bitrate :</value>
+  </data>
+  <data name="Button_Play" xml:space="preserve">
+    <value>Jouer</value>
+  </data>
+  <data name="Button_Pause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="Button_Resume" xml:space="preserve">
+    <value>Reprendre</value>
+  </data>
+  <data name="Button_Stop" xml:space="preserve">
+    <value>Arrêter</value>
+  </data>
+  <data name="Button_BPM" xml:space="preserve">
+    <value>BPM</value>
+  </data>
+  <data name="Button_Random_Off" xml:space="preserve">
+    <value>Aléatoire OFF</value>
+  </data>
+  <data name="Button_Random_On" xml:space="preserve">
+    <value>Aléatoire ON</value>
+  </data>
+  <data name="Button_ManageList" xml:space="preserve">
+    <value>Gérer la liste</value>
+  </data>
+  <data name="Button_Parameters" xml:space="preserve">
+    <value>Paramètres</value>
+  </data>
+  <data name="Button_Mute" xml:space="preserve">
+    <value>Sourdine</value>
+  </data>
+  <data name="Button_Mute_On" xml:space="preserve">
+    <value>Sourdine ON</value>
+  </data>
+  <data name="Button_Mute_Off" xml:space="preserve">
+    <value>Sourdine OFF</value>
+  </data>
+  <data name="Column_Num" xml:space="preserve">
+    <value>#</value>
+  </data>
+  <data name="Column_Songs" xml:space="preserve">
+    <value>Chansons</value>
+  </data>
+  <data name="Column_BPM" xml:space="preserve">
+    <value>BPM</value>
+  </data>
+  <data name="Column_Duration" xml:space="preserve">
+    <value>Durée</value>
+  </data>
+  <data name="Menu_PlaySelected" xml:space="preserve">
+    <value>Jouer la chanson sélectionnée</value>
+  </data>
+  <data name="Menu_PlayPrevious" xml:space="preserve">
+    <value>Jouer la chanson précédente</value>
+  </data>
+  <data name="Menu_PlayNext" xml:space="preserve">
+    <value>Jouer la chanson suivante</value>
+  </data>
+  <data name="Menu_AddFile" xml:space="preserve">
+    <value>Ajout d'un fichier</value>
+  </data>
+  <data name="Menu_AddDirectory" xml:space="preserve">
+    <value>Ajout d'un répertoire...</value>
+  </data>
+  <data name="Menu_OpenList" xml:space="preserve">
+    <value>Ouvrir une liste</value>
+  </data>
+  <data name="Menu_SaveList" xml:space="preserve">
+    <value>Enregistrer la liste</value>
+  </data>
+  <data name="Menu_NewList" xml:space="preserve">
+    <value>Nouvelle liste (vide)</value>
+  </data>
+  <data name="Menu_ClearList" xml:space="preserve">
+    <value>Effacer la liste</value>
+  </data>
+  <data name="Error_FileNotFound" xml:space="preserve">
+    <value>Impossible de trouver le fichier.</value>
+  </data>
+  <data name="Error_PlaybackError" xml:space="preserve">
+    <value>Erreur lors de la lecture : {0}</value>
+  </data>
+  <data name="Error_Title" xml:space="preserve">
+    <value>Erreur</value>
+  </data>
+  <data name="Error_FileAssociation" xml:space="preserve">
+    <value>Erreur lors de l'association de {0} : {1}</value>
+  </data>
+  <data name="Error_FileAssociation_Title" xml:space="preserve">
+    <value>Erreur association</value>
+  </data>
+  <data name="Info_Title" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="Confirm_ClearList" xml:space="preserve">
+    <value>Êtes-vous sûr de vouloir vider la liste ?</value>
+  </data>
+  <data name="Confirm_Title" xml:space="preserve">
+    <value>Confirmation</value>
+  </data>
+  <data name="BPM_Calculating" xml:space="preserve">
+    <value>Calcul du BPM en cours...</value>
+  </data>
+  <data name="BPM_Cancelled" xml:space="preserve">
+    <value>Calcul BPM annulé.</value>
+  </data>
+  <data name="BPM_CancelConfirm" xml:space="preserve">
+    <value>Voulez-vous arrêter le processus de calcul du BPM en cours ?</value>
+  </data>
+  <data name="BPM_Detected" xml:space="preserve">
+    <value>BPM détecté : {0}</value>
+  </data>
+  <data name="SelectAudioFiles" xml:space="preserve">
+    <value>Sélectionner des fichiers audio</value>
+  </data>
+  <data name="BPM_Missing" xml:space="preserve">
+    <value>Le BPM de cette chanson n'est pas connu. Voulez-vous le calculer maintenant ?</value>
+  </data>
+  <data name="BPM_Missing_Title" xml:space="preserve">
+    <value>BPM manquant</value>
+  </data>
+  <data name="BPM_Error" xml:space="preserve">
+    <value>Le calcul du BPM a échoué.</value>
+  </data>
+  <data name="BPM_Error_Title" xml:space="preserve">
+    <value>Erreur BPM</value>
+  </data>
+  <data name="AudioFilesFilter" xml:space="preserve">
+    <value>Fichiers audio|*.mp3;*.wav;*.flac;*.m4a;*.aac;*.ogg;*.wma</value>
+  </data>
+  <data name="SelectFolder" xml:space="preserve">
+    <value>Sélectionner un dossier</value>
+  </data>
+  <data name="SavePlaylistAs" xml:space="preserve">
+    <value>Enregistrer la playlist sous...</value>
+  </data>
+  <data name="OpenPlaylist" xml:space="preserve">
+    <value>Ouvrir une liste de lecture</value>
+  </data>
+  <data name="Params_GeneralSettings" xml:space="preserve">
+    <value>Paramètres généraux</value>
+  </data>
+  <data name="Params_PlaybackSettings" xml:space="preserve">
+    <value>Paramètres de lecture</value>
+  </data>
+  <data name="Params_LanguageSettings" xml:space="preserve">
+    <value>Paramètres de langue</value>
+  </data>
+  <data name="Params_AutoPlay" xml:space="preserve">
+    <value>Lecture automatique du morceau suivant</value>
+  </data>
+  <data name="Params_AutoPlayNext" xml:space="preserve">
+    <value>Lecture automatique du morceau suivant</value>
+  </data>
+  <data name="Params_ShowBPM" xml:space="preserve">
+    <value>Afficher le BPM dans les métadonnées</value>
+  </data>
+  <data name="Params_SavePosition" xml:space="preserve">
+    <value>Sauvegarder la position de lecture au démarrage</value>
+  </data>
+  <data name="Params_VolumeNormalization" xml:space="preserve">
+    <value>Normalisation du volume</value>
+  </data>
+  <data name="Params_BPMMethod" xml:space="preserve">
+    <value>Méthode de calcul BPM :</value>
+  </data>
+  <data name="Params_BPMMethod_Auto" xml:space="preserve">
+    <value>Auto (Librosa si disponible, sinon SoundTouch)</value>
+  </data>
+  <data name="Params_BPMMethod_Librosa" xml:space="preserve">
+    <value>Librosa uniquement (plus précis)</value>
+  </data>
+  <data name="Params_BPMMethod_SoundTouch" xml:space="preserve">
+    <value>SoundTouch uniquement (moins précis)</value>
+  </data>
+  <data name="Params_EnableMetronome" xml:space="preserve">
+    <value>Activer le métronome avant chaque chanson</value>
+  </data>
+  <data name="Params_MetronomeSound" xml:space="preserve">
+    <value>Son</value>
+  </data>
+  <data name="Params_MetronomeLight" xml:space="preserve">
+    <value>Lumière</value>
+  </data>
+  <data name="Params_MetronomeBeats" xml:space="preserve">
+    <value>Nombre de beats :</value>
+  </data>
+  <data name="Params_BeatsCount" xml:space="preserve">
+    <value>Nombre de beats :</value>
+  </data>
+  <data name="Params_RemoveSilenceStart" xml:space="preserve">
+    <value>Supprimer les silences au début des chansons</value>
+  </data>
+  <data name="Params_RemoveSilenceEnd" xml:space="preserve">
+    <value>Supprimer les silences à la fin des chansons</value>
+  </data>
+  <data name="Params_Language" xml:space="preserve">
+    <value>Langue :</value>
+  </data>
+  <data name="Button_Browse" xml:space="preserve">
+    <value>Parcourir...</value>
+  </data>
+  <data name="Button_Save" xml:space="preserve">
+    <value>Sauvegarder</value>
+  </data>
+  <data name="Button_Cancel" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="Button_Reset" xml:space="preserve">
+    <value>Réinitialiser</value>
+  </data>
+  <data name="Button_Help" xml:space="preserve">
+    <value>Aide</value>
+  </data>
+  <data name="Params_Save" xml:space="preserve">
+    <value>Sauvegarder</value>
+  </data>
+  <data name="Params_Cancel" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="Params_Reset" xml:space="preserve">
+    <value>Réinitialiser</value>
+  </data>
+  <data name="Reset_ConfirmTitle" xml:space="preserve">
+    <value>Confirmation de réinitialisation</value>
+  </data>
+  <data name="Reset_ConfirmMessage" xml:space="preserve">
+    <value>Êtes-vous sûr de vouloir réinitialiser tous les paramètres aux valeurs par défaut ?</value>
+  </data>
+  <data name="Params_SavedSuccess" xml:space="preserve">
+    <value>Paramètres sauvegardés avec succès.</value>
+  </data>
+  <data name="Params_InvalidBeatsCount" xml:space="preserve">
+    <value>Le nombre de beats doit être un nombre entier positif.</value>
+  </data>
+  <data name="Params_Title" xml:space="preserve">
+    <value>Paramètres</value>
+  </data>
+  <data name="Success_Title" xml:space="preserve">
+    <value>Succès</value>
+  </data>
+  <data name="Warning_Title" xml:space="preserve">
+    <value>Avertissement</value>
+  </data>
+  <data name="Confirmation_Title" xml:space="preserve">
+    <value>Confirmation</value>
+  </data>
+  <data name="Error_LoadingSettings" xml:space="preserve">
+    <value>Erreur lors du chargement des paramètres : {0}</value>
+  </data>
+  <data name="Error_SavingSettings" xml:space="preserve">
+    <value>Erreur lors de la sauvegarde : {0}</value>
+  </data>
+  <data name="Error_InvalidBeatsRange" xml:space="preserve">
+    <value>Le nombre de beats doit être entre 1 et 16.</value>
+  </data>
+  <data name="Success_SettingsSaved" xml:space="preserve">
+    <value>Paramètres sauvegardés avec succès!</value>
+  </data>
+  <data name="BPM_Title" xml:space="preserve">
+    <value>BPM</value>
+  </data>
+  <data name="BPM_Recalculation_Title" xml:space="preserve">
+    <value>Recalcul BPM</value>
+  </data>
+  <data name="BPM_Calculation_Title" xml:space="preserve">
+    <value>Calcul BPM</value>
+  </data>
+  <data name="BPM_AlreadyExists" xml:space="preserve">
+    <value>Cet item possède déjà un BPM affiché : {0}
+
+Utilisez 'Recalculer le BPM de l'item sélectionné' pour forcer le recalcul.</value>
+  </data>
+  <data name="BPM_MetadataExists" xml:space="preserve">
+    <value>Ce fichier possède déjà un BPM dans ses métadonnées : {0}
+
+Voulez-vous utiliser ce BPM existant ?
+(NON recalculera le BPM)</value>
+  </data>
+  <data name="BPM_FromMetadata" xml:space="preserve">
+    <value>BPM récupéré depuis les métadonnées : {0}</value>
+  </data>
+  <data name="BPM_DetectionFailed" xml:space="preserve">
+    <value>Impossible de détecter le BPM de ce fichier.</value>
+  </data>
+  <data name="BPM_CalculateForFiles" xml:space="preserve">
+    <value>Voulez-vous calculer le BPM pour {0} fichiers sans BPM ?
+
+Cliquez OUI pour calculer ET sauvegarder dans les métadonnées des fichiers.
+Cliquez NON pour calculer sans sauvegarder (affichage uniquement dans la liste).</value>
+  </data>
+  <data name="BPM_RecalculateAll" xml:space="preserve">
+    <value>Voulez-vous vraiment recalculer le BPM de TOUS les {0} fichiers ?
+
+Cette opération va recalculer même les fichiers qui possèdent déjà un BPM.
+
+Cliquez OUI pour recalculer ET sauvegarder dans les métadonnées.
+Cliquez NON pour recalculer sans sauvegarder.</value>
+  </data>
+  <data name="BPM_CancelledByUser" xml:space="preserve">
+    <value>Calcul BPM annulé par l'utilisateur.
+
+Fichiers traités avant annulation : {0}
+BPM détectés : {1}
+Échecs : {2}</value>
+  </data>
+  <data name="BPM_RecalculationCancelledByUser" xml:space="preserve">
+    <value>Recalcul BPM annulé par l'utilisateur.
+
+Fichiers traités avant annulation : {0}
+BPM détectés : {1}
+Échecs : {2}</value>
+  </data>
+  <data name="BPM_CalculationComplete" xml:space="preserve">
+    <value>Calcul BPM terminé !
+
+Fichiers traités : {0}
+BPM détectés : {1}
+Échecs : {2}</value>
+  </data>
+  <data name="BPM_RecalculationComplete" xml:space="preserve">
+    <value>Recalcul BPM terminé !
+
+Fichiers traités : {0}
+BPM détectés : {1}
+Échecs : {2}</value>
+  </data>
+  <data name="Playlist_SelectItem" xml:space="preserve">
+    <value>Veuillez sélectionner un élément.</value>
+  </data>
+  <data name="Playlist_Empty" xml:space="preserve">
+    <value>La liste est vide.</value>
+  </data>
+  <data name="Playlist_AlreadyEmpty" xml:space="preserve">
+    <value>La playlist est déjà vide.</value>
+  </data>
+  <data name="Playlist_Loaded" xml:space="preserve">
+    <value>Playlist chargée : {0}</value>
+  </data>
+  <data name="Playlist_Saved" xml:space="preserve">
+    <value>Playlist enregistrée : {0}</value>
+  </data>
+  <data name="Playlist_NewCreated" xml:space="preserve">
+    <value>Nouvelle playlist créée (vide)</value>
+  </data>
+  <data name="Playlist_ClearConfirm" xml:space="preserve">
+    <value>Voulez-vous vraiment vider la liste actuelle ?</value>
+  </data>
+  <data name="Error_LoadingPlaylist" xml:space="preserve">
+    <value>Erreur lors du chargement de la playlist : {0}</value>
+  </data>
+  <data name="Error_SavingPlaylist" xml:space="preserve">
+    <value>Erreur lors de l'enregistrement de la playlist : {0}</value>
+  </data>
+  <data name="Error_Calculation" xml:space="preserve">
+    <value>Erreur lors du calcul : {0}</value>
+  </data>
+  <data name="Random_RequiresAutoPlay" xml:space="preserve">
+    <value>Le mode aléatoire nécessite que la lecture automatique soit activée.
+
+Veuillez activer 'Lecture automatique du morceau suivant' dans les paramètres.</value>
+  </data>
+  <data name="Random_Disabled_Title" xml:space="preserve">
+    <value>Mode aléatoire désactivé</value>
+  </data>
+  <data name="Cancellation_Title" xml:space="preserve">
+    <value>Annulation</value>
+  </data>
+  <data name="Menu_BPM_CalcSelected" xml:space="preserve">
+    <value>Calcul du BPM de l'item sélectionné</value>
+  </data>
+  <data name="Menu_BPM_RecalcSelected" xml:space="preserve">
+    <value>Recalculer le BPM de l'item sélectionné</value>
+  </data>
+  <data name="Menu_BPM_CalcAll" xml:space="preserve">
+    <value>Calcul de tous les items de la liste...</value>
+  </data>
+  <data name="Menu_BPM_RecalcAll" xml:space="preserve">
+    <value>Recalculer tous les items de la liste...</value>
+  </data>
+  <data name="BPM_Status_Calculating" xml:space="preserve">
+    <value>Calcul...</value>
+  </data>
+  <data name="BPM_Status_Recalculating" xml:space="preserve">
+    <value>Recalcul...</value>
+  </data>
+  <data name="BPM_RecalculateSingle_Confirm" xml:space="preserve">
+    <value>Voulez-vous vraiment recalculer le BPM de ce fichier ?</value>
+  </data>
+  <data name="BPM_RecalculateSingle_WithCurrent" xml:space="preserve">
+    <value>Le BPM actuel est {0}.
+
+Voulez-vous vraiment le recalculer ?</value>
+  </data>
+  <data name="BPM_ItemCalculated" xml:space="preserve">
+    <value>BPM calculé : {0}
+Méthode : {1}</value>
+  </data>
+  <data name="BPM_ItemRecalculated" xml:space="preserve">
+    <value>BPM recalculé : {0}
+Méthode : {1}</value>
+  </data>
+  <data name="BPM_MetadataSaved" xml:space="preserve">
+    <value>✓ Sauvegardé dans les métadonnées du fichier</value>
+  </data>
+  <data name="BPM_MetadataSaveError" xml:space="preserve">
+    <value>⚠ Erreur sauvegarde métadonnées : {0}</value>
+  </data>
+  <data name="BPM_BulkSummary" xml:space="preserve">
+    <value>Calcul terminé :
+- Fichiers traités : {0}
+- Fichiers ignorés (BPM déjà présent) : {1}
+- BPM détecté : {2}
+- BPM existants utilisés : {3}
+- Échecs : {4}
+- Méthode : {5}</value>
+  </data>
+  <data name="BPM_RebulkSummary" xml:space="preserve">
+    <value>Recalcul terminé :
+- Fichiers traités : {0}
+- BPM détecté : {1}
+- Échecs : {2}
+- Méthode : {3}</value>
+  </data>
+  <data name="BPM_BulkMetadataSummary" xml:space="preserve">
+    <value>Sauvegarde métadonnées :
+- Réussies : {0}
+- Échecs : {1}</value>
+  </data>
+  <data name="Meta_Form_Title" xml:space="preserve">
+    <value>Métadonnées et Tags ID3 du fichier audio</value>
+  </data>
+  <data name="Meta_Group_Tags" xml:space="preserve">
+    <value>🎵 Tags ID3 / Métadonnées (Éditable)</value>
+  </data>
+  <data name="Meta_Label_Title" xml:space="preserve">
+    <value>Titre :</value>
+  </data>
+  <data name="Meta_Label_Artist" xml:space="preserve">
+    <value>Artiste :</value>
+  </data>
+  <data name="Meta_Label_Album" xml:space="preserve">
+    <value>Album :</value>
+  </data>
+  <data name="Meta_Label_Year" xml:space="preserve">
+    <value>Année :</value>
+  </data>
+  <data name="Meta_Label_Genre" xml:space="preserve">
+    <value>Genre :</value>
+  </data>
+  <data name="Meta_Label_Comment" xml:space="preserve">
+    <value>Commentaire :</value>
+  </data>
+  <data name="Meta_Label_Track" xml:space="preserve">
+    <value>N° de piste :</value>
+  </data>
+  <data name="Meta_Label_AlbumArtist" xml:space="preserve">
+    <value>Artiste Album :</value>
+  </data>
+  <data name="Meta_Label_BPM" xml:space="preserve">
+    <value>BPM :</value>
+  </data>
+  <data name="Meta_Button_Save" xml:space="preserve">
+    <value>💾 Sauvegarder</value>
+  </data>
+  <data name="Meta_Button_Close" xml:space="preserve">
+    <value>Fermer</value>
+  </data>
+  <data name="Meta_Error_FileNotExists" xml:space="preserve">
+    <value>Le fichier n'existe pas.</value>
+  </data>
+  <data name="Meta_Error_ReadingMetadata" xml:space="preserve">
+    <value>Erreur lors de la lecture des métadonnées :
+{0}</value>
+  </data>
+  <data name="Meta_Error_NoFileLoaded" xml:space="preserve">
+    <value>Aucun fichier chargé.</value>
+  </data>
+  <data name="Meta_Error_FileLocked" xml:space="preserve">
+    <value>Le fichier est actuellement verrouillé et ne peut pas être modifié.
+
+Causes possibles :
+• Le fichier est en cours de lecture
+• Le fichier a été ouvert pendant la lecture
+• Une autre application utilise le fichier
+
+Pour sauvegarder les métadonnées :
+1. Arrêtez la lecture si le fichier est en cours
+2. Fermez ce formulaire
+3. Attendez quelques secondes
+4. Rouvrez le formulaire de métadonnées</value>
+  </data>
+  <data name="Meta_Title_FileLocked" xml:space="preserve">
+    <value>Fichier verrouillé</value>
+  </data>
+  <data name="Meta_Info_FileCurrentlyPlaying" xml:space="preserve">
+    <value>Ce fichier est actuellement en cours de lecture.
+
+Pour sauvegarder les métadonnées, vous devez d'abord arrêter la lecture,
+fermer ce formulaire, puis le rouvrir pour éditer.
+
+Voulez-vous arrêter la lecture maintenant ?</value>
+  </data>
+  <data name="Meta_Title_FileCurrentlyPlaying" xml:space="preserve">
+    <value>Fichier en cours de lecture</value>
+  </data>
+  <data name="Meta_Info_PlaybackStopped" xml:space="preserve">
+    <value>La lecture a été arrêtée.
+
+Fermez ce formulaire et rouvrez-le pour éditer les métadonnées.</value>
+  </data>
+  <data name="Meta_Title_PlaybackStopped" xml:space="preserve">
+    <value>Lecture arrêtée</value>
+  </data>
+  <data name="Meta_Success_Saved" xml:space="preserve">
+    <value>✅ Les métadonnées ont été sauvegardées avec succès !
+
+Les nouvelles informations sont maintenant enregistrées dans le fichier.</value>
+  </data>
+  <data name="Meta_Error_SavingHeader" xml:space="preserve">
+    <value>❌ Erreur lors de la sauvegarde :</value>
+  </data>
+  <data name="Meta_Error_Type" xml:space="preserve">
+    <value>Type d'erreur : {0}</value>
+  </data>
+  <data name="Meta_Error_Message" xml:space="preserve">
+    <value>Message : {0}</value>
+  </data>
+  <data name="Meta_Error_Details" xml:space="preserve">
+    <value>Détails : {0}</value>
+  </data>
+  <data name="Meta_Error_CheckReadonly" xml:space="preserve">
+    <value>Vérifiez que le fichier n'est pas en lecture seule ou utilisé par une autre application.</value>
+  </data>
+  <data name="Meta_Title_SaveError" xml:space="preserve">
+    <value>Erreur de sauvegarde</value>
+  </data>
+  <data name="Meta_Info_Section_File" xml:space="preserve">
+    <value>INFORMATIONS DU FICHIER</value>
+  </data>
+  <data name="Meta_Info_Section_Audio" xml:space="preserve">
+    <value>INFORMATIONS AUDIO</value>
+  </data>
+  <data name="Meta_Info_Section_Tags" xml:space="preserve">
+    <value>TAGS ID3 / MÉTADONNÉES</value>
+  </data>
+  <data name="Meta_Info_FileName" xml:space="preserve">
+    <value>Nom du fichier :</value>
+  </data>
+  <data name="Meta_Info_FullPath" xml:space="preserve">
+    <value>Chemin complet :</value>
+  </data>
+  <data name="Meta_Info_FileSize" xml:space="preserve">
+    <value>Taille du fichier :</value>
+  </data>
+  <data name="Meta_Info_ModifiedDate" xml:space="preserve">
+    <value>Date de modification :</value>
+  </data>
+  <data name="Meta_Info_Duration" xml:space="preserve">
+    <value>Durée :</value>
+  </data>
+  <data name="Meta_Info_AudioFormat" xml:space="preserve">
+    <value>Format audio :</value>
+  </data>
+  <data name="Meta_Info_SampleRate" xml:space="preserve">
+    <value>Taux d'échantillonnage :</value>
+  </data>
+  <data name="Meta_Info_Channels" xml:space="preserve">
+    <value>Canaux :</value>
+  </data>
+  <data name="Meta_Channel_Mono" xml:space="preserve">
+    <value>Mono</value>
+  </data>
+  <data name="Meta_Channel_Stereo" xml:space="preserve">
+    <value>Stéréo</value>
+  </data>
+  <data name="Meta_Channel_Multi" xml:space="preserve">
+    <value>Multi-canal</value>
+  </data>
+  <data name="Meta_Info_BitsPerSample" xml:space="preserve">
+    <value>Bits par échantillon :</value>
+  </data>
+  <data name="Meta_Info_BitrateAvg" xml:space="preserve">
+    <value>Débit binaire moyen :</value>
+  </data>
+  <data name="Meta_Info_BytesPerSecond" xml:space="preserve">
+    <value>Octets par seconde :</value>
+  </data>
+  <data name="Meta_Info_AudioReadFailed" xml:space="preserve">
+    <value>Impossible de lire les informations audio.</value>
+  </data>
+  <data name="Meta_Info_AudioPossiblyInUse" xml:space="preserve">
+    <value>Le fichier est peut-être en cours d'utilisation.</value>
+  </data>
+  <data name="Meta_Info_Tag_Title" xml:space="preserve">
+    <value>Titre :</value>
+  </data>
+  <data name="Meta_Info_Tag_Artist" xml:space="preserve">
+    <value>Artiste :</value>
+  </data>
+  <data name="Meta_Info_Tag_Album" xml:space="preserve">
+    <value>Album :</value>
+  </data>
+  <data name="Meta_Info_Tag_Year" xml:space="preserve">
+    <value>Année :</value>
+  </data>
+  <data name="Meta_Info_Tag_Genre" xml:space="preserve">
+    <value>Genre :</value>
+  </data>
+  <data name="Meta_Info_Tag_Track" xml:space="preserve">
+    <value>Piste :</value>
+  </data>
+  <data name="Meta_Info_Tag_AlbumArtist" xml:space="preserve">
+    <value>Artiste Album :</value>
+  </data>
+  <data name="Meta_Info_Tag_Comment" xml:space="preserve">
+    <value>Commentaire :</value>
+  </data>
+  <data name="Meta_Info_Tag_BPM" xml:space="preserve">
+    <value>BPM :</value>
+  </data>
+  <data name="Meta_Info_Tag_Composer" xml:space="preserve">
+    <value>Compositeur :</value>
+  </data>
+  <data name="Meta_Info_TagTypesDetected" xml:space="preserve">
+    <value>Types de tags détectés :</value>
+  </data>
+  <data name="Meta_Info_NoMetadataFound" xml:space="preserve">
+    <value>Aucune métadonnée trouvée dans ce fichier.</value>
+  </data>
+  <data name="Meta_Info_AddMetadataBelow" xml:space="preserve">
+    <value>Vous pouvez les ajouter ci-dessous.</value>
+  </data>
+  <data name="Meta_Info_TagsReadFailed" xml:space="preserve">
+    <value>Impossible de lire les tags ID3.</value>
+  </data>
+  <data name="Meta_Unit_Bytes" xml:space="preserve">
+    <value>octets</value>
+  </data>
+  <data name="Meta_Unit_KB" xml:space="preserve">
+    <value>Ko</value>
+  </data>
+  <data name="Meta_Unit_MB" xml:space="preserve">
+    <value>Mo</value>
+  </data>
+  <data name="Meta_Unit_GB" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="Meta_Unit_TB" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="Theme_Group" xml:space="preserve">
+    <value>Couleurs de l'interface</value>
+  </data>
+  <data name="Theme_Customize" xml:space="preserve">
+    <value>Créer un thème de couleurs...</value>
+  </data>
+  <data name="Theme_Reset" xml:space="preserve">
+    <value>Couleurs par défaut</value>
+  </data>
+  <data name="Theme_Preview" xml:space="preserve">
+    <value>Aperçu</value>
+  </data>
+  <data name="Theme_Pick_FormBack" xml:space="preserve">
+    <value>Couleur de fond formulaire</value>
+  </data>
+  <data name="Theme_Pick_ControlBack" xml:space="preserve">
+    <value>Couleur de fond contrôles</value>
+  </data>
+  <data name="Theme_Pick_ControlText" xml:space="preserve">
+    <value>Couleur de texte contrôles</value>
+  </data>
+  <data name="Theme_Pick_ButtonBack" xml:space="preserve">
+    <value>Couleur de fond boutons</value>
+  </data>
+  <data name="Theme_Pick_ButtonText" xml:space="preserve">
+    <value>Couleur de texte boutons</value>
+  </data>
+  <data name="Theme_Pick_TextBoxBack" xml:space="preserve">
+    <value>Couleur de fond TextBox</value>
+  </data>
+  <data name="Theme_Pick_TextBoxText" xml:space="preserve">
+    <value>Couleur de texte TextBox</value>
+  </data>
+  <data name="Theme_Pick_ListViewBack" xml:space="preserve">
+    <value>Couleur de fond ListView</value>
+  </data>
+  <data name="Theme_Pick_ListViewText" xml:space="preserve">
+    <value>Couleur de texte ListView</value>
+  </data>
+  <data name="Theme_Pick_ListViewHeaderBack" xml:space="preserve">
+    <value>Couleur de fond en-tête ListView</value>
+  </data>
+  <data name="Theme_Pick_ListViewHeaderText" xml:space="preserve">
+    <value>Couleur de texte en-tête ListView</value>
+  </data>
+  <data name="Theme_Pick_ListViewSelBack" xml:space="preserve">
+    <value>Couleur sélection ListView</value>
+  </data>
+  <data name="Theme_Pick_ListViewSelText" xml:space="preserve">
+    <value>Couleur texte sélection ListView</value>
+  </data>
+  <data name="Theme_Pick_GroupBoxText" xml:space="preserve">
+    <value>Couleur texte GroupBox</value>
+  </data>
+  <data name="Theme_Pick_GroupBoxBorder" xml:space="preserve">
+    <value>Couleur bordure GroupBox</value>
+  </data>
+  <data name="Theme_Pick_TrackBarBack" xml:space="preserve">
+    <value>Couleur de fond TrackBar</value>
+  </data>
+  <data name="Theme_Apply" xml:space="preserve">
+    <value>Appliquer</value>
+  </data>
+  <data name="Theme_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Theme_Select" xml:space="preserve">
+    <value>Sélectionner un thème :</value>
+  </data>
+  <data name="Theme_SaveAs" xml:space="preserve">
+    <value>Enregistrer sous...</value>
+  </data>
+  <data name="Theme_Delete" xml:space="preserve">
+    <value>Supprimer le thème</value>
+  </data>
+  <data name="Theme_SaveDialog_Title" xml:space="preserve">
+    <value>Enregistrer le thème</value>
+  </data>
+  <data name="Theme_SaveDialog_Prompt" xml:space="preserve">
+    <value>Entrez un nom pour ce thème :</value>
+  </data>
+  <data name="Theme_DeleteConfirm" xml:space="preserve">
+    <value>Voulez-vous vraiment supprimer le thème "{0}" ?</value>
+  </data>
+  <data name="Theme_DeleteConfirm_Title" xml:space="preserve">
+    <value>Confirmer la suppression</value>
+  </data>
+  <data name="Theme_ModifiedPrompt" xml:space="preserve">
+    <value>Le thème "{0}" a été modifié. Voulez-vous remplacer le thème existant ?
+
+Oui = Remplacer le thème "{0}"
+Non = Sauvegarder sous un nouveau nom
+Annuler = Ne pas sauvegarder les modifications</value>
+  </data>
+  <data name="Theme_ModifiedTitle" xml:space="preserve">
+    <value>Thème modifié</value>
+  </data>
+  <data name="Theme_DuplicatedSuccess" xml:space="preserve">
+    <value>Le thème "{0}" a été créé avec succès !</value>
+  </data>
+  <data name="Theme_DefaultProtected" xml:space="preserve">
+    <value>Le thème "Par défaut" est protégé et ne peut pas être modifié.
+
+Pour personnaliser les couleurs, veuillez :
+1. Sélectionner un autre thème dans la liste, OU
+2. Cliquer sur "💾 Enregistrer le thème" pour créer une copie du thème par défaut que vous pourrez ensuite personnaliser.</value>
+  </data>
+  <data name="Theme_DefaultProtected_Title" xml:space="preserve">
+    <value>Thème protégé</value>
+  </data>
+  <data name="Theme_PreinstalledProtected" xml:space="preserve">
+    <value>Ce thème est préinstallé et protégé, il ne peut pas être modifié.
+
+Thèmes protégés : Par défaut, Automne, Océan, Soleil, Sombre
+
+Pour personnaliser les couleurs :
+• Cliquez sur "Enregistrer le thème sous" pour créer une copie que vous pourrez modifier
+• Sélectionnez un thème que vous avez créé</value>
+  </data>
+  <data name="Theme_PreinstalledProtected_Title" xml:space="preserve">
+    <value>Thème préinstallé protégé</value>
+  </data>
+  <data name="Theme_PreinstalledCannotReplace" xml:space="preserve">
+    <value>Impossible d'utiliser ce nom. Les thèmes préinstallés sont protégés :
+• Par défaut
+• Automne
+• Océan
+• Soleil
+• Sombre
+
+Veuillez choisir un autre nom pour votre thème.</value>
+  </data>
+  <data name="Theme_PreinstalledCannotDelete" xml:space="preserve">
+    <value>Les thèmes préinstallés ne peuvent pas être supprimés.</value>
+  </data>
+  <data name="Help_Themes_Title" xml:space="preserve">
+    <value>Guide des thèmes de couleurs</value>
+  </data>
+  <data name="Help_Normalization_Title" xml:space="preserve">
+    <value>Guide de normalisation du volume</value>
+  </data>
+  <data name="Help_Metronome_Title" xml:space="preserve">
+    <value>Guide du métronome</value>
+  </data>
+  <data name="Help_FilesNotFound" xml:space="preserve">
+    <value>Les fichiers d'aide sont introuvables.</value>
+  </data>
+  <data name="Help_ExpectedFiles" xml:space="preserve">
+    <value>Fichiers attendus :</value>
+  </data>
+  <data name="Help_FilesNotFoundTitle" xml:space="preserve">
+    <value>Aide non disponible</value>
+  </data>
+  <data name="Help_ErrorOpenFile" xml:space="preserve">
+    <value>Erreur lors de l'ouverture du fichier d'aide : {0}</value>
+  </data>
+  <data name="Button_PauseResume" xml:space="preserve">
+    <value>Pause / Reprendre</value>
+  </data>
+  <data name="Button_Previous" xml:space="preserve">
+    <value>Précédent</value>
+  </data>
+  <data name="Button_Next" xml:space="preserve">
+    <value>Suivant</value>
+  </data>
+  <data name="Button_AddFile" xml:space="preserve">
+    <value>Ajouter un fichier...</value>
+  </data>
+  <data name="Button_Playlist" xml:space="preserve">
+    <value>Liste de lecture</value>
+  </data>
+  <data name="Button_Random" xml:space="preserve">
+    <value>Aléatoire</value>
+  </data>
+  <data name="Column_Number" xml:space="preserve">
+    <value>#</value>
+  </data>
+  <data name="Menu_SaveListAs" xml:space="preserve">
+    <value>Enregistrer la liste sous...</value>
+  </data>
+  <data name="Status_Paused" xml:space="preserve">
+    <value>En pause</value>
+  </data>
+  <data name="Status_RandomOn" xml:space="preserve">
+    <value>Aléatoire: ON</value>
+  </data>
+  <data name="Status_RandomOff" xml:space="preserve">
+    <value>Aléatoire: OFF</value>
+  </data>
+  <data name="Status_Playing" xml:space="preserve">
+    <value>En cours de lecture...</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="AudioPlay_Logo_Bleu" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Logo_Bleu.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Rapetisser_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Rapetisser_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Rapetisser_Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Rapetisser_Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Rapetisser_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Rapetisser_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Karaoke_Title" xml:space="preserve">
+    <value>Karaoke</value>
+  </data>
+  <data name="Karaoke_WindowTitle" xml:space="preserve">
+    <value>AudioPlay Karaoke</value>
+  </data>
+  <data name="Karaoke_NoCDGFile" xml:space="preserve">
+    <value>Aucun fichier CDG trouvé pour cette chanson dans le même répertoire.</value>
+  </data>
+  <data name="Karaoke_NoFile" xml:space="preserve">
+    <value>Aucun fichier CDG chargé</value>
+  </data>
+  <data name="Karaoke_FileNotFound" xml:space="preserve">
+    <value>Fichier CDG introuvable</value>
+  </data>
+  <data name="Karaoke_LoadError" xml:space="preserve">
+    <value>Erreur lors du chargement du fichier CDG</value>
+  </data>
+  <data name="Karaoke_Loaded" xml:space="preserve">
+    <value>CDG chargé : {0}</value>
+  </data>
+  <data name="Karaoke_Playing" xml:space="preserve">
+    <value>Lecture en cours...</value>
+  </data>
+  <data name="Karaoke_Stopped" xml:space="preserve">
+    <value>Lecture arrêtée</value>
+  </data>
+  <data name="Karaoke_Paused" xml:space="preserve">
+    <value>En pause</value>
+  </data>
+  <data name="AudioPlay_Vide__Carré" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Vide__Carré.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Aide_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Aide_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Aide_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Aide_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Aide_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Aide_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Ajout__Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Ajout__Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Ajout__Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Ajout__Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Ajout__Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Ajout__Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Ajout__Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Ajout__Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Rapetisser_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Rapetisser_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_BPM_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_BPM_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_BPM_Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_BPM_Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_BPM_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_BPM_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_BPM_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_BPM_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Jouer_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Jouer_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Jouer_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Jouer_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Jouer_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Jouer_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Led_Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Led_Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Led_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Led_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Mute_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Mute_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Mute_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Mute_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Mute_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Mute_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Pause_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Pause_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Pause_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Pause_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Pause_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Pause_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Power_Bleu" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Power_Bleu.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Power_Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Power_Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Power_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Power_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Power_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Power_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Random_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Random_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Random_Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Random_Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Random_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Random_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Random_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Random_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Suivant_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Suivant_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Suivant_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Suivant_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Suivant_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Suivant_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Vide_Rond" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Vide_Rond.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_X_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_X_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_X_Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_X_Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_X_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_X_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_X_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_X_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Loop_Help_Title" xml:space="preserve">
+    <value>Aide - Boucle (Loop)</value>
+  </data>
+  <data name="Loop_Help_Message" xml:space="preserve">
+    <value>FONCTION BOUCLE (LOOP)
+
+Le bouton Loop permet de répéter une section spécifique de la chanson en cours.
+
+📝 COMMENT UTILISER :
+
+1️⃣ Démarrez la lecture d'une chanson
+
+2️⃣ Pendant la lecture, appuyez sur la touche I (comme "Début") à l'endroit où vous voulez que la boucle commence
+
+3️⃣ Continuez l'écoute et appuyez sur la touche O (comme "Fin") à l'endroit où vous voulez que la boucle se termine
+
+4️⃣ Deux petits marqueurs I et O apparaissent au-dessus de la barre d'avancement
+
+5️⃣ Cliquez sur le bouton Loop pour activer la boucle (le bouton devient vert clair)
+
+6️⃣ La section entre I et O jouera en boucle indéfiniment
+
+🔄 POUR DÉSACTIVER :
+Cliquez à nouveau sur le bouton Loop
+
+🗑️ RÉINITIALISATION :
+Les marqueurs disparaissent automatiquement quand vous :
+• Chargez une nouvelle chanson
+• Arrêtez complètement la lecture (bouton Arrêter ou Ctrl+Espace)
+
+⏸️ PAUSE/MUTE :
+• La boucle se met en pause avec la lecture
+• La boucle continue silencieusement en mode muet</value>
+  </data>
+  <data name="App_Title" xml:space="preserve">
+    <value>AudioPlay v{0}</value>
+  </data>
+  <data name="FileAssociation_NotDefault" xml:space="preserve">
+    <value>AudioPlay n'est pas l'application par défaut pour les types suivants : {0}
+
+Voulez-vous configurer les associations maintenant ?</value>
+  </data>
+  <data name="BPM_PythonInstallPrompt" xml:space="preserve">
+    <value>Python avec librosa permet un calcul de BPM très précis (95%+).
+
+Voulez-vous installer Python et librosa maintenant ?
+
+Note: L'installation prendra quelques minutes.</value>
+  </data>
+  <data name="BPM_PythonInstallTitle" xml:space="preserve">
+    <value>Installation de Python + librosa</value>
+  </data>
+  <data name="Loop_Active_Title" xml:space="preserve">
+    <value>Boucle active</value>
+  </data>
+  <data name="BPM_BlockedDuringLoop_Message" xml:space="preserve">
+    <value>Le calcul BPM n'est pas disponible pendant qu'une boucle est active.
+
+Veuillez désactiver la boucle (bouton Loop) avant de calculer le BPM.</value>
+  </data>
+  <data name="Loop_NotDefined_Message" xml:space="preserve">
+    <value>Aucune boucle n'a été définie. Utilisez 'I' pour le début et 'O' pour la fin.</value>
+  </data>
+  <data name="Loop_NotDefined_Title" xml:space="preserve">
+    <value>Boucle non définie</value>
+  </data>
+  <data name="Playlist_DeleteConfirm_Message" xml:space="preserve">
+    <value>Voulez-vous vraiment supprimer la sélection de la liste ?</value>
+  </data>
+  <data name="Context_CalculateBPM" xml:space="preserve">
+    <value>Calculer le BPM</value>
+  </data>
+  <data name="Context_ShowMetadata" xml:space="preserve">
+    <value>Afficher les métadonnées</value>
+  </data>
+  <data name="Context_RemoveFromList" xml:space="preserve">
+    <value>Supprimer de la liste</value>
+  </data>
+  <data name="Folder_SelectDefaultDirectory" xml:space="preserve">
+    <value>Sélectionner le répertoire par défaut</value>
+  </data>
+  <data name="ListView_Column_Num" xml:space="preserve">
+    <value>#</value>
+  </data>
+  <data name="ListView_Column_Songs" xml:space="preserve">
+    <value>Chansons</value>
+  </data>
+  <data name="ListView_Column_BPM" xml:space="preserve">
+    <value>BPM</value>
+  </data>
+  <data name="ListView_Column_Duration" xml:space="preserve">
+    <value>Durée</value>
+  </data>
+  <data name="UnhandledException_Title" xml:space="preserve">
+    <value>Erreur non gérée</value>
+  </data>
+  <data name="UnhandledException_Message" xml:space="preserve">
+    <value>Exception non gérée !
+
+Message: {0}
+
+Source: {1}
+
+StackTrace: {2}</value>
+  </data>
+  <data name="UnhandledException_Inner" xml:space="preserve">
+    <value>
+
+InnerException: {0}
+InnerException StackTrace: {1}</value>
+  </data>
+  <data name="Params_DJMixerMode" xml:space="preserve">
+    <value>Mode Mixeur DJ (2 platines avec crossfader et contrôles DJ)</value>
+  </data>
+  <data name="CheckBox_EffacerChansons" xml:space="preserve">
+    <value>Message pour confirmer l'enlèvement d'une sélection dans la liste</value>
+  </data>
+  <data name="Info_DJModeEnabled" xml:space="preserve">
+    <value>Mode DJ activé - Utilisez 2 platines avec crossfader</value>
+  </data>
+  <data name="Confirm_ReturnSimpleMode" xml:space="preserve">
+    <value>Voulez-vous retourner en mode simple ?</value>
+  </data>
+  <data name="Confirm_QuitApplication" xml:space="preserve">
+    <value>Êtes-vous sûr de vouloir quitter AudioPlay ?</value>
+  </data>
+  <data name="DJMode_Title" xml:space="preserve">
+    <value>Mode DJ</value>
+  </data>
+  <data name="Search_Placeholder" xml:space="preserve">
+    <value>Rechercher...</value>
+  </data>
+  <data name="Search_ByFileName" xml:space="preserve">
+    <value>Par nom de fichier</value>
+  </data>
+  <data name="Search_ByBPM" xml:space="preserve">
+    <value>Par BPM</value>
+  </data>
+  <data name="Search_ByDuration" xml:space="preserve">
+    <value>Par durée</value>
+  </data>
+  <data name="AudioEffects_GroupTitle" xml:space="preserve">
+    <value>Effets Audio</value>
+  </data>
+  <data name="AudioEffects_Reverb" xml:space="preserve">
+    <value>Réverbération</value>
+  </data>
+  <data name="AudioEffects_ReverbMix" xml:space="preserve">
+    <value>Mélange :</value>
+  </data>
+  <data name="AudioEffects_Echo" xml:space="preserve">
+    <value>Écho</value>
+  </data>
+  <data name="AudioEffects_EchoMix" xml:space="preserve">
+    <value>Mélange :</value>
+  </data>
+  <data name="AudioEffects_EchoDelay" xml:space="preserve">
+    <value>Délai :</value>
+  </data>
+  <data name="AudioEffects_EchoFeedback" xml:space="preserve">
+    <value>Feedback :</value>
+  </data>
+  <data name="AudioEffects_TimeStretch" xml:space="preserve">
+    <value>Changement de tempo</value>
+  </data>
+  <data name="AudioEffects_TimeStretchRatio" xml:space="preserve">
+    <value>Vitesse :</value>
+  </data>
+  <data name="AudioEffects_PitchShift" xml:space="preserve">
+    <value>Changement de tonalité (Pitch Shift)</value>
+  </data>
+  <data name="AudioEffects_PitchSemitones" xml:space="preserve">
+    <value>Tonalité (demi-tons) :</value>
+  </data>
+  <data name="AudioEffects_PitchShift_Reset" xml:space="preserve">
+    <value>Réinitialiser</value>
+  </data>
+  <data name="AudioEffects_Phaser" xml:space="preserve">
+    <value>Phaser (effet spatial)</value>
+  </data>
+  <data name="AudioEffects_PhaserRate" xml:space="preserve">
+    <value>Vitesse (Hz) :</value>
+  </data>
+  <data name="AudioEffects_PhaserDepth" xml:space="preserve">
+    <value>Profondeur :</value>
+  </data>
+  <data name="AudioEffects_PhaserFeedback" xml:space="preserve">
+    <value>Résonance (Feedback) :</value>
+  </data>
+  <data name="AudioEffects_PhaserMix" xml:space="preserve">
+    <value>Mélange (Mix) :</value>
+  </data>
+  <data name="AudioEffects_PhaserStages" xml:space="preserve">
+    <value>Étages (Stages) :</value>
+  </data>
+  <data name="AudioEffects_Phaser_Reset" xml:space="preserve">
+    <value>Réinitialiser</value>
+  </data>
+  <data name="AudioEffects_ResetButton" xml:space="preserve">
+    <value>Réinitialiser les effets</value>
+  </data>
+  <data name="AudioTypes_GroupTitle" xml:space="preserve">
+    <value>Types Audio par Défaut</value>
+  </data>
+  <data name="AudioTypes_Label" xml:space="preserve">
+    <value>Cocher les types audio par défaut :</value>
+  </data>
+  <data name="DJ_Waveform" xml:space="preserve">
+    <value>Forme d'onde</value>
+  </data>
+  <data name="DJ_HotCues" xml:space="preserve">
+    <value>HotCues</value>
+  </data>
+  <data name="DJ_HotCue_Set" xml:space="preserve">
+    <value>HotCue {0} défini à {1}</value>
+  </data>
+  <data name="DJ_HotCue_Trigger" xml:space="preserve">
+    <value>Saut au HotCue {0}</value>
+  </data>
+  <data name="DJ_HotCue_Delete" xml:space="preserve">
+    <value>HotCue {0} supprimé</value>
+  </data>
+  <data name="DJ_HotCue_ClearAll" xml:space="preserve">
+    <value>Tous les HotCues ont été effacés</value>
+  </data>
+  <data name="DJ_Loop" xml:space="preserve">
+    <value>Boucle</value>
+  </data>
+  <data name="DJ_LoopIn" xml:space="preserve">
+    <value>Loop In</value>
+  </data>
+  <data name="DJ_LoopOut" xml:space="preserve">
+    <value>Loop Out</value>
+  </data>
+  <data name="DJ_LoopToggle" xml:space="preserve">
+    <value>Loop On/Off</value>
+  </data>
+  <data name="DJ_Loop_Active" xml:space="preserve">
+    <value>Boucle active : {0} - {1}</value>
+  </data>
+  <data name="DJ_Loop_Inactive" xml:space="preserve">
+    <value>Boucle désactivée</value>
+  </data>
+  <data name="DJ_Loop_2Beats" xml:space="preserve">
+    <value>2 Temps</value>
+  </data>
+  <data name="DJ_Loop_4Beats" xml:space="preserve">
+    <value>4 Temps</value>
+  </data>
+  <data name="DJ_Loop_8Beats" xml:space="preserve">
+    <value>8 Temps</value>
+  </data>
+  <data name="DJ_Loop_16Beats" xml:space="preserve">
+    <value>16 Temps</value>
+  </data>
+  <data name="DJ_Recording" xml:space="preserve">
+    <value>Enregistrement</value>
+  </data>
+  <data name="DJ_RecordStart" xml:space="preserve">
+    <value>● REC</value>
+  </data>
+  <data name="DJ_RecordStop" xml:space="preserve">
+    <value>■ STOP</value>
+  </data>
+  <data name="DJ_Recording_Started" xml:space="preserve">
+    <value>Enregistrement démarré :{0}{1}</value>
+  </data>
+  <data name="DJ_Recording_Stopped" xml:space="preserve">
+    <value>Enregistrement sauvegardé :{0}{1}</value>
+  </data>
+  <data name="DJ_Recording_Error" xml:space="preserve">
+    <value>Erreur d'enregistrement : {0}</value>
+  </data>
+  <data name="DJ_Recording_Duration" xml:space="preserve">
+    <value>Durée : {0}</value>
+  </data>
+  <data name="DJ_AutoCue" xml:space="preserve">
+    <value>Auto-Cue</value>
+  </data>
+  <data name="DJ_AutoCue_Detected" xml:space="preserve">
+    <value>Auto-Cue détecté à : {0}</value>
+  </data>
+  <data name="DJ_AutoCue_Enable" xml:space="preserve">
+    <value>Activer l'Auto-Cue</value>
+  </data>
+  <data name="DJ_AutoCue_Disable" xml:space="preserve">
+    <value>Désactiver l'Auto-Cue</value>
+  </data>
+  <data name="DJ_Sampler" xml:space="preserve">
+    <value>Sampler</value>
+  </data>
+  <data name="DJ_Sampler_Pad" xml:space="preserve">
+    <value>Pad {0}</value>
+  </data>
+  <data name="DJ_Sampler_LoadSample" xml:space="preserve">
+    <value>Charger un sample pour le Pad {0}</value>
+  </data>
+  <data name="DJ_Sampler_PlaySample" xml:space="preserve">
+    <value>Jouer le sample {0}</value>
+  </data>
+  <data name="DJ_Sampler_StopSample" xml:space="preserve">
+    <value>Arrêter le sample {0}</value>
+  </data>
+  <data name="DJ_Play" xml:space="preserve">
+    <value>Lecture</value>
+  </data>
+  <data name="DJ_Pause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="DJ_Stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="DJ_Cue" xml:space="preserve">
+    <value>Cue</value>
+  </data>
+  <data name="DJ_Sync" xml:space="preserve">
+    <value>Sync</value>
+  </data>
+  <data name="DJ_DeckA" xml:space="preserve">
+    <value>Platine A</value>
+  </data>
+  <data name="DJ_DeckB" xml:space="preserve">
+    <value>Platine B</value>
+  </data>
+  <data name="DJ_Mixer" xml:space="preserve">
+    <value>Mixeur</value>
+  </data>
+  <data name="DJ_Crossfader" xml:space="preserve">
+    <value>Crossfader</value>
+  </data>
+  <data name="DJ_Volume" xml:space="preserve">
+    <value>Volume</value>
+  </data>
+  <data name="DJ_Pitch" xml:space="preserve">
+    <value>Pitch</value>
+  </data>
+  <data name="DJ_BPM" xml:space="preserve">
+    <value>BPM</value>
+  </data>
+  <data name="DJ_Duration" xml:space="preserve">
+    <value>Durée</value>
+  </data>
+  <data name="DJ_Position" xml:space="preserve">
+    <value>Position</value>
+  </data>
+  <data name="DJ_LoadTrack" xml:space="preserve">
+    <value>Charger une piste</value>
+  </data>
+  <data name="DJ_Playlist" xml:space="preserve">
+    <value>Playlist</value>
+  </data>
+  <data name="DJ_PlaylistTitle" xml:space="preserve">
+    <value>📋 PLAYLIST DJ</value>
+  </data>
+  <data name="DJ_AddTrack" xml:space="preserve">
+    <value>Ajouter une piste</value>
+  </data>
+  <data name="DJ_RemoveTrack" xml:space="preserve">
+    <value>Retirer la piste</value>
+  </data>
+  <data name="DJ_ClearPlaylist" xml:space="preserve">
+    <value>Vider la playlist</value>
+  </data>
+  <data name="DJ_SavePlaylist" xml:space="preserve">
+    <value>Sauvegarder la playlist</value>
+  </data>
+  <data name="DJ_LoadPlaylist" xml:space="preserve">
+    <value>Charger une playlist</value>
+  </data>
+  <data name="DJ_ManagePlaylist" xml:space="preserve">
+    <value>📋 Gérer</value>
+  </data>
+  <data name="DJ_DeckATitle" xml:space="preserve">
+    <value>🎧 PLATINE A</value>
+  </data>
+  <data name="DJ_DeckBTitle" xml:space="preserve">
+    <value>🎧 PLATINE B</value>
+  </data>
+  <data name="DJ_MixerTitle" xml:space="preserve">
+    <value>🎚️ MIXEUR</value>
+  </data>
+  <data name="DJ_DragTrackHere" xml:space="preserve">
+    <value>Glissez une piste ici ⬇</value>
+  </data>
+  <data name="DJ_VolumeLabel" xml:space="preserve">
+    <value>Vol {0} : {1}%</value>
+  </data>
+  <data name="DJ_PitchLabel" xml:space="preserve">
+    <value>Pitch : {0}%</value>
+  </data>
+  <data name="DJ_BPMLabel" xml:space="preserve">
+    <value>BPM : {0}</value>
+  </data>
+  <data name="DJ_CrossfaderLabel" xml:space="preserve">
+    <value>Crossfader : {0}%</value>
+  </data>
+  <data name="DJ_EffectPhaser" xml:space="preserve">
+    <value>🌀 PHASER</value>
+  </data>
+  <data name="DJ_EffectReverb" xml:space="preserve">
+    <value>🎵 REVERB</value>
+  </data>
+  <data name="DJ_EffectEcho" xml:space="preserve">
+    <value>🔢 ECHO</value>
+  </data>
+  <data name="DJ_ButtonReturnSimple" xml:space="preserve">
+    <value>◀ Mode Simple</value>
+  </data>
+  <data name="DJ_ButtonSettings" xml:space="preserve">
+    <value>⚙️ Paramètres</value>
+  </data>
+  <data name="DJ_ButtonQuit" xml:space="preserve">
+    <value>✖ Quitter</value>
+  </data>
+  <data name="DJ_Error_LoadingDeck" xml:space="preserve">
+    <value>Erreur lors du chargement de la Platine {0} : {1}</value>
+  </data>
+  <data name="DJ_Error_Title" xml:space="preserve">
+    <value>Erreur</value>
+  </data>
+  <data name="DJ_BPM_NotDetected" xml:space="preserve">
+    <value>BPM non détecté sur les deux platines.</value>
+  </data>
+  <data name="DJ_Sync_TitleAtoB" xml:space="preserve">
+    <value>🔄 SYNC → B</value>
+  </data>
+  <data name="DJ_Sync_TitleBtoA" xml:space="preserve">
+    <value>🔄 SYNC → A</value>
+  </data>
+  <data name="DJ_BPM_Unknown" xml:space="preserve">
+    <value>BPM : --</value>
+  </data>
+  <data name="DJ_BPM_Value" xml:space="preserve">
+    <value>BPM : {0:F3}</value>
+  </data>
+  <data name="DJ_Pitch_Value" xml:space="preserve">
+    <value>Pitch : {0:+0.0%;-0.0%;0.0%}</value>
+  </data>
+  <data name="DJ_Duration_Format" xml:space="preserve">
+    <value>{0:mm\:ss} / {1:mm\:ss}</value>
+  </data>
+  <data name="DJ_Button_Play" xml:space="preserve">
+    <value>▶</value>
+  </data>
+  <data name="DJ_Button_Pause" xml:space="preserve">
+    <value>⏸</value>
+  </data>
+  <data name="DJ_Button_Stop" xml:space="preserve">
+    <value>⏹</value>
+  </data>
+  <data name="DJ_Button_Cue" xml:space="preserve">
+    <value>CUE</value>
+  </data>
+  <data name="DJ_Playlist_LoadSuccess" xml:space="preserve">
+    <value>Playlist chargée avec succès !</value>
+  </data>
+  <data name="DJ_Playlist_SaveSuccess" xml:space="preserve">
+    <value>Playlist sauvegardée avec succès !</value>
+  </data>
+  <data name="DJ_Playlist_LoadError" xml:space="preserve">
+    <value>Erreur lors du chargement : {0}</value>
+  </data>
+  <data name="DJ_Playlist_SaveError" xml:space="preserve">
+    <value>Erreur lors de la sauvegarde : {0}</value>
+  </data>
+  <data name="DJ_Playlist_ClearConfirm" xml:space="preserve">
+    <value>Voulez-vous vraiment vider la playlist ?</value>
+  </data>
+  <data name="DJ_Success_Title" xml:space="preserve">
+    <value>Succès</value>
+  </data>
+  <data name="DJ_Confirm_Title" xml:space="preserve">
+    <value>Confirmation</value>
+  </data>
+  <data name="DJ_ButtonAddTrack" xml:space="preserve">
+    <value>➕ Ajouter</value>
+  </data>
+  <data name="DJ_ButtonManagePlaylist" xml:space="preserve">
+    <value>⚙️ Gérer</value>
+  </data>
+  <data name="DJ_ColumnNumber" xml:space="preserve">
+    <value>#</value>
+  </data>
+  <data name="DJ_ColumnSong" xml:space="preserve">
+    <value>Chanson</value>
+  </data>
+  <data name="DJ_ColumnBPM" xml:space="preserve">
+    <value>BPM</value>
+  </data>
+  <data name="DJ_ColumnDuration" xml:space="preserve">
+    <value>Durée</value>
+  </data>
+  <data name="DJ_Label_InDevelopment" xml:space="preserve">
+    <value>En développement....</value>
+  </data>
+  <data name="DJ_Menu_AddFile" xml:space="preserve">
+    <value>Ajouter un fichier</value>
+  </data>
+  <data name="DJ_Menu_AddFolder" xml:space="preserve">
+    <value>Ajouter un répertoire</value>
+  </data>
+  <data name="DJ_Menu_OpenList" xml:space="preserve">
+    <value>Ouvrir une liste</value>
+  </data>
+  <data name="DJ_Menu_SaveList" xml:space="preserve">
+    <value>Enregistrer la liste</value>
+  </data>
+  <data name="DJ_Menu_NewList" xml:space="preserve">
+    <value>Nouvelle liste</value>
+  </data>
+  <data name="DJ_Menu_ClearList" xml:space="preserve">
+    <value>Effacer la liste</value>
+  </data>
+  <data name="DJ_Menu_RemoveSelected" xml:space="preserve">
+    <value>Supprimer l'item sélectionné</value>
+  </data>
+  <data name="DJ_Dialog_AddAudioFiles" xml:space="preserve">
+    <value>Ajouter des fichiers audio</value>
+  </data>
+  <data name="DJ_Dialog_SelectFolder" xml:space="preserve">
+    <value>Sélectionner un dossier contenant des fichiers audio</value>
+  </data>
+  <data name="DJ_Dialog_OpenPlaylist" xml:space="preserve">
+    <value>Ouvrir une liste de lecture</value>
+  </data>
+  <data name="DJ_Dialog_SavePlaylist" xml:space="preserve">
+    <value>Enregistrer la liste de lecture</value>
+  </data>
+  <data name="DJ_Filter_Audio" xml:space="preserve">
+    <value>Audio|*.mp3;*.wav;*.flac;*.aac;*.wma;*.ogg</value>
+  </data>
+  <data name="DJ_Filter_Playlists" xml:space="preserve">
+    <value>Listes de lecture|*.m3u;*.m3u8|Tous les fichiers (*.*)|*.*</value>
+  </data>
+  <data name="PlaylistFilesFilter" xml:space="preserve">
+    <value>Listes de lecture|*.m3u;*.m3u8|Tous les fichiers (*.*)|*.*</value>
+  </data>
+  <data name="DJ_Recording_Button_Start" xml:space="preserve">
+    <value>⬤ REC</value>
+  </data>
+  <data name="DJ_Recording_Button_Stop" xml:space="preserve">
+    <value>⬛ STOP</value>
+  </data>
+  <data name="DJ_Recording_Label_Format" xml:space="preserve">
+    <value>Format :</value>
+  </data>
+  <data name="DJ_Recording_Format_WAV" xml:space="preserve">
+    <value>WAV (Lossless)</value>
+  </data>
+  <data name="DJ_Recording_Format_MP3_320" xml:space="preserve">
+    <value>MP3 (320 kbps)</value>
+  </data>
+  <data name="DJ_Recording_Format_MP3_256" xml:space="preserve">
+    <value>MP3 (256 kbps)</value>
+  </data>
+  <data name="DJ_Recording_Format_MP3_192" xml:space="preserve">
+    <value>MP3 (192 kbps)</value>
+  </data>
+  <data name="DJ_Recording_Format_MP3_128" xml:space="preserve">
+    <value>MP3 (128 kbps)</value>
+  </data>
+  <data name="DJ_Recording_Format_FLAC" xml:space="preserve">
+    <value>FLAC (Lossless) - Prochainement</value>
+  </data>
+  <data name="DJ_Recording_Format_WMA" xml:space="preserve">
+    <value>WMA - Prochainement</value>
+  </data>
+  <data name="DJ_Recording_Format_AAC" xml:space="preserve">
+    <value>AAC - Prochainement</value>
+  </data>
+  <data name="DJ_Recording_Error_NoTrack" xml:space="preserve">
+    <value>Chargez au moins une piste avant de commencer l'enregistrement.</value>
+  </data>
+  <data name="DJ_Recording_Error_NoTrack_Title" xml:space="preserve">
+    <value>Enregistrement impossible</value>
+  </data>
+  <data name="DJ_Recording_SelectFolder" xml:space="preserve">
+    <value>Choisissez le répertoire pour enregistrer votre mix</value>
+  </data>
+  <data name="DJ_Recording_Started_Message" xml:space="preserve">
+    <value>Enregistrement démarré !
+
+Fichier: {0}</value>
+  </data>
+  <data name="DJ_Recording_Started_Title" xml:space="preserve">
+    <value>Enregistrement</value>
+  </data>
+  <data name="DJ_Recording_Stopped_Message" xml:space="preserve">
+    <value>Enregistrement terminé !
+
+Durée: {0}
+Fichier: {1}
+
+Voulez-vous ouvrir le dossier ?</value>
+  </data>
+  <data name="DJ_Recording_Stopped_Title" xml:space="preserve">
+    <value>Enregistrement terminé</value>
+  </data>
+  <data name="DJ_Recording_Error_Start" xml:space="preserve">
+    <value>Erreur lors du démarrage de l'enregistrement :
+{0}</value>
+  </data>
+  <data name="DJ_Recording_Error_Stop" xml:space="preserve">
+    <value>Erreur lors de l'arrêt de l'enregistrement :
+{0}</value>
+  </data>
+  <data name="DJ_Recording_Error_Title" xml:space="preserve">
+    <value>Erreur</value>
+  </data>
+  <data name="AudioPlay_Arreter_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Arreter_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Arreter_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Arreter_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Arreter_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Arreter_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_GererListe_Grise" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_GererListe_Grise.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_GererListe_Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_GererListe_Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_GererListe_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_GererListe_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_GererListe_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_GererListe_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Metadonnees__Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Metadonnees__Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Metadonnees__Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Metadonnees__Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Metadonnees__Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Metadonnees__Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Metadonnees__Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Metadonnees__Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Parametres_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Parametres_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Parametres_Rouges" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Parametres_Rouges.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Parametres_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Parametres_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Precedent_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Precedent_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Precedent_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Precedent_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Precedent_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Precedent_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_X_Carre_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_X_Carre_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_X_Carre_Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_X_Carre_Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_X_Carre_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_X_Carre_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_X_Carre_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_X_Carre_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Loop_Carre_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Loop_Carre_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Loop_Carre_Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Loop_Carre_Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Loop_Carre_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Loop_Carre_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Loop_Carre_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Loop_Carre_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+</root>
