@@ -3,5 +3,6 @@
 *.sln text eol=crlf
 *.designer.vb text eol=crlf
 *.config text eol=crlf
-installer/EXE/AudioPlay-Setup.exe filter=lfs diff=lfs merge=lfs -text
+installer/EXE/*.exe filter=lfs diff=lfs merge=lfs -text
 installer/Scripts/python_embedded/Lib/site-packages/**/llvmlite.dll filter=lfs diff=lfs merge=lfs -text
+installer/EXE/AudioPlay-Setup.exe filter=lfs diff=lfs merge=lfs -text
