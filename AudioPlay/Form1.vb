@@ -3,7 +3,7 @@ Imports System.IO.Pipes
 Imports System.Threading
 Imports NAudio.Wave
 Imports NAudio.Wave.SampleProviders
-Imports SoundTouch
+Imports SoundTouchSharp
 
 Imports Microsoft.Win32
 
@@ -3475,7 +3475,7 @@ Public Class Form1
         End Try
     End Sub
 
-    Private Sub SauvegarderParametres()
+    Public Sub SauvegarderParametres()
         Dim fichierParam = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "AudioPlay",
