@@ -255,19 +255,20 @@ Partial Public Class FormParametres
                         Select Case cle
                             Case "RepertoireParDefaut"
                                 RepertoireParDefaut = valeur
+                                ParametresGlobaux.repertoireParDefaut = valeur
                             Case "DernierRepertoireAjoutFichier"
                                 Try
-                                    Global.AudioPlay.Form1.dernierRepertoireAjoutFichier = valeur
+                                    ParametresGlobaux.dernierRepertoireAjoutFichier = valeur
                                 Catch ex As Exception
                                 End Try
                             Case "DernierRepertoireAjoutRepertoire"
                                 Try
-                                    Global.AudioPlay.Form1.dernierRepertoireAjoutRepertoire = valeur
+                                    ParametresGlobaux.dernierRepertoireAjoutRepertoire = valeur
                                 Catch ex As Exception
                                 End Try
                             Case "DernierRepertoirePlaylist"
                                 Try
-                                    Global.AudioPlay.Form1.dernierRepertoirePlaylist = valeur
+                                    ParametresGlobaux.dernierRepertoirePlaylist = valeur
                                 Catch ex As Exception
                                 End Try
                             Case "VolumeLecture", "Volume"
