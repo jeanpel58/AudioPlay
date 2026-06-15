@@ -2064,17 +2064,17 @@ Public Class FormDJ
             .Title = LanguageManager.GetString("DJ_Dialog_AddAudioFiles")
         }
             ' Utiliser le dernier répertoire spécifique pour l'ajout de fichiers
-            If Not String.IsNullOrEmpty(Global.AudioPlay.Form1.dernierRepertoireAjoutFichier) AndAlso Directory.Exists(Global.AudioPlay.Form1.dernierRepertoireAjoutFichier) Then
-                ofd.InitialDirectory = Global.AudioPlay.Form1.dernierRepertoireAjoutFichier
-            ElseIf Not String.IsNullOrEmpty(Global.AudioPlay.Form1.repertoireParDefaut) AndAlso Directory.Exists(Global.AudioPlay.Form1.repertoireParDefaut) Then
-                ofd.InitialDirectory = Global.AudioPlay.Form1.repertoireParDefaut
+            If Not String.IsNullOrEmpty(ParametresGlobaux.dernierRepertoireAjoutFichier) AndAlso Directory.Exists(ParametresGlobaux.dernierRepertoireAjoutFichier) Then
+                ofd.InitialDirectory = ParametresGlobaux.dernierRepertoireAjoutFichier
+            ElseIf Not String.IsNullOrEmpty(ParametresGlobaux.repertoireParDefaut) AndAlso Directory.Exists(ParametresGlobaux.repertoireParDefaut) Then
+                ofd.InitialDirectory = ParametresGlobaux.repertoireParDefaut
             End If
 
             If ofd.ShowDialog() = DialogResult.OK Then
                 If ofd.FileNames IsNot Nothing AndAlso ofd.FileNames.Length > 0 Then
-                    Global.AudioPlay.Form1.dernierRepertoireAjoutFichier = Path.GetDirectoryName(ofd.FileNames(0))
+                    ParametresGlobaux.dernierRepertoireAjoutFichier = Path.GetDirectoryName(ofd.FileNames(0))
                     Try
-                        Global.AudioPlay.Form1.SauvegarderParametres()
+                        Form1.SauvegarderParametres()
                     Catch
                     End Try
                 End If
@@ -2095,17 +2095,17 @@ Public Class FormDJ
             .ShowNewFolderButton = False
         }
             ' Utiliser le dernier répertoire spécifique pour l'ajout de répertoires
-            If Not String.IsNullOrEmpty(Global.AudioPlay.Form1.dernierRepertoireAjoutRepertoire) AndAlso Directory.Exists(Global.AudioPlay.Form1.dernierRepertoireAjoutRepertoire) Then
-                fbd.SelectedPath = Global.AudioPlay.Form1.dernierRepertoireAjoutRepertoire
-            ElseIf Not String.IsNullOrEmpty(Global.AudioPlay.Form1.repertoireParDefaut) AndAlso Directory.Exists(Global.AudioPlay.Form1.repertoireParDefaut) Then
-                fbd.SelectedPath = Global.AudioPlay.Form1.repertoireParDefaut
+            If Not String.IsNullOrEmpty(ParametresGlobaux.dernierRepertoireAjoutRepertoire) AndAlso Directory.Exists(ParametresGlobaux.dernierRepertoireAjoutRepertoire) Then
+                fbd.SelectedPath = ParametresGlobaux.dernierRepertoireAjoutRepertoire
+            ElseIf Not String.IsNullOrEmpty(ParametresGlobaux.repertoireParDefaut) AndAlso Directory.Exists(ParametresGlobaux.repertoireParDefaut) Then
+                fbd.SelectedPath = ParametresGlobaux.repertoireParDefaut
             End If
 
             If fbd.ShowDialog() = DialogResult.OK Then
                 ' Mémoriser et sauvegarder le répertoire choisi
-                Global.AudioPlay.Form1.dernierRepertoireAjoutRepertoire = fbd.SelectedPath
+                ParametresGlobaux.dernierRepertoireAjoutRepertoire = fbd.SelectedPath
                 Try
-                    Global.AudioPlay.Form1.SauvegarderParametres()
+                    Form1.SauvegarderParametres()
                 Catch
                 End Try
 
@@ -2167,18 +2167,18 @@ Public Class FormDJ
             .Title = LanguageManager.GetString("DJ_Dialog_OpenPlaylist")
         }
             ' Utiliser le dernier répertoire spécifique pour les opérations de playlist
-            If Not String.IsNullOrEmpty(Global.AudioPlay.Form1.dernierRepertoirePlaylist) AndAlso Directory.Exists(Global.AudioPlay.Form1.dernierRepertoirePlaylist) Then
-                ofd.InitialDirectory = Global.AudioPlay.Form1.dernierRepertoirePlaylist
-            ElseIf Not String.IsNullOrEmpty(Global.AudioPlay.Form1.repertoireParDefaut) AndAlso Directory.Exists(Global.AudioPlay.Form1.repertoireParDefaut) Then
-                ofd.InitialDirectory = Global.AudioPlay.Form1.repertoireParDefaut
+            If Not String.IsNullOrEmpty(ParametresGlobaux.dernierRepertoirePlaylist) AndAlso Directory.Exists(ParametresGlobaux.dernierRepertoirePlaylist) Then
+                ofd.InitialDirectory = ParametresGlobaux.dernierRepertoirePlaylist
+            ElseIf Not String.IsNullOrEmpty(ParametresGlobaux.repertoireParDefaut) AndAlso Directory.Exists(ParametresGlobaux.repertoireParDefaut) Then
+                ofd.InitialDirectory = ParametresGlobaux.repertoireParDefaut
             End If
 
             If ofd.ShowDialog() = DialogResult.OK Then
                 Try
                     ' Mémoriser le répertoire utilisé pour les playlists et sauvegarder les paramètres
-                    Global.AudioPlay.Form1.dernierRepertoirePlaylist = Path.GetDirectoryName(ofd.FileName)
+                    ParametresGlobaux.dernierRepertoirePlaylist = Path.GetDirectoryName(ofd.FileName)
                     Try
-                        Global.AudioPlay.Form1.SauvegarderParametres()
+                        Form1.SauvegarderParametres()
                     Catch
                     End Try
 
@@ -2223,18 +2223,18 @@ Public Class FormDJ
             .Title = LanguageManager.GetString("DJ_Dialog_SavePlaylist")
         }
             ' Utiliser le dernier répertoire spécifique pour les opérations de playlist
-            If Not String.IsNullOrEmpty(Global.AudioPlay.Form1.dernierRepertoirePlaylist) AndAlso Directory.Exists(Global.AudioPlay.Form1.dernierRepertoirePlaylist) Then
-                sfd.InitialDirectory = Global.AudioPlay.Form1.dernierRepertoirePlaylist
-            ElseIf Not String.IsNullOrEmpty(Global.AudioPlay.Form1.repertoireParDefaut) AndAlso Directory.Exists(Global.AudioPlay.Form1.repertoireParDefaut) Then
-                sfd.InitialDirectory = Global.AudioPlay.Form1.repertoireParDefaut
+            If Not String.IsNullOrEmpty(ParametresGlobaux.dernierRepertoirePlaylist) AndAlso Directory.Exists(ParametresGlobaux.dernierRepertoirePlaylist) Then
+                sfd.InitialDirectory = ParametresGlobaux.dernierRepertoirePlaylist
+            ElseIf Not String.IsNullOrEmpty(ParametresGlobaux.repertoireParDefaut) AndAlso Directory.Exists(ParametresGlobaux.repertoireParDefaut) Then
+                sfd.InitialDirectory = ParametresGlobaux.repertoireParDefaut
             End If
 
             If sfd.ShowDialog() = DialogResult.OK Then
                 Try
                     ' Mémoriser le répertoire utilisé pour les playlists et sauvegarder les paramètres
-                    Global.AudioPlay.Form1.dernierRepertoirePlaylist = Path.GetDirectoryName(sfd.FileName)
+                    ParametresGlobaux.dernierRepertoirePlaylist = Path.GetDirectoryName(sfd.FileName)
                     Try
-                        Global.AudioPlay.Form1.SauvegarderParametres()
+                        Form1.SauvegarderParametres()
                     Catch
                     End Try
 

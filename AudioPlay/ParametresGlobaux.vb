@@ -30,4 +30,10 @@ Public Module ParametresGlobaux
 
     ' Mode Mixeur DJ
     Public ModeMixeurDJ As Boolean = False ' Mode lecteur simple (False) ou mixeur DJ (True)
+
+    ' === Paramètres persistants globaux (répertoires utilisés) ===
+    Public repertoireParDefaut As String = ""
+    Public dernierRepertoireAjoutFichier As String = ""
+    Public dernierRepertoireAjoutRepertoire As String = ""
+    Public dernierRepertoirePlaylist As String = ""
 End Module
