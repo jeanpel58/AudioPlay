@@ -36,4 +36,8 @@ Public Module ParametresGlobaux
     Public dernierRepertoireAjoutFichier As String = ""
     Public dernierRepertoireAjoutRepertoire As String = ""
     Public dernierRepertoirePlaylist As String = ""
+    ' === Clés spécifiques au mode DJ (mémoire séparée) ===
+    Public dernierRepertoireAjoutFichier_DJ As String = ""
+    Public dernierRepertoireAjoutRepertoire_DJ As String = ""
+    Public dernierRepertoirePlaylist_DJ As String = ""
 End Module

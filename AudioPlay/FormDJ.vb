@@ -2064,7 +2064,10 @@ Public Class FormDJ
             .Title = LanguageManager.GetString("DJ_Dialog_AddAudioFiles")
         }
             ' Utiliser le dernier répertoire spécifique pour l'ajout de fichiers
-            If Not String.IsNullOrEmpty(ParametresGlobaux.dernierRepertoireAjoutFichier) AndAlso Directory.Exists(ParametresGlobaux.dernierRepertoireAjoutFichier) Then
+            ' Priorité : utiliser la mémoire DJ si présente, sinon la mémoire générale
+            If Not String.IsNullOrEmpty(ParametresGlobaux.dernierRepertoireAjoutFichier_DJ) AndAlso Directory.Exists(ParametresGlobaux.dernierRepertoireAjoutFichier_DJ) Then
+                ofd.InitialDirectory = ParametresGlobaux.dernierRepertoireAjoutFichier_DJ
+            ElseIf Not String.IsNullOrEmpty(ParametresGlobaux.dernierRepertoireAjoutFichier) AndAlso Directory.Exists(ParametresGlobaux.dernierRepertoireAjoutFichier) Then
                 ofd.InitialDirectory = ParametresGlobaux.dernierRepertoireAjoutFichier
             ElseIf Not String.IsNullOrEmpty(ParametresGlobaux.repertoireParDefaut) AndAlso Directory.Exists(ParametresGlobaux.repertoireParDefaut) Then
                 ofd.InitialDirectory = ParametresGlobaux.repertoireParDefaut
@@ -2072,7 +2075,10 @@ Public Class FormDJ
 
             If ofd.ShowDialog() = DialogResult.OK Then
                 If ofd.FileNames IsNot Nothing AndAlso ofd.FileNames.Length > 0 Then
-                    ParametresGlobaux.dernierRepertoireAjoutFichier = Path.GetDirectoryName(ofd.FileNames(0))
+                    ' Mémoriser le choix dans la mémoire DJ et la mémoire générale
+                    Dim chosen = Path.GetDirectoryName(ofd.FileNames(0))
+                    ParametresGlobaux.dernierRepertoireAjoutFichier_DJ = chosen
+                    ParametresGlobaux.dernierRepertoireAjoutFichier = chosen
                     Try
                         Form1.SauvegarderParametres()
                     Catch
@@ -2095,7 +2101,9 @@ Public Class FormDJ
             .ShowNewFolderButton = False
         }
             ' Utiliser le dernier répertoire spécifique pour l'ajout de répertoires
-            If Not String.IsNullOrEmpty(ParametresGlobaux.dernierRepertoireAjoutRepertoire) AndAlso Directory.Exists(ParametresGlobaux.dernierRepertoireAjoutRepertoire) Then
+            If Not String.IsNullOrEmpty(ParametresGlobaux.dernierRepertoireAjoutRepertoire_DJ) AndAlso Directory.Exists(ParametresGlobaux.dernierRepertoireAjoutRepertoire_DJ) Then
+                fbd.SelectedPath = ParametresGlobaux.dernierRepertoireAjoutRepertoire_DJ
+            ElseIf Not String.IsNullOrEmpty(ParametresGlobaux.dernierRepertoireAjoutRepertoire) AndAlso Directory.Exists(ParametresGlobaux.dernierRepertoireAjoutRepertoire) Then
                 fbd.SelectedPath = ParametresGlobaux.dernierRepertoireAjoutRepertoire
             ElseIf Not String.IsNullOrEmpty(ParametresGlobaux.repertoireParDefaut) AndAlso Directory.Exists(ParametresGlobaux.repertoireParDefaut) Then
                 fbd.SelectedPath = ParametresGlobaux.repertoireParDefaut
@@ -2103,7 +2111,9 @@ Public Class FormDJ
 
             If fbd.ShowDialog() = DialogResult.OK Then
                 ' Mémoriser et sauvegarder le répertoire choisi
-                ParametresGlobaux.dernierRepertoireAjoutRepertoire = fbd.SelectedPath
+                Dim chosen = fbd.SelectedPath
+                ParametresGlobaux.dernierRepertoireAjoutRepertoire_DJ = chosen
+                ParametresGlobaux.dernierRepertoireAjoutRepertoire = chosen
                 Try
                     Form1.SauvegarderParametres()
                 Catch
@@ -2167,7 +2177,10 @@ Public Class FormDJ
             .Title = LanguageManager.GetString("DJ_Dialog_OpenPlaylist")
         }
             ' Utiliser le dernier répertoire spécifique pour les opérations de playlist
-            If Not String.IsNullOrEmpty(ParametresGlobaux.dernierRepertoirePlaylist) AndAlso Directory.Exists(ParametresGlobaux.dernierRepertoirePlaylist) Then
+            ' Priorité : utiliser la mémoire DJ si présente, sinon la mémoire générale
+            If Not String.IsNullOrEmpty(ParametresGlobaux.dernierRepertoirePlaylist_DJ) AndAlso Directory.Exists(ParametresGlobaux.dernierRepertoirePlaylist_DJ) Then
+                ofd.InitialDirectory = ParametresGlobaux.dernierRepertoirePlaylist_DJ
+            ElseIf Not String.IsNullOrEmpty(ParametresGlobaux.dernierRepertoirePlaylist) AndAlso Directory.Exists(ParametresGlobaux.dernierRepertoirePlaylist) Then
                 ofd.InitialDirectory = ParametresGlobaux.dernierRepertoirePlaylist
             ElseIf Not String.IsNullOrEmpty(ParametresGlobaux.repertoireParDefaut) AndAlso Directory.Exists(ParametresGlobaux.repertoireParDefaut) Then
                 ofd.InitialDirectory = ParametresGlobaux.repertoireParDefaut
@@ -2176,7 +2189,9 @@ Public Class FormDJ
             If ofd.ShowDialog() = DialogResult.OK Then
                 Try
                     ' Mémoriser le répertoire utilisé pour les playlists et sauvegarder les paramètres
-                    ParametresGlobaux.dernierRepertoirePlaylist = Path.GetDirectoryName(ofd.FileName)
+                    Dim chosen = Path.GetDirectoryName(ofd.FileName)
+                    ParametresGlobaux.dernierRepertoirePlaylist_DJ = chosen
+                    ParametresGlobaux.dernierRepertoirePlaylist = chosen
                     Try
                         Form1.SauvegarderParametres()
                     Catch
@@ -2223,7 +2238,9 @@ Public Class FormDJ
             .Title = LanguageManager.GetString("DJ_Dialog_SavePlaylist")
         }
             ' Utiliser le dernier répertoire spécifique pour les opérations de playlist
-            If Not String.IsNullOrEmpty(ParametresGlobaux.dernierRepertoirePlaylist) AndAlso Directory.Exists(ParametresGlobaux.dernierRepertoirePlaylist) Then
+            If Not String.IsNullOrEmpty(ParametresGlobaux.dernierRepertoirePlaylist_DJ) AndAlso Directory.Exists(ParametresGlobaux.dernierRepertoirePlaylist_DJ) Then
+                sfd.InitialDirectory = ParametresGlobaux.dernierRepertoirePlaylist_DJ
+            ElseIf Not String.IsNullOrEmpty(ParametresGlobaux.dernierRepertoirePlaylist) AndAlso Directory.Exists(ParametresGlobaux.dernierRepertoirePlaylist) Then
                 sfd.InitialDirectory = ParametresGlobaux.dernierRepertoirePlaylist
             ElseIf Not String.IsNullOrEmpty(ParametresGlobaux.repertoireParDefaut) AndAlso Directory.Exists(ParametresGlobaux.repertoireParDefaut) Then
                 sfd.InitialDirectory = ParametresGlobaux.repertoireParDefaut
@@ -2232,7 +2249,9 @@ Public Class FormDJ
             If sfd.ShowDialog() = DialogResult.OK Then
                 Try
                     ' Mémoriser le répertoire utilisé pour les playlists et sauvegarder les paramètres
-                    ParametresGlobaux.dernierRepertoirePlaylist = Path.GetDirectoryName(sfd.FileName)
+                    Dim chosen = Path.GetDirectoryName(sfd.FileName)
+                    ParametresGlobaux.dernierRepertoirePlaylist_DJ = chosen
+                    ParametresGlobaux.dernierRepertoirePlaylist = chosen
                     Try
                         Form1.SauvegarderParametres()
                     Catch
