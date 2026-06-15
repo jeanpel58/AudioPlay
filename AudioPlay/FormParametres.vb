@@ -258,17 +258,17 @@ Partial Public Class FormParametres
                             Case "DernierRepertoireAjoutFichier"
                                 Try
                                     Global.AudioPlay.Form1.dernierRepertoireAjoutFichier = valeur
-                                Catch
+                                Catch ex As Exception
                                 End Try
                             Case "DernierRepertoireAjoutRepertoire"
                                 Try
                                     Global.AudioPlay.Form1.dernierRepertoireAjoutRepertoire = valeur
-                                Catch
+                                Catch ex As Exception
                                 End Try
                             Case "DernierRepertoirePlaylist"
                                 Try
                                     Global.AudioPlay.Form1.dernierRepertoirePlaylist = valeur
-                                Catch
+                                Catch ex As Exception
                                 End Try
                             Case "VolumeLecture", "Volume"
                                 Dim v As Integer = 20

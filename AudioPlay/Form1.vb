@@ -137,9 +137,10 @@ Public Class Form1
     ' === Paramètres persistants ===
     Public Shared repertoireParDefaut As String = ""
     ' Derniers répertoires utilisés (persistants)
-    Public Shared dernierRepertoireAjoutFichier As String = ""   ' Button_Ajout - option Ajouter un fichier
+    Public Shared dernierRepertoireAjout As String = ""       ' Button_Ajout (AjouterFichier / AjouterRepertoire)
+    Public Shared dernierRepertoireAjoutFichier As String = "" ' Button_Ajout - option Ajouter un fichier
     Public Shared dernierRepertoireAjoutRepertoire As String = "" ' Button_Ajout - option Ajouter un répertoire
-    Public Shared dernierRepertoirePlaylist As String = ""       ' Button_Playlist (OuvrirPlaylist / EnregistrerPlaylist)
+    Public Shared dernierRepertoirePlaylist As String = ""    ' Button_Playlist (OuvrirPlaylist / EnregistrerPlaylist)
     Private lectureEnContinu As Boolean = True
     Private dernierVolume As Single = 0.5F  ' Maintenant dans Son_Ajustement.txt
     Private dernieresBasses As Single = 0.0F  ' Maintenant dans Son_Ajustement.txt
@@ -928,13 +929,13 @@ Public Class Form1
     ' ========================================
     ' LECTURE AUDIO AVEC ÉGALISEUR
     ' ========================================
-    Private Async Function JouerItemSelectionne() As Task
+    Private Async Sub JouerItemSelectionne()
         ' Réinitialiser le compteur de tentatives au début d'une nouvelle demande de lecture
         tentativesLectureFichier = 0
-        Await JouerItemSelectionneAvecTentatives()
-    End Function
+        JouerItemSelectionneAvecTentatives()
+    End Sub
 
-    Private Async Function JouerItemSelectionneAvecTentatives() As Task
+    Private Async Sub JouerItemSelectionneAvecTentatives()
         ' Protection contre les boucles infinies : si tous les fichiers sont manquants
         If tentativesLectureFichier >= ListView1.Items.Count Then
             System.Diagnostics.Debug.WriteLine("Tous les fichiers de la liste semblent manquants. Arrêt de la lecture.")
@@ -1513,7 +1514,7 @@ Public Class Form1
 
             ' Réinitialiser le compteur de tentatives avant de lancer la lecture
             tentativesLectureFichier = 0
-            Await JouerItemSelectionne()
+            JouerItemSelectionne()
 
         Finally
             gardeReentrance = False
@@ -2055,7 +2056,7 @@ Public Class Form1
 
             If ofd.ShowDialog() = DialogResult.OK Then
                 If ofd.FileNames IsNot Nothing AndAlso ofd.FileNames.Length > 0 Then
-                    dernierRepertoireAjoutFichier = Path.GetDirectoryName(ofd.FileNames(0))
+                    dernierRepertoireAjout = Path.GetDirectoryName(ofd.FileNames(0))
                     SauvegarderParametres()
                 End If
 
@@ -3400,10 +3401,8 @@ Public Class Form1
             For Each ligne In lignes
                 If ligne.StartsWith("RepertoireParDefaut=") Then
                     repertoireParDefaut = ligne.Substring("RepertoireParDefaut=".Length)
-                ElseIf ligne.StartsWith("DernierRepertoireAjoutFichier=") Then
-                    dernierRepertoireAjoutFichier = ligne.Substring("DernierRepertoireAjoutFichier=".Length)
-                ElseIf ligne.StartsWith("DernierRepertoireAjoutRepertoire=") Then
-                    dernierRepertoireAjoutRepertoire = ligne.Substring("DernierRepertoireAjoutRepertoire=".Length)
+                ElseIf ligne.StartsWith("DernierRepertoireAjout=") Then
+                    dernierRepertoireAjout = ligne.Substring("DernierRepertoireAjout=".Length)
                 ElseIf ligne.StartsWith("DernierRepertoirePlaylist=") Then
                     dernierRepertoirePlaylist = ligne.Substring("DernierRepertoirePlaylist=".Length)
                 ElseIf ligne.StartsWith("LectureEnContinu=") Then
@@ -3475,7 +3474,7 @@ Public Class Form1
         End Try
     End Sub
 
-    Public Sub SauvegarderParametres()
+    Private Sub SauvegarderParametres()
         Dim fichierParam = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "AudioPlay",
