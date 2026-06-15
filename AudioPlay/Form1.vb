@@ -3474,7 +3474,7 @@ Public Class Form1
         End Try
     End Sub
 
-    Private Sub SauvegarderParametres()
+    Public Sub SauvegarderParametres()
         Dim fichierParam = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "AudioPlay",
