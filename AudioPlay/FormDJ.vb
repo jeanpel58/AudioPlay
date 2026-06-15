@@ -2160,8 +2160,19 @@ Public Class FormDJ
             .Filter = LanguageManager.GetString("DJ_Filter_Playlists"),
             .Title = LanguageManager.GetString("DJ_Dialog_OpenPlaylist")
         }
+            ' Utiliser le dernier répertoire spécifique pour les opérations de playlist
+            If Not String.IsNullOrEmpty(Form1.dernierRepertoirePlaylist) AndAlso Directory.Exists(Form1.dernierRepertoirePlaylist) Then
+                ofd.InitialDirectory = Form1.dernierRepertoirePlaylist
+            ElseIf Not String.IsNullOrEmpty(Form1.repertoireParDefaut) AndAlso Directory.Exists(Form1.repertoireParDefaut) Then
+                ofd.InitialDirectory = Form1.repertoireParDefaut
+            End If
+
             If ofd.ShowDialog() = DialogResult.OK Then
                 Try
+                    ' Mémoriser le répertoire utilisé pour les playlists et sauvegarder les paramètres
+                    Form1.dernierRepertoirePlaylist = Path.GetDirectoryName(ofd.FileName)
+                    Form1.SauvegarderParametres()
+
                     Dim lignes = File.ReadAllLines(ofd.FileName)
                     Dim bpmEnAttente As String = ""
 
@@ -2202,8 +2213,19 @@ Public Class FormDJ
             .DefaultExt = "m3u",
             .Title = LanguageManager.GetString("DJ_Dialog_SavePlaylist")
         }
+            ' Utiliser le dernier répertoire spécifique pour les opérations de playlist
+            If Not String.IsNullOrEmpty(Form1.dernierRepertoirePlaylist) AndAlso Directory.Exists(Form1.dernierRepertoirePlaylist) Then
+                sfd.InitialDirectory = Form1.dernierRepertoirePlaylist
+            ElseIf Not String.IsNullOrEmpty(Form1.repertoireParDefaut) AndAlso Directory.Exists(Form1.repertoireParDefaut) Then
+                sfd.InitialDirectory = Form1.repertoireParDefaut
+            End If
+
             If sfd.ShowDialog() = DialogResult.OK Then
                 Try
+                    ' Mémoriser le répertoire utilisé pour les playlists et sauvegarder les paramètres
+                    Form1.dernierRepertoirePlaylist = Path.GetDirectoryName(sfd.FileName)
+                    Form1.SauvegarderParametres()
+
                     Dim lignes As New List(Of String)()
 
                     For Each item As ListViewItem In ListViewPlaylist.Items
