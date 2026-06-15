@@ -135,10 +135,11 @@ Public Class Form1
     ' Initialisation de l'intervalle dans Form1_Load
 
     ' === Paramètres persistants ===
-    Private repertoireParDefaut As String = ""
+    Public Shared repertoireParDefaut As String = ""
     ' Derniers répertoires utilisés (persistants)
-    Private dernierRepertoireAjout As String = ""       ' Button_Ajout (AjouterFichier / AjouterRepertoire)
-    Private dernierRepertoirePlaylist As String = ""    ' Button_Playlist (OuvrirPlaylist / EnregistrerPlaylist)
+    Public Shared dernierRepertoireAjoutFichier As String = ""   ' Button_Ajout - option Ajouter un fichier
+    Public Shared dernierRepertoireAjoutRepertoire As String = "" ' Button_Ajout - option Ajouter un répertoire
+    Public Shared dernierRepertoirePlaylist As String = ""       ' Button_Playlist (OuvrirPlaylist / EnregistrerPlaylist)
     Private lectureEnContinu As Boolean = True
     Private dernierVolume As Single = 0.5F  ' Maintenant dans Son_Ajustement.txt
     Private dernieresBasses As Single = 0.0F  ' Maintenant dans Son_Ajustement.txt
@@ -2046,15 +2047,15 @@ Public Class Form1
             .Title = LanguageManager.GetString("SelectAudioFiles")
         }
             ' Utiliser le dernier répertoire spécifique pour l'ajout de fichiers
-            If Not String.IsNullOrEmpty(dernierRepertoireAjout) AndAlso Directory.Exists(dernierRepertoireAjout) Then
-                ofd.InitialDirectory = dernierRepertoireAjout
+            If Not String.IsNullOrEmpty(dernierRepertoireAjoutFichier) AndAlso Directory.Exists(dernierRepertoireAjoutFichier) Then
+                ofd.InitialDirectory = dernierRepertoireAjoutFichier
             ElseIf Not String.IsNullOrEmpty(repertoireParDefaut) AndAlso Directory.Exists(repertoireParDefaut) Then
                 ofd.InitialDirectory = repertoireParDefaut
             End If
 
             If ofd.ShowDialog() = DialogResult.OK Then
                 If ofd.FileNames IsNot Nothing AndAlso ofd.FileNames.Length > 0 Then
-                    dernierRepertoireAjout = Path.GetDirectoryName(ofd.FileNames(0))
+                    dernierRepertoireAjoutFichier = Path.GetDirectoryName(ofd.FileNames(0))
                     SauvegarderParametres()
                 End If
 
@@ -2074,14 +2075,14 @@ Public Class Form1
             .ShowNewFolderButton = False
         }
             ' Utiliser le dernier répertoire spécifique pour l'ajout de répertoires
-            If Not String.IsNullOrEmpty(dernierRepertoireAjout) AndAlso Directory.Exists(dernierRepertoireAjout) Then
-                fbd.SelectedPath = dernierRepertoireAjout
+            If Not String.IsNullOrEmpty(dernierRepertoireAjoutRepertoire) AndAlso Directory.Exists(dernierRepertoireAjoutRepertoire) Then
+                fbd.SelectedPath = dernierRepertoireAjoutRepertoire
             ElseIf Not String.IsNullOrEmpty(repertoireParDefaut) AndAlso Directory.Exists(repertoireParDefaut) Then
                 fbd.SelectedPath = repertoireParDefaut
             End If
 
             If fbd.ShowDialog() = DialogResult.OK Then
-                dernierRepertoireAjout = fbd.SelectedPath
+                dernierRepertoireAjoutRepertoire = fbd.SelectedPath
                 SauvegarderParametres()
 
                 Dim extensions = {".mp3", ".wav", ".flac", ".wma", ".aac", ".ogg"}
@@ -3399,8 +3400,10 @@ Public Class Form1
             For Each ligne In lignes
                 If ligne.StartsWith("RepertoireParDefaut=") Then
                     repertoireParDefaut = ligne.Substring("RepertoireParDefaut=".Length)
-                ElseIf ligne.StartsWith("DernierRepertoireAjout=") Then
-                    dernierRepertoireAjout = ligne.Substring("DernierRepertoireAjout=".Length)
+                ElseIf ligne.StartsWith("DernierRepertoireAjoutFichier=") Then
+                    dernierRepertoireAjoutFichier = ligne.Substring("DernierRepertoireAjoutFichier=".Length)
+                ElseIf ligne.StartsWith("DernierRepertoireAjoutRepertoire=") Then
+                    dernierRepertoireAjoutRepertoire = ligne.Substring("DernierRepertoireAjoutRepertoire=".Length)
                 ElseIf ligne.StartsWith("DernierRepertoirePlaylist=") Then
                     dernierRepertoirePlaylist = ligne.Substring("DernierRepertoirePlaylist=".Length)
                 ElseIf ligne.StartsWith("LectureEnContinu=") Then
@@ -3487,7 +3490,8 @@ Public Class Form1
             ' Volume, Basses, Aigues sont maintenant dans Son_Ajustement.txt (fichier séparé)
             Dim lignes As New List(Of String) From {
                 $"RepertoireParDefaut={repertoireParDefaut}",
-                $"DernierRepertoireAjout={dernierRepertoireAjout}",
+                $"DernierRepertoireAjoutFichier={dernierRepertoireAjoutFichier}",
+                $"DernierRepertoireAjoutRepertoire={dernierRepertoireAjoutRepertoire}",
                 $"DernierRepertoirePlaylist={dernierRepertoirePlaylist}",
                 $"LectureEnContinu={lectureEnContinu}",
                 $"NormalisationVolume={normalisationVolumeActive}",

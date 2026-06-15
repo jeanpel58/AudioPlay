@@ -2063,10 +2063,23 @@ Public Class FormDJ
             .Multiselect = True,
             .Title = LanguageManager.GetString("DJ_Dialog_AddAudioFiles")
         }
+            ' Utiliser le dernier répertoire spécifique pour l'ajout de fichiers DJ
+            If Not String.IsNullOrEmpty(Form1.dernierRepertoireAjoutFichier) AndAlso Directory.Exists(Form1.dernierRepertoireAjoutFichier) Then
+                ofd.InitialDirectory = Form1.dernierRepertoireAjoutFichier
+            ElseIf Not String.IsNullOrEmpty(Form1.repertoireParDefaut) AndAlso Directory.Exists(Form1.repertoireParDefaut) Then
+                ofd.InitialDirectory = Form1.repertoireParDefaut
+            End If
+
             If ofd.ShowDialog() = DialogResult.OK Then
                 For Each fichier In ofd.FileNames
                     AjouterFichierAListeDJ(fichier)
                 Next
+                ' Mémoriser le répertoire utilisé
+                If ofd.FileNames IsNot Nothing AndAlso ofd.FileNames.Length > 0 Then
+                    Form1.dernierRepertoireAjoutFichier = Path.GetDirectoryName(ofd.FileNames(0))
+                    Form1.SauvegarderParametres()
+                End If
+
                 MettreAJourNumerotationDJ()
                 SauvegarderPlaylistDJ()
             End If
@@ -2079,7 +2092,17 @@ Public Class FormDJ
             .Description = LanguageManager.GetString("DJ_Dialog_SelectFolder"),
             .ShowNewFolderButton = False
         }
+            ' Utiliser le dernier répertoire spécifique pour l'ajout de répertoires DJ
+            If Not String.IsNullOrEmpty(Form1.dernierRepertoireAjoutRepertoire) AndAlso Directory.Exists(Form1.dernierRepertoireAjoutRepertoire) Then
+                fbd.SelectedPath = Form1.dernierRepertoireAjoutRepertoire
+            ElseIf Not String.IsNullOrEmpty(Form1.repertoireParDefaut) AndAlso Directory.Exists(Form1.repertoireParDefaut) Then
+                fbd.SelectedPath = Form1.repertoireParDefaut
+            End If
+
             If fbd.ShowDialog() = DialogResult.OK Then
+                ' Mémoriser le répertoire utilisé
+                Form1.dernierRepertoireAjoutRepertoire = fbd.SelectedPath
+                Form1.SauvegarderParametres()
                 Dim extensions = {".mp3", ".wav", ".flac", ".wma", ".aac", ".ogg"}
                 Dim fichiers = Directory.GetFiles(fbd.SelectedPath, "*.*", SearchOption.AllDirectories) _
                     .Where(Function(f) extensions.Contains(Path.GetExtension(f).ToLower()))
