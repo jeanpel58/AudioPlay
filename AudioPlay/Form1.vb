@@ -2083,7 +2083,12 @@ Public Class Form1
             End If
 
             If fbd.ShowDialog() = DialogResult.OK Then
-                dernierRepertoireAjoutRepertoire = fbd.SelectedPath
+                Dim chosen = fbd.SelectedPath
+                dernierRepertoireAjoutRepertoire = chosen
+                Try
+                    ParametresGlobaux.dernierRepertoireAjoutRepertoire = chosen
+                Catch
+                End Try
                 SauvegarderParametres()
 
                 Dim extensions = {".mp3", ".wav", ".flac", ".wma", ".aac", ".ogg"}
