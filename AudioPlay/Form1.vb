@@ -928,13 +928,13 @@ Public Class Form1
     ' ========================================
     ' LECTURE AUDIO AVEC ÉGALISEUR
     ' ========================================
-    Private Async Sub JouerItemSelectionne()
+    Private Async Function JouerItemSelectionne() As Task
         ' Réinitialiser le compteur de tentatives au début d'une nouvelle demande de lecture
         tentativesLectureFichier = 0
-        JouerItemSelectionneAvecTentatives()
-    End Sub
+        Await JouerItemSelectionneAvecTentatives()
+    End Function
 
-    Private Async Sub JouerItemSelectionneAvecTentatives()
+    Private Async Function JouerItemSelectionneAvecTentatives() As Task
         ' Protection contre les boucles infinies : si tous les fichiers sont manquants
         If tentativesLectureFichier >= ListView1.Items.Count Then
             System.Diagnostics.Debug.WriteLine("Tous les fichiers de la liste semblent manquants. Arrêt de la lecture.")
@@ -1513,7 +1513,7 @@ Public Class Form1
 
             ' Réinitialiser le compteur de tentatives avant de lancer la lecture
             tentativesLectureFichier = 0
-            JouerItemSelectionne()
+            Await JouerItemSelectionne()
 
         Finally
             gardeReentrance = False
