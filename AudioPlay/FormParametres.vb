@@ -1,4 +1,4 @@
-﻿Imports System.IO
+Imports System.IO
 Imports System.ComponentModel
 Imports System.Linq
 
@@ -255,6 +255,21 @@ Partial Public Class FormParametres
                         Select Case cle
                             Case "RepertoireParDefaut"
                                 RepertoireParDefaut = valeur
+                            Case "DernierRepertoireAjoutFichier"
+                                Try
+                                    Global.AudioPlay.Form1.dernierRepertoireAjoutFichier = valeur
+                                Catch
+                                End Try
+                            Case "DernierRepertoireAjoutRepertoire"
+                                Try
+                                    Global.AudioPlay.Form1.dernierRepertoireAjoutRepertoire = valeur
+                                Catch
+                                End Try
+                            Case "DernierRepertoirePlaylist"
+                                Try
+                                    Global.AudioPlay.Form1.dernierRepertoirePlaylist = valeur
+                                Catch
+                                End Try
                             Case "VolumeLecture", "Volume"
                                 Dim v As Integer = 20
                                 If Integer.TryParse(valeur, v) Then
