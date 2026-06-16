@@ -140,6 +140,7 @@ Public Class Form1
     Public Shared dernierRepertoireAjout As String = ""       ' Button_Ajout (AjouterFichier / AjouterRepertoire)
     Public Shared dernierRepertoireAjoutFichier As String = "" ' Button_Ajout - option Ajouter un fichier
     Public Shared dernierRepertoireAjoutRepertoire As String = "" ' Button_Ajout - option Ajouter un répertoire
+    Public Shared premierOuvertureAjoutRepertoire As Boolean = True
     Public Shared dernierRepertoirePlaylist As String = ""    ' Button_Playlist (OuvrirPlaylist / EnregistrerPlaylist)
     Private lectureEnContinu As Boolean = True
     Private dernierVolume As Single = 0.5F  ' Maintenant dans Son_Ajustement.txt
@@ -627,6 +628,31 @@ Public Class Form1
     ' FORM LOAD
     ' ========================================
     Private Async Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        ' === Charger les paramètres et effectuer un nettoyage des temporaires restants au démarrage ===
+        Try
+            ' Charger rapidement les paramètres pour connaître les chemins à nettoyer
+            Dim fp As New FormParametres()
+            Try
+                fp.ChargerParametresAvantDemarrage()
+            Catch
+            End Try
+
+            ' Nettoyer les dossiers .AudioPlayTmp_* dans les emplacements connus
+            Try
+                ParametresGlobaux.SupprimerTempRestantsDans(ParametresGlobaux.repertoireParDefaut)
+            Catch
+            End Try
+            Try
+                ParametresGlobaux.SupprimerTempRestantsDans(ParametresGlobaux.dernierRepertoireAjoutRepertoire)
+            Catch
+            End Try
+            Try
+                ParametresGlobaux.SupprimerTempRestantsDans(ParametresGlobaux.dernierRepertoireAjoutRepertoire_DJ)
+            Catch
+            End Try
+        Catch
+        End Try
+
         ' === Vérifier le Mode Mixeur DJ ===
         If ParametresGlobaux.ModeMixeurDJ Then
             ' L'utilisateur a activé le Mode DJ : afficher FormDJ au lieu de Form1
@@ -1846,7 +1872,8 @@ Public Class Form1
     Private Sub OuvrirPlaylist()
         Using ofd As New OpenFileDialog With {
             .Filter = LanguageManager.GetString("PlaylistFilesFilter"),
-            .Title = LanguageManager.GetString("OpenPlaylist")
+            .Title = LanguageManager.GetString("OpenPlaylist"),
+            .RestoreDirectory = True
         }
             ' Utiliser le dernier répertoire spécifique pour les opérations de playlist
             If Not String.IsNullOrEmpty(dernierRepertoirePlaylist) AndAlso Directory.Exists(dernierRepertoirePlaylist) Then
@@ -1857,6 +1884,12 @@ Public Class Form1
 
             If ofd.ShowDialog() = DialogResult.OK Then
                 dernierRepertoirePlaylist = Path.GetDirectoryName(ofd.FileName)
+                ' Écrire dans ParametresGlobaux uniquement la mémoire simple (ne pas laisser FormDJ l'écraser)
+                Try
+                    ParametresGlobaux.dernierRepertoirePlaylist_Simple = dernierRepertoirePlaylist
+                    ParametresGlobauxHelpers.EcrireCleParametres("DernierRepertoirePlaylist", dernierRepertoirePlaylist)
+                Catch
+                End Try
                 SauvegarderParametres()
 
                 ' Ajouter la playlist à la suite de la liste actuelle
@@ -2045,18 +2078,24 @@ Public Class Form1
         Using ofd As New OpenFileDialog With {
             .Filter = LanguageManager.GetString("AudioFilesFilter"),
             .Multiselect = True,
-            .Title = LanguageManager.GetString("SelectAudioFiles")
+            .Title = LanguageManager.GetString("SelectAudioFiles"),
+            .RestoreDirectory = True
         }
             ' Utiliser le dernier répertoire spécifique pour l'ajout de fichiers
-            If Not String.IsNullOrEmpty(dernierRepertoireAjoutFichier) AndAlso Directory.Exists(dernierRepertoireAjoutFichier) Then
-                ofd.InitialDirectory = dernierRepertoireAjoutFichier
-            ElseIf Not String.IsNullOrEmpty(repertoireParDefaut) AndAlso Directory.Exists(repertoireParDefaut) Then
-                ofd.InitialDirectory = repertoireParDefaut
+            If Not String.IsNullOrEmpty(ParametresGlobaux.dernierRepertoireAjoutFichier) AndAlso Directory.Exists(ParametresGlobaux.dernierRepertoireAjoutFichier) Then
+                ofd.InitialDirectory = ParametresGlobaux.dernierRepertoireAjoutFichier
+            ElseIf Not String.IsNullOrEmpty(ParametresGlobaux.repertoireParDefaut) AndAlso Directory.Exists(ParametresGlobaux.repertoireParDefaut) Then
+                ofd.InitialDirectory = ParametresGlobaux.repertoireParDefaut
             End If
+            ofd.RestoreDirectory = True
 
             If ofd.ShowDialog() = DialogResult.OK Then
                 If ofd.FileNames IsNot Nothing AndAlso ofd.FileNames.Length > 0 Then
-                    dernierRepertoireAjout = Path.GetDirectoryName(ofd.FileNames(0))
+                    Dim chosen = Path.GetDirectoryName(ofd.FileNames(0))
+                    Try
+                        ParametresGlobaux.dernierRepertoireAjoutFichier = chosen
+                    Catch
+                    End Try
                     SauvegarderParametres()
                 End If
 
@@ -2075,21 +2114,98 @@ Public Class Form1
             .Description = LanguageManager.GetString("SelectFolder"),
             .ShowNewFolderButton = False
         }
-            ' Utiliser le dernier répertoire spécifique pour l'ajout de répertoires
-            If Not String.IsNullOrEmpty(dernierRepertoireAjoutRepertoire) AndAlso Directory.Exists(dernierRepertoireAjoutRepertoire) Then
-                fbd.SelectedPath = dernierRepertoireAjoutRepertoire
-            ElseIf Not String.IsNullOrEmpty(repertoireParDefaut) AndAlso Directory.Exists(repertoireParDefaut) Then
-                fbd.SelectedPath = repertoireParDefaut
-            End If
+            ' Déterminer de façon déterministe le répertoire d'ouverture :
+            ' 1) si l'utilisateur a précédemment choisi un dossier exact (dernierRepertoireAjoutRepertoireChoisi),
+            '    ouvrir dans le parent direct de ce dossier;
+            ' 2) sinon, si un parent déjà enregistré existe (dernierRepertoireAjoutRepertoire), l'utiliser tel quel;
+            ' 3) sinon utiliser repertoireParDefaut.
+            Try
+                Dim initialPath As String = Nothing
+                If Not String.IsNullOrEmpty(ParametresGlobaux.dernierRepertoireAjoutRepertoireChoisi) AndAlso Directory.Exists(ParametresGlobaux.dernierRepertoireAjoutRepertoireChoisi) Then
+                    Dim parent = Directory.GetParent(ParametresGlobaux.dernierRepertoireAjoutRepertoireChoisi)
+                    If parent IsNot Nothing AndAlso Directory.Exists(parent.FullName) Then
+                        initialPath = parent.FullName
+                    End If
+                End If
+                If String.IsNullOrEmpty(initialPath) AndAlso Not String.IsNullOrEmpty(ParametresGlobaux.dernierRepertoireAjoutRepertoire) AndAlso Directory.Exists(ParametresGlobaux.dernierRepertoireAjoutRepertoire) Then
+                    initialPath = ParametresGlobaux.dernierRepertoireAjoutRepertoire
+                End If
+                If String.IsNullOrEmpty(initialPath) AndAlso Not String.IsNullOrEmpty(repertoireParDefaut) AndAlso Directory.Exists(repertoireParDefaut) Then
+                    initialPath = repertoireParDefaut
+                End If
+                If Not String.IsNullOrEmpty(initialPath) Then
+                    fbd.SelectedPath = initialPath
+                End If
+            Catch
+                ' Ignorer et laisser FolderBrowserDialog choisir par défaut
+            End Try
+
+            ' Préserver le répertoire courant pour éviter que FolderBrowserDialog change le WorkingDirectory
+            Dim cwd = Environment.CurrentDirectory
+            ' Contournement : créer un dossier temporaire DANS le parent voulu et ouvrir le dialogue dessus.
+            ' Certaines versions de FolderBrowserDialog ignorent SelectedPath ; en ouvrant un dossier réel
+            ' créé dans le parent voulu on force l'explorateur à afficher ce parent.
+            Dim tmpFolder As String = Nothing
+            Try
+                If Not String.IsNullOrEmpty(fbd.SelectedPath) AndAlso Directory.Exists(fbd.SelectedPath) Then
+                    Try
+                        tmpFolder = Path.Combine(fbd.SelectedPath, ".AudioPlayTmp_" & Guid.NewGuid().ToString("N"))
+                        Directory.CreateDirectory(tmpFolder)
+                        fbd.SelectedPath = tmpFolder
+                        Environment.CurrentDirectory = tmpFolder
+                    Catch
+                        tmpFolder = Nothing
+                    End Try
+                End If
+            Catch
+            End Try
 
             If fbd.ShowDialog() = DialogResult.OK Then
                 Dim chosen = fbd.SelectedPath
-                dernierRepertoireAjoutRepertoire = chosen
+                ' Enregistrer le parent du répertoire choisi afin qu'au prochain démarrage
+                ' le dialogue s'ouvre dans le répertoire précédent et non dans celui choisi.
+                ' Garder l'avant-dernier pour restaurer l'ouverture au dossier parent
                 Try
-                    ParametresGlobaux.dernierRepertoireAjoutRepertoire = chosen
+                    ParametresGlobaux.avantDernierRepertoireAjoutRepertoire = ParametresGlobaux.dernierRepertoireAjoutRepertoire
+                Catch
+                End Try
+                ' Conserver aussi le répertoire choisi (non transformé)
+                Try
+                    ParametresGlobaux.dernierRepertoireAjoutRepertoireChoisi = chosen
+                Catch
+                End Try
+
+                Dim toSave As String = chosen
+                Try
+                    Dim parent = Directory.GetParent(chosen)
+                    If parent IsNot Nothing AndAlso Directory.Exists(parent.FullName) Then
+                        toSave = parent.FullName
+                    End If
+                Catch
+                    toSave = chosen
+                End Try
+
+                Try
+                    ParametresGlobaux.dernierRepertoireAjoutRepertoire = toSave
+                Catch
+                End Try
+                ' Log après sauvegarde (debug temporaire)
+                Try
+                    Dim debugFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "debug_repertoires.txt")
+                    Dim msg = $"[{DateTime.Now:O}] AfterSave: chosen='{chosen}' savedAs='{toSave}' Form1.dernierRepertoireAjoutRepertoire='{dernierRepertoireAjoutRepertoire}' ParametresGlobaux.dernierRepertoireAjoutRepertoire='{ParametresGlobaux.dernierRepertoireAjoutRepertoire}'{Environment.NewLine}"
+                    File.AppendAllText(debugFile, msg)
                 Catch
                 End Try
                 SauvegarderParametres()
+                ' Restaurer le répertoire courant et supprimer le dossier temporaire si créé (utiliser méthode robuste)
+                Try
+                    ParametresGlobaux.SupprimerDossierTemporaire(tmpFolder)
+                Catch
+                End Try
+                Try
+                    Environment.CurrentDirectory = cwd
+                Catch
+                End Try
 
                 Dim extensions = {".mp3", ".wav", ".flac", ".wma", ".aac", ".ogg"}
                 Dim fichiers = Directory.GetFiles(fbd.SelectedPath, "*.*", SearchOption.AllDirectories) _
@@ -3491,12 +3607,24 @@ Public Class Form1
                 Directory.CreateDirectory(dossier)
             End If
 
+            ' Synchroniser les valeurs locales vers ParametresGlobaux avant d'écrire
+            Try
+                ParametresGlobaux.dernierRepertoirePlaylist = dernierRepertoirePlaylist
+                ParametresGlobaux.repertoireParDefaut = repertoireParDefaut
+            Catch
+            End Try
+
             ' Volume, Basses, Aigues sont maintenant dans Son_Ajustement.txt (fichier séparé)
             Dim lignes As New List(Of String) From {
-                $"RepertoireParDefaut={repertoireParDefaut}",
-                $"DernierRepertoireAjoutFichier={dernierRepertoireAjoutFichier}",
-                $"DernierRepertoireAjoutRepertoire={dernierRepertoireAjoutRepertoire}",
-                $"DernierRepertoirePlaylist={dernierRepertoirePlaylist}",
+                $"RepertoireParDefaut={ParametresGlobaux.repertoireParDefaut}",
+                $"DernierRepertoireAjoutFichier={ParametresGlobaux.dernierRepertoireAjoutFichier}",
+                $"DernierRepertoireAjoutRepertoire={ParametresGlobaux.dernierRepertoireAjoutRepertoire}",
+                $"DernierRepertoirePlaylist={ParametresGlobaux.dernierRepertoirePlaylist}",
+                $"DernierRepertoireAjoutFichier_DJ={ParametresGlobaux.dernierRepertoireAjoutFichier_DJ}",
+                $"DernierRepertoireAjoutRepertoire_DJ={ParametresGlobaux.dernierRepertoireAjoutRepertoire_DJ}",
+                $"DernierRepertoirePlaylist_DJ={ParametresGlobaux.dernierRepertoirePlaylist_DJ}",
+                $"AvantDernierRepertoireAjoutRepertoire={ParametresGlobaux.avantDernierRepertoireAjoutRepertoire}",
+                $"AvantDernierRepertoireAjoutRepertoire_DJ={ParametresGlobaux.avantDernierRepertoireAjoutRepertoire_DJ}",
                 $"LectureEnContinu={lectureEnContinu}",
                 $"NormalisationVolume={normalisationVolumeActive}",
                 $"MethodeBPM={BPMDetector.MethodeChoisie}",

@@ -261,14 +261,39 @@ Partial Public Class FormParametres
                                     ParametresGlobaux.dernierRepertoireAjoutFichier = valeur
                                 Catch ex As Exception
                                 End Try
+                            Case "DernierRepertoireAjoutFichier_DJ"
+                                Try
+                                    ParametresGlobaux.dernierRepertoireAjoutFichier_DJ = valeur
+                                Catch ex As Exception
+                                End Try
                             Case "DernierRepertoireAjoutRepertoire"
                                 Try
                                     ParametresGlobaux.dernierRepertoireAjoutRepertoire = valeur
                                 Catch ex As Exception
                                 End Try
+                            Case "DernierRepertoireAjoutRepertoire_DJ"
+                                Try
+                                    ParametresGlobaux.dernierRepertoireAjoutRepertoire_DJ = valeur
+                                Catch ex As Exception
+                                End Try
+                            Case "AvantDernierRepertoireAjoutRepertoire"
+                                Try
+                                    ParametresGlobaux.avantDernierRepertoireAjoutRepertoire = valeur
+                                Catch ex As Exception
+                                End Try
+                            Case "AvantDernierRepertoireAjoutRepertoire_DJ"
+                                Try
+                                    ParametresGlobaux.avantDernierRepertoireAjoutRepertoire_DJ = valeur
+                                Catch ex As Exception
+                                End Try
                             Case "DernierRepertoirePlaylist"
                                 Try
                                     ParametresGlobaux.dernierRepertoirePlaylist = valeur
+                                Catch ex As Exception
+                                End Try
+                            Case "DernierRepertoirePlaylist_DJ"
+                                Try
+                                    ParametresGlobaux.dernierRepertoirePlaylist_DJ = valeur
                                 Catch ex As Exception
                                 End Try
                             Case "VolumeLecture", "Volume"
