@@ -2311,8 +2311,12 @@ Public Class FormDJ
                                                                                      End Try
                                                                                  End Try
 
-                                                                                 Try
+                                                                             Try
                                                                                      MettreAJourNumerotationDJ()
+                                                                                 Catch
+                                                                                 End Try
+                                                                                 Try
+                                                                                     DemarrerTraitementMetadonneesEnArrierePlanDJ(batch)
                                                                                  Catch
                                                                                  End Try
                                                                              End Sub)
