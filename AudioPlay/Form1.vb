@@ -55,11 +55,7 @@ Public Class Form1
 
     ' Basculer en mode DJ : afficher FormDJ et rendre Form1 invisible
     Private Sub ButtonModeDJ_Click(sender As Object, e As EventArgs) Handles ButtonModeDJ.Click
-        ' Debug: confirmer que l'événement Click est reçu
-        Try
-            MessageBox.Show("ButtonModeDJ clicked", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information)
-        Catch
-        End Try
+
 
         Try
             Dim djForm As New FormDJ()
