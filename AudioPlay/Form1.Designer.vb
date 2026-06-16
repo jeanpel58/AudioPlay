@@ -22,7 +22,7 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim ButtonModeDJ As Button
+        ' ButtonModeDJ declared as field (Friend WithEvents) below; do not re-declare here
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
         GroupBox1 = New GroupBox()
         Button_AudioPlay_Aide = New Button()
@@ -82,20 +82,20 @@ Partial Class Form1
         ' 
         ' ButtonModeDJ
         ' 
-        ButtonModeDJ.BackColor = Color.Transparent
-        ButtonModeDJ.BackgroundImageLayout = ImageLayout.Stretch
-        ButtonModeDJ.FlatAppearance.BorderColor = Color.FromArgb(CByte(224), CByte(224), CByte(224))
-        ButtonModeDJ.FlatAppearance.BorderSize = 0
-        ButtonModeDJ.FlatAppearance.MouseDownBackColor = Color.Transparent
-        ButtonModeDJ.FlatAppearance.MouseOverBackColor = Color.Transparent
-        ButtonModeDJ.FlatStyle = FlatStyle.Flat
-        ButtonModeDJ.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        ButtonModeDJ.Location = New Point(12, 15)
-        ButtonModeDJ.Name = "ButtonModeDJ"
-        ButtonModeDJ.Size = New Size(50, 50)
-        ButtonModeDJ.TabIndex = 6
-        ButtonModeDJ.Text = "DJ Mixer"
-        ButtonModeDJ.UseVisualStyleBackColor = False
+        Me.ButtonModeDJ.BackColor = Color.Transparent
+        Me.ButtonModeDJ.BackgroundImageLayout = ImageLayout.Stretch
+        Me.ButtonModeDJ.FlatAppearance.BorderColor = Color.FromArgb(CByte(224), CByte(224), CByte(224))
+        Me.ButtonModeDJ.FlatAppearance.BorderSize = 0
+        Me.ButtonModeDJ.FlatAppearance.MouseDownBackColor = Color.Transparent
+        Me.ButtonModeDJ.FlatAppearance.MouseOverBackColor = Color.Transparent
+        Me.ButtonModeDJ.FlatStyle = FlatStyle.Flat
+        Me.ButtonModeDJ.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Me.ButtonModeDJ.Location = New Point(12, 15)
+        Me.ButtonModeDJ.Name = "ButtonModeDJ"
+        Me.ButtonModeDJ.Size = New Size(50, 50)
+        Me.ButtonModeDJ.TabIndex = 6
+        Me.ButtonModeDJ.Text = "DJ Mixer"
+        Me.ButtonModeDJ.UseVisualStyleBackColor = False
         ' 
         ' GroupBox1
         ' 

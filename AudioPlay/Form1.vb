@@ -53,6 +53,44 @@ Public Class Form1
         End If
     End Sub
 
+    ' Basculer en mode DJ : afficher FormDJ et rendre Form1 invisible
+    Private Sub ButtonModeDJ_Click(sender As Object, e As EventArgs) Handles ButtonModeDJ.Click
+        ' Debug: confirmer que l'événement Click est reçu
+        Try
+            MessageBox.Show("ButtonModeDJ clicked", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Catch
+        End Try
+
+        Try
+            Dim djForm As New FormDJ()
+            Try
+                djForm.Show(Me)
+            Catch ex As Exception
+                Try
+                    djForm.Show()
+                Catch ex2 As Exception
+                    MessageBox.Show("Impossible d'ouvrir FormDJ: " & ex2.Message, "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    Return
+                End Try
+            End Try
+            ' Masquer la form principale pour mode DJ
+            Try
+                Me.Hide()
+            Catch ex As Exception
+                ' afficher erreur si masquage échoue
+                Try
+                    MessageBox.Show("Erreur masquage Form1: " & ex.Message, "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Catch
+                End Try
+            End Try
+        Catch ex As Exception
+            Try
+                MessageBox.Show("Erreur lors du basculement en mode DJ: " & ex.Message, "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Catch
+            End Try
+        End Try
+    End Sub
+
     ' Cancellation token source for background metadata processing
     Private metadataCancellationTokenSource As Threading.CancellationTokenSource = Nothing
 
