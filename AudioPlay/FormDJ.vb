@@ -1,4 +1,5 @@
 Imports System.IO
+Imports System.Threading
 Imports NAudio.Wave
 Imports NAudio.Wave.SampleProviders
 
@@ -42,7 +43,7 @@ Public Class FormDJ
     Private crossfaderPosition As Single = 0.5F ' 0.0 (100% A) à 1.0 (100% B)
 
     ' === Timer pour mise à jour position ===
-    Private WithEvents timerPosition As New Timer()
+    Private WithEvents timerPosition As New System.Windows.Forms.Timer()
 
     ' === BPM ===
     ' Précision Double (3 décimales) comme Virtual DJ / Serato
@@ -78,7 +79,7 @@ Public Class FormDJ
     ' === DJ Recording (Multi-format) ===
     Private djRecorder As DJRecorder = Nothing
     Private enregistrementEnCours As Boolean = False
-    Private timerEnregistrement As New Timer()
+    Private timerEnregistrement As New System.Windows.Forms.Timer()
     Private repertoireEnregistrement As String = ""
 
     ' === Sampler ===
@@ -90,7 +91,7 @@ Public Class FormDJ
     ' === AUTO-CALIBRATION SYNC : Ajustement automatique du ratio basé sur le drift mesuré ===
     Private autoCalibrationActive_DeckA As Boolean = False
     Private autoCalibrationActive_DeckB As Boolean = False
-    Private autoCalibTimer As New Timer() With {.Interval = 3000} ' Mesurer toutes les 3 secondes
+    Private autoCalibTimer As New System.Windows.Forms.Timer() With {.Interval = 3000} ' Mesurer toutes les 3 secondes
     Private lastCalibrationTime As DateTime = DateTime.Now
     Private driftAccumuléDeckA As Double = 0.0
     Private driftAccumuléDeckB As Double = 0.0
@@ -138,7 +139,7 @@ Public Class FormDJ
         ' Configurer drag depuis ListView
         AddHandler ListViewPlaylist.ItemDrag, AddressOf ListViewPlaylist_ItemDrag
 
-        ' Charger la playlist sauvegardée
+        ' Charger la playlist sauvegardée (en arrière-plan pour réactivité)
         ChargerPlaylistDJ()
 
         ' Appliquer le thème
@@ -162,6 +163,7 @@ Public Class FormDJ
 
         ' Initialiser les contrôles d'enregistrement
         InitialiserEnregistrement()
+        Debug.WriteLine("[INIT] FormDJ_Load terminé")
 
         ' === CONFIGURATION CROSSFADER FOCUS & ROULETTE GLOBALE ===
         ' Donner le focus initial au crossfader
@@ -1933,34 +1935,412 @@ Public Class FormDJ
     ' GESTION DE LA PLAYLIST DJ
     ' ========================================
 
-    ' === Charger la playlist depuis playlistDJ.txt ===
-    Private Sub ChargerPlaylistDJ()
-        Dim fichierPlaylist = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "AudioPlay",
-            "playlistDJ.txt")
-        If Not File.Exists(fichierPlaylist) Then Return
+    ' UI status strip for DJ playlist metadata progress
+    Private StatusStripPlaylist As StatusStrip = Nothing
 
+    ' Cancellation token source for DJ metadata processing
+    Private metadataCancellationTokenSource_DJ As Threading.CancellationTokenSource = Nothing
+
+    Private Function IsMetadataCancellationRequested_DJ() As Boolean
         Try
-            Dim lignes = File.ReadAllLines(fichierPlaylist)
-            For Each ligne In lignes
-                If Not String.IsNullOrWhiteSpace(ligne) Then
-                    Dim parties = ligne.Split("|"c)
-                    If parties.Length >= 2 Then
-                        Dim chemin = parties(0)
-                        Dim nom = parties(1)
-                        Dim bpm = If(parties.Length >= 3, parties(2), "")
-                        Dim duree = If(parties.Length >= 4, parties(3), "")
+            Return (metadataCancellationTokenSource_DJ IsNot Nothing) AndAlso metadataCancellationTokenSource_DJ.IsCancellationRequested
+        Catch
+            Return False
+        End Try
+    End Function
 
-                        If File.Exists(chemin) Then
-                            AjouterFichierAListeDJ(chemin, nom, bpm, duree)
-                        End If
+    ' Counters for DJ metadata progress
+    Private metadataTotal_DJ As Integer = 0
+    Private metadataDone_DJ As Integer = 0
+
+    Private Sub InitMetadataProgressDJ(totalItems As Integer)
+        Try
+            metadataTotal_DJ = totalItems
+            metadataDone_DJ = 0
+            If StatusStripPlaylist Is Nothing Then
+                Dim ss As New StatusStrip()
+                ss.Name = "StatusStripPlaylist"
+                Dim lbl As New ToolStripStatusLabel()
+                lbl.Name = "ToolStripStatusLabel_MetadataDJ"
+                lbl.Text = ""
+                ss.Items.Add(lbl)
+                Dim pb As New ToolStripProgressBar()
+                pb.Name = "ToolStripProgressBar_MetadataDJ"
+                pb.Minimum = 0
+                pb.Maximum = Math.Max(1, totalItems)
+                pb.Value = 0
+                pb.AutoSize = False
+                pb.Size = New Size(200, 16)
+                ss.Items.Add(pb)
+                Dim btn As New ToolStripButton()
+                btn.Name = "ToolStripButton_MetadataCancelDJ"
+                btn.Text = "Annuler"
+                AddHandler btn.Click, Sub()
+                                         Try
+                                             RequestCancelMetadataProcessingDJ()
+                                             btn.Enabled = False
+                                         Catch
+                                         End Try
+                                     End Sub
+                ss.Items.Add(btn)
+                Me.Controls.Add(ss)
+                ss.BringToFront()
+                StatusStripPlaylist = ss
+            End If
+
+            Dim label = CType(StatusStripPlaylist.Items.OfType(Of ToolStripItem)().FirstOrDefault(Function(it) it.Name = "ToolStripStatusLabel_MetadataDJ"), ToolStripStatusLabel)
+            If label Is Nothing Then
+                label = New ToolStripStatusLabel("ToolStripStatusLabel_MetadataDJ")
+                StatusStripPlaylist.Items.Add(label)
+            End If
+            label.Text = String.Format("Chargement playlist DJ: 0/{0}", metadataTotal_DJ)
+            Try
+                Dim pb = CType(StatusStripPlaylist.Items.OfType(Of ToolStripItem)().FirstOrDefault(Function(it) it.Name = "ToolStripProgressBar_MetadataDJ"), ToolStripProgressBar)
+                If pb IsNot Nothing Then
+                    pb.Maximum = Math.Max(1, metadataTotal_DJ)
+                    pb.Value = 0
+                End If
+            Catch
+            End Try
+        Catch
+        End Try
+    End Sub
+
+    Private Sub UpdateMetadataProgressDJ(done As Integer, total As Integer)
+        Try
+            If StatusStripPlaylist Is Nothing Then Return
+            Dim label = CType(StatusStripPlaylist.Items.OfType(Of ToolStripItem)().FirstOrDefault(Function(it) it.Name = "ToolStripStatusLabel_MetadataDJ"), ToolStripStatusLabel)
+            If label Is Nothing Then Return
+            label.Text = String.Format("Chargement playlist DJ: {0}/{1}", done, total)
+            Try
+                Dim pb = CType(StatusStripPlaylist.Items.OfType(Of ToolStripItem)().FirstOrDefault(Function(it) it.Name = "ToolStripProgressBar_MetadataDJ"), ToolStripProgressBar)
+                If pb IsNot Nothing Then
+                    pb.Value = Math.Min(pb.Maximum, done)
+                End If
+            Catch
+            End Try
+            Try
+                If done >= total OrElse IsMetadataCancellationRequested_DJ() Then
+                    If Not Me.IsDisposed AndAlso Me.IsHandleCreated Then
+                        Me.BeginInvoke(Sub()
+                                           Try
+                                               If StatusStripPlaylist IsNot Nothing Then
+                                                   Try
+                                                       Me.Controls.Remove(StatusStripPlaylist)
+                                                       StatusStripPlaylist.Dispose()
+                                                   Catch
+                                                   End Try
+                                                   StatusStripPlaylist = Nothing
+                                               End If
+                                           Catch
+                                           End Try
+                                           metadataTotal_DJ = 0
+                                           metadataDone_DJ = 0
+                                       End Sub)
                     End If
                 End If
+            Catch
+            End Try
+        Catch
+        End Try
+    End Sub
+
+    Private Sub RequestCancelMetadataProcessingDJ()
+        Try
+            If metadataCancellationTokenSource_DJ IsNot Nothing Then
+                Try
+                    metadataCancellationTokenSource_DJ.Cancel()
+                Catch
+                End Try
+            End If
+        Catch
+        End Try
+    End Sub
+
+    Private Sub DemarrerTraitementMetadonneesEnArrierePlanDJ(batchEntries As List(Of Tuple(Of String, String, String)))
+        Try
+            If batchEntries Is Nothing OrElse batchEntries.Count = 0 Then Return
+
+            Dim maxDegree As Integer = Math.Max(1, Math.Min(Environment.ProcessorCount, 4))
+            Dim semaphore As New Threading.SemaphoreSlim(maxDegree)
+
+            Dim total = batchEntries.Count
+            For Each entry In batchEntries
+                Dim cheminLocal = entry.Item1
+                Dim bpmExistantLocal = entry.Item2
+                Dim dureeExistanteLocal = entry.Item3
+                If IsMetadataCancellationRequested_DJ() Then
+                    Exit For
+                End If
+
+                Threading.ThreadPool.QueueUserWorkItem(Sub()
+                                                           semaphore.Wait()
+                                                           Try
+                                                               If String.IsNullOrWhiteSpace(cheminLocal) OrElse Not File.Exists(cheminLocal) Then
+                                                                   Dim currentDone = Interlocked.Increment(metadataDone_DJ)
+                                                                   Try
+                                                                       Me.BeginInvoke(Sub() UpdateMetadataProgressDJ(currentDone, metadataTotal_DJ))
+                                                                   Catch
+                                                                   End Try
+                                                                   Return
+                                                               End If
+
+                                                               Dim needDuree As Boolean = String.IsNullOrWhiteSpace(dureeExistanteLocal) OrElse dureeExistanteLocal = "--:--"
+                                                               Dim needBpm As Boolean = String.IsNullOrWhiteSpace(bpmExistantLocal)
+                                                               If Not needDuree AndAlso Not needBpm Then
+                                                                   Dim currentDone = Interlocked.Increment(metadataDone_DJ)
+                                                                   Try
+                                                                       Me.BeginInvoke(Sub() UpdateMetadataProgressDJ(currentDone, metadataTotal_DJ))
+                                                                   Catch
+                                                                   End Try
+                                                                   Return
+                                                               End If
+
+                                                               Dim newDuree As String = Nothing
+                                                               Dim newBpm As String = Nothing
+
+                                                               If IsMetadataCancellationRequested_DJ() Then Return
+
+                                                               If needDuree Then
+                                                                   Try
+                                                                       Using reader As New AudioFileReader(cheminLocal)
+                                                                           Dim ts = reader.TotalTime
+                                                                           newDuree = String.Format("{0:D2}:{1:D2}", CInt(ts.TotalMinutes), ts.Seconds)
+                                                                       End Using
+                                                                   Catch
+                                                                   End Try
+                                                               End If
+
+                                                               If needBpm Then
+                                                                   Try
+                                                                       Dim bpmMetadata = BPMMetadataManager.LireBPMPrecisDepuisMetadonnees(cheminLocal)
+                                                                       If bpmMetadata > 0 Then
+                                                                           newBpm = bpmMetadata.ToString("F2", Globalization.CultureInfo.InvariantCulture)
+                                                                       End If
+                                                                   Catch
+                                                                   End Try
+                                                               End If
+
+                                                               If String.IsNullOrWhiteSpace(newDuree) AndAlso String.IsNullOrWhiteSpace(newBpm) Then
+                                                                   Dim currentDone = Interlocked.Increment(metadataDone_DJ)
+                                                                   Try
+                                                                       Me.BeginInvoke(Sub() UpdateMetadataProgressDJ(currentDone, metadataTotal_DJ))
+                                                                   Catch
+                                                                   End Try
+                                                                   Return
+                                                               End If
+
+                                                               If Not Me.IsDisposed AndAlso Me.IsHandleCreated Then
+                                                                   Me.BeginInvoke(Sub()
+                                                                                      Try
+                                                                                          Dim targetItem As ListViewItem = Nothing
+                                                                                          For Each lvItem As ListViewItem In ListViewPlaylist.Items
+                                                                                              Dim tagChemin As String = ""
+                                                                                              If TypeOf lvItem.Tag Is Dictionary(Of String, Object) Then
+                                                                                                  Dim existingTag = DirectCast(lvItem.Tag, Dictionary(Of String, Object))
+                                                                                                  If existingTag.ContainsKey("Chemin") Then
+                                                                                                      tagChemin = existingTag("Chemin")?.ToString()
+                                                                                                  End If
+                                                                                              ElseIf TypeOf lvItem.Tag Is String Then
+                                                                                                  tagChemin = lvItem.Tag.ToString()
+                                                                                              End If
+
+                                                                                              If String.Equals(tagChemin, cheminLocal, StringComparison.OrdinalIgnoreCase) Then
+                                                                                                  targetItem = lvItem
+                                                                                                  Exit For
+                                                                                              End If
+                                                                                          Next
+
+                                                                                          If targetItem Is Nothing Then Return
+
+                                                                                          If Not String.IsNullOrWhiteSpace(newDuree) Then
+                                                                                              targetItem.SubItems(3).Text = newDuree
+                                                                                          End If
+
+                                                                                          If Not String.IsNullOrWhiteSpace(newBpm) Then
+                                                                                              targetItem.SubItems(2).Text = newBpm
+
+                                                                                              Dim tagDict As Dictionary(Of String, Object)
+                                                                                              If TypeOf targetItem.Tag Is Dictionary(Of String, Object) Then
+                                                                                                  tagDict = DirectCast(targetItem.Tag, Dictionary(Of String, Object))
+                                                                                              Else
+                                                                                                  tagDict = New Dictionary(Of String, Object) From {
+                                                                                                      {"Chemin", cheminLocal}
+                                                                                                  }
+                                                                                              End If
+
+                                                                                              Dim bpmValue As Double = 0
+                                                                                              If Double.TryParse(newBpm, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, bpmValue) Then
+                                                                                                  tagDict("BPM") = bpmValue
+                                                                                              End If
+                                                                                              targetItem.Tag = tagDict
+                                                                                          End If
+                                                                                      Catch
+                                                                                      End Try
+                                                                                  End Sub)
+                                                               End If
+
+                                                               ' Update cache asynchronously
+                                                               Try
+                                                                   Threading.ThreadPool.QueueUserWorkItem(Sub()
+                                                                                                              Try
+                                                                                                                  If Not String.IsNullOrEmpty(cheminLocal) Then
+                                                                                                                      MetadataCache.UpdateCache(cheminLocal, If(newDuree, ""), If(newBpm, ""))
+                                                                                                                  End If
+                                                                                                              Catch
+                                                                                                              End Try
+                                                                                                          End Sub)
+                                                               Catch
+                                                               End Try
+
+                                                               Dim currentDoneFinal = Interlocked.Increment(metadataDone_DJ)
+                                                               Try
+                                                                   Me.BeginInvoke(Sub() UpdateMetadataProgressDJ(currentDoneFinal, metadataTotal_DJ))
+                                                               Catch
+                                                               End Try
+                                                           Catch
+                                                           Finally
+                                                               semaphore.Release()
+                                                           End Try
+                                                       End Sub)
             Next
-            MettreAJourNumerotationDJ()
-        Catch ex As Exception
-            ' Ignorer les erreurs de chargement
+        Catch
+        End Try
+    End Sub
+
+    ' === Charger la playlist depuis playlistDJ.txt ===
+    Private Sub ChargerPlaylistDJ()
+        Try
+            Dim t As New Threading.Thread(Sub()
+                                              Try
+                                                  Dim fichierPlaylist = Path.Combine(
+                                                      Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                                                      "AudioPlay",
+                                                      "playlistDJ.txt")
+                                                  If Not File.Exists(fichierPlaylist) Then Return
+
+                                                  Dim lignes = File.ReadAllLines(fichierPlaylist)
+                                                  Dim entries As New List(Of Tuple(Of String, String, String))()
+                                                  For Each ligne In lignes
+                                                      If String.IsNullOrWhiteSpace(ligne) Then Continue For
+                                                      Dim parties = ligne.Split("|"c)
+                                                      If parties.Length >= 2 Then
+                                                          Dim chemin = parties(0)
+                                                          Dim nom = parties(1)
+                                                          Dim bpm = If(parties.Length >= 3, parties(2), "")
+                                                          Dim duree = If(parties.Length >= 4, parties(3), "")
+                                                          If File.Exists(chemin) Then
+                                                              entries.Add(Tuple.Create(chemin, bpm, duree))
+                                                          End If
+                                                      End If
+                                                  Next
+
+                                                  Dim batchSize As Integer = 100
+                                                  Dim firstBatchSize As Integer = Math.Min(20, batchSize)
+                                                  Dim index As Integer = 0
+
+                                                  ' Initialize DJ cancellation token and progress UI
+                                                  Try
+                                                      If metadataCancellationTokenSource_DJ IsNot Nothing Then
+                                                          Try
+                                                              metadataCancellationTokenSource_DJ.Dispose()
+                                                          Catch
+                                                          End Try
+                                                      End If
+                                                      metadataCancellationTokenSource_DJ = New Threading.CancellationTokenSource()
+                                                  Catch
+                                                  End Try
+
+                                                  If entries.Count > 0 Then
+                                                      ' Init progress UI on UI thread
+                                                      If Not Me.IsDisposed AndAlso Me.IsHandleCreated Then
+                                                          Me.BeginInvoke(Sub()
+                                                                             Try
+                                                                                 InitMetadataProgressDJ(entries.Count)
+                                                                             Catch
+                                                                             End Try
+                                                                         End Sub)
+                                                      End If
+
+                                                      Dim firstBatch = entries.Take(firstBatchSize).ToList()
+                                                      If Not Me.IsDisposed AndAlso Me.IsHandleCreated Then
+                                                          Me.BeginInvoke(Sub()
+                                                                             Try
+                                                                                 ListViewPlaylist.BeginUpdate()
+                                                                                 For Each entry In firstBatch
+                                                                                     AjouterFichierAListeDJ(entry.Item1, Path.GetFileName(entry.Item1), entry.Item2, entry.Item3)
+                                                                                 Next
+                                                                             Catch
+                                                                             Finally
+                                                                                 Try
+                                                                                     ListViewPlaylist.EndUpdate()
+                                                                                 Catch
+                                                                                 End Try
+                                                                             End Try
+
+                                                                             Try
+                                                                                 MettreAJourNumerotationDJ()
+                                                                                 DemarrerTraitementMetadonneesEnArrierePlanDJ(firstBatch)
+                                                                             Catch
+                                                                             End Try
+                                                                         End Sub)
+                                                      End If
+                                                      index += firstBatchSize
+                                                  End If
+
+                                                  While index < entries.Count
+                                                      Dim batch As New List(Of Tuple(Of String, String, String))()
+                                                      Dim maxIndex As Integer = Math.Min(index + batchSize, entries.Count)
+                                                      For i As Integer = index To maxIndex - 1
+                                                          batch.Add(entries(i))
+                                                      Next
+
+                                                      Try
+                                                          If Not Me.IsDisposed AndAlso Me.IsHandleCreated Then
+                                                              Me.BeginInvoke(Sub()
+                                                                                 Try
+                                                                                     ListViewPlaylist.BeginUpdate()
+                                                                                     For Each entry In batch
+                                                                                         AjouterFichierAListeDJ(entry.Item1, Path.GetFileName(entry.Item1), entry.Item2, entry.Item3)
+                                                                                     Next
+                                                                                 Catch
+                                                                                 Finally
+                                                                                     Try
+                                                                                         ListViewPlaylist.EndUpdate()
+                                                                                     Catch
+                                                                                     End Try
+                                                                                 End Try
+
+                                                                                 Try
+                                                                                     MettreAJourNumerotationDJ()
+                                                                                 Catch
+                                                                                 End Try
+                                                                             End Sub)
+                                                          End If
+                                                      Catch
+                                                      End Try
+
+                                                      Try
+                                                          Threading.ThreadPool.QueueUserWorkItem(Sub()
+                                                                                                     For Each cacheEntry In batch
+                                                                                                         Try
+                                                                                                             MetadataCache.GetCached(cacheEntry.Item1)
+                                                                                                         Catch
+                                                                                                         End Try
+                                                                                                     Next
+                                                                                                 End Sub)
+                                                      Catch
+                                                      End Try
+
+                                                      index += batchSize
+                                                      Threading.Thread.Sleep(10)
+                                                  End While
+                                              Catch
+                                              End Try
+                                          End Sub)
+            t.IsBackground = True
+            t.Start()
+        Catch
         End Try
     End Sub
 
