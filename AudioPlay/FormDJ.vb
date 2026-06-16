@@ -2268,7 +2268,7 @@ Public Class FormDJ
                                                                              Try
                                                                                  ListViewPlaylist.BeginUpdate()
                                                                                  For Each entry In firstBatch
-                                                                                     AjouterFichierAListeDJ(entry.Item1, Path.GetFileName(entry.Item1), entry.Item2, entry.Item3)
+                                                                                         AjouterItemLightDJ(entry.Item1, Path.GetFileName(entry.Item1), entry.Item2, entry.Item3)
                                                                                  Next
                                                                              Catch
                                                                              Finally
@@ -2301,7 +2301,7 @@ Public Class FormDJ
                                                                                  Try
                                                                                      ListViewPlaylist.BeginUpdate()
                                                                                      For Each entry In batch
-                                                                                         AjouterFichierAListeDJ(entry.Item1, Path.GetFileName(entry.Item1), entry.Item2, entry.Item3)
+                                                                                         AjouterItemLightDJ(entry.Item1, Path.GetFileName(entry.Item1), entry.Item2, entry.Item3)
                                                                                      Next
                                                                                  Catch
                                                                                  Finally
@@ -2428,6 +2428,31 @@ Public Class FormDJ
         item.Tag = tagDict
 
         ListViewPlaylist.Items.Add(item)
+    End Sub
+
+    ' Ajoute un item léger dans la ListViewPlaylist sans ouvrir le fichier audio (rapide pour affichage initial)
+    Private Sub AjouterItemLightDJ(chemin As String, nomFichier As String, bpm As String, duree As String)
+        Try
+            Dim newItem As New ListViewItem()
+            newItem.Text = "" ' Colonne Num (remplie par MettreAJourNumerotationDJ)
+            newItem.SubItems.Add(nomFichier) ' Colonne Chanson
+            newItem.SubItems.Add(If(String.IsNullOrWhiteSpace(bpm), "", bpm)) ' Colonne BPM
+            newItem.SubItems.Add(If(String.IsNullOrWhiteSpace(duree), "--:--", duree)) ' Colonne Durée
+
+            Dim tagDict As New Dictionary(Of String, Object) From {
+                {"Chemin", chemin}
+            }
+
+            Dim bpmValue As Double = 0
+            If Not String.IsNullOrWhiteSpace(bpm) AndAlso Double.TryParse(bpm, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, bpmValue) Then
+                tagDict("BPM") = bpmValue
+            End If
+
+            newItem.Tag = tagDict
+            ListViewPlaylist.Items.Add(newItem)
+        Catch
+            ' Ignorer les erreurs d'ajout
+        End Try
     End Sub
 
     ' === Mettre à jour la numérotation de la playlist ===
