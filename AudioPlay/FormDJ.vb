@@ -933,43 +933,7 @@ Public Class FormDJ
         LabelCrossfader.Text = String.Format(LanguageManager.GetString("DJ_CrossfaderLabel"), value)
     End Sub
 
-    Private Sub ComboBoxDisplayMode_SelectedIndexChanged(sender As Object, e As EventArgs)
-        Try
-            Dim modeName As String = "VirtualDJ"
-            If ComboBoxDisplayMode IsNot Nothing AndAlso ComboBoxDisplayMode.SelectedItem IsNot Nothing Then
-                modeName = ComboBoxDisplayMode.SelectedItem.ToString()
-            End If
-            ApplyDisplayModeToAllWaveforms(modeName)
-        Catch
-        End Try
-    End Sub
 
-    Private Sub ApplyDisplayModeToAllWaveforms(modeName As String)
-        Try
-            ApplyDisplayModeToWaveform(waveformDeckA, modeName)
-            ApplyDisplayModeToWaveform(waveformDeckB, modeName)
-        Catch
-        End Try
-    End Sub
-
-    Private Sub ApplyDisplayModeToWaveform(target As Control, modeName As String)
-        Try
-            If target Is Nothing OrElse target.IsDisposed Then Return
-
-            Dim prop = target.GetType().GetProperty("DisplayMode")
-            If prop Is Nothing OrElse Not prop.CanWrite Then Return
-
-            If prop.PropertyType IsNot Nothing AndAlso prop.PropertyType.IsEnum Then
-                Dim enumValue = [Enum].Parse(prop.PropertyType, modeName, True)
-                prop.SetValue(target, enumValue, Nothing)
-            Else
-                prop.SetValue(target, modeName, Nothing)
-            End If
-
-            target.Invalidate()
-        Catch
-        End Try
-    End Sub
 
     ' === Handlers BeatSync : Ajustement temporaire du tempo (pitch bend) ===
     ' Variables pour stocker les tempo de base
