@@ -237,6 +237,17 @@ Partial Class FormParametres
         ButtonBrowsePython.Text = "Parcourir"
         ButtonBrowsePython.UseVisualStyleBackColor = True
 
+        ' Button to verify librosa and offer installation
+        ButtonCheckLibrosa = New Button()
+        ButtonCheckLibrosa.Location = New Point(375, 348)
+        ButtonCheckLibrosa.Name = "ButtonCheckLibrosa"
+        ButtonCheckLibrosa.Size = New Size(75, 25)
+        ButtonCheckLibrosa.TabIndex = 21
+        ButtonCheckLibrosa.Text = "Vérifier"
+        ButtonCheckLibrosa.UseVisualStyleBackColor = True
+
+        GroupBoxLecture.Controls.Add(ButtonCheckLibrosa)
+
         GroupBoxLecture.Controls.Add(LabelPythonPath)
         GroupBoxLecture.Controls.Add(TextBoxPythonPath)
         GroupBoxLecture.Controls.Add(ButtonBrowsePython)

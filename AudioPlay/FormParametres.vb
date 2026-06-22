@@ -107,6 +107,56 @@ Partial Public Class FormParametres
         LectureEnContinu = valeur
     End Sub
 
+    Private Async Sub ButtonCheckLibrosa_Click(sender As Object, e As EventArgs) Handles ButtonCheckLibrosa.Click
+        Try
+            ' Determine python exe to use
+            Dim pythonExe As String = If(Not String.IsNullOrEmpty(ParametresGlobaux.PythonPath), ParametresGlobaux.PythonPath, PythonManager.CheminPython)
+
+            ' Check librosa via PythonManager if embedded installed
+            If PythonManager.EstInstalle() Then
+                Dim ok = Await PythonManager.LibrosaEstInstalle()
+                If ok Then
+                    MessageBox.Show(LanguageManager.GetString("BPM_PythonLibrosa_OK"), LanguageManager.GetString("BPM_PythonCheckTitle"), MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    Return
+                End If
+            End If
+
+            ' If not installed, offer to install via PythonManager
+            Dim resp = MessageBox.Show(LanguageManager.GetString("BPM_PythonInstallPrompt"), LanguageManager.GetString("BPM_PythonInstallTitle"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+            If resp = DialogResult.Yes Then
+                Dim progressForm As New Form()
+                progressForm.Text = LanguageManager.GetString("BPM_PythonInstallTitle")
+                progressForm.Size = New Size(500, 150)
+                progressForm.StartPosition = FormStartPosition.CenterParent
+                progressForm.FormBorderStyle = FormBorderStyle.FixedDialog
+                progressForm.ControlBox = False
+
+                Dim lblProgress As New Label()
+                lblProgress.AutoSize = False
+                lblProgress.Size = New Size(460, 60)
+                lblProgress.Location = New Point(20, 20)
+                lblProgress.TextAlign = ContentAlignment.MiddleLeft
+                progressForm.Controls.Add(lblProgress)
+                progressForm.Show(Me)
+
+                Dim progress = New Progress(Of String)(Sub(msg)
+                                                          lblProgress.Text = msg
+                                                          Application.DoEvents()
+                                                      End Sub)
+
+                Dim success = Await PythonManager.InstallerPythonEmbedded(progress)
+                progressForm.Close()
+                If success Then
+                    MessageBox.Show(LanguageManager.GetString("BPM_PythonInstall_Success"), LanguageManager.GetString("BPM_PythonInstallTitle"), MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Else
+                    MessageBox.Show(LanguageManager.GetString("BPM_PythonInstall_Failed"), LanguageManager.GetString("BPM_PythonInstallTitle"), MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(LanguageManager.GetString("BPM_PythonCheck_Error"), LanguageManager.GetString("BPM_PythonCheckTitle"), MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
     Public Function ObtenirLectureEnContinu() As Boolean
         Return LectureEnContinu
     End Function
@@ -705,6 +755,12 @@ Partial Public Class FormParametres
                     ParametresGlobaux.PythonPath = TextBoxPythonPath.Text.Trim()
                     ParametresGlobauxHelpers.EcrireCleParametres("PythonPath", ParametresGlobaux.PythonPath)
                 End If
+            Catch
+            End Try
+
+            ' Sauvegarder la méthode BPM choisie
+            Try
+                ParametresGlobauxHelpers.EcrireCleParametres("MethodeBPM", MethodeBPM)
             Catch
             End Try
 
