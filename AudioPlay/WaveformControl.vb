@@ -339,15 +339,7 @@ Public Class WaveformControl
             If Not File.Exists(scriptPath) Then
                 Return (Nothing, 0)
             End If
-            Dim pythonExe As String = "python"
-            Try
-                If Not String.IsNullOrEmpty(ParametresGlobaux.PythonPath) AndAlso File.Exists(ParametresGlobaux.PythonPath) Then
-                    pythonExe = ParametresGlobaux.PythonPath
-                End If
-            Catch
-            End Try
-
-            Dim psi As New ProcessStartInfo(pythonExe, $"""{scriptPath}""" & " " & $"""{audioFilePath}"""") With {
+            Dim psi As New ProcessStartInfo(GetPythonExecutable(), $"""{scriptPath}""" & " " & $"""{audioFilePath}"""") With {
                 .UseShellExecute = False,
                 .RedirectStandardOutput = True,
                 .RedirectStandardError = True,
@@ -380,6 +372,33 @@ Public Class WaveformControl
         Catch
         End Try
         Return (Nothing, 0)
+    End Function
+
+    Private Function GetPythonExecutable() As String
+        Try
+            ' 1) Prefer embedded Python managed by PythonManager
+            Try
+                If PythonManager IsNot Nothing Then
+                    If File.Exists(PythonManager.CheminPython) Then
+                        Return PythonManager.CheminPython
+                    End If
+                End If
+            Catch
+            End Try
+
+            ' 2) Then user-specified path
+            Try
+                If Not String.IsNullOrEmpty(ParametresGlobaux.PythonPath) AndAlso File.Exists(ParametresGlobaux.PythonPath) Then
+                    Return ParametresGlobaux.PythonPath
+                End If
+            Catch
+            End Try
+
+            ' 3) Fallback to system python
+            Return "python"
+        Catch
+            Return "python"
+        End Try
     End Function
 
     ' Cache des positions de beats calculées (en pixels)
