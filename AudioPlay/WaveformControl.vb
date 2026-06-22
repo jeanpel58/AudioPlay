@@ -68,6 +68,11 @@ Public Class WaveformControl
         ' Intentionally ignored
     End Sub
 
+    ' Overload accepting Single() as some callers provide Single arrays
+    Public Sub SetOnsetMarkers(markers() As Single)
+        ' Intentionally ignored
+    End Sub
+
     ''' <summary>
     ''' Génère la forme d'onde à partir d'un fichier audio
     ''' </summary>
