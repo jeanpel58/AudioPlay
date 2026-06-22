@@ -50,6 +50,9 @@ Public Class WaveformControl
     ' Set waveform samples (called from background workers)
     Public Sub SetWaveformSamples(samples() As Single)
         waveformData = samples
+        ' Recompute beat info when samples are set
+        cachedBeatPositions = Nothing
+        cachedBeatInterval = 0
         Me.Invalidate()
     End Sub
 
@@ -104,6 +107,79 @@ Public Class WaveformControl
         End Try
     End Sub
 
+    ' Cache des positions de beats calculées (en pixels)
+    Private cachedBeatPositions As List(Of Integer) = Nothing
+    Private cachedBeatInterval As Integer = 0
+    Private Sub ComputeBeatsIfNeeded()
+        Try
+            If waveformData Is Nothing OrElse waveformData.Length = 0 Then Return
+            If cachedBeatPositions IsNot Nothing AndAlso cachedBeatPositions.Count > 0 Then Return
+
+            Dim widthPx As Integer = Math.Max(1, Me.Width)
+            Dim maxVal As Single = 0.0F
+            For i As Integer = 0 To waveformData.Length - 1
+                If waveformData(i) > maxVal Then maxVal = waveformData(i)
+            Next
+            If maxVal <= 0 Then Return
+
+            ' Peak picking: threshold relative to maxVal
+            Dim threshold As Single = Math.Max(0.02F, maxVal * 0.25F)
+            Dim minDistance As Integer = Math.Max(8, CInt(widthPx * 0.02F)) ' minimal distance between beats in pixels
+
+            Dim peaks As New List(Of Integer)()
+            For i As Integer = 1 To Math.Min(waveformData.Length - 2, widthPx - 2)
+                Dim val As Single = waveformData(i)
+                If val >= threshold Then
+                    ' local maximum within small neighborhood
+                    If val >= waveformData(Math.Max(0, i - 1)) AndAlso val >= waveformData(Math.Min(waveformData.Length - 1, i + 1)) Then
+                        If peaks.Count = 0 OrElse Math.Abs(i - peaks(peaks.Count - 1)) >= minDistance Then
+                            peaks.Add(i)
+                        End If
+                    End If
+                End If
+            Next
+
+            ' If too many peaks (noise), try raising threshold progressively
+            Dim thr As Single = threshold
+            While peaks.Count > 0 AndAlso peaks.Count < 6
+                ' if too few peaks, lower threshold
+                thr = thr * 0.8F
+                peaks.Clear()
+                For i As Integer = 1 To Math.Min(waveformData.Length - 2, widthPx - 2)
+                    Dim val As Single = waveformData(i)
+                    If val >= thr Then
+                        If val >= waveformData(Math.Max(0, i - 1)) AndAlso val >= waveformData(Math.Min(waveformData.Length - 1, i + 1)) Then
+                            If peaks.Count = 0 OrElse Math.Abs(i - peaks(peaks.Count - 1)) >= minDistance Then
+                                peaks.Add(i)
+                            End If
+                        End If
+                    End If
+                Next
+                If thr < 0.005F Then Exit While
+            End While
+
+            cachedBeatPositions = peaks
+
+            ' Compute beat interval as median of differences
+            If cachedBeatPositions.Count >= 2 Then
+                Dim diffs As New List(Of Integer)()
+                For i As Integer = 1 To cachedBeatPositions.Count - 1
+                    diffs.Add(cachedBeatPositions(i) - cachedBeatPositions(i - 1))
+                Next
+                diffs.Sort()
+                cachedBeatInterval = diffs(diffs.Count 
+                                            2)
+                ' clamp to reasonable range
+                If cachedBeatInterval < 4 Then cachedBeatInterval = 4
+            Else
+                cachedBeatInterval = 0
+            End If
+        Catch
+            cachedBeatPositions = Nothing
+            cachedBeatInterval = 0
+        End Try
+    End Sub
+
     ''' <summary>
     ''' Position de lecture actuelle (0.0 = début, 1.0 = fin)
     ''' </summary>
@@ -132,6 +208,8 @@ Public Class WaveformControl
         Select Case m_displayMode
             Case DisplayMode.Audacity
                 RenderAudacity(g)
+            Case DisplayMode.VirtualDJ
+                RenderVirtualDJ(g)
             Case Else
                 RenderAudacity(g)
         End Select
@@ -152,6 +230,54 @@ Public Class WaveformControl
 
         ' Bordure
         g.DrawRectangle(Pens.Gray, 0, 0, Me.Width - 1, Me.Height - 1)
+    End Sub
+
+    Private Sub RenderVirtualDJ(g As Graphics)
+        If waveformData Is Nothing Then
+            RenderAudacity(g)
+            Return
+        End If
+
+        ' Assurer que les beats sont calculés
+        ComputeBeatsIfNeeded()
+
+        Dim centerY As Integer = Me.Height \\ 2
+        Dim maxHeight As Integer = Me.Height \\ 2 - 5
+
+        Dim centerLineX As Integer = CInt(Me.Width * 0.5F)
+        Dim offset As Integer = 1
+
+        ' Dessiner forme d'onde minimisée (ligne fine) sur une bande
+        Using pen As New Pen(WaveformColor, 1)
+            For xIndex As Integer = 0 To Math.Min(Me.Width - 1 - centerLineX - offset, waveformData.Length - 1)
+                Dim amplitude As Single = waveformData(xIndex)
+                Dim height As Integer = CInt(amplitude * maxHeight * 0.6F)
+                Dim x As Integer = centerLineX + offset + xIndex
+                g.DrawLine(pen, x, centerY - height, x, centerY + height)
+            Next
+        End Using
+
+        ' Dessiner les marqueurs de beat (petits triangles ou barres) au-dessus
+        If cachedBeatPositions IsNot Nothing AndAlso cachedBeatPositions.Count > 0 Then
+            Using beatPen As New Pen(Color.FromArgb(200, 255, 90, 90), 2)
+                For Each p In cachedBeatPositions
+                    Dim x As Integer = centerLineX + offset + p
+                    ' Dessiner petit rectangle/ligne pour représenter le beat
+                    g.DrawLine(beatPen, x, centerY - maxHeight, x, centerY - maxHeight + 8)
+                Next
+            End Using
+        End If
+
+        ' Dessiner la Computed Beat Grid (CBG) : carrés plus larges qui marquent la mesure
+        If cachedBeatInterval > 0 Then
+            Dim measureStep As Integer = cachedBeatInterval * 4 ' approximativement 4 temps par mesure
+            Using measurePen As New Pen(Color.FromArgb(120, 200, 200, 255), 2)
+                Dim xStart As Integer = centerLineX + offset + If(cachedBeatPositions IsNot Nothing AndAlso cachedBeatPositions.Count > 0, cachedBeatPositions(0), 0)
+                For x As Integer = xStart To centerLineX + offset + waveformData.Length Step measureStep
+                    g.DrawRectangle(measurePen, x - 3, centerY - maxHeight, 6, maxHeight * 2)
+                Next
+            End Using
+        End If
     End Sub
 
     Private Sub RenderAudacity(g As Graphics)

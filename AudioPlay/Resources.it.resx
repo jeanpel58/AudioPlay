@@ -150,6 +150,21 @@
   <data name="Button_Parametres" xml:space="preserve">
     <value>Impostazioni</value>
   </data>
+  <data name="DisplayMode_VirtualDJ" xml:space="preserve">
+    <value>VirtualDJ</value>
+  </data>
+  <data name="DisplayMode_Audacity" xml:space="preserve">
+    <value>Audacity</value>
+  </data>
+  <data name="DisplayMode_Spectrogram" xml:space="preserve">
+    <value>Spettrogramma</value>
+  </data>
+  <data name="DisplayMode_Line" xml:space="preserve">
+    <value>Linea</value>
+  </data>
+  <data name="DisplayMode_Serato" xml:space="preserve">
+    <value>Serato</value>
+  </data>
   <data name="Button_InfoSelect" xml:space="preserve">
     <value>Info brano</value>
   </data>

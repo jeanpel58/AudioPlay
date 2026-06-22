@@ -115,8 +115,8 @@ Partial Class FormDJ
         GroupBoxDeckA.Controls.Add(CheckBoxReverbDeckA)
         GroupBoxDeckA.Controls.Add(CheckBoxEchoDeckA)
         GroupBoxDeckA.Controls.Add(ButtonSyncDeckA)
-        GroupBoxDeckA.Font = New Font("Segoe UI", 12F, FontStyle.Bold)
-        GroupBoxDeckA.Location = New Point(12, 165)
+        GroupBoxDeckA.Font = New Font("Segoe UI", 12.0F, FontStyle.Bold)
+        GroupBoxDeckA.Location = New Point(12, 200)
         GroupBoxDeckA.Name = "GroupBoxDeckA"
         GroupBoxDeckA.Size = New Size(480, 494)
         GroupBoxDeckA.TabIndex = 0
@@ -137,7 +137,7 @@ Partial Class FormDJ
         ' 
         Button_DeckA_BackTo0.BackgroundImageLayout = ImageLayout.Stretch
         Button_DeckA_BackTo0.FlatStyle = FlatStyle.Flat
-        Button_DeckA_BackTo0.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Button_DeckA_BackTo0.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Button_DeckA_BackTo0.ImageAlign = ContentAlignment.TopCenter
         Button_DeckA_BackTo0.Location = New Point(354, 201)
         Button_DeckA_BackTo0.Name = "Button_DeckA_BackTo0"
@@ -150,7 +150,7 @@ Partial Class FormDJ
         ' 
         LabelTrackDeckA.BackColor = Color.FromArgb(CByte(240), CByte(240), CByte(240))
         LabelTrackDeckA.BorderStyle = BorderStyle.FixedSingle
-        LabelTrackDeckA.Font = New Font("Segoe UI", 10F, FontStyle.Bold)
+        LabelTrackDeckA.Font = New Font("Segoe UI", 10.0F, FontStyle.Bold)
         LabelTrackDeckA.Location = New Point(15, 35)
         LabelTrackDeckA.Name = "LabelTrackDeckA"
         LabelTrackDeckA.Size = New Size(450, 47)
@@ -198,7 +198,7 @@ Partial Class FormDJ
         ' 
         ' LabelDureeDeckA
         ' 
-        LabelDureeDeckA.Font = New Font("Segoe UI", 9F)
+        LabelDureeDeckA.Font = New Font("Segoe UI", 9.0F)
         LabelDureeDeckA.Location = New Point(162, 188)
         LabelDureeDeckA.Name = "LabelDureeDeckA"
         LabelDureeDeckA.Size = New Size(160, 20)
@@ -217,7 +217,7 @@ Partial Class FormDJ
         ' 
         ' LabelVolumeDeckA
         ' 
-        LabelVolumeDeckA.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        LabelVolumeDeckA.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         LabelVolumeDeckA.Location = New Point(15, 281)
         LabelVolumeDeckA.Name = "LabelVolumeDeckA"
         LabelVolumeDeckA.Size = New Size(200, 20)
@@ -238,7 +238,7 @@ Partial Class FormDJ
         ' 
         ' LabelPitchDeckA
         ' 
-        LabelPitchDeckA.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        LabelPitchDeckA.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         LabelPitchDeckA.Location = New Point(265, 281)
         LabelPitchDeckA.Name = "LabelPitchDeckA"
         LabelPitchDeckA.Size = New Size(200, 20)
@@ -248,7 +248,7 @@ Partial Class FormDJ
         ' 
         ' LabelBPMDeckA
         ' 
-        LabelBPMDeckA.Font = New Font("Segoe UI", 14F, FontStyle.Bold)
+        LabelBPMDeckA.Font = New Font("Segoe UI", 14.0F, FontStyle.Bold)
         LabelBPMDeckA.ForeColor = Color.Green
         LabelBPMDeckA.Location = New Point(164, 298)
         LabelBPMDeckA.Name = "LabelBPMDeckA"
@@ -267,7 +267,7 @@ Partial Class FormDJ
         ' 
         ' CheckBoxPhaserDeckA
         ' 
-        CheckBoxPhaserDeckA.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        CheckBoxPhaserDeckA.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         CheckBoxPhaserDeckA.Location = New Point(72, 336)
         CheckBoxPhaserDeckA.Name = "CheckBoxPhaserDeckA"
         CheckBoxPhaserDeckA.Size = New Size(120, 30)
@@ -277,7 +277,7 @@ Partial Class FormDJ
         ' 
         ' CheckBoxReverbDeckA
         ' 
-        CheckBoxReverbDeckA.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        CheckBoxReverbDeckA.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         CheckBoxReverbDeckA.Location = New Point(202, 336)
         CheckBoxReverbDeckA.Name = "CheckBoxReverbDeckA"
         CheckBoxReverbDeckA.Size = New Size(120, 30)
@@ -287,7 +287,7 @@ Partial Class FormDJ
         ' 
         ' CheckBoxEchoDeckA
         ' 
-        CheckBoxEchoDeckA.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        CheckBoxEchoDeckA.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         CheckBoxEchoDeckA.Location = New Point(332, 336)
         CheckBoxEchoDeckA.Name = "CheckBoxEchoDeckA"
         CheckBoxEchoDeckA.Size = New Size(120, 30)
@@ -297,7 +297,7 @@ Partial Class FormDJ
         ' 
         ' ButtonSyncDeckA
         ' 
-        ButtonSyncDeckA.Font = New Font("Segoe UI", 10F, FontStyle.Bold)
+        ButtonSyncDeckA.Font = New Font("Segoe UI", 10.0F, FontStyle.Bold)
         ButtonSyncDeckA.Location = New Point(345, 97)
         ButtonSyncDeckA.Name = "ButtonSyncDeckA"
         ButtonSyncDeckA.Size = New Size(120, 36)
@@ -308,9 +308,9 @@ Partial Class FormDJ
         ' Label_Avertissement
         ' 
         Label_Avertissement.BackColor = Color.Yellow
-        Label_Avertissement.Font = New Font("Segoe UI", 24F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Label_Avertissement.Font = New Font("Segoe UI", 24.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Label_Avertissement.ForeColor = Color.Red
-        Label_Avertissement.Location = New Point(357, 49)
+        Label_Avertissement.Location = New Point(304, -4)
         Label_Avertissement.Name = "Label_Avertissement"
         Label_Avertissement.Size = New Size(365, 47)
         Label_Avertissement.TabIndex = 4
@@ -335,8 +335,8 @@ Partial Class FormDJ
         GroupBoxDeckB.Controls.Add(CheckBoxReverbDeckB)
         GroupBoxDeckB.Controls.Add(CheckBoxEchoDeckB)
         GroupBoxDeckB.Controls.Add(ButtonSyncDeckB)
-        GroupBoxDeckB.Font = New Font("Segoe UI", 12F, FontStyle.Bold)
-        GroupBoxDeckB.Location = New Point(530, 165)
+        GroupBoxDeckB.Font = New Font("Segoe UI", 12.0F, FontStyle.Bold)
+        GroupBoxDeckB.Location = New Point(530, 200)
         GroupBoxDeckB.Name = "GroupBoxDeckB"
         GroupBoxDeckB.Size = New Size(480, 494)
         GroupBoxDeckB.TabIndex = 1
@@ -347,7 +347,7 @@ Partial Class FormDJ
         ' 
         Button_DeckB_BackTo0.BackgroundImageLayout = ImageLayout.Stretch
         Button_DeckB_BackTo0.FlatStyle = FlatStyle.Flat
-        Button_DeckB_BackTo0.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Button_DeckB_BackTo0.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Button_DeckB_BackTo0.ImageAlign = ContentAlignment.TopCenter
         Button_DeckB_BackTo0.Location = New Point(354, 233)
         Button_DeckB_BackTo0.Name = "Button_DeckB_BackTo0"
@@ -360,7 +360,7 @@ Partial Class FormDJ
         ' 
         LabelTrackDeckB.BackColor = Color.FromArgb(CByte(240), CByte(240), CByte(240))
         LabelTrackDeckB.BorderStyle = BorderStyle.FixedSingle
-        LabelTrackDeckB.Font = New Font("Segoe UI", 10F, FontStyle.Bold)
+        LabelTrackDeckB.Font = New Font("Segoe UI", 10.0F, FontStyle.Bold)
         LabelTrackDeckB.Location = New Point(15, 35)
         LabelTrackDeckB.Name = "LabelTrackDeckB"
         LabelTrackDeckB.Size = New Size(450, 47)
@@ -370,7 +370,7 @@ Partial Class FormDJ
         ' 
         ' ButtonPlayDeckB
         ' 
-        ButtonPlayDeckB.Font = New Font("Segoe UI", 16F, FontStyle.Bold)
+        ButtonPlayDeckB.Font = New Font("Segoe UI", 16.0F, FontStyle.Bold)
         ButtonPlayDeckB.Location = New Point(53, 99)
         ButtonPlayDeckB.Name = "ButtonPlayDeckB"
         ButtonPlayDeckB.Size = New Size(85, 50)
@@ -380,7 +380,7 @@ Partial Class FormDJ
         ' 
         ' ButtonCueDeckB
         ' 
-        ButtonCueDeckB.Font = New Font("Segoe UI", 12F, FontStyle.Bold)
+        ButtonCueDeckB.Font = New Font("Segoe UI", 12.0F, FontStyle.Bold)
         ButtonCueDeckB.Location = New Point(200, 99)
         ButtonCueDeckB.Name = "ButtonCueDeckB"
         ButtonCueDeckB.Size = New Size(85, 50)
@@ -390,7 +390,7 @@ Partial Class FormDJ
         ' 
         ' ButtonStopDeckB
         ' 
-        ButtonStopDeckB.Font = New Font("Segoe UI", 16F, FontStyle.Bold)
+        ButtonStopDeckB.Font = New Font("Segoe UI", 16.0F, FontStyle.Bold)
         ButtonStopDeckB.Location = New Point(342, 97)
         ButtonStopDeckB.Name = "ButtonStopDeckB"
         ButtonStopDeckB.Size = New Size(85, 50)
@@ -408,7 +408,7 @@ Partial Class FormDJ
         ' 
         ' LabelDureeDeckB
         ' 
-        LabelDureeDeckB.Font = New Font("Segoe UI", 9F)
+        LabelDureeDeckB.Font = New Font("Segoe UI", 9.0F)
         LabelDureeDeckB.Location = New Point(162, 220)
         LabelDureeDeckB.Name = "LabelDureeDeckB"
         LabelDureeDeckB.Size = New Size(160, 20)
@@ -427,7 +427,7 @@ Partial Class FormDJ
         ' 
         ' LabelVolumeDeckB
         ' 
-        LabelVolumeDeckB.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        LabelVolumeDeckB.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         LabelVolumeDeckB.Location = New Point(15, 313)
         LabelVolumeDeckB.Name = "LabelVolumeDeckB"
         LabelVolumeDeckB.Size = New Size(200, 20)
@@ -448,7 +448,7 @@ Partial Class FormDJ
         ' 
         ' LabelPitchDeckB
         ' 
-        LabelPitchDeckB.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        LabelPitchDeckB.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         LabelPitchDeckB.Location = New Point(265, 313)
         LabelPitchDeckB.Name = "LabelPitchDeckB"
         LabelPitchDeckB.Size = New Size(200, 20)
@@ -458,7 +458,7 @@ Partial Class FormDJ
         ' 
         ' LabelBPMDeckB
         ' 
-        LabelBPMDeckB.Font = New Font("Segoe UI", 14F, FontStyle.Bold)
+        LabelBPMDeckB.Font = New Font("Segoe UI", 14.0F, FontStyle.Bold)
         LabelBPMDeckB.ForeColor = Color.Blue
         LabelBPMDeckB.Location = New Point(85, 345)
         LabelBPMDeckB.Name = "LabelBPMDeckB"
@@ -477,7 +477,7 @@ Partial Class FormDJ
         ' 
         ' CheckBoxPhaserDeckB
         ' 
-        CheckBoxPhaserDeckB.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        CheckBoxPhaserDeckB.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         CheckBoxPhaserDeckB.Location = New Point(85, 395)
         CheckBoxPhaserDeckB.Name = "CheckBoxPhaserDeckB"
         CheckBoxPhaserDeckB.Size = New Size(120, 30)
@@ -487,7 +487,7 @@ Partial Class FormDJ
         ' 
         ' CheckBoxReverbDeckB
         ' 
-        CheckBoxReverbDeckB.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        CheckBoxReverbDeckB.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         CheckBoxReverbDeckB.Location = New Point(215, 395)
         CheckBoxReverbDeckB.Name = "CheckBoxReverbDeckB"
         CheckBoxReverbDeckB.Size = New Size(120, 30)
@@ -497,7 +497,7 @@ Partial Class FormDJ
         ' 
         ' CheckBoxEchoDeckB
         ' 
-        CheckBoxEchoDeckB.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        CheckBoxEchoDeckB.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         CheckBoxEchoDeckB.Location = New Point(345, 395)
         CheckBoxEchoDeckB.Name = "CheckBoxEchoDeckB"
         CheckBoxEchoDeckB.Size = New Size(120, 30)
@@ -507,7 +507,7 @@ Partial Class FormDJ
         ' 
         ' ButtonSyncDeckB
         ' 
-        ButtonSyncDeckB.Font = New Font("Segoe UI", 10F, FontStyle.Bold)
+        ButtonSyncDeckB.Font = New Font("Segoe UI", 10.0F, FontStyle.Bold)
         ButtonSyncDeckB.Location = New Point(85, 435)
         ButtonSyncDeckB.Name = "ButtonSyncDeckB"
         ButtonSyncDeckB.Size = New Size(380, 40)
@@ -521,14 +521,13 @@ Partial Class FormDJ
         GroupBoxMixeur.Controls.Add(ComboBoxFormatEnregistrement)
         GroupBoxMixeur.Controls.Add(LabelEnregistrement)
         GroupBoxMixeur.Controls.Add(ButtonEnregistrement)
-        GroupBoxMixeur.Controls.Add(ComboBoxDisplayMode)
         GroupBoxMixeur.Controls.Add(TrackBarCrossfader)
         GroupBoxMixeur.Controls.Add(LabelCrossfader)
         GroupBoxMixeur.Controls.Add(ButtonRetourModeSimple)
         GroupBoxMixeur.Controls.Add(ButtonParametres)
         GroupBoxMixeur.Controls.Add(ButtonQuitter)
-        GroupBoxMixeur.Font = New Font("Segoe UI", 12F, FontStyle.Bold)
-        GroupBoxMixeur.Location = New Point(12, 665)
+        GroupBoxMixeur.Font = New Font("Segoe UI", 12.0F, FontStyle.Bold)
+        GroupBoxMixeur.Location = New Point(12, 700)
         GroupBoxMixeur.Name = "GroupBoxMixeur"
         GroupBoxMixeur.Size = New Size(998, 150)
         GroupBoxMixeur.TabIndex = 2
@@ -537,7 +536,7 @@ Partial Class FormDJ
         ' 
         ' LabelDureeEnregistrement
         ' 
-        LabelDureeEnregistrement.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        LabelDureeEnregistrement.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         LabelDureeEnregistrement.ForeColor = Color.Red
         LabelDureeEnregistrement.Location = New Point(15, 88)
         LabelDureeEnregistrement.Name = "LabelDureeEnregistrement"
@@ -549,7 +548,7 @@ Partial Class FormDJ
         ' ComboBoxFormatEnregistrement
         ' 
         ComboBoxFormatEnregistrement.DropDownStyle = ComboBoxStyle.DropDownList
-        ComboBoxFormatEnregistrement.Font = New Font("Segoe UI", 9F)
+        ComboBoxFormatEnregistrement.Font = New Font("Segoe UI", 9.0F)
         ComboBoxFormatEnregistrement.FormattingEnabled = True
         ComboBoxFormatEnregistrement.Location = New Point(860, 53)
         ComboBoxFormatEnregistrement.Name = "ComboBoxFormatEnregistrement"
@@ -558,7 +557,7 @@ Partial Class FormDJ
         ' 
         ' LabelEnregistrement
         ' 
-        LabelEnregistrement.Font = New Font("Segoe UI", 8F)
+        LabelEnregistrement.Font = New Font("Segoe UI", 8.0F)
         LabelEnregistrement.Location = New Point(860, 30)
         LabelEnregistrement.Name = "LabelEnregistrement"
         LabelEnregistrement.Size = New Size(130, 20)
@@ -569,7 +568,7 @@ Partial Class FormDJ
         ' ButtonEnregistrement
         ' 
         ButtonEnregistrement.BackColor = Color.FromArgb(CByte(220), CByte(50), CByte(50))
-        ButtonEnregistrement.Font = New Font("Segoe UI", 11F, FontStyle.Bold)
+        ButtonEnregistrement.Font = New Font("Segoe UI", 11.0F, FontStyle.Bold)
         ButtonEnregistrement.ForeColor = Color.White
         ButtonEnregistrement.Location = New Point(15, 30)
         ButtonEnregistrement.Name = "ButtonEnregistrement"
@@ -590,7 +589,7 @@ Partial Class FormDJ
         ' 
         ' LabelCrossfader
         ' 
-        LabelCrossfader.Font = New Font("Segoe UI", 10F, FontStyle.Bold)
+        LabelCrossfader.Font = New Font("Segoe UI", 10.0F, FontStyle.Bold)
         LabelCrossfader.Location = New Point(150, 88)
         LabelCrossfader.Name = "LabelCrossfader"
         LabelCrossfader.Size = New Size(700, 25)
@@ -600,7 +599,7 @@ Partial Class FormDJ
         ' 
         ' ButtonRetourModeSimple
         ' 
-        ButtonRetourModeSimple.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        ButtonRetourModeSimple.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         ButtonRetourModeSimple.Location = New Point(15, 99)
         ButtonRetourModeSimple.Name = "ButtonRetourModeSimple"
         ButtonRetourModeSimple.Size = New Size(110, 40)
@@ -610,7 +609,7 @@ Partial Class FormDJ
         ' 
         ' ButtonParametres
         ' 
-        ButtonParametres.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        ButtonParametres.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         ButtonParametres.Location = New Point(765, 99)
         ButtonParametres.Name = "ButtonParametres"
         ButtonParametres.Size = New Size(112, 40)
@@ -621,7 +620,7 @@ Partial Class FormDJ
         ' ButtonQuitter
         ' 
         ButtonQuitter.BackColor = Color.FromArgb(CByte(200), CByte(60), CByte(60))
-        ButtonQuitter.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        ButtonQuitter.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         ButtonQuitter.ForeColor = Color.White
         ButtonQuitter.Location = New Point(883, 99)
         ButtonQuitter.Name = "ButtonQuitter"
@@ -630,12 +629,20 @@ Partial Class FormDJ
         ButtonQuitter.Text = "✖ Quitter"
         ButtonQuitter.UseVisualStyleBackColor = False
         ' 
+        ' ComboBoxDisplayMode
+        ' 
+        ComboBoxDisplayMode.Items.AddRange(New Object() {"Mode Virtual DJ", "Mode Audacity", "Mode Serato", "Mode Spectogramme", "Mode Lignes"})
+        ComboBoxDisplayMode.Location = New Point(12, 12)
+        ComboBoxDisplayMode.Name = "ComboBoxDisplayMode"
+        ComboBoxDisplayMode.Size = New Size(121, 23)
+        ComboBoxDisplayMode.TabIndex = 8
+        ' 
         ' GroupBoxPlaylist
         ' 
         GroupBoxPlaylist.Controls.Add(ListViewPlaylist)
         GroupBoxPlaylist.Controls.Add(ButtonAjouterPiste)
         GroupBoxPlaylist.Controls.Add(ButtonGererPlaylist)
-        GroupBoxPlaylist.Font = New Font("Segoe UI", 12F, FontStyle.Bold)
+        GroupBoxPlaylist.Font = New Font("Segoe UI", 12.0F, FontStyle.Bold)
         GroupBoxPlaylist.Location = New Point(1020, 12)
         GroupBoxPlaylist.Name = "GroupBoxPlaylist"
         GroupBoxPlaylist.Size = New Size(534, 744)
@@ -682,7 +689,7 @@ Partial Class FormDJ
         ' 
         ' ButtonAjouterPiste
         ' 
-        ButtonAjouterPiste.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        ButtonAjouterPiste.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         ButtonAjouterPiste.Location = New Point(10, 693)
         ButtonAjouterPiste.Name = "ButtonAjouterPiste"
         ButtonAjouterPiste.Size = New Size(160, 40)
@@ -692,7 +699,7 @@ Partial Class FormDJ
         ' 
         ' ButtonGererPlaylist
         ' 
-        ButtonGererPlaylist.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        ButtonGererPlaylist.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         ButtonGererPlaylist.Location = New Point(176, 693)
         ButtonGererPlaylist.Name = "ButtonGererPlaylist"
         ButtonGererPlaylist.Size = New Size(160, 40)
@@ -702,27 +709,28 @@ Partial Class FormDJ
         ' 
         ' Panel_Platine_A
         ' 
-        Panel_Platine_A.Location = New Point(12, 7)
+        Panel_Platine_A.Location = New Point(12, 46)
         Panel_Platine_A.Name = "Panel_Platine_A"
-        Panel_Platine_A.Size = New Size(998, 71)
+        Panel_Platine_A.Size = New Size(1002, 71)
         Panel_Platine_A.TabIndex = 4
         ' 
         ' Panel_Platine_B
         ' 
-        Panel_Platine_B.Location = New Point(12, 84)
+        Panel_Platine_B.Location = New Point(12, 123)
         Panel_Platine_B.Name = "Panel_Platine_B"
-        Panel_Platine_B.Size = New Size(998, 71)
+        Panel_Platine_B.Size = New Size(1002, 71)
         Panel_Platine_B.TabIndex = 5
         ' 
         ' FormDJ
         ' 
-        AutoScaleDimensions = New SizeF(7F, 15F)
+        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(1564, 827)
+        ClientSize = New Size(1564, 862)
         Controls.Add(Label_Avertissement)
         Controls.Add(Panel_Platine_B)
         Controls.Add(Panel_Platine_A)
         Controls.Add(GroupBoxPlaylist)
+        Controls.Add(ComboBoxDisplayMode)
         Controls.Add(GroupBoxMixeur)
         Controls.Add(GroupBoxDeckB)
         Controls.Add(GroupBoxDeckA)

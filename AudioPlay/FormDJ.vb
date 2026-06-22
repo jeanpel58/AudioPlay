@@ -258,13 +258,43 @@ Public Class FormDJ
                 RemoveHandler ComboBoxDisplayMode.SelectedIndexChanged, AddressOf ComboBoxDisplayMode_SelectedIndexChanged
                 AddHandler ComboBoxDisplayMode.SelectedIndexChanged, AddressOf ComboBoxDisplayMode_SelectedIndexChanged
 
-                If Not ComboBoxDisplayMode.Items.Contains("VirtualDJ") Then
-                    ComboBoxDisplayMode.Items.Add("VirtualDJ")
+                ' Remplir le combo depuis les ressources pour la langue actuelle
+                ComboBoxDisplayMode.Items.Clear()
+                Dim modes = New String() {"VirtualDJ", "Audacity", "Spectrogram", "Line", "Serato"}
+                For Each key In modes
+                    Dim resKey = "DisplayMode_" & key
+                    Dim txt = LanguageManager.GetString(resKey)
+                    If Not String.IsNullOrEmpty(txt) Then
+                        ComboBoxDisplayMode.Items.Add(txt)
+                    Else
+                        ComboBoxDisplayMode.Items.Add(key)
+                    End If
+                Next
+
+                ' Sélectionner VirtualDJ par défaut (localisé)
+                Dim defaultText = LanguageManager.GetString("DisplayMode_VirtualDJ")
+                If String.IsNullOrEmpty(defaultText) Then defaultText = "VirtualDJ"
+                If ComboBoxDisplayMode.Items.Contains(defaultText) Then
+                    ComboBoxDisplayMode.SelectedItem = defaultText
+                ElseIf ComboBoxDisplayMode.Items.Count > 0 Then
+                    ComboBoxDisplayMode.SelectedIndex = 0
                 End If
 
-                ComboBoxDisplayMode.SelectedItem = "VirtualDJ"
-                ' Apply via the enum-based helper
-                Dim m = [Enum].Parse(GetType(WaveformControl.DisplayMode), "VirtualDJ")
+                ' Appliquer le mode via enum en résolvant l'item localisé vers l'enum English key
+                Dim selectedKey = "VirtualDJ"
+                Try
+                    Dim selectedTxt = ComboBoxDisplayMode.SelectedItem?.ToString()
+                    ' Trouver l'enum correspondant en comparant aux ressources
+                    For Each key In modes
+                        Dim txt = LanguageManager.GetString("DisplayMode_" & key)
+                        If String.Equals(txt, selectedTxt, StringComparison.OrdinalIgnoreCase) OrElse String.Equals(key, selectedTxt, StringComparison.OrdinalIgnoreCase) Then
+                            selectedKey = key
+                            Exit For
+                        End If
+                    Next
+                Catch
+                End Try
+                Dim m = [Enum].Parse(GetType(WaveformControl.DisplayMode), selectedKey)
                 ApplyDisplayModeToAll(DirectCast(m, WaveformControl.DisplayMode))
             End If
         Catch
@@ -284,9 +314,26 @@ Public Class FormDJ
 
     Private Sub ComboBoxDisplayMode_SelectedIndexChanged(sender As Object, e As EventArgs)
         Try
-            Dim txt = ComboBoxDisplayMode.SelectedItem?.ToString()
-            If String.IsNullOrEmpty(txt) Then Return
-            Dim mode = [Enum].Parse(GetType(WaveformControl.DisplayMode), txt)
+            Dim selectedTxt = ComboBoxDisplayMode.SelectedItem?.ToString()
+            If String.IsNullOrEmpty(selectedTxt) Then Return
+
+            ' Convert localized display text back to enum key (VirtualDJ, Audacity, Spectrogram, Line, Serato)
+            Dim modes = New String() {"VirtualDJ", "Audacity", "Spectrogram", "Line", "Serato"}
+            Dim matchedKey As String = Nothing
+            For Each key In modes
+                Dim txt = LanguageManager.GetString("DisplayMode_" & key)
+                If String.Equals(txt, selectedTxt, StringComparison.OrdinalIgnoreCase) OrElse String.Equals(key, selectedTxt, StringComparison.OrdinalIgnoreCase) Then
+                    matchedKey = key
+                    Exit For
+                End If
+            Next
+
+            If String.IsNullOrEmpty(matchedKey) Then
+                ' Fallback: try to use the selected text as-is (maybe already an enum name)
+                matchedKey = selectedTxt
+            End If
+
+            Dim mode = [Enum].Parse(GetType(WaveformControl.DisplayMode), matchedKey)
             ApplyDisplayModeToAll(DirectCast(mode, WaveformControl.DisplayMode))
         Catch
         End Try
