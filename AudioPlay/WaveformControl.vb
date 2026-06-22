@@ -30,11 +30,42 @@ Public Class WaveformControl
 
     Private waveformData() As Single = Nothing
     Private m_currentPosition As Single = 0.0F ' Position actuelle (0.0 à 1.0)
+    ' Propriétés attendues par FormDJ
+    Public Property Zoom As Single = 1.0F
+    Public Property WaveformColor As Color = Color.Cyan
+    Public ReadOnly Property LastTrimStartPixel As Integer = 0
+    Public ReadOnly Property LastTrimLengthPixels As Integer = 0
 
     Public Sub New()
         Me.DoubleBuffered = True
         Me.Size = New Size(400, 80)
         Me.BackColor = Color.Black
+    End Sub
+
+    ' API events used by FormDJ when interacting with the waveform control
+    Public Event DragStarted()
+    Public Event DragMoved(position As Single)
+    Public Event DragEnded()
+
+    ' Set waveform samples (called from background workers)
+    Public Sub SetWaveformSamples(samples() As Single)
+        waveformData = samples
+        Me.Invalidate()
+    End Sub
+
+    ' Layout helper called by FormDJ
+    Public Sub UpdateLayoutToParent()
+        ' By default do nothing — designer handles placement
+    End Sub
+
+    ' Center view helper (placeholder)
+    Public Sub CenterViewOnCurrentPosition()
+        ' Placeholder: no-op for now
+    End Sub
+
+    ' Onset markers API (no-op — markers disabled by user request)
+    Public Sub SetOnsetMarkers(markers() As Integer)
+        ' Intentionally ignored
     End Sub
 
     ''' <summary>

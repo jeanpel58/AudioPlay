@@ -34,6 +34,10 @@ Public Module ParametresGlobaux
     ' Mode Mixeur DJ
     Public ModeMixeurDJ As Boolean = False ' Mode lecteur simple (False) ou mixeur DJ (True)
 
+    ' Paramètres utilisés par le rendu des waveforms et la détection
+    Public OnsetDetectionSensitivity As Single = 1.8F
+    Public WaveformCacheMaxSizeMB As Integer = 200
+
     ' === Paramètres persistants globaux (répertoires utilisés) ===
     Public repertoireParDefaut As String = ""
     Public dernierRepertoireAjoutFichier As String = ""
