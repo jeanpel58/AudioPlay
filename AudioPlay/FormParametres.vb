@@ -117,6 +117,14 @@ Partial Public Class FormParametres
             ComboBoxMethodeBPM.SelectedIndex = 0 ' Par défaut : Auto
         End If
 
+        ' Initialiser TextBoxPythonPath si défini
+        Try
+            If TextBoxPythonPath IsNot Nothing Then
+                TextBoxPythonPath.Text = ParametresGlobaux.PythonPath
+            End If
+        Catch
+        End Try
+
         ' Initialiser le ComboBox langue
         If ComboBoxLangue IsNot Nothing Then
             ComboBoxLangue.Items.Clear()
@@ -191,6 +199,22 @@ Partial Public Class FormParametres
         ChargerEffetsAudioDansUI()
 
         RefreshLanguage()
+    End Sub
+
+    Private Sub ButtonBrowsePython_Click(sender As Object, e As EventArgs) Handles ButtonBrowsePython.Click
+        Try
+            Using ofd As New OpenFileDialog()
+                ofd.Filter = "python.exe|python.exe|All files|*.*"
+                ofd.Title = "Sélectionner l'exécutable Python"
+                If Not String.IsNullOrEmpty(TextBoxPythonPath.Text) AndAlso File.Exists(TextBoxPythonPath.Text) Then
+                    ofd.FileName = TextBoxPythonPath.Text
+                End If
+                If ofd.ShowDialog() = DialogResult.OK Then
+                    TextBoxPythonPath.Text = ofd.FileName
+                End If
+            End Using
+        Catch
+        End Try
     End Sub
 
     ' Charger la liste des thèmes disponibles
@@ -674,6 +698,15 @@ Partial Public Class FormParametres
             }
 
             File.WriteAllLines(cheminConfig, lignes)
+
+            ' Sauvegarder le chemin Python si fourni
+            Try
+                If TextBoxPythonPath IsNot Nothing Then
+                    ParametresGlobaux.PythonPath = TextBoxPythonPath.Text.Trim()
+                    ParametresGlobauxHelpers.EcrireCleParametres("PythonPath", ParametresGlobaux.PythonPath)
+                End If
+            Catch
+            End Try
 
             ' DEBUG : Vérifier si ModeMixeurDJ a été écrit
             System.Diagnostics.Debug.WriteLine($"Sauvegarde : ModeMixeurDJ={ParametresGlobaux.ModeMixeurDJ}")

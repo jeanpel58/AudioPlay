@@ -34,6 +34,9 @@ Public Module ParametresGlobaux
     ' Mode Mixeur DJ
     Public ModeMixeurDJ As Boolean = False ' Mode lecteur simple (False) ou mixeur DJ (True)
 
+    ' Chemin vers l'exécutable Python s'il est défini par l'utilisateur (optionnel)
+    Public PythonPath As String = ""
+
     ' Paramètres utilisés par le rendu des waveforms et la détection
     Public OnsetDetectionSensitivity As Single = 1.8F
     Public WaveformCacheMaxSizeMB As Integer = 200

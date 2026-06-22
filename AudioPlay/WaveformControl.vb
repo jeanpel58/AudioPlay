@@ -339,7 +339,15 @@ Public Class WaveformControl
             If Not File.Exists(scriptPath) Then
                 Return (Nothing, 0)
             End If
-            Dim psi As New ProcessStartInfo("python", $"""{scriptPath}""" & " " & $"""{audioFilePath}"""") With {
+            Dim pythonExe As String = "python"
+            Try
+                If Not String.IsNullOrEmpty(ParametresGlobaux.PythonPath) AndAlso File.Exists(ParametresGlobaux.PythonPath) Then
+                    pythonExe = ParametresGlobaux.PythonPath
+                End If
+            Catch
+            End Try
+
+            Dim psi As New ProcessStartInfo(pythonExe, $"""{scriptPath}""" & " " & $"""{audioFilePath}"""") With {
                 .UseShellExecute = False,
                 .RedirectStandardOutput = True,
                 .RedirectStandardError = True,

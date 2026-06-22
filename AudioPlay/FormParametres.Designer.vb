@@ -119,6 +119,7 @@ Partial Class FormParametres
         CType(TrackBarPhaserFeedback, ComponentModel.ISupportInitialize).BeginInit()
         CType(TrackBarPhaserMix, ComponentModel.ISupportInitialize).BeginInit()
         SuspendLayout()
+        ' Keep designer consistency (no-op placeholder)
         ' 
         ' GroupBox_TypesAudioDefaut
         ' 
@@ -213,6 +214,32 @@ Partial Class FormParametres
         GroupBoxLecture.Controls.Add(CheckBoxLectureAuto)
         GroupBoxLecture.Controls.Add(LabelMethodeBPM)
         GroupBoxLecture.Controls.Add(ComboBoxMethodeBPM)
+        ' Python path textbox
+        LabelPythonPath = New Label()
+        TextBoxPythonPath = New TextBox()
+        ButtonBrowsePython = New Button()
+        LabelPythonPath.AutoSize = True
+        LabelPythonPath.Location = New Point(15, 320)
+        LabelPythonPath.Name = "LabelPythonPath"
+        LabelPythonPath.Size = New Size(120, 15)
+        LabelPythonPath.TabIndex = 18
+        LabelPythonPath.Text = "Chemin Python (optionnel):"
+
+        TextBoxPythonPath.Location = New Point(150, 318)
+        TextBoxPythonPath.Name = "TextBoxPythonPath"
+        TextBoxPythonPath.Size = New Size(220, 23)
+        TextBoxPythonPath.TabIndex = 19
+
+        ButtonBrowsePython.Location = New Point(375, 316)
+        ButtonBrowsePython.Name = "ButtonBrowsePython"
+        ButtonBrowsePython.Size = New Size(75, 25)
+        ButtonBrowsePython.TabIndex = 20
+        ButtonBrowsePython.Text = "Parcourir"
+        ButtonBrowsePython.UseVisualStyleBackColor = True
+
+        GroupBoxLecture.Controls.Add(LabelPythonPath)
+        GroupBoxLecture.Controls.Add(TextBoxPythonPath)
+        GroupBoxLecture.Controls.Add(ButtonBrowsePython)
         GroupBoxLecture.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         GroupBoxLecture.Location = New Point(12, 180)
         GroupBoxLecture.Name = "GroupBoxLecture"
