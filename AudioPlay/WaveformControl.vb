@@ -8,6 +8,26 @@ Imports NAudio.Wave
 Public Class WaveformControl
     Inherits Control
 
+    Public Enum DisplayMode
+        Audacity
+        VirtualDJ
+        Spectrogram
+        Line
+        Serato
+    End Enum
+
+    Private m_displayMode As DisplayMode = DisplayMode.Audacity
+
+    Public Property DisplayModeSetting As DisplayMode
+        Get
+            Return m_displayMode
+        End Get
+        Set(value As DisplayMode)
+            m_displayMode = value
+            Me.Invalidate()
+        End Set
+    End Property
+
     Private waveformData() As Single = Nothing
     Private m_currentPosition As Single = 0.0F ' Position actuelle (0.0 à 1.0)
     Private cueMarkers As New List(Of Single)() ' Positions des cue points
