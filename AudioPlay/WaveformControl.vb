@@ -30,7 +30,6 @@ Public Class WaveformControl
 
     Private waveformData() As Single = Nothing
     Private m_currentPosition As Single = 0.0F ' Position actuelle (0.0 à 1.0)
-    Private cueMarkers As New List(Of Single)() ' Positions des cue points
 
     Public Sub New()
         Me.DoubleBuffered = True
@@ -82,23 +81,7 @@ Public Class WaveformControl
         End Set
     End Property
 
-    ''' <summary>
-    ''' Ajoute un marqueur de cue point
-    ''' </summary>
-    Public Sub AddCueMarker(position As Single)
-        If Not cueMarkers.Contains(position) Then
-            cueMarkers.Add(position)
-            Me.Invalidate()
-        End If
-    End Sub
-
-    ''' <summary>
-    ''' Efface tous les marqueurs de cue
-    ''' </summary>
-    Public Sub ClearCueMarkers()
-        cueMarkers.Clear()
-        Me.Invalidate()
-    End Sub
+    ' Les marqueurs de cue ont été retirés volontairement (ne pas afficher de marqueurs)
 
     Protected Overrides Sub OnPaint(e As PaintEventArgs)
         MyBase.OnPaint(e)
@@ -117,17 +100,11 @@ Public Class WaveformControl
                 RenderAudacity(g)
         End Select
 
-        ' Dessiner les marqueurs de cue (points rouges)
-        For Each cuePos As Single In cueMarkers
-            Dim x As Integer = CInt(cuePos * Me.Width)
-            Using brush As New SolidBrush(Color.FromArgb(180, Color.Red))
-                g.FillRectangle(brush, x - 2, 0, 4, Me.Height)
-            End Using
-        Next
+        ' Les marqueurs de cue ont été désactivés par demande de l'utilisateur
 
-        ' Dessiner la position actuelle (ligne jaune)
+        ' Dessiner la position actuelle (ligne jaune fine)
         Dim posX As Integer = CInt(m_currentPosition * Me.Width)
-        Using pen As New Pen(Color.Yellow, 2)
+        Using pen As New Pen(Color.Yellow, 1)
             g.DrawLine(pen, posX, 0, posX, Me.Height)
         End Using
 
@@ -150,12 +127,18 @@ Public Class WaveformControl
         Dim centerY As Integer = Me.Height \ 2
         Dim maxHeight As Integer = Me.Height \ 2 - 5
 
+        ' Décalage: garder la waveform à droite de la ligne centrale (ligne jaune)
+        ' On décale l'origine horizontale pour que x=0 commence juste à droite de la ligne centrale
+        Dim centerLineX As Integer = CInt(Me.Width * 0.5F)
+        Dim offset As Integer = 1 ' petit décalage pour que la waveform commence après la ligne
+
         Using pen As New Pen(Color.Cyan, 1)
-            For x As Integer = 0 To Math.Min(Me.Width - 1, waveformData.Length - 1)
-                Dim amplitude As Single = waveformData(x)
+            For xIndex As Integer = 0 To Math.Min(Me.Width - 1 - centerLineX - offset, waveformData.Length - 1)
+                Dim amplitude As Single = waveformData(xIndex)
                 Dim height As Integer = CInt(amplitude * maxHeight)
 
-                ' Ligne verticale représentant l'amplitude
+                Dim x As Integer = centerLineX + offset + xIndex
+                ' Ligne verticale représentant l'amplitude (à droite du centre)
                 g.DrawLine(pen, x, centerY - height, x, centerY + height)
             Next
         End Using
