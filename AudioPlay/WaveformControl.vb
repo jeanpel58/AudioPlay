@@ -1,6 +1,12 @@
 Imports System.Drawing
 Imports System.Windows.Forms
 Imports NAudio.Wave
+Imports System.Diagnostics
+Imports System.Text.Json
+Imports System.IO
+Imports System.Security.Cryptography
+Imports System.Text
+Imports System.Threading.Tasks
 
 ''' <summary>
 ''' Contrôle de visualisation de forme d'onde (waveform) pour afficher la piste audio
@@ -102,10 +108,271 @@ Public Class WaveformControl
             End Using
 
             Me.Invalidate()
+
+            ' Check cache first (AppData). If present and valid, use it. Otherwise run detection async and cache result.
+            Try
+                Dim durationSeconds As Double = 0
+                Try
+                    Using reader2 As New AudioFileReader(audioFilePath)
+                        durationSeconds = reader2.TotalTime.TotalSeconds
+                    End Using
+                Catch
+                End Try
+
+                Dim beatsSeconds As List(Of Double) = Nothing
+                Dim tempo As Double = 0
+                If TryLoadCache(audioFilePath, beatsSeconds, tempo) AndAlso beatsSeconds IsNot Nothing AndAlso beatsSeconds.Count > 0 Then
+                    ' convert to pixels
+                    Dim peaks As New List(Of Integer)()
+                    For Each t In beatsSeconds
+                        Try
+                            If durationSeconds > 0 Then
+                                Dim px = CInt((t / durationSeconds) * waveformData.Length)
+                                If px < 0 Then px = 0
+                                If px >= waveformData.Length Then px = waveformData.Length - 1
+                                peaks.Add(px)
+                            End If
+                        Catch
+                        End Try
+                    Next
+                    If peaks.Count > 0 Then
+                        cachedBeatPositions = peaks
+                        ' compute median diff
+                        Dim diffs As New List(Of Integer)()
+                        For i As Integer = 1 To cachedBeatPositions.Count - 1
+                            diffs.Add(cachedBeatPositions(i) - cachedBeatPositions(i - 1))
+                        Next
+                        If diffs.Count > 0 Then
+                            diffs.Sort()
+                            cachedBeatInterval = diffs(diffs.Count \ 2)
+                            If cachedBeatInterval < 4 Then cachedBeatInterval = 4
+                        End If
+                        Me.Invalidate()
+                    End If
+                Else
+                    ' Run detection in background to avoid blocking UI
+                    Task.Run(Sub()
+                                 Try
+                                     Dim (detBeats, detTempo) = RunPythonDetectBeats(audioFilePath)
+                                     If detBeats IsNot Nothing AndAlso detBeats.Count > 0 Then
+                                         ' save cache
+                                         Try
+                                             SaveCacheAtomic(audioFilePath, detBeats, detTempo)
+                                         Catch
+                                         End Try
+
+                                         ' convert to pixels on UI thread
+                                         Try
+                                             Me.BeginInvoke(New Action(Sub()
+                                                                          Try
+                                                                              Dim peaksLocal As New List(Of Integer)()
+                                                                              For Each t In detBeats
+                                                                                  If durationSeconds > 0 Then
+                                                                                      Dim px = CInt((t / durationSeconds) * waveformData.Length)
+                                                                                      If px < 0 Then px = 0
+                                                                                      If px >= waveformData.Length Then px = waveformData.Length - 1
+                                                                                      peaksLocal.Add(px)
+                                                                                  End If
+                                                                              Next
+                                                                              If peaksLocal.Count > 0 Then
+                                                                                  cachedBeatPositions = peaksLocal
+                                                                                  Dim diffs As New List(Of Integer)()
+                                                                                  For i As Integer = 1 To cachedBeatPositions.Count - 1
+                                                                                      diffs.Add(cachedBeatPositions(i) - cachedBeatPositions(i - 1))
+                                                                                  Next
+                                                                                  If diffs.Count > 0 Then
+                                                                                      diffs.Sort()
+                                                                                      cachedBeatInterval = diffs(diffs.Count \ 2)
+                                                                                      If cachedBeatInterval < 4 Then cachedBeatInterval = 4
+                                                                                  End If
+                                                                                  Me.Invalidate()
+                                                                              End If
+                                                                          Catch
+                                                                          End Try
+                                                                      End Sub))
+                                         Catch
+                                         End Try
+                                     Else
+                                         ' fallback: attempt local peak picking
+                                         Try
+                                             Me.BeginInvoke(New Action(Sub()
+                                                                          Try
+                                                                              ComputeBeatsIfNeeded()
+                                                                              Me.Invalidate()
+                                                                          Catch
+                                                                          End Try
+                                                                      End Sub))
+                                         Catch
+                                         End Try
+                                     End If
+                                 Catch
+                                 End Try
+                             End Sub)
+                End If
+            Catch
+            End Try
         Catch ex As Exception
             ' Erreur silencieuse
         End Try
     End Sub
+
+    ' Cache helpers
+    Private Function GetCacheDirectory() As String
+        Try
+            Dim d = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "CalculatedBeats")
+            If Not Directory.Exists(d) Then
+                Directory.CreateDirectory(d)
+            End If
+            Return d
+        Catch
+            Return Nothing
+        End Try
+    End Function
+
+    Private Function ComputeCacheFileName(audioPath As String) As String
+        Try
+            Using sha As SHA1 = SHA1.Create()
+                Dim bytes = Encoding.UTF8.GetBytes(Path.GetFullPath(audioPath).ToLowerInvariant())
+                Dim hash = sha.ComputeHash(bytes)
+                Dim sb As New StringBuilder()
+                For Each b In hash
+                    sb.Append(b.ToString("x2"))
+                Next
+                Return sb.ToString() & ".beats.json"
+            End Using
+        Catch
+            Return Nothing
+        End Try
+    End Function
+
+    Private Function TryLoadCache(audioPath As String, ByRef beatsSeconds As List(Of Double), ByRef tempo As Double) As Boolean
+        beatsSeconds = Nothing
+        tempo = 0
+        Try
+            Dim cacheDir = GetCacheDirectory()
+            Dim cachePath As String = Nothing
+            If Not String.IsNullOrEmpty(cacheDir) Then
+                Dim fileName = ComputeCacheFileName(audioPath)
+                If Not String.IsNullOrEmpty(fileName) Then
+                    cachePath = Path.Combine(cacheDir, fileName)
+                End If
+            End If
+
+            ' fallback: no cache dir
+            If String.IsNullOrEmpty(cachePath) OrElse Not File.Exists(cachePath) Then
+                Return False
+            End If
+
+            Dim json = File.ReadAllText(cachePath)
+            Dim doc = JsonDocument.Parse(json)
+            Dim root = doc.RootElement
+            If root.TryGetProperty("audioPath", Nothing) Then
+                Dim savedPath = root.GetProperty("audioPath").GetString()
+                If Not String.Equals(Path.GetFullPath(savedPath), Path.GetFullPath(audioPath), StringComparison.OrdinalIgnoreCase) Then
+                    Return False
+                End If
+            End If
+            ' validate mtime/size
+            Dim fileInfo = New FileInfo(audioPath)
+            If root.TryGetProperty("mtimeTicks", Nothing) Then
+                Dim savedTicks = root.GetProperty("mtimeTicks").GetInt64()
+                If savedTicks <> fileInfo.LastWriteTimeUtc.Ticks Then
+                    Return False
+                End If
+            End If
+            If root.TryGetProperty("size", Nothing) Then
+                Dim savedSize = root.GetProperty("size").GetInt64()
+                If savedSize <> fileInfo.Length Then
+                    Return False
+                End If
+            End If
+
+            If root.TryGetProperty("tempo", Nothing) Then
+                tempo = root.GetProperty("tempo").GetDouble()
+            End If
+            If root.TryGetProperty("beats", Nothing) Then
+                beatsSeconds = New List(Of Double)()
+                For Each el In root.GetProperty("beats").EnumerateArray()
+                    beatsSeconds.Add(el.GetDouble())
+                Next
+                Return True
+            End If
+        Catch
+        End Try
+        Return False
+    End Function
+
+    Private Sub SaveCacheAtomic(audioPath As String, beatsSeconds As List(Of Double), tempo As Double)
+        Try
+            Dim cacheDir = GetCacheDirectory()
+            If String.IsNullOrEmpty(cacheDir) Then
+                ' fallback: save next to audio file
+                cacheDir = Path.GetDirectoryName(audioPath)
+            End If
+            Dim fileName = ComputeCacheFileName(audioPath)
+            If String.IsNullOrEmpty(fileName) Then Return
+            Dim targetPath = Path.Combine(cacheDir, fileName)
+
+            Dim fileInfo = New FileInfo(audioPath)
+            Dim payload As New Dictionary(Of String, Object) From {
+                {"audioPath", Path.GetFullPath(audioPath)},
+                {"mtimeTicks", fileInfo.LastWriteTimeUtc.Ticks},
+                {"size", fileInfo.Length},
+                {"tempo", tempo},
+                {"beats", beatsSeconds}
+            }
+
+            Dim tmp = targetPath & ".tmp"
+            Dim json = JsonSerializer.Serialize(payload)
+            File.WriteAllText(tmp, json)
+            If File.Exists(targetPath) Then
+                File.Delete(targetPath)
+            End If
+            File.Move(tmp, targetPath)
+        Catch
+        End Try
+    End Sub
+
+    Private Function RunPythonDetectBeats(audioFilePath As String) As (List(Of Double), Double)
+        Try
+            Dim scriptPath As String = Path.Combine(Application.StartupPath, "Tools", "detect_beats.py")
+            If Not File.Exists(scriptPath) Then
+                Return (Nothing, 0)
+            End If
+            Dim psi As New ProcessStartInfo("python", $"""{scriptPath}""" & " " & $"""{audioFilePath}"""") With {
+                .UseShellExecute = False,
+                .RedirectStandardOutput = True,
+                .RedirectStandardError = True,
+                .CreateNoWindow = True
+            }
+            Using p As Process = Process.Start(psi)
+                If p Is Nothing Then Return (Nothing, 0)
+                Dim stdout As String = p.StandardOutput.ReadToEnd()
+                Dim stderr As String = p.StandardError.ReadToEnd()
+                p.WaitForExit(60000)
+                If String.IsNullOrEmpty(stdout) Then Return (Nothing, 0)
+                Try
+                    Dim doc = JsonDocument.Parse(stdout)
+                    Dim root = doc.RootElement
+                    Dim beats As New List(Of Double)()
+                    Dim tempo As Double = 0
+                    If root.TryGetProperty("beats", Nothing) Then
+                        For Each el In root.GetProperty("beats").EnumerateArray()
+                            beats.Add(el.GetDouble())
+                        Next
+                    End If
+                    If root.TryGetProperty("tempo", Nothing) Then
+                        tempo = root.GetProperty("tempo").GetDouble()
+                    End If
+                    Return (beats, tempo)
+                Catch
+                    Return (Nothing, 0)
+                End Try
+            End Using
+        Catch
+        End Try
+        Return (Nothing, 0)
+    End Function
 
     ' Cache des positions de beats calculées (en pixels)
     Private cachedBeatPositions As List(Of Integer) = Nothing
