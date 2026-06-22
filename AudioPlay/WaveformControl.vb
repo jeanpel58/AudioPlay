@@ -109,29 +109,13 @@ Public Class WaveformControl
         ' Fond noir
         g.Clear(Color.Black)
 
-        If waveformData Is Nothing Then
-            ' Pas de données, afficher un message
-            Using font As New Font("Segoe UI", 10.0F)
-                Dim text As String = "Aucune piste chargée"
-                Dim textSize As SizeF = g.MeasureString(text, font)
-                g.DrawString(text, font, Brushes.Gray, (Me.Width - textSize.Width) / 2, (Me.Height - textSize.Height) / 2)
-            End Using
-            Return
-        End If
-
-        ' Dessiner la forme d'onde
-        Dim centerY As Integer = Me.Height \ 2
-        Dim maxHeight As Integer = Me.Height \ 2 - 5
-
-        Using pen As New Pen(Color.Cyan, 1)
-            For x As Integer = 0 To Math.Min(Me.Width - 1, waveformData.Length - 1)
-                Dim amplitude As Single = waveformData(x)
-                Dim height As Integer = CInt(amplitude * maxHeight)
-
-                ' Ligne verticale représentant l'amplitude
-                g.DrawLine(pen, x, centerY - height, x, centerY + height)
-            Next
-        End Using
+        ' Déléguer le rendu principal selon le mode d'affichage
+        Select Case m_displayMode
+            Case DisplayMode.Audacity
+                RenderAudacity(g)
+            Case Else
+                RenderAudacity(g)
+        End Select
 
         ' Dessiner les marqueurs de cue (points rouges)
         For Each cuePos As Single In cueMarkers
@@ -149,6 +133,32 @@ Public Class WaveformControl
 
         ' Bordure
         g.DrawRectangle(Pens.Gray, 0, 0, Me.Width - 1, Me.Height - 1)
+    End Sub
+
+    Private Sub RenderAudacity(g As Graphics)
+        If waveformData Is Nothing Then
+            ' Pas de données, afficher un message
+            Using font As New Font("Segoe UI", 10.0F)
+                Dim text As String = "Aucune piste chargée"
+                Dim textSize As SizeF = g.MeasureString(text, font)
+                g.DrawString(text, font, Brushes.Gray, (Me.Width - textSize.Width) / 2, (Me.Height - textSize.Height) / 2)
+            End Using
+            Return
+        End If
+
+        ' Dessiner la forme d'onde (style Audacity actuel)
+        Dim centerY As Integer = Me.Height \ 2
+        Dim maxHeight As Integer = Me.Height \ 2 - 5
+
+        Using pen As New Pen(Color.Cyan, 1)
+            For x As Integer = 0 To Math.Min(Me.Width - 1, waveformData.Length - 1)
+                Dim amplitude As Single = waveformData(x)
+                Dim height As Integer = CInt(amplitude * maxHeight)
+
+                ' Ligne verticale représentant l'amplitude
+                g.DrawLine(pen, x, centerY - height, x, centerY + height)
+            Next
+        End Using
     End Sub
 
     ''' <summary>
