@@ -137,7 +137,7 @@ Public Class WaveformControl
         End Select
 
         ' Ligne verticale fixe au centre (repère jaune)
-        Dim centerX As Integer = Me.Width \\ 2
+        Dim centerX As Integer = Me.Width \ 2
         Using centerPen As New Pen(Color.Yellow, 1)
             g.DrawLine(centerPen, centerX, 0, centerX, Me.Height)
         End Using
