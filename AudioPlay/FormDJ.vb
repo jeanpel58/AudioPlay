@@ -263,7 +263,9 @@ Public Class FormDJ
                 End If
 
                 ComboBoxDisplayMode.SelectedItem = "VirtualDJ"
-                ApplyDisplayModeToAllWaveforms("VirtualDJ")
+                ' Apply via the enum-based helper
+                Dim m = [Enum].Parse(GetType(WaveformControl.DisplayMode), "VirtualDJ")
+                ApplyDisplayModeToAll(DirectCast(m, WaveformControl.DisplayMode))
             End If
         Catch
         End Try
