@@ -252,6 +252,22 @@ Public Class FormDJ
         InitialiserEnregistrement()
         Debug.WriteLine("[INIT] FormDJ_Load terminé")
 
+        ' Initialiser le mode d'affichage waveform (global Deck A + Deck B)
+        Try
+            If ComboBoxDisplayMode IsNot Nothing AndAlso Not ComboBoxDisplayMode.IsDisposed Then
+                RemoveHandler ComboBoxDisplayMode.SelectedIndexChanged, AddressOf ComboBoxDisplayMode_SelectedIndexChanged
+                AddHandler ComboBoxDisplayMode.SelectedIndexChanged, AddressOf ComboBoxDisplayMode_SelectedIndexChanged
+
+                If Not ComboBoxDisplayMode.Items.Contains("VirtualDJ") Then
+                    ComboBoxDisplayMode.Items.Add("VirtualDJ")
+                End If
+
+                ComboBoxDisplayMode.SelectedItem = "VirtualDJ"
+                ApplyDisplayModeToAllWaveforms("VirtualDJ")
+            End If
+        Catch
+        End Try
+
         ' === CONFIGURATION CROSSFADER FOCUS & ROULETTE GLOBALE ===
         ' Donner le focus initial à la playlist
         Try
@@ -262,6 +278,24 @@ Public Class FormDJ
         End Try
 
         ' Note : OnMouseWheel est surchargé pour intercepter globalement la roulette
+    End Sub
+
+    Private Sub ComboBoxDisplayMode_SelectedIndexChanged(sender As Object, e As EventArgs)
+        Try
+            Dim txt = ComboBoxDisplayMode.SelectedItem?.ToString()
+            If String.IsNullOrEmpty(txt) Then Return
+            Dim mode = [Enum].Parse(GetType(WaveformControl.DisplayMode), txt)
+            ApplyDisplayModeToAll(DirectCast(mode, WaveformControl.DisplayMode))
+        Catch
+        End Try
+    End Sub
+
+    Private Sub ApplyDisplayModeToAll(mode As WaveformControl.DisplayMode)
+        Try
+            If waveformDeckA IsNot Nothing Then waveformDeckA.DisplayModeSetting = mode
+            If waveformDeckB IsNot Nothing Then waveformDeckB.DisplayModeSetting = mode
+        Catch
+        End Try
     End Sub
 
     ' Message filter instance used to capture mouse wheel while hovering panels
@@ -897,6 +931,44 @@ Public Class FormDJ
 
     Private Sub UpdateCrossfaderLabel(value As Integer)
         LabelCrossfader.Text = String.Format(LanguageManager.GetString("DJ_CrossfaderLabel"), value)
+    End Sub
+
+    Private Sub ComboBoxDisplayMode_SelectedIndexChanged(sender As Object, e As EventArgs)
+        Try
+            Dim modeName As String = "VirtualDJ"
+            If ComboBoxDisplayMode IsNot Nothing AndAlso ComboBoxDisplayMode.SelectedItem IsNot Nothing Then
+                modeName = ComboBoxDisplayMode.SelectedItem.ToString()
+            End If
+            ApplyDisplayModeToAllWaveforms(modeName)
+        Catch
+        End Try
+    End Sub
+
+    Private Sub ApplyDisplayModeToAllWaveforms(modeName As String)
+        Try
+            ApplyDisplayModeToWaveform(waveformDeckA, modeName)
+            ApplyDisplayModeToWaveform(waveformDeckB, modeName)
+        Catch
+        End Try
+    End Sub
+
+    Private Sub ApplyDisplayModeToWaveform(target As Control, modeName As String)
+        Try
+            If target Is Nothing OrElse target.IsDisposed Then Return
+
+            Dim prop = target.GetType().GetProperty("DisplayMode")
+            If prop Is Nothing OrElse Not prop.CanWrite Then Return
+
+            If prop.PropertyType IsNot Nothing AndAlso prop.PropertyType.IsEnum Then
+                Dim enumValue = [Enum].Parse(prop.PropertyType, modeName, True)
+                prop.SetValue(target, enumValue, Nothing)
+            Else
+                prop.SetValue(target, modeName, Nothing)
+            End If
+
+            target.Invalidate()
+        Catch
+        End Try
     End Sub
 
     ' === Handlers BeatSync : Ajustement temporaire du tempo (pitch bend) ===
