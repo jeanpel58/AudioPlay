@@ -142,8 +142,8 @@ Public Class FormDJ
         ' Charger la playlist sauvegardée (en arrière-plan pour réactivité)
         ChargerPlaylistDJ()
 
-        ' Appliquer le thème
-        ThemeManager.ApplyThemeToForm(Me)
+        ' Appliquer le thème (désactivé temporairement pour tester l'apparence designer)
+        ' ThemeManager.ApplyThemeToForm(Me)
 
         ' Localiser l'interface
         RefreshLanguage()
