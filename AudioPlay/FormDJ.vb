@@ -142,6 +142,31 @@ Public Class FormDJ
         ' Charger la playlist sauvegardée (en arrière-plan pour réactivité)
         ChargerPlaylistDJ()
 
+        ' --- Initialiser les contrôles waveform si absents (ajout programmatique)
+        Try
+            If waveformDeckA Is Nothing Then
+                waveformDeckA = New WaveformControl()
+                waveformDeckA.Name = "waveformDeckA"
+                waveformDeckA.Size = New Size(450, 80)
+                waveformDeckA.Location = New Point(15, 85)
+                waveformDeckA.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
+                GroupBoxDeckA.Controls.Add(waveformDeckA)
+                waveformDeckA.BringToFront()
+            End If
+
+            If waveformDeckB Is Nothing Then
+                waveformDeckB = New WaveformControl()
+                waveformDeckB.Name = "waveformDeckB"
+                waveformDeckB.Size = New Size(450, 80)
+                waveformDeckB.Location = New Point(15, 85)
+                waveformDeckB.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
+                GroupBoxDeckB.Controls.Add(waveformDeckB)
+                waveformDeckB.BringToFront()
+            End If
+        Catch ex As Exception
+            Debug.WriteLine($"Erreur initialisation waveform controls: {ex.Message}")
+        End Try
+
         ' Appliquer le thème (désactivé temporairement pour tester l'apparence designer)
         ' ThemeManager.ApplyThemeToForm(Me)
 
