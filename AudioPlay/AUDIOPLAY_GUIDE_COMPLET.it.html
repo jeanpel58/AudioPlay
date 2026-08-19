@@ -484,6 +484,242 @@
                 <div class="warning"><strong>File in riproduzione:</strong> Se il file è in riproduzione, AudioPlay propone di fermarlo prima di salvare. Accetta per consentire la scrittura.</div>
             </section>
 
+            <!-- SEZIONE CD AUDIO -->
+            <section id="cd-audio">
+                <h2>💿 CD Audio - Riproduzione ed Estrazione</h2>
+
+                <div class="success">
+                    <strong>Nuova funzione!</strong><br>
+                    AudioPlay ora può riprodurre ed estrarre CD audio direttamente dalle unità CD/DVD.
+                </div>
+
+                <h3>🎵 Riproduzione CD Audio</h3>
+
+                <div class="button-desc">
+                    <strong>Accesso all'unità CD</strong><br>
+                    Per riprodurre un CD audio:
+                    <ol>
+                        <li>Inserire un CD audio nell'unità CD/DVD</li>
+                        <li>Fare clic sul pulsante <strong>"Aggiungi" (Button_Ajout)</strong> nella barra degli strumenti</li>
+                        <li>Nel menu contestuale che appare, scegliere <strong>"Aggiungi CD Audio"</strong></li>
+                        <li>AudioPlay rileva automaticamente le unità contenenti un CD audio</li>
+                        <li>Selezionare l'unità dall'elenco a discesa</li>
+                        <li>Le tracce del CD vengono visualizzate automaticamente</li>
+                    </ol>
+
+                    <div class="tip">
+                        <strong>Rilevamento automatico:</strong> AudioPlay monitora le unità CD in tempo reale. 
+                        Se si espelle o si inserisce un CD, l'interfaccia si aggiorna automaticamente.
+                    </div>
+                </div>
+
+                <h3>📝 Metadati CD</h3>
+
+                <div class="button-desc">
+                    <strong>Caricamento automatico delle informazioni</strong><br>
+                    AudioPlay recupera automaticamente i metadati del CD:
+                    <ul>
+                        <li><strong>Artista</strong>: Nome dell'artista o del gruppo</li>
+                        <li><strong>Album</strong>: Titolo dell'album</li>
+                        <li><strong>Anno</strong>: Anno di uscita</li>
+                        <li><strong>Genere</strong>: Stile musicale</li>
+                        <li><strong>Titoli delle tracce</strong>: Nome di ogni canzone</li>
+                        <li><strong>Copertina</strong>: Immagine della copertina dell'album (se disponibile)</li>
+                    </ul>
+
+                    <div class="warning">
+                        <strong>Fonti dei metadati:</strong>
+                        <ul>
+                            <li><strong>GnuDB</strong>: Database CD gratuito (predefinito)</li>
+                            <li><strong>MusicBrainz</strong>: Database musicale comunitario</li>
+                            <li><strong>Cache locale</strong>: Metadati salvati da CD letti in precedenza</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>💾 Estrazione CD Audio</h3>
+
+                <div class="button-desc">
+                    <strong>Converti i tuoi CD in file audio</strong><br>
+                    AudioPlay può estrarre tracce da un CD audio sul disco rigido:
+
+                    <h4>📂 Formati di estrazione supportati:</h4>
+                    <table>
+                        <tr>
+                            <th>Formato</th>
+                            <th>Descrizione</th>
+                            <th>Qualità disponibili</th>
+                        </tr>
+                        <tr>
+                            <td><strong>MP3</strong></td>
+                            <td>Formato compresso universale</td>
+                            <td>
+                                • Bassa (128 kbps)<br>
+                                • Media (192 kbps)<br>
+                                • Alta (256 kbps)<br>
+                                • <strong>Molto Alta (320 kbps)</strong> ⭐
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>FLAC</strong></td>
+                            <td>Compressione senza perdita</td>
+                            <td>
+                                • Livello 0 (veloce)<br>
+                                • Livello 5 (bilanciato)<br>
+                                • <strong>Livello 8 (migliore)</strong> ⭐
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>WAV</strong></td>
+                            <td>Formato non compresso (qualità CD)</td>
+                            <td>
+                                • PCM 16-bit 44.1 kHz<br>
+                                • <strong>PCM 24-bit 96 kHz</strong> ⭐<br>
+                                • PCM 32-bit 192 kHz
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>WMA</strong></td>
+                            <td>Windows Media Audio</td>
+                            <td>
+                                • 128 kbps<br>
+                                • 192 kbps<br>
+                                • <strong>256 kbps</strong> ⭐
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="tip">
+                        <strong>Predefinito:</strong> AudioPlay estrae in <strong>MP3</strong> a <strong>Qualità Molto Alta (320 kbps)</strong>
+                    </div>
+                </div>
+
+                <h3>⚙️ Processo di estrazione</h3>
+
+                <div class="button-desc">
+                    <strong>Come estrarre un CD:</strong>
+                    <ol>
+                        <li><strong>Selezionare tracce</strong>: Selezionare le tracce da estrarre nell'elenco</li>
+                        <li><strong>Scegliere formato</strong>: MP3, FLAC, WAV o WMA</li>
+                        <li><strong>Scegliere qualità</strong>: A seconda del formato selezionato</li>
+                        <li><strong>Impostare cartella di salvataggio</strong>: Dove salvare i file</li>
+                        <li><strong>Regolare metadati</strong>:
+                            <ul>
+                                <li>Artista, Album, Anno</li>
+                                <li>Genere, Commento</li>
+                                <li>Numero prima traccia (per album parziali)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Opzioni avanzate</strong>:
+                            <ul>
+                                <li>☑️ <strong>Blocca CD</strong>: Impedisce l'espulsione durante l'estrazione</li>
+                                <li>☑️ <strong>Espelli CD</strong>: Espelle automaticamente il CD al termine</li>
+                                <li>🔊 <strong>Normalizzazione Audio</strong>: Regolare volume di estrazione (1-100%, predefinito 95%)
+                                    <ul>
+                                        <li><strong>95%</strong>: Valore consigliato per evitare saturazione</li>
+                                        <li><strong>100%</strong>: Volume massimo (rischio di distorsione)</li>
+                                        <li><strong>Meno del 95%</strong>: Riduzione del volume se le tracce sono troppo forti</li>
+                                        <li>💾 <em>Il valore viene salvato automaticamente tra le sessioni</em></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><strong>Fare clic su "Estrai"</strong></li>
+                    </ol>
+
+                    <div class="success">
+                        <strong>Organizzazione automatica:</strong><br>
+                        I file vengono organizzati automaticamente in questo modo:<br>
+                        <code>Cartella_Salvataggio\(Anno) Artista - Album\NN - Artista - Titolo.ext</code><br><br>
+                        <strong>Esempio:</strong><br>
+                        <code>Musica\(2005) Paul McCartney - Never Stop Doing What You Love\01 - Paul McCartney - Another Day.mp3</code>
+                    </div>
+
+                    <div class="warning">
+                        <strong>Numerazione intelligente:</strong> I numeri delle tracce vengono formattati automaticamente con zeri iniziali (01, 02... 09, 10, ecc.)
+                    </div>
+                </div>
+
+                <h3>📊 Monitoraggio del progresso</h3>
+
+                <div class="button-desc">
+                    <strong>Indicatori in tempo reale:</strong>
+                    <ul>
+                        <li><strong>Traccia corrente</strong>: Mostra "Artista - Titolo" della traccia attualmente in estrazione</li>
+                        <li><strong>Progresso traccia</strong>: Barra di avanzamento per la traccia corrente</li>
+                        <li><strong>Progresso complessivo</strong>: Barra di avanzamento per tutte le tracce selezionate</li>
+                    </ul>
+
+                    <div class="tip">
+                        <strong>Estrazione in background:</strong> È possibile ridurre a icona la finestra durante l'estrazione. 
+                        AudioPlay continuerà a lavorare in background.
+                    </div>
+                </div>
+
+                <h3>🔧 Installazione automatica di FFMpeg</h3>
+
+                <div class="button-desc">
+                    <strong>Per formati FLAC e WMA:</strong><br>
+                    AudioPlay richiede FFMpeg per estrarre in FLAC e WMA. Se FFMpeg non è installato:
+                    <ol>
+                        <li>AudioPlay rileva automaticamente la sua assenza</li>
+                        <li>Appare una finestra di download</li>
+                        <li>FFMpeg viene scaricato e installato automaticamente</li>
+                        <li>L'estrazione inizia quindi normalmente</li>
+                    </ol>
+
+                    <div class="success">
+                        <strong>Installazione trasparente:</strong> Non devi fare nulla! AudioPlay gestisce tutto automaticamente.
+                    </div>
+
+                    <div class="warning">
+                        <strong>Posizione:</strong> FFMpeg viene installato in <code>Tools\ffmpeg.exe</code> nella cartella di AudioPlay
+                    </div>
+                </div>
+
+                <h3>❓ Domande frequenti</h3>
+
+                <h4>💿 Il mio CD non viene rilevato</h4>
+                <ul>
+                    <li>Verificare che il CD sia inserito correttamente nell'unità</li>
+                    <li>Assicurarsi che sia un CD audio (non MP3 o dati)</li>
+                    <li>Fare nuovamente clic su <strong>Button_Ajout → "Aggiungi CD Audio"</strong></li>
+                    <li>Riavviare AudioPlay se il problema persiste</li>
+                </ul>
+
+                <h4>📝 I metadati non si caricano</h4>
+                <ul>
+                    <li>Verificare la connessione Internet (GnuDB e MusicBrainz ne hanno bisogno)</li>
+                    <li>Provare a cambiare la fonte dei metadati</li>
+                    <li>Il CD potrebbe essere raro o non elencato nei database</li>
+                    <li>È possibile inserire i metadati manualmente nel modulo di estrazione</li>
+                </ul>
+
+                <h4>⚡ L'estrazione è lenta</h4>
+                <ul>
+                    <li>L'estrazione in tempo reale impiega lo stesso tempo della riproduzione del CD</li>
+                    <li>I formati compressi (MP3, FLAC, WMA) aggiungono tempo di codifica</li>
+                    <li>Il formato WAV è il più veloce (nessuna compressione)</li>
+                    <li>Chiudere altre applicazioni per liberare risorse</li>
+                </ul>
+
+                <h4>🔒 Il CD è bloccato</h4>
+                <ul>
+                    <li>Se l'opzione "Blocca CD" è selezionata, il CD non può essere espulso durante l'estrazione</li>
+                    <li>Attendere la fine dell'estrazione</li>
+                    <li>Se selezionata, l'opzione "Espelli CD" lo espellerà automaticamente alla fine</li>
+                    <li>In caso di problema, chiudere AudioPlay e il CD verrà sbloccato</li>
+                </ul>
+
+                <h4>💾 Dove vengono salvati i miei file?</h4>
+                <ul>
+                    <li>I file vengono salvati nella cartella scelta</li>
+                    <li>Viene creata automaticamente una sottocartella: <code>(Anno) Artista - Album</code></li>
+                    <li>I file vengono denominati: <code>NN - Artista - Titolo.ext</code></li>
+                    <li>È possibile modificare la cartella di salvataggio per ogni estrazione</li>
+                </ul>
+            </section>
+
             <section id="funzioni">
                 <h2>✨ Funzioni Avanzate</h2>
 
@@ -506,10 +742,155 @@
                 <h3>🌐 Multilingue</h3>
                 <div class="button-desc"><strong>Interfaccia in 5 lingue</strong><br>AudioPlay è completamente tradotto: Interfaccia completa localizzata, Tutti i messaggi e dialoghi, Documentazione HTML in ogni lingua, Cambio lingua senza reinstallazione.</div>
 
-                <h3>💡 Suggerimenti e Trucchi</h3>
-                <div class="tip"><strong>Scorciatoie essenziali:</strong> Memorizza queste 3 scorciatoie: <span class="key">Spazio</span> (Riproduci/Pausa), <span class="key">Ctrl+S</span> (Muto), <span class="key">Canc</span> (Rimuovi dalla playlist)</div>
-                <div class="tip"><strong>Menu contestuale:</strong> Fai clic destro su una canzone per accedere rapidamente a: Calcola BPM, Mostra metadati, Rimuovi dalla lista</div>
-                <div class="success"><strong>Selezione multipla:</strong> <span class="key">Ctrl</span> + Clic (selezione multipla non consecutiva), <span class="key">Maiusc</span> + Clic (selezione intervallo), <span class="key">Ctrl+A</span> (seleziona tutto)</div>
+                <h3>💡 Prestazioni</h3>
+                <div class="button-desc"><strong>Ottimizzato per prestazioni fluide</strong><br>Basso utilizzo di memoria e CPU, Supporto di playlist di grandi dimensioni (diverse migliaia di tracce), Scansione rapida delle cartelle, Interfaccia reattiva.</div>
+
+                <h3>🔒 Sicurezza</h3>
+                <div class="button-desc"><strong>Nessuna raccolta di dati</strong><br>AudioPlay rispetta la tua privacy: Nessuna telemetria, Tutti i dati rimangono locali, Nessuna connessione Internet richiesta (tranne per i metadati dei CD), Codice open-source.</div>
+            </section>
+
+            <!-- SEZIONE SUGGERIMENTI E CONSIGLI -->
+            <section id="suggerimenti">
+                <h2>💡 Suggerimenti e Consigli</h2>
+
+                <h3>🎯 Utilizzo Ottimale</h3>
+
+                <div class="tip">
+                    <strong>Scorciatoie Essenziali</strong><br>
+                    Memorizza queste 3 scorciatoie per un utilizzo fluido:
+                    <ul>
+                        <li><span class="key">Spazio</span>: Riproduzione / Pausa</li>
+                        <li><span class="key">Ctrl</span> + <span class="key">S</span>: Muto</li>
+                        <li><span class="key">Canc</span>: Rimuovi dalla playlist</li>
+                    </ul>
+                </div>
+
+                <div class="tip">
+                    <strong>Calcolo Rapido BPM</strong><br>
+                    Per calcolare il BPM di tutta la tua playlist:
+                    <ol>
+                        <li>Fai clic sul pulsante BPM</li>
+                        <li>Scegli "Ricalcola BPM per tutte le canzoni"</li>
+                        <li>Lascia che AudioPlay lavori in background</li>
+                    </ol>
+                </div>
+
+                <div class="tip">
+                    <strong>Tema Personalizzato</strong><br>
+                    Crea facilmente il tuo tema:
+                    <ol>
+                        <li>Apri Impostazioni > Temi</li>
+                        <li>Seleziona un tema vicino a quello che desideri</li>
+                        <li>Fai clic su "Duplica"</li>
+                        <li>Personalizza i colori</li>
+                        <li>Salva con un nome univoco</li>
+                    </ol>
+                </div>
+
+                <div class="tip">
+                    <strong>Organizzazione delle Playlist</strong><br>
+                    Organizza le tue canzoni in modo efficiente:
+                    <ul>
+                        <li>Usa <span class="key">Ctrl</span> + <span class="key">↑↓</span> per riorganizzare</li>
+                        <li>Crea playlist tematiche (allenamento, festa, relax)</li>
+                        <li>Salva regolarmente le tue playlist</li>
+                    </ul>
+                </div>
+
+                <h3>⚠️ Punti di Attenzione</h3>
+
+                <div class="warning">
+                    <strong>Modifica dei Metadati</strong><br>
+                    Le modifiche ai metadati sono permanenti. Verifica prima di salvare.
+                </div>
+
+                <div class="warning">
+                    <strong>Calcolo BPM e Loop</strong><br>
+                    Non puoi calcolare il BPM mentre un loop è attivo. Disattiva prima il loop.
+                </div>
+
+                <div class="warning">
+                    <strong>File Protetti</strong><br>
+                    Se un file è di sola lettura o protetto, i metadati non possono essere modificati.
+                </div>
+
+                <h3>🚀 Scorciatoie Avanzate</h3>
+
+                <div class="success">
+                    <strong>Menu Contestuale</strong><br>
+                    Fai clic destro su una canzone per accedere rapidamente a:
+                    <ul>
+                        <li>Calcola il BPM</li>
+                        <li>Mostra i metadati</li>
+                        <li>Rimuovi dalla lista</li>
+                    </ul>
+                </div>
+
+                <div class="success">
+                    <strong>Doppio Clic</strong><br>
+                    Fai doppio clic su una canzone per riprodurla immediatamente.
+                </div>
+
+                <div class="success">
+                    <strong>Selezione Multipla</strong><br>
+                    <ul>
+                        <li><span class="key">Ctrl</span> + Clic: Selezione multipla non consecutiva</li>
+                        <li><span class="key">Maiusc</span> + Clic: Selezione di intervallo</li>
+                        <li><span class="key">Ctrl</span> + <span class="key">A</span>: Seleziona tutto</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SEZIONE RISOLUZIONE PROBLEMI -->
+            <section id="risoluzione-problemi">
+                <h2>🔧 Risoluzione dei Problemi</h2>
+
+                <h3>❓ Problemi Comuni</h3>
+
+                <h4>🔇 Nessun suono</h4>
+                <ul>
+                    <li>Verifica che il volume non sia allo 0%</li>
+                    <li>Verifica che la modalità Muto non sia attivata</li>
+                    <li>Verifica il volume di sistema di Windows</li>
+                    <li>Prova con un altro file audio</li>
+                </ul>
+
+                <h4>❌ Il file non si apre</h4>
+                <ul>
+                    <li>Verifica che il formato sia supportato</li>
+                    <li>Verifica che il file non sia danneggiato</li>
+                    <li>Verifica i permessi del file</li>
+                    <li>Prova a copiare il file in un'altra cartella</li>
+                </ul>
+
+                <h4>🐌 Calcolo BPM lento</h4>
+                <ul>
+                    <li>Il calcolo BPM con SoundTouch è veloce</li>
+                    <li>Il calcolo con librosa (Python) è più preciso ma più lento</li>
+                    <li>Puoi annullare con <span class="key">Esc</span> (con conferma) o <span class="key">Ctrl</span> + <span class="key">Spazio</span> (senza conferma)</li>
+                    <li>Cambia il metodo in Impostazioni > Calcolo BPM</li>
+                </ul>
+
+                <h4>🎨 Il tema non si applica</h4>
+                <ul>
+                    <li>Assicurati di aver fatto clic su "Applica"</li>
+                    <li>Chiudi e riapri le altre finestre (Metadati, Impostazioni)</li>
+                    <li>Verifica che il tema esista nella cartella Themes/</li>
+                </ul>
+
+                <h4>🌍 Il cambio lingua non funziona</h4>
+                <ul>
+                    <li>Chiudi completamente AudioPlay</li>
+                    <li>Riavvia l'applicazione</li>
+                    <li>La lingua si applica all'avvio</li>
+                </ul>
+
+                <h3>📞 Supporto</h3>
+
+                <div class="success">
+                    <strong>Hai bisogno di ulteriore aiuto?</strong><br>
+                    AudioPlay è un software libero e open-source. Per qualsiasi domanda o problema, consulta la documentazione o contatta l'autore.
+                </div>
             </section>
         </div>
 

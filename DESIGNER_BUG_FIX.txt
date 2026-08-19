@@ -1,0 +1,30 @@
+# ============================================================
+# IMPORTANT: BUG DU DESIGNER VISUAL STUDIO
+# ============================================================
+# 
+# Lorsque vous modifiez des boutons dans le designer de Form1,
+# Visual Studio peut créer par erreur une ligne comme :
+#
+#   Dim ButtonModeDJ As Button
+#
+# au début de InitializeComponent() dans Form1.Designer.vb
+#
+# Cette ligne MASQUE le véritable membre de classe et provoque
+# l'erreur: "Object reference not set to an instance of an object"
+#
+# SOLUTION AUTOMATIQUE:
+# ---------------------
+# Après toute modification dans le designer, exécutez :
+#
+#   .\FixDesignerBug.ps1
+#
+# Le script supprimera automatiquement les déclarations locales incorrectes.
+#
+# SOLUTION MANUELLE:
+# ------------------
+# 1. Ouvrir AudioPlay\Form1.Designer.vb
+# 2. Chercher ligne ~25 après "Private Sub InitializeComponent()"
+# 3. Supprimer toute ligne commençant par "Dim Button" ou "Dim Label", etc.
+# 4. Sauvegarder
+#
+# ============================================================

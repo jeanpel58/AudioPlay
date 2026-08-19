@@ -12,9 +12,18 @@ Public Class CDAudioAnalyzer
     '''
     ''' <summary>
     ''' Seuil de détection de silence (en % de l'amplitude maximale)
-    ''' Par défaut 0.1% = -60 dB environ (détecte les silences même faibles)
+    ''' Valeur plus basse = on exige un niveau plus faible pour être considéré comme silence.
+    ''' Réduit les faux positifs sur les fade-outs faibles. Par défaut ~0.03% (~-70 dB)
     ''' </summary>
+    ' Restore previous, less sensitive default to avoid over-trimming after lowering it caused regressions.
     Public Shared Property SilenceThreshold As Double = 0.001
+
+    '''
+    ''' <summary>
+    ''' Activer l'analyse appairée des transitions (true par défaut).
+    ''' Si false, on conserve le comportement historique (analyse piste par piste).
+    ''' </summary>
+    Public Shared Property UsePairwiseAnalysis As Boolean = True
 
     '''
     ''' <summary>
@@ -29,6 +38,20 @@ Public Class CDAudioAnalyzer
     ''' Par défaut 20 secondes après la frontière entre deux pistes
     ''' </summary>
     Public Shared Property TransitionWindowAfterSeconds As Double = 20.0
+
+    '''
+    ''' <summary>
+    ''' Durée minimale de silence requise pour valider une transition (en secondes)
+    ''' Valeur plus élevée = sélection plus stricte (réduit les faux positifs de fade-out)
+    ''' </summary>
+    Public Shared Property MinTransitionSilenceSeconds As Double = 2.5
+
+    '''
+    ''' <summary>
+    ''' Fenêtre de proximité maximale autour de la frontière TOC (en secondes)
+    ''' Valeur plus faible = silence accepté uniquement s'il est proche de la frontière
+    ''' </summary>
+    Public Shared Property TransitionProximityWindowSeconds As Double = 8.0
 
     '''
     ''' <summary>
@@ -91,35 +114,15 @@ Public Class CDAudioAnalyzer
             System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] 🎵 ANALYSE PISTE {track.TrackNumber}")
             System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ═══════════════════════════════════════════")
 
-            ' Si la piste précédente a détecté un silence, utiliser le CENTRE du silence pour démarrer cette piste
-            If previousAnalysis IsNot Nothing AndAlso previousAnalysis.TransitionAnalyzed AndAlso previousAnalysis.SilenceStartFrame > 0 Then
-                ' Utiliser le CENTRE du silence détecté comme point de départ
-                Dim silenceCenter As Integer = (previousAnalysis.SilenceStartFrame + previousAnalysis.SilenceEndFrame) \ 2
-
-                ' Le centre du silence peut être AVANT le StartFrame TOC (c'est normal, on ajuste la frontière!)
-                result.AdjustedStartFrame = silenceCenter
-                result.TrimmedStartFrames = silenceCenter - track.StartFrame  ' Peut être NÉGATIF si on recule!
+            ' Toujours analyser le début de la piste de manière indépendante
+            Dim startTrimFrames = AnalyzeTrackStart(track)
+            If startTrimFrames > 0 Then
+                result.AdjustedStartFrame = track.StartFrame + startTrimFrames
+                result.TrimmedStartFrames = startTrimFrames
                 result.WasAdjusted = True
-
-                System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ✅ Début ajusté au CENTRE du silence précédent (frame {silenceCenter})")
-                System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer]    ├─ TOC original: {track.StartFrame}")
-                System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer]    ├─ Silence de la piste {previousAnalysis.TrackNumber}: {previousAnalysis.SilenceStartFrame}-{previousAnalysis.SilenceEndFrame}")
-                System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer]    └─ Ajustement: {If(result.TrimmedStartFrames >= 0, "+", "")}{result.TrimmedStartFrames / 75.0:F2}s")
-            ElseIf track.TrackNumber = 1 Then
-                ' PISTE 1 : Le TOC est déjà au bon endroit (après le pre-gap standard)
-                ' Ne PAS analyser le début, garder le StartFrame original
-                System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] 🎵 Piste 1 : Début au TOC original (frame {track.StartFrame})")
+                System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ✅ Début ajusté : +{startTrimFrames / 75.0:F2}s ({startTrimFrames} frames)")
             Else
-                ' Pour les autres pistes sans analyse précédente, analyser le début (pre-gap / silence initial)
-                Dim startTrimFrames = AnalyzeTrackStart(track)
-                If startTrimFrames > 0 Then
-                    result.AdjustedStartFrame = track.StartFrame + startTrimFrames
-                    result.TrimmedStartFrames = startTrimFrames
-                    result.WasAdjusted = True
-                    System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ✅ Début ajusté : +{startTrimFrames / 75.0:F2}s ({startTrimFrames} frames)")
-                Else
-                    System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ✅ Début OK : pas de silence détecté")
-                End If
+                System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ✅ Début OK : pas de silence détecté")
             End If
 
             ' Si une piste suivante existe, analyser la TRANSITION
@@ -132,26 +135,31 @@ Public Class CDAudioAnalyzer
                     result.SilenceStartFrame = transitionResult.SilenceStart
                     result.SilenceEndFrame = transitionResult.SilenceEnd
 
-                    ' Ajuster la fin de la piste actuelle au CENTRE du silence
-                    result.AdjustedEndFrame = transitionResult.SilenceCenter
-                    result.TrimmedEndFrames = track.EndFrame - transitionResult.SilenceCenter
+                    ' Ajuster la fin de la piste actuelle au début du silence + marge de sécurité (stratégie conservatrice)
+                    Dim cutFrame As Integer = Math.Min(track.EndFrame, transitionResult.SilenceStart + SafetyMarginFrames)
+                    result.AdjustedEndFrame = cutFrame
+                    result.TrimmedEndFrames = track.EndFrame - cutFrame
                     result.WasAdjusted = True
-                    System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ✅ Fin ajustée au CENTRE du silence : -{result.TrimmedEndFrames / 75.0:F2}s ({result.TrimmedEndFrames} frames)")
-                    System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] 🎯 Coupe au frame {transitionResult.SilenceCenter} (centre du silence {transitionResult.SilenceStart}-{transitionResult.SilenceEnd})")
+                    System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ✅ Fin ajustée (conservatrice): -{result.TrimmedEndFrames / 75.0:F2}s ({result.TrimmedEndFrames} frames)")
+                    System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] 🎯 Coupe au frame {cutFrame} (silence {transitionResult.SilenceStart}-{transitionResult.SilenceEnd}, marge {SafetyMarginFrames} frames)")
                 Else
                     System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ⚠️ Pas de silence clair détecté dans la transition")
                 End If
             Else
-                ' Dernière piste du CD : analyser la fin pour détecter le silence final
-                System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] 🎵 Dernière piste du CD : analyse de fin")
+                ' Dernière piste du CD : analyser la fin pour détecter un silence final valide
+                ' et ne couper que si un silence clair et suffisamment long est trouvé.
+                System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] 🔍 Dernière piste du CD : analyse de fin activée pour détecter silence final")
+
                 Dim endTrimFrames = AnalyzeTrackEnd(track)
                 If endTrimFrames > 0 Then
-                    result.AdjustedEndFrame = track.EndFrame - endTrimFrames
-                    result.TrimmedEndFrames = endTrimFrames
+                    ' Calculer la nouvelle frame de fin
+                    Dim newEndFrame As Integer = Math.Max(track.StartFrame, track.EndFrame - endTrimFrames)
+                    result.AdjustedEndFrame = newEndFrame
+                    result.TrimmedEndFrames = track.EndFrame - newEndFrame
                     result.WasAdjusted = True
-                    System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ✅ Fin ajustée : -{endTrimFrames / 75.0:F2}s ({endTrimFrames} frames)")
+                    System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ✅ Dernière piste : fin ajustée conservativement: -{result.TrimmedEndFrames / 75.0:F2}s ({result.TrimmedEndFrames} frames)")
                 Else
-                    System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ✅ Fin OK : pas de silence détecté")
+                    System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ℹ️ Dernière piste : aucun silence final valide détecté, fin TOC conservée")
                 End If
             End If
 
@@ -289,15 +297,27 @@ Public Class CDAudioAnalyzer
 
                     ' Choisir le silence LE PLUS PROCHE DU TOC avec filtres universels
                     If silencesDetectes.Count > 0 Then
-                        ' FILTRE 1: Durée minimale >= 2 secondes (150 frames)
-                        Dim silencesLongs = silencesDetectes.Where(Function(s) (s.endPos - s.start) >= 150).ToList()
+                        ' FILTRE 1: Durée minimale configurable
+                        Dim minSilenceFrames As Integer = CInt(MinTransitionSilenceSeconds * 75)
+                        Dim silencesLongs = silencesDetectes.Where(Function(s) (s.endPos - s.start) >= minSilenceFrames).ToList()
 
-                        ' FILTRE 2: Proximité au TOC <= 10 secondes (750 frames)
-                        Dim silencesProches = silencesLongs.Where(Function(s) Math.Abs(s.distanceFromTOC) <= 750).ToList()
+                        ' FILTRE 2: Proximité au TOC configurable
+                        Dim proximityFrames As Integer = CInt(TransitionProximityWindowSeconds * 75)
+                        Dim silencesProches = silencesLongs.Where(Function(s) Math.Abs(s.distanceFromTOC) <= proximityFrames).ToList()
 
-                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] 🔍 Filtrage: {silencesDetectes.Count} détectés → {silencesLongs.Count} longs (≥2s) → {silencesProches.Count} proches (≤10s du TOC)")
+                        Dim rejectedByDuration As Integer = silencesDetectes.Count - silencesLongs.Count
+                        Dim rejectedByProximity As Integer = silencesLongs.Count - silencesProches.Count
 
-                        Dim meilleurSilence As (start As Integer, endPos As Integer, distanceFromTOC As Integer)
+                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] 🔍 Filtrage: {silencesDetectes.Count} détectés → {silencesLongs.Count} longs (≥{MinTransitionSilenceSeconds:F1}s) → {silencesProches.Count} proches (≤{TransitionProximityWindowSeconds:F1}s du TOC)")
+                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer]    └─ Rejets: durée={rejectedByDuration}, proximité={rejectedByProximity}")
+
+                        ' Refuser tout trim si aucun silence suffisamment long et proche
+                        If silencesProches.Count = 0 Then
+                            System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ⚠️ Aucun silence valide (long et proche du TOC) -> aucun trim de transition")
+                            Return result
+                        End If
+
+                        Dim meilleurSilence As (start As Integer, endPos As Integer, distanceFromTOC As Double)
 
                         ' PRIORITÉ SUPPLÉMENTAIRE : préférer un silence qui CONTIENT une portion APRÈS le TOC
                         Dim silencesAvecPortionApresTOC = silencesProches.Where(Function(s) s.endPos >= tocBoundary).ToList()
@@ -305,31 +325,23 @@ Public Class CDAudioAnalyzer
                             ' Choisir le plus proche du TOC parmi ceux contenant une portion après le TOC
                             meilleurSilence = silencesAvecPortionApresTOC.OrderBy(Function(s) Math.Abs(s.distanceFromTOC)).First()
                             System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ✅ Silence sélectionné contenant une portion APRÈS le TOC (préférence)")
-                        ElseIf silencesProches.Count > 0 Then
-                            ' Pas de silence contenant une portion après le TOC, choisir le plus proche du TOC parmi les filtrés
+                        Else
+                            ' Choisir le plus proche du TOC parmi les silences valides
                             meilleurSilence = silencesProches.OrderBy(Function(s) Math.Abs(s.distanceFromTOC)).First()
                             System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ✅ Silence universel sélectionné (filtré: long ET proche du TOC)")
-                        ElseIf silencesLongs.Count > 0 Then
-                            ' Pas de silence proche, prendre le plus long disponible
-                            meilleurSilence = silencesLongs.OrderByDescending(Function(s) (s.endPos - s.start)).First()
-                            System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ⚠️ Silence sélectionné (long mais éloigné du TOC)")
-                        Else
-                            ' Aucun silence >= 2s, prendre le plus proche du TOC tout court
-                            meilleurSilence = silencesDetectes.OrderBy(Function(s) Math.Abs(s.distanceFromTOC)).First()
-                            System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ⚠️ Silence court sélectionné (aucun ≥2s trouvé)")
                         End If
 
-                        ' Calculer le CENTRE du silence (point de coupe idéal)
-                        Dim silenceCenter As Integer = (meilleurSilence.start + meilleurSilence.endPos) \ 2
+                        ' Coupe prudente : début du silence + marge de sécurité
+                        Dim cutFrame As Integer = Math.Min(meilleurSilence.endPos, meilleurSilence.start + SafetyMarginFrames)
 
                         result.SilenceFound = True
                         result.SilenceStart = meilleurSilence.start
                         result.SilenceEnd = meilleurSilence.endPos
-                        result.SilenceCenter = silenceCenter
+                        result.SilenceCenter = cutFrame
                         result.SilenceDuration = (meilleurSilence.endPos - meilleurSilence.start) / 75.0
 
                         System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer]    ├─ Début  : frame {meilleurSilence.start} (TOC {(meilleurSilence.start - tocBoundary) / 75.0:F2}s)")
-                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer]    ├─ Centre : frame {silenceCenter} (TOC {(silenceCenter - tocBoundary) / 75.0:F2}s) ⭐")
+                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer]    ├─ Coupe  : frame {cutFrame} (TOC {(cutFrame - tocBoundary) / 75.0:F2}s) ⭐")
                         System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer]    ├─ Fin    : frame {meilleurSilence.endPos} (TOC {(meilleurSilence.endPos - tocBoundary) / 75.0:F2}s)")
                         System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer]    └─ Durée  : {result.SilenceDuration:F2}s")
                     Else
@@ -465,27 +477,56 @@ Public Class CDAudioAnalyzer
                     ' Vérifier si on termine avec un silence
                     If consecutiveSilentSlices >= minConsecutiveSlices AndAlso silenceStartSliceOffset >= 0 Then
                         Dim silenceStart As Integer = readStartFrame + (silenceStartSliceOffset \ 2352)
-                        Dim silenceEnd As Integer = track.EndFrame
+                        Dim silenceEnd As Integer = Math.Min(track.EndFrame, readStartFrame + (bytesRead \ 2352))
                         silencesDetectes.Add((silenceStart, silenceEnd))
-                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer]    🔇 Silence #{silencesDetectes.Count} (fin): frames {silenceStart}-{silenceEnd} ({(silenceEnd - silenceStart) / 75.0:F2}s)")
+                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer]    🔇 Silence #{silencesDetectes.Count} (fin de buffer): frames {silenceStart}-{silenceEnd} ({(silenceEnd - silenceStart) / 75.0:F2}s)")
                     End If
 
-                    ' Choisir le DERNIER silence (celui qui est le plus proche de la fin)
+                    ' Choisir le silence le plus adapté pour la fin de piste
                     If silencesDetectes.Count > 0 Then
-                        Dim dernierSilence = silencesDetectes.OrderByDescending(Function(s) s.start).First()
-                        Dim silenceDuration As Double = (dernierSilence.endPos - dernierSilence.start) / 75.0
+                        Dim tailPreferenceFrames As Integer = CInt(10 * 75) ' Préférer un silence dans les 10 dernières secondes
+                        Dim minimalMusicBeforeCutFrames As Integer = CInt(1 * 75) ' Garder au moins 1s avant le centre de coupe
+                        Dim minSilenceFrames As Integer = CInt(1.5 * 75) ' Exiger au moins 1.5s de silence
 
-                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ✅ Dernier silence trouvé (le plus proche de la fin) !")
-                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer]    ├─ Début  : frame {dernierSilence.start}")
-                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer]    ├─ Fin    : frame {dernierSilence.endPos}")
+                        Dim silencesTries = silencesDetectes.OrderByDescending(Function(s) s.start).ToList()
+                        Dim candidats = silencesTries.Where(Function(s) s.endPos >= track.EndFrame - tailPreferenceFrames AndAlso (s.endPos - s.start) >= minSilenceFrames).ToList()
+
+                        If candidats.Count > 0 Then
+                            System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ✅ Priorité queue: {candidats.Count} silence(s) éligible(s) dans les 10 dernières secondes")
+                        Else
+                            System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ⚠️ Aucun silence de queue éligible (>= {minSilenceFrames / 75.0:F2}s); fin TOC conservée")
+                            Return 0
+                        End If
+
+                        ' Choisir le silence éligible le plus proche de la fin TOC
+                        Dim meilleurSilence = candidats.OrderBy(Function(s) Math.Abs(track.EndFrame - ((s.start + s.endPos) \ 2))).First()
+                        Dim silenceStartFrame As Integer = meilleurSilence.start
+                        Dim silenceEndFrame As Integer = meilleurSilence.endPos
+                        Dim silenceDuration As Double = (silenceEndFrame - silenceStartFrame) / 75.0
+                        Dim cutFrame As Integer = silenceStartFrame + SafetyMarginFrames
+
+                        If (cutFrame - track.StartFrame) < minimalMusicBeforeCutFrames Then
+                            System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ⚠️ Point de coupe trop proche du début (moins de 1s), fin TOC conservée")
+                            Return 0
+                        End If
+
+                        Dim framesToTrim As Integer = track.EndFrame - cutFrame
+
+                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ✅ Silence de fin sélectionné")
+                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer]    ├─ Début  : frame {silenceStartFrame}")
+                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer]    ├─ Fin    : frame {silenceEndFrame}")
                         System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer]    └─ Durée  : {silenceDuration:F2}s")
-
-                        ' Calculer le centre du dernier silence
-                        Dim silenceCenter As Integer = (dernierSilence.start + dernierSilence.endPos) \ 2
-                        Dim framesToTrim As Integer = track.EndFrame - silenceCenter
-
-                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] 🎯 Coupe au CENTRE du dernier silence : frame {silenceCenter}")
+                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] 🎯 Coupe PRUDENTE au début du silence + marge ({SafetyMarginFrames} frames) : frame {cutFrame}")
                         System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer]    └─ Trim : {framesToTrim / 75.0:F2}s ({framesToTrim} frames)")
+
+                        ' Protection : éviter des trims absurdes (silence trouvé près du début de la piste
+                        ' qui conduiraient à une fin <= début). Si le trim dépasse 90% de la longueur de la piste,
+                        ' il s'agit probablement d'un silence en tête (transition précédente) et non de la queue.
+                        Dim totalFrames As Integer = track.EndFrame - track.StartFrame
+                        If totalFrames > 0 AndAlso framesToTrim >= CInt(totalFrames * 0.9) Then
+                            System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ⚠️ Trim rejeté: framesToTrim ({framesToTrim}) >= 90% de la piste ({totalFrames}) -> conserver fin TOC")
+                            Return 0
+                        End If
 
                         Return framesToTrim
                     Else
@@ -530,13 +571,70 @@ Public Class CDAudioAnalyzer
     Public Shared Function AnalyzeSelectedTracks(tracks As List(Of CDAudioManager.CDTrack), selectedIndices As List(Of Integer)) As List(Of TrackAnalysis)
         Dim results As New List(Of TrackAnalysis)
 
+        If Not UsePairwiseAnalysis Then
+            ' Comportement historique : analyser piste par piste
+            For Each index In selectedIndices
+                If index >= 0 AndAlso index < tracks.Count Then
+                    Dim track = tracks(index)
+                    System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] Analyse piste {track.TrackNumber}...")
+                    Dim analysis = AnalyzeTrack(track)
+                    results.Add(analysis)
+                    System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] {analysis.AnalysisMessage}")
+                End If
+            Next
+
+            Return results
+        End If
+
+        ' Nouvelle approche appairée : analyser chaque piste en tenant compte de la piste suivante
         For Each index In selectedIndices
             If index >= 0 AndAlso index < tracks.Count Then
                 Dim track = tracks(index)
-                System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] Analyse piste {track.TrackNumber}...")
-                Dim analysis = AnalyzeTrack(track)
+
+                Dim nextTrack As CDAudioManager.CDTrack = Nothing
+                If index + 1 < tracks.Count Then
+                    nextTrack = tracks(index + 1)
+                End If
+
+                System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] Analyse piste {track.TrackNumber} (pairwise)...")
+                Dim analysis = AnalyzeTrack(track, nextTrack, Nothing)
                 results.Add(analysis)
                 System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] {analysis.AnalysisMessage}")
+            End If
+        Next
+
+        ' Réconciliation paire par paire : éviter tout chevauchement entre la fin d'une piste et le début de la suivante
+        For i As Integer = 0 To results.Count - 2
+            Dim cur = results(i)
+            Dim nxt = results(i + 1)
+
+            ' Calculer valeurs par défaut si non initialisées
+            If nxt.AdjustedStartFrame <= 0 Then
+                nxt.AdjustedStartFrame = nxt.OriginalStartFrame
+            End If
+
+            If cur.AdjustedEndFrame >= nxt.AdjustedStartFrame Then
+                Dim correctedStart As Integer = cur.AdjustedEndFrame + 1
+
+                ' Vérifier l'inversion possible (start >= end)
+                If correctedStart >= nxt.AdjustedEndFrame Then
+                    System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ⚠️ Réconciliation impossible sans inversion entre piste {cur.TrackNumber} et {nxt.TrackNumber} - conservation des positions TOC pour la suivante")
+                    ' Reprendre la position TOC pour la piste suivante pour éviter d'écraser la durée
+                    nxt.AdjustedStartFrame = nxt.OriginalStartFrame
+                    nxt.TrimmedStartFrames = 0
+                Else
+                    System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] 🔧 Réconciliation: déplacement du début de la piste {nxt.TrackNumber} à {correctedStart} pour éviter chevauchement avec piste {cur.TrackNumber}")
+                    nxt.AdjustedStartFrame = correctedStart
+                    nxt.TrimmedStartFrames = nxt.AdjustedStartFrame - nxt.OriginalStartFrame
+                    nxt.WasAdjusted = True
+                End If
+
+                ' Mettre à jour le message d'analyse pour la piste suivante
+                If nxt.WasAdjusted Then
+                    nxt.AnalysisMessage = $"Piste {nxt.TrackNumber}: Début +{nxt.TrimmedStartFrames / 75.0:F2}s, Fin -{nxt.TrimmedEndFrames / 75.0:F2}s"
+                Else
+                    nxt.AnalysisMessage = $"Piste {nxt.TrackNumber}: OK (pas d'ajustement)"
+                End If
             End If
         Next
 

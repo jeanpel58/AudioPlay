@@ -252,6 +252,21 @@
   <data name="Menu_AddDirectory" xml:space="preserve">
     <value>Aggiungi directory...</value>
   </data>
+  <data name="Menu_AddCDAudio" xml:space="preserve">
+    <value>Aggiungi CD audio</value>
+  </data>
+  <data name="CDTrack_Prefix" xml:space="preserve">
+    <value>Traccia</value>
+  </data>
+  <data name="Menu_NoCDDrive" xml:space="preserve">
+    <value>Nessuna unità CD/DVD rilevata</value>
+  </data>
+  <data name="Menu_CDEmpty" xml:space="preserve">
+    <value>vuoto</value>
+  </data>
+  <data name="Menu_CDTracks" xml:space="preserve">
+    <value>tracce</value>
+  </data>
   <data name="Menu_OpenList" xml:space="preserve">
     <value>Apri lista</value>
   </data>
@@ -314,6 +329,12 @@
   </data>
   <data name="BPM_Error_Title" xml:space="preserve">
     <value>Errore BPM</value>
+  </data>
+  <data name="BPM_PythonCheckTitle" xml:space="preserve">
+    <value>Verifica Python</value>
+  </data>
+  <data name="BPM_PythonLibrosa_OK" xml:space="preserve">
+    <value>Librosa è installato e pronto all'uso.</value>
   </data>
   <data name="AudioFilesFilter" xml:space="preserve">
     <value>File audio</value>
@@ -378,6 +399,24 @@
   <data name="Params_BeatsCount" xml:space="preserve">
     <value>Numero di battute:</value>
   </data>
+  <data name="AudioTypes_Applied" xml:space="preserve">
+    <value>Tipi audio applicati.</value>
+  </data>
+  <data name="Button_ApplyNow" xml:space="preserve">
+    <value>Applica ora</value>
+  </data>
+  <data name="LabelLibrosaExist" xml:space="preserve">
+    <value>Verificare se la libreria Librosa è presente sul sistema :</value>
+  </data>
+  <data name="LabelPythonPath" xml:space="preserve">
+    <value>Percorso Python (opzionale) :</value>
+  </data>
+  <data name="ButtonCheckLibrosa" xml:space="preserve">
+    <value>Verifica</value>
+  </data>
+  <data name="ButtonBrowsePython" xml:space="preserve">
+    <value>Sfoglia</value>
+  </data>
   <data name="Params_RemoveSilenceStart" xml:space="preserve">
     <value>Rimuovi silenzi all'inizio delle canzoni</value>
   </data>
@@ -395,6 +434,9 @@
   </data>
   <data name="Button_Cancel" xml:space="preserve">
     <value>Annulla</value>
+  </data>
+  <data name="Button_OK" xml:space="preserve">
+    <value>OK</value>
   </data>
   <data name="Button_Reset" xml:space="preserve">
     <value>Ripristina</value>
@@ -958,6 +1000,21 @@ Per personalizzare i colori:
 • Fare clic su "Salva tema come" per creare una copia modificabile
 • Selezionare un tema creato dall'utente</value>
   </data>
+  <data name="Theme_Name_Default" xml:space="preserve">
+    <value>Predefinito</value>
+  </data>
+  <data name="Theme_Name_Autumn" xml:space="preserve">
+    <value>Autunno</value>
+  </data>
+  <data name="Theme_Name_Ocean" xml:space="preserve">
+    <value>Oceano</value>
+  </data>
+  <data name="Theme_Name_Sun" xml:space="preserve">
+    <value>Sole</value>
+  </data>
+  <data name="Theme_Name_Dark" xml:space="preserve">
+    <value>Scuro</value>
+  </data>
   <data name="Theme_PreinstalledProtected_Title" xml:space="preserve">
     <value>Tema preinstallato protetto</value>
   </data>
@@ -1018,6 +1075,105 @@ Si prega di scegliere un altro nome per il tema.</value>
   </data>
   <data name="Menu_SaveListAs" xml:space="preserve">
     <value>Salvare l'elenco come...</value>
+  </data>
+  <data name="Button_ViewCrashLog" xml:space="preserve">
+    <value>Visualizza ultimo crash</value>
+  </data>
+  <data name="Tip_Button_Play" xml:space="preserve">
+    <value>Riprodurre la canzone selezionata</value>
+  </data>
+  <data name="Tip_Button_Stop" xml:space="preserve">
+    <value>Fermare la canzone in corso</value>
+  </data>
+  <data name="Tip_Button_Add" xml:space="preserve">
+    <value>Aggiungere una o più canzoni o cartella alla finestra della lista...</value>
+  </data>
+  <data name="Tip_Button_ManageList" xml:space="preserve">
+    <value>Gestire la finestra della lista</value>
+  </data>
+  <data name="Tip_TrackBar_Volume" xml:space="preserve">
+    <value>Regolare il volume</value>
+  </data>
+  <data name="Tip_TrackBar_Position" xml:space="preserve">
+    <value>Posizione di riproduzione (trascina per cercare)</value>
+  </data>
+  <data name="Tip_Combo_SearchType" xml:space="preserve">
+    <value>Tipo di ricerca (nome file, BPM, durata)</value>
+  </data>
+  <data name="Tip_Label_Volume" xml:space="preserve">
+    <value>Livello volume corrente</value>
+  </data>
+  <data name="Tip_TrackBar_Aigues" xml:space="preserve">
+    <value>Regolazione generale degli acuti di AudioPlay</value>
+  </data>
+  <data name="Tip_TrackBar_Basses" xml:space="preserve">
+    <value>Regolazione generale dei bassi di AudioPlay</value>
+  </data>
+  <data name="Tip_Label_DureeRestante" xml:space="preserve">
+    <value>Durata rimanente della canzone in corso</value>
+  </data>
+  <data name="Tip_Button_Parametres" xml:space="preserve">
+    <value>Accesso a tutti i parametri di AudioPlay</value>
+  </data>
+  <data name="Tip_Button_Loop_Help" xml:space="preserve">
+    <value>Aiuto per programmare una sezione della canzone con i tasti 'I' e 'O'</value>
+  </data>
+  <data name="Tip_Button_Loop" xml:space="preserve">
+    <value>Riprodurre in loop la sezione della canzone selezionata con i tasti della tastiera 'I' e 'O'...</value>
+  </data>
+  <data name="Tip_Button_InfoSelect" xml:space="preserve">
+    <value>Accesso alle informazioni della canzone selezionata</value>
+  </data>
+  <data name="Tip_Button_DJMode" xml:space="preserve">
+    <value>AudioPlay in modalità DJ (Mixer)</value>
+  </data>
+  <data name="Tip_GroupBox_Avancement" xml:space="preserve">
+    <value>Avanzamento della canzone in corso</value>
+  </data>
+  <data name="Tip_ListView1" xml:space="preserve">
+    <value>Finestra della lista delle canzoni caricate</value>
+  </data>
+  <data name="Tip_Button_APropos" xml:space="preserve">
+    <value>Informazioni su AudioPlay</value>
+  </data>
+  <data name="Tip_Button_AudioPlay_Help" xml:space="preserve">
+    <value>Aiuto generale per AudioPlay</value>
+  </data>
+  <data name="Tip_Combo_TypeRecherche" xml:space="preserve">
+    <value>Scelta della modalità di ricerca</value>
+  </data>
+  <data name="Tip_Button_ClearSearch" xml:space="preserve">
+    <value>Cancellare la ricerca</value>
+  </data>
+  <data name="Tip_Button_Power" xml:space="preserve">
+    <value>Chiudere l'applicazione</value>
+  </data>
+  <data name="Tip_Button_CalculBPM" xml:space="preserve">
+    <value>Calcolare il BPM (Beats per minute) delle canzoni selezionate</value>
+  </data>
+  <data name="Tip_Button_Random" xml:space="preserve">
+    <value>Modalità casuale della lista delle canzoni</value>
+  </data>
+  <data name="Tip_Button_Mute" xml:space="preserve">
+    <value>Silenziare la canzone in corso</value>
+  </data>
+  <data name="Tip_Button_PauseResume" xml:space="preserve">
+    <value>Mettere in pausa / Riprendere la riproduzione</value>
+  </data>
+  <data name="Tip_Button_Next" xml:space="preserve">
+    <value>Canzone successiva</value>
+  </data>
+  <data name="Tip_Button_Previous" xml:space="preserve">
+    <value>Canzone precedente</value>
+  </data>
+  <data name="Tip_TrackBar_ValuePrefix" xml:space="preserve">
+    <value>Valore: </value>
+  </data>
+  <data name="CrashLog_NotFound" xml:space="preserve">
+    <value>Nessun crash registrato (crash.log non trovato).</value>
+  </data>
+  <data name="CrashLog_Title" xml:space="preserve">
+    <value>Log di crash</value>
   </data>
   <data name="Status_Paused" xml:space="preserve">
     <value>In pausa</value>
@@ -1177,6 +1333,18 @@ InnerException StackTrace: {1}</value>
   </data>
   <data name="CheckBox_EffacerChansons" xml:space="preserve">
     <value>Messaggio per confermare la rimozione di una selezione dall'elenco</value>
+  </data>
+  <data name="Search_Placeholder" xml:space="preserve">
+    <value>Cerca...</value>
+  </data>
+  <data name="Search_ByFileName" xml:space="preserve">
+    <value>Nome file</value>
+  </data>
+  <data name="Search_ByBPM" xml:space="preserve">
+    <value>BPM</value>
+  </data>
+  <data name="Search_ByDuration" xml:space="preserve">
+    <value>Durata</value>
   </data>
   <data name="AudioEffects_GroupTitle" xml:space="preserve">
     <value>Effetti Audio</value>
@@ -1538,6 +1706,413 @@ InnerException StackTrace: {1}</value>
   <data name="PlaylistFilesFilter" xml:space="preserve">
     <value>Playlist|*.m3u;*.m3u8|Tutti i file (*.*)|*.*</value>
   </data>
+  <data name="CDSelector_Title" xml:space="preserve">
+    <value>Selezione tracce CD</value>
+  </data>
+  <data name="CDSelector_Source" xml:space="preserve">
+    <value>Fonte:</value>
+  </data>
+  <data name="CDSelector_LoadButton" xml:space="preserve">
+    <value>Carica</value>
+  </data>
+  <data name="CDSelector_ClearCacheButton" xml:space="preserve">
+    <value>Cancella cache</value>
+  </data>
+  <data name="CDSelector_LoadingDefault" xml:space="preserve">
+    <value>Caricamento metadati...</value>
+  </data>
+  <data name="CDSelector_SelectAllButton" xml:space="preserve">
+    <value>Seleziona tutto</value>
+  </data>
+  <data name="CDSelector_DeselectAllButton" xml:space="preserve">
+    <value>Deseleziona tutto</value>
+  </data>
+  <data name="CDSelector_OKButton" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="CDSelector_CancelButton" xml:space="preserve">
+    <value>Annulla</value>
+  </data>
+  <data name="CDSelector_SourceGnuDB" xml:space="preserve">
+    <value>GnuDB</value>
+  </data>
+  <data name="CDSelector_SourceMusicBrainz" xml:space="preserve">
+    <value>MusicBrainz</value>
+  </data>
+  <data name="CDSelector_SourceDiscogs" xml:space="preserve">
+    <value>Discogs</value>
+  </data>
+  <data name="CDSelector_SourceManual" xml:space="preserve">
+    <value>Inserimento manuale</value>
+  </data>
+  <data name="CDSelector_LoadedFromCache" xml:space="preserve">
+    <value>✓ Metadati caricati dalla cache</value>
+  </data>
+  <data name="CDSelector_LoadingAutoGnuDB" xml:space="preserve">
+    <value>Caricamento automatico da GnuDB...</value>
+  </data>
+  <data name="CDSelector_ErrorAutoLoad" xml:space="preserve">
+    <value>Errore di caricamento automatico: {0}</value>
+  </data>
+  <data name="CDSelector_AlbumFound" xml:space="preserve">
+    <value>✓ Album trovato: {0} - {1}</value>
+  </data>
+  <data name="CDSelector_NoMetadataGnuDB" xml:space="preserve">
+    <value>⚠ Nessun metadato trovato su GnuDB</value>
+  </data>
+  <data name="CDSelector_ErrorGnuDB" xml:space="preserve">
+    <value>❌ Errore GnuDB: {0}</value>
+  </data>
+  <data name="CDSelector_ManualMode" xml:space="preserve">
+    <value>Modalità manuale - Puoi modificare i nomi direttamente</value>
+  </data>
+  <data name="CDSelector_ManualInstructions" xml:space="preserve">
+    <value>Inserisci le informazioni manualmente nell'elenco</value>
+  </data>
+  <data name="CDSelector_SourceNotRecognized" xml:space="preserve">
+    <value>Fonte non riconosciuta</value>
+  </data>
+  <data name="CDSelector_ErrorTitle" xml:space="preserve">
+    <value>Errore</value>
+  </data>
+  <data name="CDSelector_LoadingMusicBrainz" xml:space="preserve">
+    <value>Caricamento da MusicBrainz...</value>
+  </data>
+  <data name="CDSelector_NoMetadataMusicBrainz" xml:space="preserve">
+    <value>⚠ Nessun metadato trovato su MusicBrainz</value>
+  </data>
+  <data name="CDSelector_ErrorMusicBrainz" xml:space="preserve">
+    <value>❌ Errore MusicBrainz: {0}</value>
+  </data>
+  <data name="CDSelector_LoadingDiscogs" xml:space="preserve">
+    <value>Ricerca su Discogs...</value>
+  </data>
+  <data name="CDSelector_NoMetadataDiscogs" xml:space="preserve">
+    <value>⚠ Nessun metadato trovato su Discogs</value>
+  </data>
+  <data name="CDSelector_ErrorDiscogs" xml:space="preserve">
+    <value>❌ Errore Discogs: {0}</value>
+  </data>
+  <data name="CDSelector_ConfirmClearCache" xml:space="preserve">
+    <value>Cancellare i metadati in cache per:{0}{1}</value>
+  </data>
+  <data name="CDSelector_ConfirmClearCacheTitle" xml:space="preserve">
+    <value>Conferma</value>
+  </data>
+  <data name="CDSelector_CacheCleared" xml:space="preserve">
+    <value>✓ Cache cancellata - Seleziona una fonte per ricaricare</value>
+  </data>
+  <data name="CDSelector_CacheClearedMessage" xml:space="preserve">
+    <value>I metadati sono stati rimossi dalla cache.{0}Seleziona una fonte dal menu a discesa per ricaricare.</value>
+  </data>
+  <data name="CDSelector_CacheClearedTitle" xml:space="preserve">
+    <value>Cache cancellata</value>
+  </data>
+  <data name="CDSelector_NoCacheForCD" xml:space="preserve">
+    <value>Nessun metadato in cache per questo CD</value>
+  </data>
+  <data name="CDSelector_InformationTitle" xml:space="preserve">
+    <value>Informazione</value>
+  </data>
+  <data name="CDSelector_ErrorClearCache" xml:space="preserve">
+    <value>Errore durante la cancellazione della cache: {0}</value>
+  </data>
+  <data name="CDSelector_DiagnosticTitle" xml:space="preserve">
+    <value>Diagnostica CD</value>
+  </data>
+  <data name="CDSelector_ErrorDiagnostic" xml:space="preserve">
+    <value>Errore diagnostica: {0}</value>
+  </data>
+  <data name="CDSelector_TitleWithDrive" xml:space="preserve">
+    <value>Seleziona tracce CD - {0}</value>
+  </data>
+  <data name="CDSelector_DiscogsArtistPrompt" xml:space="preserve">
+    <value>Inserisci il nome dell'artista:</value>
+  </data>
+  <data name="CDSelector_DiscogsAlbumPrompt" xml:space="preserve">
+    <value>Inserisci il titolo dell'album:</value>
+  </data>
+  <data name="CDSelector_DiscogsSearchTitle" xml:space="preserve">
+    <value>Ricerca Discogs</value>
+  </data>
+  <data name="CDSelector_NoCDDetected" xml:space="preserve">
+    <value>⚠ Nessun CD rilevato nell'unità</value>
+  </data>
+  <data name="CDSelector_NewCDDetected" xml:space="preserve">
+    <value>✓ Nuovo CD rilevato - Caricamento...</value>
+  </data>
+  <data name="CDSelector_ExtractionButton" xml:space="preserve">
+    <value>Estrai traccia/e audio...</value>
+  </data>
+  <data name="CDSelector_NoPistesForExtraction" xml:space="preserve">
+    <value>Nessuna traccia CD disponibile per l'estrazione. Si prega di caricare prima i metadati del CD.</value>
+  </data>
+  <data name="CDSelector_ButtonAdd" xml:space="preserve">
+    <value>Aggiungi...</value>
+  </data>
+  <data name="CDSelector_ButtonSelectAll" xml:space="preserve">
+    <value>Seleziona tutto</value>
+  </data>
+  <data name="CDSelector_ButtonDeselectAll" xml:space="preserve">
+    <value>Deseleziona tutto</value>
+  </data>
+  <data name="CDSelector_ButtonExtraction" xml:space="preserve">
+    <value>Estrai traccia/e audio...</value>
+  </data>
+  <data name="CDSelector_ButtonCancel" xml:space="preserve">
+    <value>Annulla</value>
+  </data>
+  <data name="CDSelector_SelectDeselectAll" xml:space="preserve">
+    <value>Seleziona tutto / Deseleziona tutto</value>
+  </data>
+  <data name="CDSelector_FormTitle" xml:space="preserve">
+    <value>Selezione tracce CD</value>
+  </data>
+  <data name="Compressor_FormTitle" xml:space="preserve">
+    <value>Estrazione CD audio</value>
+  </data>
+  <data name="Compressor_DriveSelection" xml:space="preserve">
+    <value>Selezione unità</value>
+  </data>
+  <data name="Compressor_CDTitle" xml:space="preserve">
+    <value>Titolo CD</value>
+  </data>
+  <data name="Compressor_CDArtist" xml:space="preserve">
+    <value>Artista CD</value>
+  </data>
+  <data name="Compressor_Year" xml:space="preserve">
+    <value>Anno</value>
+  </data>
+  <data name="Compressor_Genre" xml:space="preserve">
+    <value>Genere</value>
+  </data>
+  <data name="Compressor_CoverArt" xml:space="preserve">
+    <value>Copertina CD</value>
+  </data>
+  <data name="Compressor_ImageDimensions" xml:space="preserve">
+    <value>Dimensioni immagine:</value>
+  </data>
+  <data name="Compressor_ImageSize" xml:space="preserve">
+    <value>Dimensione immagine:</value>
+  </data>
+  <data name="Compressor_CDNumber" xml:space="preserve">
+    <value>Numero CD:</value>
+  </data>
+  <data name="Compressor_FirstTrackNumber" xml:space="preserve">
+    <value>Numero prima traccia:</value>
+  </data>
+  <data name="Compressor_Comment" xml:space="preserve">
+    <value>Commento</value>
+  </data>
+  <data name="Compressor_ConversionType" xml:space="preserve">
+    <value>Tipo di conversione:</value>
+  </data>
+  <data name="Compressor_ConversionQuality" xml:space="preserve">
+    <value>Qualità di conversione:</value>
+  </data>
+  <data name="Compressor_SaveDirectory" xml:space="preserve">
+    <value>Directory di salvataggio:</value>
+  </data>
+  <data name="Compressor_ButtonBrowse" xml:space="preserve">
+    <value>Sfoglia</value>
+  </data>
+  <data name="Compressor_ButtonExtract" xml:space="preserve">
+    <value>Estrai</value>
+  </data>
+  <data name="Compressor_ButtonCancel" xml:space="preserve">
+    <value>Annulla</value>
+  </data>
+  <data name="Compressor_AnalyzingTracks" xml:space="preserve">
+    <value>Analisi tracce in corso...</value>
+  </data>
+  <data name="Compressor_AnalyzingTrackProgress" xml:space="preserve">
+    <value>Analisi in corso... Traccia {0} ({1}/{2})</value>
+  </data>
+  <data name="Compressor_CancelConfirmMessage" xml:space="preserve">
+    <value>Vuoi davvero annullare l'estrazione in corso?
+
+La traccia corrente sarà completata prima di fermarsi.</value>
+  </data>
+  <data name="Compressor_CancelConfirmTitle" xml:space="preserve">
+    <value>Conferma annullamento</value>
+  </data>
+  <data name="Compressor_CancelInProgress" xml:space="preserve">
+    <value>Annullamento in corso... (completamento traccia corrente)</value>
+  </data>
+  <data name="Compressor_ExtractionCancelledMessage" xml:space="preserve">
+    <value>Estrazione annullata dall'utente.
+
+{0} traccia/e estratta/e con successo prima dell'annullamento.</value>
+  </data>
+  <data name="Compressor_ExtractionCancelledTitle" xml:space="preserve">
+    <value>Estrazione annullata</value>
+  </data>
+  <data name="Compressor_ExtractionSuccessMessage" xml:space="preserve">
+    <value>{0} traccia/e estratta/e con successo</value>
+  </data>
+  <data name="Compressor_ExtractionFailedMessage" xml:space="preserve">
+    <value>{0} traccia/e fallita/e</value>
+  </data>
+  <data name="Compressor_ExtractionCompletedTitle" xml:space="preserve">
+    <value>Estrazione completata</value>
+  </data>
+  <data name="Compressor_GlobalProgress" xml:space="preserve">
+    <value>Progresso globale: {0} / {1}</value>
+  </data>
+  <data name="Compressor_DefaultComment" xml:space="preserve">
+    <value>Estratto da AudioPlay...</value>
+  </data>
+  <data name="Compressor_ButtonQuit" xml:space="preserve">
+    <value>Esci</value>
+  </data>
+  <data name="Compressor_ButtonEditTracks" xml:space="preserve">
+    <value>Modifica tracce...</value>
+  </data>
+  <data name="Compressor_SelectDeselectAll" xml:space="preserve">
+    <value>Seleziona tutto / Deseleziona tutto</value>
+  </data>
+  <data name="Compressor_EjectCD" xml:space="preserve">
+    <value>Espelli CD al termine...</value>
+  </data>
+  <data name="Compressor_LockCD" xml:space="preserve">
+    <value>Blocca cassetto unità durante l'estrazione</value>
+  </data>
+  <data name="Compressor_ColumnTrack" xml:space="preserve">
+    <value>Traccia</value>
+  </data>
+  <data name="Compressor_ColumnTitle" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Compressor_ColumnArtist" xml:space="preserve">
+    <value>Artista</value>
+  </data>
+  <data name="Compressor_ColumnStart" xml:space="preserve">
+    <value>Inizio</value>
+  </data>
+  <data name="Compressor_ColumnLength" xml:space="preserve">
+    <value>Durata</value>
+  </data>
+  <data name="Compressor_NoMoreCovers" xml:space="preserve">
+    <value>Nessuna altra copertina trovata per questo album.</value>
+  </data>
+  <data name="Compressor_SearchTitle" xml:space="preserve">
+    <value>Ricerca copertina</value>
+  </data>
+  <data name="Compressor_ColumnSize" xml:space="preserve">
+    <value>Dimensione file</value>
+  </data>
+  <data name="Compressor_ColumnCompressedSize" xml:space="preserve">
+    <value>Dimensione file compresso</value>
+  </data>
+  <data name="Compressor_QualityLow" xml:space="preserve">
+    <value>Bassa (128 kbps)</value>
+  </data>
+  <data name="Compressor_QualityMedium" xml:space="preserve">
+    <value>Media (192 kbps)</value>
+  </data>
+  <data name="Compressor_QualityHigh" xml:space="preserve">
+    <value>Alta (256 kbps)</value>
+  </data>
+  <data name="Compressor_QualityVeryHigh" xml:space="preserve">
+    <value>Molto alta (320 kbps)</value>
+  </data>
+  <data name="Compressor_QualityFlacLevel0" xml:space="preserve">
+    <value>Livello 0 (veloce)</value>
+  </data>
+  <data name="Compressor_QualityFlacLevel5" xml:space="preserve">
+    <value>Livello 5 (bilanciato)</value>
+  </data>
+  <data name="Compressor_QualityFlacLevel8" xml:space="preserve">
+    <value>Livello 8 (migliore)</value>
+  </data>
+  <data name="Compressor_QualityWav16" xml:space="preserve">
+    <value>PCM 16-bit 44.1 kHz</value>
+  </data>
+  <data name="Compressor_QualityWav24" xml:space="preserve">
+    <value>PCM 24-bit 96 kHz</value>
+  </data>
+  <data name="Compressor_QualityWav32" xml:space="preserve">
+    <value>PCM 32-bit 192 kHz</value>
+  </data>
+  <data name="Compressor_QualityWma128" xml:space="preserve">
+    <value>128 kbps</value>
+  </data>
+  <data name="Compressor_QualityWma192" xml:space="preserve">
+    <value>192 kbps</value>
+  </data>
+  <data name="Compressor_QualityWma256" xml:space="preserve">
+    <value>256 kbps</value>
+  </data>
+  <data name="EditTracks_FormTitle" xml:space="preserve">
+    <value>Modifica tracce</value>
+  </data>
+  <data name="EditTracks_TrackLabel" xml:space="preserve">
+    <value>Traccia #</value>
+  </data>
+  <data name="EditTracks_TitleLabel" xml:space="preserve">
+    <value>Titolo:</value>
+  </data>
+  <data name="EditTracks_ArtistLabel" xml:space="preserve">
+    <value>Artista:</value>
+  </data>
+  <data name="EditTracks_ButtonPrevious" xml:space="preserve">
+    <value>Traccia precedente</value>
+  </data>
+  <data name="EditTracks_ButtonNext" xml:space="preserve">
+    <value>Traccia successiva</value>
+  </data>
+  <data name="EditTracks_ButtonQuit" xml:space="preserve">
+    <value>Esci</value>
+  </data>
+  <data name="GnuDB_ButtonSubmit" xml:space="preserve">
+    <value>Invia a GnuDB</value>
+  </data>
+  <data name="GnuDB_SubmitDialogTitle" xml:space="preserve">
+    <value>Invia metadati a GnuDB</value>
+  </data>
+  <data name="GnuDB_SubmitDialogMessage" xml:space="preserve">
+    <value>Stai per inviare i metadati di questo CD al database GnuDB.
+
+Questo aiuterà altri utenti a identificare automaticamente questo CD.
+
+Per continuare, inserisci il tuo indirizzo email (richiesto da CDDB):</value>
+  </data>
+  <data name="GnuDB_SubmitEmailLabel" xml:space="preserve">
+    <value>Indirizzo email:</value>
+  </data>
+  <data name="GnuDB_SubmitSuccess" xml:space="preserve">
+    <value>Metadati inviati con successo a GnuDB!
+
+Grazie per il tuo contributo al database.</value>
+  </data>
+  <data name="GnuDB_SubmitSuccessTitle" xml:space="preserve">
+    <value>Invio riuscito</value>
+  </data>
+  <data name="GnuDB_SubmitError" xml:space="preserve">
+    <value>Errore durante l'invio a GnuDB:
+
+{0}</value>
+  </data>
+  <data name="GnuDB_SubmitErrorTitle" xml:space="preserve">
+    <value>Errore di invio</value>
+  </data>
+  <data name="GnuDB_SubmitClipboardCopied" xml:space="preserve">
+    <value>✓ I metadati CDDB sono stati copiati negli appunti!
+
+Il tuo client di posta elettronica si aprirà con un messaggio precompilato per GnuDB.
+
+Rivedi i dati e fai clic su "Invia".
+
+Grazie per il tuo contributo al database GnuDB!</value>
+  </data>
+  <data name="GnuDB_SubmitInvalidEmail" xml:space="preserve">
+    <value>Inserisci un indirizzo email valido.</value>
+  </data>
+  <data name="GnuDB_SubmitMissingData" xml:space="preserve">
+    <value>Impossibile inviare a GnuDB: mancano alcune informazioni obbligatorie.
+
+Assicurati che artista, album e tutti i titoli delle tracce siano compilati.</value>
+  </data>
   <data name="DJ_Sampler_SampleLoaded" xml:space="preserve">
     <value>Sample caricato: {0}</value>
   </data>
@@ -1574,4 +2149,62 @@ InnerException StackTrace: {1}</value>
   <data name="GroupBoxEffetsAudio" xml:space="preserve">
     <value>Effetti Audio</value>
   </data>
+  <data name="FCompress_Label_ImageDimensions" xml:space="preserve">
+    <value>Dimensioni immagine:</value>
+  </data>
+  <data name="FCompress_Label_ImageSite" xml:space="preserve">
+    <value>Sito:</value>
+  </data>
+  <data name="FCompress_Label_ImageSize" xml:space="preserve">
+    <value>Dimensione immagine:</value>
+  </data>
+  <data name="GnuDB_Category" xml:space="preserve">
+    <value>Categoria: {0}</value>
+  </data>
+  <data name="GnuDB_DiscIDError" xml:space="preserve">
+    <value>Impossibile calcolare il DiscID CDDB.</value>
+  </data>
+  <data name="GnuDB_EmailInvalid" xml:space="preserve">
+    <value>Indirizzo e-mail valido richiesto per inviare a GnuDB.</value>
+  </data>
+  <data name="GnuDB_EmailMissing" xml:space="preserve">
+    <value>E-mail mancante</value>
+  </data>
+  <data name="GnuDB_EmailPrompt" xml:space="preserve">
+    <value>Inserisci il tuo indirizzo e-mail.
+
+Questo indirizzo e OBBLIGATORIO affinche GnuDB possa notificarti
+se la tua presentazione e accettata o rifiutata.
+
+La tua e-mail sara utilizzata solo per la notifica.</value>
+  </data>
+  <data name="GnuDB_EmailTitle" xml:space="preserve">
+    <value>Indirizzo e-mail richiesto</value>
+  </data>
+  <data name="GnuDB_Error" xml:space="preserve">
+    <value>Errore</value>
+  </data>
+  <data name="GnuDB_ModePrompt" xml:space="preserve">
+    <value>Vuoi effettuare una presentazione di TEST?
+
+SI = Modalita TEST (consigliata per la prima volta)
+     Il server verifichera la tua presentazione ma non la salvera.
+
+NO = Modalita INVIO (presentazione reale)
+     Il tuo contributo verra aggiunto al database GnuDB.</value>
+  </data>
+  <data name="GnuDB_ModeTitle" xml:space="preserve">
+    <value>Modalita di presentazione</value>
+  </data>
+  <data name="GnuDB_TestTitle" xml:space="preserve">
+    <value>Test di presentazione</value>
+  </data>
+  <data name="FCompress_Label_Normalization" xml:space="preserve">
+    <value>Normalizzazione Audio</value>
+  </data>
+  <data name="FormInputEmail_Title" xml:space="preserve">
+    <value>Inviare email a GnuDB</value>
+  </data>
+
+
 </root>

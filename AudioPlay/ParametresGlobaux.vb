@@ -57,6 +57,15 @@ Public Module ParametresGlobaux
     Public dernierRepertoirePlaylist_DJ As String = ""
     Public avantDernierRepertoireAjoutRepertoire_DJ As String = ""
     Public dernierRepertoireAjoutRepertoireChoisi_DJ As String = ""
+    ' === Répertoire d'extraction CD ===
+    Public repertoireExtractionCD As String = ""
+    ' === Volume d'extraction CD (1-100, défaut 95) ===
+    Public volumeExtractionCD As Integer = 95
+    ' === Mode TOC précis pour extraction CD (pour les albums sans silences) ===
+    Public ModeTOCPrecis As Boolean = False
+    ' === Suppression des silences ===
+    Public SupprimerSilenceDebut As Boolean = False
+    Public SupprimerSilenceFin As Boolean = False
     ' Supprimer de manière robuste un dossier temporaire créé par AudioPlay
     Public Sub SupprimerDossierTemporaire(ByVal dossier As String)
         If String.IsNullOrEmpty(dossier) Then Return

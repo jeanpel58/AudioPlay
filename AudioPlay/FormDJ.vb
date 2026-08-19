@@ -4,6 +4,24 @@ Imports NAudio.Wave
 Imports NAudio.Wave.SampleProviders
 
 Public Class FormDJ
+    ' API Windows pour enlever le bouton X
+    Private Const SC_CLOSE As Integer = &HF060
+    Private Const MF_BYCOMMAND As Integer = &H0
+
+    <System.Runtime.InteropServices.DllImport("user32.dll")>
+    Private Shared Function GetSystemMenu(hWnd As IntPtr, bRevert As Boolean) As IntPtr
+    End Function
+
+    <System.Runtime.InteropServices.DllImport("user32.dll")>
+    Private Shared Function RemoveMenu(hMenu As IntPtr, uPosition As UInteger, uFlags As UInteger) As Boolean
+    End Function
+
+    Protected Overrides Sub OnLoad(e As EventArgs)
+        MyBase.OnLoad(e)
+        Dim hMenu As IntPtr = GetSystemMenu(Me.Handle, False)
+        RemoveMenu(hMenu, SC_CLOSE, MF_BYCOMMAND)
+    End Sub
+
     ' === Variables de lecture pour les deux platines ===
     Private lecteurDeckA As IWavePlayer = Nothing
     Private fichierAudioDeckA As AudioFileReader = Nothing

@@ -265,7 +265,7 @@ Public Class SilenceDetector
     ''' <summary>
     ''' Analyse un fichier pour trouver la durée réelle (sans le silence à la fin)
     ''' </summary>
-    Public Shared Function TrouverDureeReelle(cheminFichier As String, Optional seuilSilence As Single = 0.01F) As TimeSpan
+    Public Shared Function TrouverDureeReelle(cheminFichier As String, Optional seuilSilence As Single = 0.001F) As TimeSpan
         Try
             Using reader As New AudioFileReader(cheminFichier)
                 ' Lire le fichier à l'envers par blocs pour trouver le dernier son

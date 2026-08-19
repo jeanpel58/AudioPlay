@@ -5,6 +5,33 @@ Imports System.Linq
 Partial Public Class FormParametres
     Inherits Form
 
+    ' API Windows pour enlever le bouton X
+    Private Const SC_CLOSE As Integer = &HF060
+    Private Const MF_BYCOMMAND As Integer = &H0
+
+    <System.Runtime.InteropServices.DllImport("user32.dll")>
+    Private Shared Function GetSystemMenu(hWnd As IntPtr, bRevert As Boolean) As IntPtr
+    End Function
+
+    <System.Runtime.InteropServices.DllImport("user32.dll")>
+    Private Shared Function RemoveMenu(hMenu As IntPtr, uPosition As UInteger, uFlags As UInteger) As Boolean
+    End Function
+
+    Protected Overrides Sub OnLoad(e As EventArgs)
+        MyBase.OnLoad(e)
+        Dim hMenu As IntPtr = GetSystemMenu(Me.Handle, False)
+        RemoveMenu(hMenu, SC_CLOSE, MF_BYCOMMAND)
+    End Sub
+
+    ' Helper type pour stocker la clé interne du thème et le label affiché
+    Private Class ThemeDisplayItem
+        Public Property Key As String
+        Public Property Label As String
+        Public Overrides Function ToString() As String
+            Return Label
+        End Function
+    End Class
+
     Private cheminConfig As String = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "AudioPlay",
@@ -94,18 +121,20 @@ Partial Public Class FormParametres
     Public Property NombreBeatsMetronome As Integer
 
     <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
-    Public Property SupprimerSilenceDebut As Boolean
-
-    <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
-    Public Property SupprimerSilenceFin As Boolean
-
-    <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Property LangueChoisie As String
 
     ' Méthodes pour définir et obtenir LectureEnContinu
     Public Sub DefinirLectureEnContinu(valeur As Boolean)
         LectureEnContinu = valeur
     End Sub
+
+    ' Retourne la clé interne du thème sélectionné dans la ComboBox (ou chaîne vide)
+    Private Function GetSelectedThemeKey() As String
+        If ComboBoxThemes Is Nothing OrElse ComboBoxThemes.SelectedItem Is Nothing Then Return ""
+        Dim disp = TryCast(ComboBoxThemes.SelectedItem, ThemeDisplayItem)
+        If disp IsNot Nothing Then Return disp.Key
+        Return ComboBoxThemes.SelectedItem.ToString()
+    End Function
 
     Private Async Sub ButtonCheckLibrosa_Click(sender As Object, e As EventArgs) Handles ButtonCheckLibrosa.Click
         Try
@@ -140,9 +169,9 @@ Partial Public Class FormParametres
                 progressForm.Show(Me)
 
                 Dim progress = New Progress(Of String)(Sub(msg)
-                                                          lblProgress.Text = msg
-                                                          Application.DoEvents()
-                                                      End Sub)
+                                                           lblProgress.Text = msg
+                                                           Application.DoEvents()
+                                                       End Sub)
 
                 Dim success = Await PythonManager.InstallerPythonEmbedded(progress)
                 progressForm.Close()
@@ -156,6 +185,90 @@ Partial Public Class FormParametres
             MessageBox.Show(LanguageManager.GetString("BPM_PythonCheck_Error"), LanguageManager.GetString("BPM_PythonCheckTitle"), MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
+
+    ' Bouton Appliquer maintenant (applique immédiatement les associations choisies)
+    Private Sub ButtonApplyNow_Click(sender As Object, e As EventArgs) Handles ButtonApplyNow.Click
+        Try
+            ' Lire l'état des cases
+            Dim mp3 = (CheckBox_MP3 IsNot Nothing AndAlso CheckBox_MP3.Checked)
+            Dim wav = (CheckBox_WAV IsNot Nothing AndAlso CheckBox_WAV.Checked)
+            Dim flac = (CheckBox_FLAC IsNot Nothing AndAlso CheckBox_FLAC.Checked)
+            Dim aac = (CheckBox_AAC IsNot Nothing AndAlso CheckBox_AAC.Checked)
+            Dim wma = (CheckBox_WMA IsNot Nothing AndAlso CheckBox_WMA.Checked)
+
+            ' Appliquer les associations immédiatement
+            If mp3 Then SetAudioPlayDefault(".mp3", "AudioPlay.mp3") Else RemoveAudioPlayDefault(".mp3")
+            If wav Then SetAudioPlayDefault(".wav", "AudioPlay.wav") Else RemoveAudioPlayDefault(".wav")
+            If flac Then SetAudioPlayDefault(".flac", "AudioPlay.flac") Else RemoveAudioPlayDefault(".flac")
+            If aac Then SetAudioPlayDefault(".aac", "AudioPlay.aac") Else RemoveAudioPlayDefault(".aac")
+            If wma Then SetAudioPlayDefault(".wma", "AudioPlay.wma") Else RemoveAudioPlayDefault(".wma")
+
+            ' Sauvegarder la préférence pour la prochaine exécution
+            AudioDefautManager.SauvegarderAudioDefaut(mp3, flac, wma, wav, aac)
+            ' Essayer d'ouvrir l'UI d'association avancée pour chaque ProgID appliqué (COM IApplicationAssociationRegistrationUI)
+            Dim launchedAny As Boolean = False
+            If mp3 Then launchedAny = TryLaunchAdvancedAssociationUI("AudioPlay.mp3") Or launchedAny
+            If flac Then launchedAny = TryLaunchAdvancedAssociationUI("AudioPlay.flac") Or launchedAny
+            If wma Then launchedAny = TryLaunchAdvancedAssociationUI("AudioPlay.wma") Or launchedAny
+            If wav Then launchedAny = TryLaunchAdvancedAssociationUI("AudioPlay.wav") Or launchedAny
+            If aac Then launchedAny = TryLaunchAdvancedAssociationUI("AudioPlay.aac") Or launchedAny
+
+            If Not launchedAny Then
+                ' Fallback : ouvrir la page Paramètres des applications par défaut
+                Try
+                    Process.Start(New ProcessStartInfo("ms-settings:defaultapps") With {.UseShellExecute = True})
+                Catch
+                End Try
+            End If
+
+            MessageBox.Show(LanguageManager.GetString("AudioTypes_Applied"), LanguageManager.GetString("Success_Title"), MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Catch ex As Exception
+            MessageBox.Show(LanguageManager.GetString("Error_FileAssociation", ex.Message), LanguageManager.GetString("Error_Title"), MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    ''' <summary>
+    ''' Tente d'appeler l'API COM IApplicationAssociationRegistrationUI::LaunchAdvancedAssociationUI
+    ''' en utilisant un CreateInstance via ProgID/Reflection. Retourne True si l'appel a été lancé.
+    ''' </summary>
+    Private Function TryLaunchAdvancedAssociationUI(appRegistryName As String) As Boolean
+        Try
+            ' Tenter d'obtenir le type via ProgID (si disponible sur le système)
+            Dim comType As Type = Nothing
+            Try
+                comType = Type.GetTypeFromProgID("ApplicationAssociationRegistrationUI")
+            Catch
+            End Try
+
+            If comType Is Nothing Then
+                ' Essayer via CLSID connu (si présent sur le système) - utiliser reflection prudente
+                Try
+                    ' CLSID may not be registered on all systems; use documented ProgID first
+                    comType = Type.GetTypeFromCLSID(New Guid("1968106D-F3B5-44CF-890E-1164BA91A3F0"))
+                Catch
+                    comType = Nothing
+                End Try
+            End If
+
+            If comType Is Nothing Then Return False
+
+            Dim comObj = Activator.CreateInstance(comType)
+            If comObj Is Nothing Then Return False
+
+            ' Rechercher la méthode LaunchAdvancedAssociationUI
+            Dim mi = comType.GetMethod("LaunchAdvancedAssociationUI")
+            If mi Is Nothing Then
+                ' Parfois la méthode est définie sur l'interface; tenter d'invoquer via late-binding
+                mi = comObj.GetType().GetMethod("LaunchAdvancedAssociationUI")
+            End If
+            If mi Is Nothing Then Return False
+
+            mi.Invoke(comObj, New Object() {appRegistryName})
+            Return True
+        Catch
+            Return False
+        End Try
+    End Function
 
     Public Function ObtenirLectureEnContinu() As Boolean
         Return LectureEnContinu
@@ -212,7 +325,9 @@ Partial Public Class FormParametres
 
         ' Gérer la protection des thèmes préinstallés au chargement
         If ComboBoxThemes IsNot Nothing AndAlso ComboBoxThemes.SelectedItem IsNot Nothing Then
-            GererProtectionThemesPreinstalles(ComboBoxThemes.SelectedItem.ToString())
+            Dim _disp = TryCast(ComboBoxThemes.SelectedItem, ThemeDisplayItem)
+            Dim _key As String = If(_disp IsNot Nothing, _disp.Key, ComboBoxThemes.SelectedItem.ToString())
+            GererProtectionThemesPreinstalles(_key)
         End If
 
         ' Synchroniser la case "Effacer chansons" avec la variable globale
@@ -270,18 +385,42 @@ Partial Public Class FormParametres
     ' Charger la liste des thèmes disponibles
     Private Sub ChargerListeThemes()
         If ComboBoxThemes Is Nothing Then Return
-
         ComboBoxThemes.Items.Clear()
         Dim themes = ThemeManager.GetAvailableThemes()
+
+        ' Construire des éléments affichés localisés mais conserver la clé interne
         For Each themeName In themes
-            ComboBoxThemes.Items.Add(themeName)
+            Dim displayLabel As String = themeName
+            Select Case themeName
+                Case "Par défaut"
+                    displayLabel = LanguageManager.GetString("Theme_Name_Default")
+                Case "Automne"
+                    displayLabel = LanguageManager.GetString("Theme_Name_Autumn")
+                Case "Océan"
+                    displayLabel = LanguageManager.GetString("Theme_Name_Ocean")
+                Case "Soleil"
+                    displayLabel = LanguageManager.GetString("Theme_Name_Sun")
+                Case "Sombre"
+                    displayLabel = LanguageManager.GetString("Theme_Name_Dark")
+                Case Else
+                    ' thèmes utilisateur : utiliser le nom tel quel
+                    displayLabel = themeName
+            End Select
+            ComboBoxThemes.Items.Add(New ThemeDisplayItem With {.Key = themeName, .Label = displayLabel})
         Next
 
-        ' Sélectionner le thème courant
+        ' Sélectionner le thème courant (par clé interne)
         Dim currentThemeName = ThemeManager.GetCurrentThemeName()
-        Dim index = ComboBoxThemes.Items.IndexOf(currentThemeName)
-        If index >= 0 Then
-            ComboBoxThemes.SelectedIndex = index
+        Dim selIndex As Integer = -1
+        For i As Integer = 0 To ComboBoxThemes.Items.Count - 1
+            Dim itm = TryCast(ComboBoxThemes.Items(i), ThemeDisplayItem)
+            If itm IsNot Nothing AndAlso String.Equals(itm.Key, currentThemeName, StringComparison.OrdinalIgnoreCase) Then
+                selIndex = i
+                Exit For
+            End If
+        Next
+        If selIndex >= 0 Then
+            ComboBoxThemes.SelectedIndex = selIndex
         ElseIf ComboBoxThemes.Items.Count > 0 Then
             ComboBoxThemes.SelectedIndex = 0
         End If
@@ -396,9 +535,9 @@ Partial Public Class FormParametres
                             Case "NombreBeatsMetronome"
                                 Integer.TryParse(valeur, NombreBeatsMetronome)
                             Case "SupprimerSilenceDebut"
-                                Boolean.TryParse(valeur, SupprimerSilenceDebut)
+                                Boolean.TryParse(valeur, ParametresGlobaux.SupprimerSilenceDebut)
                             Case "SupprimerSilenceFin"
-                                Boolean.TryParse(valeur, SupprimerSilenceFin)
+                                Boolean.TryParse(valeur, ParametresGlobaux.SupprimerSilenceFin)
                             Case "EffacerChansons"
                                 If CheckBox_EffacerChansons IsNot Nothing Then
                                     Dim b As Boolean = True
@@ -486,6 +625,9 @@ Partial Public Class FormParametres
                             Case "ModeMixeurDJ"
                                 Boolean.TryParse(valeur, ParametresGlobaux.ModeMixeurDJ)
                                 System.Diagnostics.Debug.WriteLine($"[ChargerParametres] ModeMixeurDJ lu depuis fichier = {ParametresGlobaux.ModeMixeurDJ} (valeur brute: '{valeur}')")
+                            Case "RepertoireExtractionCD"
+                                ParametresGlobaux.repertoireExtractionCD = valeur
+                                System.Diagnostics.Debug.WriteLine($"[ChargerParametres] RepertoireExtractionCD lu depuis fichier = '{valeur}'")
                         End Select
                     End If
                 Next
@@ -520,11 +662,11 @@ Partial Public Class FormParametres
 
         ' Vérifier si les contrôles existent avant de les utiliser
         If CheckBoxSupprimerSilenceDebut IsNot Nothing Then
-            CheckBoxSupprimerSilenceDebut.Checked = SupprimerSilenceDebut
+            CheckBoxSupprimerSilenceDebut.Checked = ParametresGlobaux.SupprimerSilenceDebut
         End If
 
         If CheckBoxSupprimerSilenceFin IsNot Nothing Then
-            CheckBoxSupprimerSilenceFin.Checked = SupprimerSilenceFin
+            CheckBoxSupprimerSilenceFin.Checked = ParametresGlobaux.SupprimerSilenceFin
         End If
 
         ' Appliquer l'état des cases à cocher audio
@@ -622,11 +764,11 @@ Partial Public Class FormParametres
 
             ' Vérifier si les contrôles existent
             If CheckBoxSupprimerSilenceDebut IsNot Nothing Then
-                SupprimerSilenceDebut = CheckBoxSupprimerSilenceDebut.Checked
+                ParametresGlobaux.SupprimerSilenceDebut = CheckBoxSupprimerSilenceDebut.Checked
             End If
 
             If CheckBoxSupprimerSilenceFin IsNot Nothing Then
-                SupprimerSilenceFin = CheckBoxSupprimerSilenceFin.Checked
+                ParametresGlobaux.SupprimerSilenceFin = CheckBoxSupprimerSilenceFin.Checked
             End If
 
             ' Valider et récupérer le nombre de beats
@@ -723,8 +865,8 @@ Partial Public Class FormParametres
                 "MetronomeSonActif=" & MetronomeSonActif.ToString(),
                 "MetronomeLumiereActive=" & MetronomeLumiereActive.ToString(),
                 "NombreBeatsMetronome=" & NombreBeatsMetronome.ToString(),
-                "SupprimerSilenceDebut=" & SupprimerSilenceDebut.ToString(),
-                "SupprimerSilenceFin=" & SupprimerSilenceFin.ToString(),
+                "SupprimerSilenceDebut=" & ParametresGlobaux.SupprimerSilenceDebut.ToString(),
+                "SupprimerSilenceFin=" & ParametresGlobaux.SupprimerSilenceFin.ToString(),
                 "ModeAleatoire=False",
                 "EffacerChansons=" & (If(CheckBox_EffacerChansons IsNot Nothing, CheckBox_EffacerChansons.Checked.ToString(), "True")),
                 "Langue=" & LangueChoisie,
@@ -839,9 +981,11 @@ Partial Public Class FormParametres
 
             ' Appliquer le thème sélectionné dans la ComboBox
             If ComboBoxThemes IsNot Nothing AndAlso ComboBoxThemes.SelectedItem IsNot Nothing Then
-                Dim selectedThemeName As String = ComboBoxThemes.SelectedItem.ToString()
-                Dim selectedTheme As ThemeColors = ThemeManager.LoadNamedTheme(selectedThemeName)
-                ThemeManager.SetCurrentTheme(selectedThemeName, selectedTheme)
+                Dim selectedThemeKey As String = GetSelectedThemeKey()
+                If Not String.IsNullOrEmpty(selectedThemeKey) Then
+                    Dim selectedTheme As ThemeColors = ThemeManager.LoadNamedTheme(selectedThemeKey)
+                    ThemeManager.SetCurrentTheme(selectedThemeKey, selectedTheme)
+                End If
             End If
 
             ' Vérifier si le mode DJ a changé en comparant l'état initial avec l'état actuel
@@ -902,6 +1046,8 @@ Partial Public Class FormParametres
             If mainForm1 IsNot Nothing Then
                 mainForm1.RefreshLanguage()
                 ThemeManager.ApplyThemeToForm(mainForm1)
+                ' Restaurer l'échelle du TrackBar après l'application du thème
+                mainForm1.RestaurerEchelleTrackBar()
             End If
 
             Dim mainFormDJ As FormDJ = TryCast(Me.Owner, FormDJ)
@@ -986,8 +1132,8 @@ Partial Public Class FormParametres
             MethodeBPM = "Auto"
             MetronomeActif = False
             NombreBeatsMetronome = 4
-            SupprimerSilenceDebut = True
-            SupprimerSilenceFin = True
+            ParametresGlobaux.SupprimerSilenceDebut = True
+            ParametresGlobaux.SupprimerSilenceFin = True
             If CheckBoxSupprimerSilenceDebut IsNot Nothing Then CheckBoxSupprimerSilenceDebut.Checked = True
             If CheckBoxSupprimerSilenceFin IsNot Nothing Then CheckBoxSupprimerSilenceFin.Checked = True
             If CheckBox_EffacerChansons IsNot Nothing Then
@@ -1491,10 +1637,28 @@ Partial Public Class FormParametres
         ChargerListeThemes()
     End Sub
 
+    Private Sub Button_ViewCrashLog_Click(sender As Object, e As EventArgs) Handles Button_ViewCrashLog.Click
+        Try
+            Dim logDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay")
+            Dim logFile = Path.Combine(logDir, "crash.log")
+            If File.Exists(logFile) Then
+                Process.Start(New ProcessStartInfo(logFile) With {.UseShellExecute = True})
+            Else
+                MessageBox.Show(LanguageManager.GetString("CrashLog_NotFound"), LanguageManager.GetString("CrashLog_Title"), MessageBoxButtons.OK, MessageBoxIcon.Information)
+            End If
+        Catch ex As Exception
+            MessageBox.Show(LanguageManager.GetString("Error_Generic"), LanguageManager.GetString("Error_Title"), MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
     Private Sub ComboBoxThemes_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBoxThemes.SelectedIndexChanged
         If ComboBoxThemes.SelectedItem Is Nothing Then Return
-
         Dim themeName As String = ComboBoxThemes.SelectedItem.ToString()
+        ' If item is ThemeDisplayItem, use its Key
+        Dim displayItem = TryCast(ComboBoxThemes.SelectedItem, ThemeDisplayItem)
+        If displayItem IsNot Nothing Then
+            themeName = displayItem.Key
+        End If
         Dim theme = ThemeManager.LoadNamedTheme(themeName)
 
         ' Prévisualiser le thème sans le sauvegarder
@@ -1603,7 +1767,7 @@ Partial Public Class FormParametres
         ThemeManager.SaveNamedTheme(themeName, currentTheme)
 
         ' Rafraîchir la liste et garder la sélection actuelle
-        Dim selectionActuelle As String = currentThemeName
+        Dim selectionActuelle As String = currentThemeName ' placeholder: no functional change
         ChargerListeThemes()
 
         ' Restaurer la sélection précédente (ne pas sélectionner le nouveau thème)
@@ -1674,6 +1838,29 @@ Partial Public Class FormParametres
         ' Rafraîchir les GroupBox
         ' GroupBoxGeneral.Text = LanguageManager.GetString("Params_GeneralSettings")
         GroupBoxLecture.Text = LanguageManager.GetString("Params_PlaybackSettings")
+
+        ' Repeupler la ComboBoxMethodeBPM pour supporter la localisation dynamique
+        If ComboBoxMethodeBPM IsNot Nothing Then
+            ComboBoxMethodeBPM.Items.Clear()
+            ComboBoxMethodeBPM.Items.Add(LanguageManager.GetString("Params_BPMMethod_Auto"))
+            ComboBoxMethodeBPM.Items.Add(LanguageManager.GetString("Params_BPMMethod_Librosa"))
+            ComboBoxMethodeBPM.Items.Add(LanguageManager.GetString("Params_BPMMethod_SoundTouch"))
+            ' Restaurer la sélection à partir des paramètres si possible
+            Try
+                Select Case MethodeBPM
+                    Case "Auto"
+                        ComboBoxMethodeBPM.SelectedIndex = 0
+                    Case "Librosa"
+                        ComboBoxMethodeBPM.SelectedIndex = 1
+                    Case "SoundTouch"
+                        ComboBoxMethodeBPM.SelectedIndex = 2
+                    Case Else
+                        If ComboBoxMethodeBPM.Items.Count > 0 Then ComboBoxMethodeBPM.SelectedIndex = 0
+                End Select
+            Catch
+                If ComboBoxMethodeBPM.Items.Count > 0 Then ComboBoxMethodeBPM.SelectedIndex = 0
+            End Try
+        End If
         GroupBoxLangue.Text = LanguageManager.GetString("Params_LanguageSettings")
 
         ' Rafraîchir les labels
@@ -1681,6 +1868,13 @@ Partial Public Class FormParametres
         LabelMethodeBPM.Text = LanguageManager.GetString("Params_BPMMethod")
         LabelNombreBeats.Text = LanguageManager.GetString("Params_MetronomeBeats")
         LabelLangue.Text = LanguageManager.GetString("Params_Language")
+        ' Labels / boutons liés à Python / Librosa
+        If LabelLibrosaExist IsNot Nothing Then LabelLibrosaExist.Text = LanguageManager.GetString("LabelLibrosaExist")
+        If LabelPythonPath IsNot Nothing Then LabelPythonPath.Text = LanguageManager.GetString("LabelPythonPath")
+        If ButtonCheckLibrosa IsNot Nothing Then ButtonCheckLibrosa.Text = LanguageManager.GetString("ButtonCheckLibrosa")
+        If ButtonBrowsePython IsNot Nothing Then ButtonBrowsePython.Text = LanguageManager.GetString("ButtonBrowsePython")
+        ' Bouton pour afficher le dernier crash (log)
+        If Button_ViewCrashLog IsNot Nothing Then Button_ViewCrashLog.Text = LanguageManager.GetString("Button_ViewCrashLog")
 
         ' Rafraîchir les cases à cocher
         CheckBoxLectureAuto.Text = LanguageManager.GetString("Params_AutoPlay")
@@ -1699,6 +1893,7 @@ Partial Public Class FormParametres
         ButtonSauvegarder.Text = LanguageManager.GetString("Button_Save")
         ButtonAnnuler.Text = LanguageManager.GetString("Button_Cancel")
         ButtonReinitialiser.Text = LanguageManager.GetString("Button_Reset")
+        If ButtonApplyNow IsNot Nothing Then ButtonApplyNow.Text = LanguageManager.GetString("Button_ApplyNow")
         ButtonAideNormalisation.Text = LanguageManager.GetString("Button_Help")
         Button_Metronome_Aide.Text = LanguageManager.GetString("Button_Help")
 
@@ -1846,10 +2041,33 @@ Partial Public Class FormParametres
     ' Associe l'extension au ProgID AudioPlay dans le registre utilisateur
     Private Sub SetAudioPlayDefault(extension As String, progId As String)
         Try
-            ' Associe l’extension au ProgID dans HKCU (pas besoin de droits admin)
-            Dim extKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey($"Software\Classes\{extension}")
-            extKey.SetValue("", progId)
-            extKey.Close()
+            ' Enregistrer un ProgID et associer l'extension pour l'utilisateur courant (HKCU)
+            Dim exePath = Application.ExecutablePath
+
+            ' 1) Créer/mettre à jour le ProgID (AudioPlay.mp3, etc.)
+            Using progKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey($"Software\Classes\{progId}")
+                progKey.SetValue("", $"AudioPlay file ({extension})")
+                Using iconKey = progKey.CreateSubKey("DefaultIcon")
+                    iconKey.SetValue("", """" & exePath & """,0")
+                End Using
+                Using cmdKey = progKey.CreateSubKey("shell\open\command")
+                    cmdKey.SetValue("", """" & exePath & """ ""%1""")
+                End Using
+            End Using
+
+            ' 2) Associer l'extension au ProgID dans HKCU
+            Using extKey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey($"Software\Classes\{extension}")
+                extKey.SetValue("", progId)
+            End Using
+
+            ' 3) Ajouter le ProgID dans OpenWithProgids pour que l'application apparaisse dans "Ouvrir avec"
+            Using ow = Microsoft.Win32.Registry.CurrentUser.CreateSubKey($"Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\{extension}\OpenWithProgids")
+                ' Valeur vide de type string
+                ow.SetValue(progId, String.Empty, Microsoft.Win32.RegistryValueKind.String)
+            End Using
+
+            ' Optionnel: demander à l'explorateur de rafraîchir les associations (silencieux)
+            ' On évite d'appeler des API natives ici; Windows peut demander confirmation à l'utilisateur
         Catch ex As Exception
             MessageBox.Show(
                 String.Format(LanguageManager.GetString("Error_FileAssociation"), extension, ex.Message),
@@ -1862,7 +2080,39 @@ Partial Public Class FormParametres
     ' Supprime l'association de l'extension AudioPlay dans le registre utilisateur
     Private Sub RemoveAudioPlayDefault(extension As String)
         Try
-            Microsoft.Win32.Registry.CurrentUser.DeleteSubKeyTree($"Software\Classes\{extension}", False)
+            ' Retirer la valeur par défaut de l'extension si elle pointe vers un ProgID AudioPlay.*
+            Using extKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey($"Software\Classes\{extension}", True)
+                If extKey IsNot Nothing Then
+                    Dim current = CStr(If(extKey.GetValue(""), String.Empty))
+                    If Not String.IsNullOrEmpty(current) AndAlso current.StartsWith("AudioPlay.", StringComparison.OrdinalIgnoreCase) Then
+                        ' Supprimer uniquement la valeur par défaut; laisser la clé si d'autres valeurs existent
+                        Try
+                            extKey.DeleteValue("", False)
+                        Catch
+                        End Try
+                    End If
+                End If
+            End Using
+
+            ' Supprimer l'entrée OpenWithProgids
+            Try
+                Using ow = Microsoft.Win32.Registry.CurrentUser.OpenSubKey($"Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\{extension}\OpenWithProgids", True)
+                    If ow IsNot Nothing Then
+                        Dim valueNames() As String = ow.GetValueNames()
+                        For Each nm As String In valueNames
+                            If nm.StartsWith("AudioPlay.", StringComparison.OrdinalIgnoreCase) Then
+                                Try
+                                    ow.DeleteValue(nm, False)
+                                Catch
+                                End Try
+                            End If
+                        Next
+                    End If
+                End Using
+            Catch
+            End Try
+
+            ' Ne pas supprimer le ProgID globalement par sécurité (peut être utilisé pour plusieurs extensions)
         Catch ex As Exception
             ' Silencieux si la clé n'existe pas
         End Try
@@ -2181,5 +2431,41 @@ Partial Public Class FormParametres
         ParametresGlobaux.ModeMixeurDJ = CheckBoxModeMixeurDJ.Checked
         System.Diagnostics.Debug.WriteLine($"[CheckBox Changed] ModeMixeurDJ = {ParametresGlobaux.ModeMixeurDJ}")
         ' Le basculement de mode se fait automatiquement lors de la sauvegarde
+    End Sub
+
+    ''' <summary>
+    ''' Obtient les informations du cache de pochettes
+    ''' </summary>
+    Public Function ObtenirInfosCache() As String
+        Dim tailleCache = CoverCacheManager.ObtenirTailleCache()
+        Dim nbFichiers = CoverCacheManager.ObtenirNombreFichiers()
+        Return $"{nbFichiers} pochette(s) - {CoverCacheManager.FormaterTaille(tailleCache)}"
+    End Function
+
+    ''' <summary>
+    ''' Vide le cache de pochettes
+    ''' </summary>
+    Public Sub ViderCachePochettes()
+        Dim result = MessageBox.Show(
+            LanguageManager.GetString("Settings_ClearCacheConfirmation", "Voulez-vous vraiment supprimer toutes les pochettes en cache ?"),
+            LanguageManager.GetString("Settings_ClearCache", "Vider le cache"),
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Question)
+
+        If result = DialogResult.Yes Then
+            If CoverCacheManager.ViderCache() Then
+                MessageBox.Show(
+                    LanguageManager.GetString("Settings_CacheClearedSuccess", "Le cache a été vidé avec succès."),
+                    LanguageManager.GetString("Settings_ClearCache", "Vider le cache"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information)
+            Else
+                MessageBox.Show(
+                    LanguageManager.GetString("Settings_CacheClearedError", "Erreur lors du vidage du cache."),
+                    LanguageManager.GetString("CDSelector_ErrorTitle", "Erreur"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error)
+            End If
+        End If
     End Sub
 End Class

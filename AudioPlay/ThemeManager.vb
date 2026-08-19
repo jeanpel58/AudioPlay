@@ -300,6 +300,16 @@ Public Class ThemeManager
     End Sub
 
     Private Shared Sub ApplyThemeToControl(ctrl As Control, theme As ThemeColors)
+        ' Ignorer les contrôles de l'échelle du TrackBar (créés dynamiquement par Form1)
+        If ctrl.Name IsNot Nothing AndAlso (ctrl.Name.StartsWith("TrackBarScaleLabel_") OrElse ctrl.Name.StartsWith("TrackBarMinorTick_")) Then
+            ' Ne pas modifier ces contrôles, ils ont déjà les bonnes couleurs
+            ' Mais continuer à parcourir leurs enfants si nécessaire
+            For Each child As Control In ctrl.Controls
+                ApplyThemeToControl(child, theme)
+            Next
+            Return
+        End If
+
         If TypeOf ctrl Is Button Then
             Dim btn As Button = CType(ctrl, Button)
             ' Ne pas changer le fond des boutons avec images (garder transparent)
@@ -342,6 +352,11 @@ Public Class ThemeManager
             ctrl.ForeColor = theme.ListViewForeColor
             ' Forcer le redessin pour les ListView en mode OwnerDraw
             ctrl.Invalidate()
+
+        ElseIf TypeOf ctrl Is CheckedListBox Then
+            ' CheckedListBox utilise les mêmes couleurs que ListView
+            ctrl.BackColor = theme.ListViewBackColor
+            ctrl.ForeColor = theme.ListViewForeColor
 
         ElseIf TypeOf ctrl Is TrackBar Then
             ctrl.BackColor = theme.TrackBarBackColor

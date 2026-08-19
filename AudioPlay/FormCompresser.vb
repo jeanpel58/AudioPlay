@@ -1589,18 +1589,21 @@ Public Class FormCompresser
                 System.Diagnostics.Debug.WriteLine($"[FormCompresser]    └─ Analyse de la transition avec piste {pisteSuivante.TrackNumber}")
             End If
 
-            ' Récupérer l'analyse de la piste PRÉCÉDENTE
-            Dim analysePrecedente As CDAudioAnalyzer.TrackAnalysis = Nothing
-            If pisteIndex > 0 AndAlso analysesPistes.ContainsKey(pisteIndex - 1) Then
-                analysePrecedente = analysesPistes(pisteIndex - 1)
-                System.Diagnostics.Debug.WriteLine($"[FormCompresser]    └─ Utilisation de l'analyse de la piste précédente ({analysePrecedente.TrackNumber})")
-            End If
-
-            Dim analyse = CDAudioAnalyzer.AnalyzeTrack(piste, pisteSuivante, analysePrecedente)
+            ' ANALYSE INDÉPENDANTE : Toujours analyser le début/fin de la piste en cours
+            ' sans utiliser l'analyse précédente afin que l'extraction d'une piste isolée
+            ' (ex. extraire uniquement la piste 8) reste correcte.
+            Dim analyse = CDAudioAnalyzer.AnalyzeTrack(piste, pisteSuivante, Nothing)
             System.Diagnostics.Debug.WriteLine($"[FormCompresser]    └─ {analyse.AnalysisMessage}")
 
             ' Stocker l'analyse pour la piste suivante
             analysesPistes(pisteIndex) = analyse
+
+            ' GARDE ANTI-CHEVREMENT : si l'analyse produit des positions ajustées qui chevauchent
+            ' la piste suivante (cas où la détection du silence réduit trop la fin),
+            ' on pourra corriger au moment d'analyser la piste suivante. Ici on ajoute un log.
+            If analyse.WasAdjusted Then
+                System.Diagnostics.Debug.WriteLine($"[FormCompresser] ⚠️ Vérifier chevauchement potentiel après ajustement: piste {numeroFichier} => {analyse.AdjustedStartFrame}-{analyse.AdjustedEndFrame}")
+            End If
 
             If analyse.WasAdjusted Then
                 ' Créer une nouvelle piste avec les positions ajustées

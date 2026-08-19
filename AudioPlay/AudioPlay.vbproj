@@ -47,6 +47,15 @@
     <None Update="Themes\*.theme">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Tools\README_FFMPEG.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Tools\INSTALLATION_FFMPEG.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Tools\EXTRACTION_FLAC_WMA.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -81,10 +90,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CSCore" Version="1.2.1.2" />
+    <PackageReference Include="FFMpegCore" Version="5.4.0" />
     <PackageReference Include="NAudio" Version="2.3.0" />
     <PackageReference Include="NAudio.Lame" Version="2.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SoundTouchSharp" Version="2.3.2" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
     <PackageReference Include="TagLibSharp" Version="2.3.0" />
   </ItemGroup>
 
@@ -108,5 +120,8 @@
     <Copy SourceFiles="$(SoundTouchSourcePath)" DestinationFiles="$(SoundTouchDestPath)" Condition="Exists('$(SoundTouchSourcePath)')" SkipUnchangedFiles="true" />
     <Warning Text="SoundTouch.dll introuvable dans $(SoundTouchSourcePath) - Time Stretch fonctionnera en mode bypass" Condition="!Exists('$(SoundTouchSourcePath)')" />
   </Target>
+
+  <!-- Correction automatique du bug du designer Visual Studio -->
+  <Import Project="AudioPlay.targets" Condition="Exists('AudioPlay.targets')" />
 
 </Project>

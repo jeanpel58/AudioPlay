@@ -415,6 +415,16 @@ Friend Class Resources
     '''<summary>
     '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
     '''</summary>
+    Friend Shared ReadOnly Property AudioPlay_Ajout_Rouge() As System.Drawing.Bitmap
+        Get
+            Dim obj As Object = ResourceManager.GetObject("AudioPlay_Ajout_Rouge", resourceCulture)
+            Return CType(obj,System.Drawing.Bitmap)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
+    '''</summary>
     Friend Shared ReadOnly Property AudioPlay_Arreter_Gris() As System.Drawing.Bitmap
         Get
             Dim obj As Object = ResourceManager.GetObject("AudioPlay_Arreter_Gris", resourceCulture)
@@ -455,16 +465,6 @@ Friend Class Resources
     '''<summary>
     '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
     '''</summary>
-    Friend Shared ReadOnly Property AudioPlay_BPM_Noir() As System.Drawing.Bitmap
-        Get
-            Dim obj As Object = ResourceManager.GetObject("AudioPlay_BPM_Noir", resourceCulture)
-            Return CType(obj,System.Drawing.Bitmap)
-        End Get
-    End Property
-    
-    '''<summary>
-    '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
-    '''</summary>
     Friend Shared ReadOnly Property AudioPlay_BPM_Rouge() As System.Drawing.Bitmap
         Get
             Dim obj As Object = ResourceManager.GetObject("AudioPlay_BPM_Rouge", resourceCulture)
@@ -478,6 +478,46 @@ Friend Class Resources
     Friend Shared ReadOnly Property AudioPlay_BPM_Vert() As System.Drawing.Bitmap
         Get
             Dim obj As Object = ResourceManager.GetObject("AudioPlay_BPM_Vert", resourceCulture)
+            Return CType(obj,System.Drawing.Bitmap)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
+    '''</summary>
+    Friend Shared ReadOnly Property AudioPlay_DJMixeur__Gris() As System.Drawing.Bitmap
+        Get
+            Dim obj As Object = ResourceManager.GetObject("AudioPlay_DJMixeur__Gris", resourceCulture)
+            Return CType(obj,System.Drawing.Bitmap)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
+    '''</summary>
+    Friend Shared ReadOnly Property AudioPlay_DJMixeur__Noir() As System.Drawing.Bitmap
+        Get
+            Dim obj As Object = ResourceManager.GetObject("AudioPlay_DJMixeur__Noir", resourceCulture)
+            Return CType(obj,System.Drawing.Bitmap)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
+    '''</summary>
+    Friend Shared ReadOnly Property AudioPlay_DJMixeur__Rouge() As System.Drawing.Bitmap
+        Get
+            Dim obj As Object = ResourceManager.GetObject("AudioPlay_DJMixeur__Rouge", resourceCulture)
+            Return CType(obj,System.Drawing.Bitmap)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
+    '''</summary>
+    Friend Shared ReadOnly Property AudioPlay_DJMixeur__Vert() As System.Drawing.Bitmap
+        Get
+            Dim obj As Object = ResourceManager.GetObject("AudioPlay_DJMixeur__Vert", resourceCulture)
             Return CType(obj,System.Drawing.Bitmap)
         End Get
     End Property
@@ -705,6 +745,16 @@ Friend Class Resources
     '''<summary>
     '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
     '''</summary>
+    Friend Shared ReadOnly Property AudioPlay_Parametres_Noir() As System.Drawing.Bitmap
+        Get
+            Dim obj As Object = ResourceManager.GetObject("AudioPlay_Parametres_Noir", resourceCulture)
+            Return CType(obj,System.Drawing.Bitmap)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
+    '''</summary>
     Friend Shared ReadOnly Property AudioPlay_Parametres_Rouges() As System.Drawing.Bitmap
         Get
             Dim obj As Object = ResourceManager.GetObject("AudioPlay_Parametres_Rouges", resourceCulture)
@@ -765,16 +815,6 @@ Friend Class Resources
     '''<summary>
     '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
     '''</summary>
-    Friend Shared ReadOnly Property AudioPlay_Power_Noir() As System.Drawing.Bitmap
-        Get
-            Dim obj As Object = ResourceManager.GetObject("AudioPlay_Power_Noir", resourceCulture)
-            Return CType(obj,System.Drawing.Bitmap)
-        End Get
-    End Property
-    
-    '''<summary>
-    '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
-    '''</summary>
     Friend Shared ReadOnly Property AudioPlay_Power_Rouge() As System.Drawing.Bitmap
         Get
             Dim obj As Object = ResourceManager.GetObject("AudioPlay_Power_Rouge", resourceCulture)
@@ -828,16 +868,6 @@ Friend Class Resources
     Friend Shared ReadOnly Property AudioPlay_Random_Gris() As System.Drawing.Bitmap
         Get
             Dim obj As Object = ResourceManager.GetObject("AudioPlay_Random_Gris", resourceCulture)
-            Return CType(obj,System.Drawing.Bitmap)
-        End Get
-    End Property
-    
-    '''<summary>
-    '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
-    '''</summary>
-    Friend Shared ReadOnly Property AudioPlay_Random_Noir() As System.Drawing.Bitmap
-        Get
-            Dim obj As Object = ResourceManager.GetObject("AudioPlay_Random_Noir", resourceCulture)
             Return CType(obj,System.Drawing.Bitmap)
         End Get
     End Property
@@ -1005,16 +1035,6 @@ Friend Class Resources
     '''<summary>
     '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
     '''</summary>
-    Friend Shared ReadOnly Property AudioPlay_X_Noir() As System.Drawing.Bitmap
-        Get
-            Dim obj As Object = ResourceManager.GetObject("AudioPlay_X_Noir", resourceCulture)
-            Return CType(obj,System.Drawing.Bitmap)
-        End Get
-    End Property
-    
-    '''<summary>
-    '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
-    '''</summary>
     Friend Shared ReadOnly Property AudioPlay_X_Rouge() As System.Drawing.Bitmap
         Get
             Dim obj As Object = ResourceManager.GetObject("AudioPlay_X_Rouge", resourceCulture)
@@ -1029,6 +1049,15 @@ Friend Class Resources
         Get
             Dim obj As Object = ResourceManager.GetObject("AudioPlay_X_Vert", resourceCulture)
             Return CType(obj,System.Drawing.Bitmap)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Types audio appliqués..
+    '''</summary>
+    Friend Shared ReadOnly Property AudioTypes_Applied() As String
+        Get
+            Return ResourceManager.GetString("AudioTypes_Applied", resourceCulture)
         End Get
     End Property
     
@@ -1286,6 +1315,15 @@ Friend Class Resources
     End Property
     
     '''<summary>
+    '''  Recherche une chaîne localisée semblable à Vérification Python.
+    '''</summary>
+    Friend Shared ReadOnly Property BPM_PythonCheckTitle() As String
+        Get
+            Return ResourceManager.GetString("BPM_PythonCheckTitle", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
     '''  Recherche une chaîne localisée semblable à Python avec librosa permet un calcul de BPM très précis (95%+).
     '''
     '''Voulez-vous installer Python et librosa maintenant ?
@@ -1304,6 +1342,15 @@ Friend Class Resources
     Friend Shared ReadOnly Property BPM_PythonInstallTitle() As String
         Get
             Return ResourceManager.GetString("BPM_PythonInstallTitle", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Librosa est installé et prêt à l&apos;emploi..
+    '''</summary>
+    Friend Shared ReadOnly Property BPM_PythonLibrosa_OK() As String
+        Get
+            Return ResourceManager.GetString("BPM_PythonLibrosa_OK", resourceCulture)
         End Get
     End Property
     
@@ -1422,6 +1469,15 @@ Friend Class Resources
     Friend Shared ReadOnly Property Button_AddFile() As String
         Get
             Return ResourceManager.GetString("Button_AddFile", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Appliquer.
+    '''</summary>
+    Friend Shared ReadOnly Property Button_ApplyNow() As String
+        Get
+            Return ResourceManager.GetString("Button_ApplyNow", resourceCulture)
         End Get
     End Property
     
@@ -1660,11 +1716,533 @@ Friend Class Resources
     End Property
     
     '''<summary>
+    '''  Recherche une chaîne localisée semblable à Afficher dernier crash.
+    '''</summary>
+    Friend Shared ReadOnly Property Button_ViewCrashLog() As String
+        Get
+            Return ResourceManager.GetString("Button_ViewCrashLog", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Parcourir.
+    '''</summary>
+    Friend Shared ReadOnly Property ButtonBrowsePython() As String
+        Get
+            Return ResourceManager.GetString("ButtonBrowsePython", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Vérifier.
+    '''</summary>
+    Friend Shared ReadOnly Property ButtonCheckLibrosa() As String
+        Get
+            Return ResourceManager.GetString("ButtonCheckLibrosa", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
     '''  Recherche une chaîne localisée semblable à Annulation.
     '''</summary>
     Friend Shared ReadOnly Property Cancellation_Title() As String
         Get
             Return ResourceManager.GetString("Cancellation_Title", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à ✓ Album trouvé: {0} - {1}.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_AlbumFound() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_AlbumFound", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Ajouter....
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_ButtonAdd() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_ButtonAdd", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Annuler.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_ButtonCancel() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_ButtonCancel", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Tout désélectionner.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_ButtonDeselectAll() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_ButtonDeselectAll", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Extraction de la ou les pistes audio....
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_ButtonExtraction() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_ButtonExtraction", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Tout sélectionner.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_ButtonSelectAll() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_ButtonSelectAll", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à ✓ Cache effacé - Sélectionnez une source pour recharger.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_CacheCleared() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_CacheCleared", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Les métadonnées ont été supprimées du cache.{0}Sélectionnez une source dans le menu déroulant pour recharger..
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_CacheClearedMessage() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_CacheClearedMessage", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Cache effacé.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_CacheClearedTitle() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_CacheClearedTitle", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Annuler.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_CancelButton() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_CancelButton", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Effacer cache.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_ClearCacheButton() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_ClearCacheButton", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Effacer les métadonnées en cache pour :{0}{1}.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_ConfirmClearCache() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_ConfirmClearCache", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Confirmation.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_ConfirmClearCacheTitle() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_ConfirmClearCacheTitle", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Tout désélectionner.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_DeselectAllButton() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_DeselectAllButton", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Diagnostic CD.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_DiagnosticTitle() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_DiagnosticTitle", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Entrez le titre de l&apos;album:.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_DiscogsAlbumPrompt() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_DiscogsAlbumPrompt", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Entrez le nom de l&apos;artiste:.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_DiscogsArtistPrompt() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_DiscogsArtistPrompt", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Recherche Discogs.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_DiscogsSearchTitle() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_DiscogsSearchTitle", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Erreur de chargement automatique: {0}.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_ErrorAutoLoad() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_ErrorAutoLoad", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Erreur lors de l&apos;effacement du cache: {0}.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_ErrorClearCache() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_ErrorClearCache", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Erreur diagnostic: {0}.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_ErrorDiagnostic() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_ErrorDiagnostic", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à ❌ Erreur Discogs: {0}.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_ErrorDiscogs() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_ErrorDiscogs", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à ❌ Erreur GnuDB: {0}.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_ErrorGnuDB() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_ErrorGnuDB", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à ❌ Erreur MusicBrainz: {0}.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_ErrorMusicBrainz() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_ErrorMusicBrainz", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Erreur.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_ErrorTitle() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_ErrorTitle", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Extraction de la ou les pistes audio....
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_ExtractionButton() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_ExtractionButton", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Sélection des pistes CD.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_FormTitle() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_FormTitle", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Information.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_InformationTitle() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_InformationTitle", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Charger.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_LoadButton() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_LoadButton", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à ✓ Métadonnées chargées depuis le cache.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_LoadedFromCache() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_LoadedFromCache", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Chargement automatique depuis GnuDB....
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_LoadingAutoGnuDB() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_LoadingAutoGnuDB", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Chargement des métadonnées....
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_LoadingDefault() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_LoadingDefault", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Recherche sur Discogs....
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_LoadingDiscogs() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_LoadingDiscogs", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Chargement depuis MusicBrainz....
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_LoadingMusicBrainz() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_LoadingMusicBrainz", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Saisissez manuellement les informations dans la liste.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_ManualInstructions() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_ManualInstructions", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Mode manuel - Vous pouvez modifier les noms directement.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_ManualMode() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_ManualMode", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à ✓ Nouveau CD détecté - Chargement....
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_NewCDDetected() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_NewCDDetected", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Aucune métadonnée en cache pour ce CD.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_NoCacheForCD() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_NoCacheForCD", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à ⚠ Aucun CD détecté dans le lecteur.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_NoCDDetected() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_NoCDDetected", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à ⚠ Aucune métadonnée trouvée sur Discogs.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_NoMetadataDiscogs() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_NoMetadataDiscogs", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à ⚠ Aucune métadonnée trouvée sur GnuDB.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_NoMetadataGnuDB() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_NoMetadataGnuDB", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à ⚠ Aucune métadonnée trouvée sur MusicBrainz.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_NoMetadataMusicBrainz() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_NoMetadataMusicBrainz", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Aucune piste CD disponible pour l&apos;extraction. Veuillez d&apos;abord charger les métadonnées du CD..
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_NoPistesForExtraction() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_NoPistesForExtraction", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à OK.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_OKButton() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_OKButton", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Tout sélectionner.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_SelectAllButton() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_SelectAllButton", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Tout sélectionner / Tout désélectionner.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_SelectDeselectAll() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_SelectDeselectAll", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Source:.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_Source() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_Source", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Discogs.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_SourceDiscogs() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_SourceDiscogs", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à GnuDB.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_SourceGnuDB() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_SourceGnuDB", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Saisie manuelle.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_SourceManual() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_SourceManual", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à MusicBrainz.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_SourceMusicBrainz() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_SourceMusicBrainz", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Source non reconnue.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_SourceNotRecognized() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_SourceNotRecognized", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Sélection des pistes CD.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_Title() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_Title", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Sélectionner les pistes du CD - {0}.
+    '''</summary>
+    Friend Shared ReadOnly Property CDSelector_TitleWithDrive() As String
+        Get
+            Return ResourceManager.GetString("CDSelector_TitleWithDrive", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Piste.
+    '''</summary>
+    Friend Shared ReadOnly Property CDTrack_Prefix() As String
+        Get
+            Return ResourceManager.GetString("CDTrack_Prefix", resourceCulture)
         End Get
     End Property
     
@@ -1719,6 +2297,523 @@ Friend Class Resources
     Friend Shared ReadOnly Property Column_Songs() As String
         Get
             Return ResourceManager.GetString("Column_Songs", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Analyse en cours... Piste {0} ({1}/{2}).
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_AnalyzingTrackProgress() As String
+        Get
+            Return ResourceManager.GetString("Compressor_AnalyzingTrackProgress", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Analyse des pistes en cours....
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_AnalyzingTracks() As String
+        Get
+            Return ResourceManager.GetString("Compressor_AnalyzingTracks", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Parcourir.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ButtonBrowse() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ButtonBrowse", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Annuler.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ButtonCancel() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ButtonCancel", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Modifier les pistes....
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ButtonEditTracks() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ButtonEditTracks", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Extraire.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ButtonExtract() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ButtonExtract", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Quitter.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ButtonQuit() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ButtonQuit", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Voulez-vous vraiment annuler l&apos;extraction en cours ?
+    '''
+    '''La piste en cours sera terminée avant l&apos;arrêt..
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_CancelConfirmMessage() As String
+        Get
+            Return ResourceManager.GetString("Compressor_CancelConfirmMessage", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Confirmer l&apos;annulation.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_CancelConfirmTitle() As String
+        Get
+            Return ResourceManager.GetString("Compressor_CancelConfirmTitle", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Annulation en cours... (fin de la piste actuelle).
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_CancelInProgress() As String
+        Get
+            Return ResourceManager.GetString("Compressor_CancelInProgress", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à CD Artiste.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_CDArtist() As String
+        Get
+            Return ResourceManager.GetString("Compressor_CDArtist", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Numéro de CD:.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_CDNumber() As String
+        Get
+            Return ResourceManager.GetString("Compressor_CDNumber", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à CD Titre.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_CDTitle() As String
+        Get
+            Return ResourceManager.GetString("Compressor_CDTitle", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Artiste.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ColumnArtist() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ColumnArtist", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Taille du fichier compressé.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ColumnCompressedSize() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ColumnCompressedSize", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Longueur.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ColumnLength() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ColumnLength", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Taille du fichier.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ColumnSize() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ColumnSize", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Début.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ColumnStart() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ColumnStart", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Titre.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ColumnTitle() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ColumnTitle", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Piste.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ColumnTrack() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ColumnTrack", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Commentaire.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_Comment() As String
+        Get
+            Return ResourceManager.GetString("Compressor_Comment", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Qualité de conversion:.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ConversionQuality() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ConversionQuality", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Type de conversion:.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ConversionType() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ConversionType", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à CD Pochette.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_CoverArt() As String
+        Get
+            Return ResourceManager.GetString("Compressor_CoverArt", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Extraction par AudioPlay....
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_DefaultComment() As String
+        Get
+            Return ResourceManager.GetString("Compressor_DefaultComment", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Choix de lecteur.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_DriveSelection() As String
+        Get
+            Return ResourceManager.GetString("Compressor_DriveSelection", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Éjecter le CD à la fin....
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_EjectCD() As String
+        Get
+            Return ResourceManager.GetString("Compressor_EjectCD", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Extraction annulée par l&apos;utilisateur.
+    '''
+    '''{0} piste(s) extraite(s) avec succès avant l&apos;annulation..
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ExtractionCancelledMessage() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ExtractionCancelledMessage", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Extraction annulée.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ExtractionCancelledTitle() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ExtractionCancelledTitle", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Extraction terminée.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ExtractionCompletedTitle() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ExtractionCompletedTitle", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à {0} piste(s) ont échoué.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ExtractionFailedMessage() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ExtractionFailedMessage", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à {0} piste(s) extraite(s) avec succès.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ExtractionSuccessMessage() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ExtractionSuccessMessage", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Premier numéro de piste:.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_FirstTrackNumber() As String
+        Get
+            Return ResourceManager.GetString("Compressor_FirstTrackNumber", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Extraction du CD Audio.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_FormTitle() As String
+        Get
+            Return ResourceManager.GetString("Compressor_FormTitle", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Genre.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_Genre() As String
+        Get
+            Return ResourceManager.GetString("Compressor_Genre", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Progression globale: {0} / {1}.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_GlobalProgress() As String
+        Get
+            Return ResourceManager.GetString("Compressor_GlobalProgress", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Dimensions image:.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ImageDimensions() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ImageDimensions", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Taille image:.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_ImageSize() As String
+        Get
+            Return ResourceManager.GetString("Compressor_ImageSize", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Verrouiller le plateau du lecteur pendant l&apos;extraction.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_LockCD() As String
+        Get
+            Return ResourceManager.GetString("Compressor_LockCD", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Aucune autre pochette trouvée pour cet album..
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_NoMoreCovers() As String
+        Get
+            Return ResourceManager.GetString("Compressor_NoMoreCovers", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Niveau 0 (rapide).
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_QualityFlacLevel0() As String
+        Get
+            Return ResourceManager.GetString("Compressor_QualityFlacLevel0", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Niveau 5 (équilibré).
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_QualityFlacLevel5() As String
+        Get
+            Return ResourceManager.GetString("Compressor_QualityFlacLevel5", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Niveau 8 (meilleur).
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_QualityFlacLevel8() As String
+        Get
+            Return ResourceManager.GetString("Compressor_QualityFlacLevel8", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Haute (256 kbps).
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_QualityHigh() As String
+        Get
+            Return ResourceManager.GetString("Compressor_QualityHigh", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Basse (128 kbps).
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_QualityLow() As String
+        Get
+            Return ResourceManager.GetString("Compressor_QualityLow", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Moyenne (192 kbps).
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_QualityMedium() As String
+        Get
+            Return ResourceManager.GetString("Compressor_QualityMedium", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Très Haute (320 kbps).
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_QualityVeryHigh() As String
+        Get
+            Return ResourceManager.GetString("Compressor_QualityVeryHigh", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à PCM 16-bit 44.1 kHz.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_QualityWav16() As String
+        Get
+            Return ResourceManager.GetString("Compressor_QualityWav16", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à PCM 24-bit 96 kHz.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_QualityWav24() As String
+        Get
+            Return ResourceManager.GetString("Compressor_QualityWav24", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à PCM 32-bit 192 kHz.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_QualityWav32() As String
+        Get
+            Return ResourceManager.GetString("Compressor_QualityWav32", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à 128 kbps.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_QualityWma128() As String
+        Get
+            Return ResourceManager.GetString("Compressor_QualityWma128", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à 192 kbps.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_QualityWma192() As String
+        Get
+            Return ResourceManager.GetString("Compressor_QualityWma192", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à 256 kbps.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_QualityWma256() As String
+        Get
+            Return ResourceManager.GetString("Compressor_QualityWma256", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Répertoire de sauvegarde:.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_SaveDirectory() As String
+        Get
+            Return ResourceManager.GetString("Compressor_SaveDirectory", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Recherche de pochette.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_SearchTitle() As String
+        Get
+            Return ResourceManager.GetString("Compressor_SearchTitle", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Tout sélectionner / Tout désélectionner.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_SelectDeselectAll() As String
+        Get
+            Return ResourceManager.GetString("Compressor_SelectDeselectAll", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Année.
+    '''</summary>
+    Friend Shared ReadOnly Property Compressor_Year() As String
+        Get
+            Return ResourceManager.GetString("Compressor_Year", resourceCulture)
         End Get
     End Property
     
@@ -1791,6 +2886,69 @@ Friend Class Resources
     Friend Shared ReadOnly Property Context_ShowMetadata() As String
         Get
             Return ResourceManager.GetString("Context_ShowMetadata", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Aucun crash enregistré (crash.log introuvable)..
+    '''</summary>
+    Friend Shared ReadOnly Property CrashLog_NotFound() As String
+        Get
+            Return ResourceManager.GetString("CrashLog_NotFound", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Log d&apos;erreur.
+    '''</summary>
+    Friend Shared ReadOnly Property CrashLog_Title() As String
+        Get
+            Return ResourceManager.GetString("CrashLog_Title", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Audacity.
+    '''</summary>
+    Friend Shared ReadOnly Property DisplayMode_Audacity() As String
+        Get
+            Return ResourceManager.GetString("DisplayMode_Audacity", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Ligne.
+    '''</summary>
+    Friend Shared ReadOnly Property DisplayMode_Line() As String
+        Get
+            Return ResourceManager.GetString("DisplayMode_Line", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Serato.
+    '''</summary>
+    Friend Shared ReadOnly Property DisplayMode_Serato() As String
+        Get
+            Return ResourceManager.GetString("DisplayMode_Serato", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Spectrogramme.
+    '''</summary>
+    Friend Shared ReadOnly Property DisplayMode_Spectrogram() As String
+        Get
+            Return ResourceManager.GetString("DisplayMode_Spectrogram", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à VirtualDJ.
+    '''</summary>
+    Friend Shared ReadOnly Property DisplayMode_VirtualDJ() As String
+        Get
+            Return ResourceManager.GetString("DisplayMode_VirtualDJ", resourceCulture)
         End Get
     End Property
     
@@ -2983,6 +4141,69 @@ Friend Class Resources
     End Property
     
     '''<summary>
+    '''  Recherche une chaîne localisée semblable à Artiste :.
+    '''</summary>
+    Friend Shared ReadOnly Property EditTracks_ArtistLabel() As String
+        Get
+            Return ResourceManager.GetString("EditTracks_ArtistLabel", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Piste suivante.
+    '''</summary>
+    Friend Shared ReadOnly Property EditTracks_ButtonNext() As String
+        Get
+            Return ResourceManager.GetString("EditTracks_ButtonNext", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Piste précédente.
+    '''</summary>
+    Friend Shared ReadOnly Property EditTracks_ButtonPrevious() As String
+        Get
+            Return ResourceManager.GetString("EditTracks_ButtonPrevious", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Quitter.
+    '''</summary>
+    Friend Shared ReadOnly Property EditTracks_ButtonQuit() As String
+        Get
+            Return ResourceManager.GetString("EditTracks_ButtonQuit", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Modification des pistes.
+    '''</summary>
+    Friend Shared ReadOnly Property EditTracks_FormTitle() As String
+        Get
+            Return ResourceManager.GetString("EditTracks_FormTitle", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Titre :.
+    '''</summary>
+    Friend Shared ReadOnly Property EditTracks_TitleLabel() As String
+        Get
+            Return ResourceManager.GetString("EditTracks_TitleLabel", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Piste #.
+    '''</summary>
+    Friend Shared ReadOnly Property EditTracks_TrackLabel() As String
+        Get
+            Return ResourceManager.GetString("EditTracks_TrackLabel", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
     '''  Recherche une chaîne localisée semblable à Erreur lors du calcul : {0}.
     '''</summary>
     Friend Shared ReadOnly Property Error_Calculation() As String
@@ -3098,6 +4319,121 @@ Friend Class Resources
     Friend Shared ReadOnly Property Folder_SelectDefaultDirectory() As String
         Get
             Return ResourceManager.GetString("Folder_SelectDefaultDirectory", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Soumettre à GnuDB.
+    '''</summary>
+    Friend Shared ReadOnly Property GnuDB_ButtonSubmit() As String
+        Get
+            Return ResourceManager.GetString("GnuDB_ButtonSubmit", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à ✓ Les métadonnées CDDB ont été copiées dans le presse-papiers !
+    '''
+    '''Votre client email va s&apos;ouvrir avec un message pré-rempli pour GnuDB.
+    '''
+    '''Vérifiez les données et cliquez sur &quot;Envoyer&quot;.
+    '''
+    '''Merci de contribuer à la base de données GnuDB !.
+    '''</summary>
+    Friend Shared ReadOnly Property GnuDB_SubmitClipboardCopied() As String
+        Get
+            Return ResourceManager.GetString("GnuDB_SubmitClipboardCopied", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Vous êtes sur le point de soumettre les métadonnées de ce CD à la base de données GnuDB.
+    '''
+    '''Cela aidera d&apos;autres utilisateurs à identifier ce CD automatiquement.
+    '''
+    '''Pour continuer, veuillez entrer votre adresse email (requise par CDDB) :.
+    '''</summary>
+    Friend Shared ReadOnly Property GnuDB_SubmitDialogMessage() As String
+        Get
+            Return ResourceManager.GetString("GnuDB_SubmitDialogMessage", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Soumettre les métadonnées à GnuDB.
+    '''</summary>
+    Friend Shared ReadOnly Property GnuDB_SubmitDialogTitle() As String
+        Get
+            Return ResourceManager.GetString("GnuDB_SubmitDialogTitle", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Adresse email :.
+    '''</summary>
+    Friend Shared ReadOnly Property GnuDB_SubmitEmailLabel() As String
+        Get
+            Return ResourceManager.GetString("GnuDB_SubmitEmailLabel", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Erreur lors de la soumission à GnuDB :
+    '''
+    '''{0}.
+    '''</summary>
+    Friend Shared ReadOnly Property GnuDB_SubmitError() As String
+        Get
+            Return ResourceManager.GetString("GnuDB_SubmitError", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Erreur de soumission.
+    '''</summary>
+    Friend Shared ReadOnly Property GnuDB_SubmitErrorTitle() As String
+        Get
+            Return ResourceManager.GetString("GnuDB_SubmitErrorTitle", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Veuillez entrer une adresse email valide..
+    '''</summary>
+    Friend Shared ReadOnly Property GnuDB_SubmitInvalidEmail() As String
+        Get
+            Return ResourceManager.GetString("GnuDB_SubmitInvalidEmail", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Impossible de soumettre à GnuDB : certaines informations obligatoires sont manquantes.
+    '''
+    '''Assurez-vous que l&apos;artiste, l&apos;album et tous les titres de pistes sont remplis..
+    '''</summary>
+    Friend Shared ReadOnly Property GnuDB_SubmitMissingData() As String
+        Get
+            Return ResourceManager.GetString("GnuDB_SubmitMissingData", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Métadonnées soumises avec succès à GnuDB !
+    '''
+    '''Merci pour votre contribution à la base de données..
+    '''</summary>
+    Friend Shared ReadOnly Property GnuDB_SubmitSuccess() As String
+        Get
+            Return ResourceManager.GetString("GnuDB_SubmitSuccess", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Soumission réussie.
+    '''</summary>
+    Friend Shared ReadOnly Property GnuDB_SubmitSuccessTitle() As String
+        Get
+            Return ResourceManager.GetString("GnuDB_SubmitSuccessTitle", resourceCulture)
         End Get
     End Property
     
@@ -3309,7 +4645,7 @@ Friend Class Resources
     End Property
     
     '''<summary>
-    '''  Recherche une chaîne localisée semblable à Aigues.
+    '''  Recherche une chaîne localisée semblable à Aigus.
     '''</summary>
     Friend Shared ReadOnly Property Label_Treble() As String
         Get
@@ -3323,6 +4659,24 @@ Friend Class Resources
     Friend Shared ReadOnly Property Label_Volume() As String
         Get
             Return ResourceManager.GetString("Label_Volume", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Vérifier si la librairie Librosa est présente sur votre système :.
+    '''</summary>
+    Friend Shared ReadOnly Property LabelLibrosaExist() As String
+        Get
+            Return ResourceManager.GetString("LabelLibrosaExist", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Chemin Python (optionnel) :.
+    '''</summary>
+    Friend Shared ReadOnly Property LabelPythonPath() As String
+        Get
+            Return ResourceManager.GetString("LabelPythonPath", resourceCulture)
         End Get
     End Property
     
@@ -3422,6 +4776,15 @@ Friend Class Resources
     End Property
     
     '''<summary>
+    '''  Recherche une chaîne localisée semblable à Ajout d&apos;un CD audio.
+    '''</summary>
+    Friend Shared ReadOnly Property Menu_AddCDAudio() As String
+        Get
+            Return ResourceManager.GetString("Menu_AddCDAudio", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
     '''  Recherche une chaîne localisée semblable à Ajout d&apos;un répertoire....
     '''</summary>
     Friend Shared ReadOnly Property Menu_AddDirectory() As String
@@ -3476,6 +4839,24 @@ Friend Class Resources
     End Property
     
     '''<summary>
+    '''  Recherche une chaîne localisée semblable à vide.
+    '''</summary>
+    Friend Shared ReadOnly Property Menu_CDEmpty() As String
+        Get
+            Return ResourceManager.GetString("Menu_CDEmpty", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à pistes.
+    '''</summary>
+    Friend Shared ReadOnly Property Menu_CDTracks() As String
+        Get
+            Return ResourceManager.GetString("Menu_CDTracks", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
     '''  Recherche une chaîne localisée semblable à Effacer la liste.
     '''</summary>
     Friend Shared ReadOnly Property Menu_ClearList() As String
@@ -3490,6 +4871,15 @@ Friend Class Resources
     Friend Shared ReadOnly Property Menu_NewList() As String
         Get
             Return ResourceManager.GetString("Menu_NewList", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Aucun lecteur CD/DVD détecté.
+    '''</summary>
+    Friend Shared ReadOnly Property Menu_NoCDDrive() As String
+        Get
+            Return ResourceManager.GetString("Menu_NoCDDrive", resourceCulture)
         End Get
     End Property
     
@@ -4767,6 +6157,51 @@ Friend Class Resources
     End Property
     
     '''<summary>
+    '''  Recherche une chaîne localisée semblable à Automne.
+    '''</summary>
+    Friend Shared ReadOnly Property Theme_Name_Autumn() As String
+        Get
+            Return ResourceManager.GetString("Theme_Name_Autumn", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Sombre.
+    '''</summary>
+    Friend Shared ReadOnly Property Theme_Name_Dark() As String
+        Get
+            Return ResourceManager.GetString("Theme_Name_Dark", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Par défaut.
+    '''</summary>
+    Friend Shared ReadOnly Property Theme_Name_Default() As String
+        Get
+            Return ResourceManager.GetString("Theme_Name_Default", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Océan.
+    '''</summary>
+    Friend Shared ReadOnly Property Theme_Name_Ocean() As String
+        Get
+            Return ResourceManager.GetString("Theme_Name_Ocean", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Soleil.
+    '''</summary>
+    Friend Shared ReadOnly Property Theme_Name_Sun() As String
+        Get
+            Return ResourceManager.GetString("Theme_Name_Sun", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
     '''  Recherche une chaîne localisée semblable à OK.
     '''</summary>
     Friend Shared ReadOnly Property Theme_OK() As String
@@ -5019,6 +6454,276 @@ Friend Class Resources
     Friend Shared ReadOnly Property Theme_Select() As String
         Get
             Return ResourceManager.GetString("Theme_Select", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Ajout d&apos;une ou des chansons ou répertoire à la fenêtre de la liste....
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Button_Add() As String
+        Get
+            Return ResourceManager.GetString("Tip_Button_Add", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à À propos d&apos;AudioPlay.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Button_APropos() As String
+        Get
+            Return ResourceManager.GetString("Tip_Button_APropos", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Aide générale d&apos;AudioPlay.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Button_AudioPlay_Help() As String
+        Get
+            Return ResourceManager.GetString("Tip_Button_AudioPlay_Help", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Calculer le BPM (Beats per minute) des chansons sélectionnées.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Button_CalculBPM() As String
+        Get
+            Return ResourceManager.GetString("Tip_Button_CalculBPM", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Effacer la recherche.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Button_ClearSearch() As String
+        Get
+            Return ResourceManager.GetString("Tip_Button_ClearSearch", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à AudioPlay en mode DJ (Mixeur).
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Button_DJMode() As String
+        Get
+            Return ResourceManager.GetString("Tip_Button_DJMode", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Accès à l&apos;information de la chanson sélectionnée.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Button_InfoSelect() As String
+        Get
+            Return ResourceManager.GetString("Tip_Button_InfoSelect", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Jouer en boucle la section de la chanson sélectionné avec les touches du clavier &apos;I&apos; et &apos;O&apos;....
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Button_Loop() As String
+        Get
+            Return ResourceManager.GetString("Tip_Button_Loop", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Aide pour programmer une section de la chanson avec les touches &apos;I&apos; et &apos;O&apos;.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Button_Loop_Help() As String
+        Get
+            Return ResourceManager.GetString("Tip_Button_Loop_Help", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Gérer la fenêtre de la liste.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Button_ManageList() As String
+        Get
+            Return ResourceManager.GetString("Tip_Button_ManageList", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Mettre en sourdine la chanson en cours.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Button_Mute() As String
+        Get
+            Return ResourceManager.GetString("Tip_Button_Mute", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Chanson suivante.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Button_Next() As String
+        Get
+            Return ResourceManager.GetString("Tip_Button_Next", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Accès à tous les paramètres d&apos;AudioPlay.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Button_Parametres() As String
+        Get
+            Return ResourceManager.GetString("Tip_Button_Parametres", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Mettre en pause / Reprendre la lecture.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Button_PauseResume() As String
+        Get
+            Return ResourceManager.GetString("Tip_Button_PauseResume", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Jouer la chanson sélectionnée.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Button_Play() As String
+        Get
+            Return ResourceManager.GetString("Tip_Button_Play", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Fermer l&apos;application.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Button_Power() As String
+        Get
+            Return ResourceManager.GetString("Tip_Button_Power", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Chanson précédente.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Button_Previous() As String
+        Get
+            Return ResourceManager.GetString("Tip_Button_Previous", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Mode aléatoire de la liste de chansons.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Button_Random() As String
+        Get
+            Return ResourceManager.GetString("Tip_Button_Random", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Arrêter la chanson en cours.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Button_Stop() As String
+        Get
+            Return ResourceManager.GetString("Tip_Button_Stop", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Type de recherche (nom, BPM, durée).
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Combo_SearchType() As String
+        Get
+            Return ResourceManager.GetString("Tip_Combo_SearchType", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Choix du mode de recherche.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Combo_TypeRecherche() As String
+        Get
+            Return ResourceManager.GetString("Tip_Combo_TypeRecherche", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Avancement de la chanson en cours.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_GroupBox_Avancement() As String
+        Get
+            Return ResourceManager.GetString("Tip_GroupBox_Avancement", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Durée restante de la chanson en cours.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Label_DureeRestante() As String
+        Get
+            Return ResourceManager.GetString("Tip_Label_DureeRestante", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Niveau du volume actuel.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_Label_Volume() As String
+        Get
+            Return ResourceManager.GetString("Tip_Label_Volume", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Fenêtre de la liste des chansons chargées.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_ListView1() As String
+        Get
+            Return ResourceManager.GetString("Tip_ListView1", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Ajustement général des aigues d&apos;AudioPlay.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_TrackBar_Aigues() As String
+        Get
+            Return ResourceManager.GetString("Tip_TrackBar_Aigues", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Ajustement général des basses d&apos;AudioPlay.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_TrackBar_Basses() As String
+        Get
+            Return ResourceManager.GetString("Tip_TrackBar_Basses", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Position de lecture (glisser pour naviguer).
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_TrackBar_Position() As String
+        Get
+            Return ResourceManager.GetString("Tip_TrackBar_Position", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Valeur: .
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_TrackBar_ValuePrefix() As String
+        Get
+            Return ResourceManager.GetString("Tip_TrackBar_ValuePrefix", resourceCulture)
+        End Get
+    End Property
+    
+    '''<summary>
+    '''  Recherche une chaîne localisée semblable à Régler le volume.
+    '''</summary>
+    Friend Shared ReadOnly Property Tip_TrackBar_Volume() As String
+        Get
+            Return ResourceManager.GetString("Tip_TrackBar_Volume", resourceCulture)
         End Get
     End Property
     

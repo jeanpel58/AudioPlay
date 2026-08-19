@@ -144,7 +144,8 @@ Public Class WaveformControl
                         Next
                         If diffs.Count > 0 Then
                             diffs.Sort()
-                            cachedBeatInterval = diffs(diffs.Count \ 2)
+                            Dim mid = diffs.Count \ 2
+                            cachedBeatInterval = diffs(mid)
                             If cachedBeatInterval < 4 Then cachedBeatInterval = 4
                         End If
                         Me.Invalidate()
@@ -153,7 +154,9 @@ Public Class WaveformControl
                     ' Run detection in background to avoid blocking UI
                     Task.Run(Sub()
                                  Try
-                                     Dim (detBeats, detTempo) = RunPythonDetectBeats(audioFilePath)
+                                     Dim result = RunPythonDetectBeats(audioFilePath)
+                                     Dim detBeats = If(result IsNot Nothing, result.Item1, Nothing)
+                                     Dim detTempo As Double = If(result IsNot Nothing, result.Item2, 0)
                                      If detBeats IsNot Nothing AndAlso detBeats.Count > 0 Then
                                          ' save cache
                                          Try
@@ -333,24 +336,28 @@ Public Class WaveformControl
         End Try
     End Sub
 
-    Private Function RunPythonDetectBeats(audioFilePath As String) As (List(Of Double), Double)
+    Private Function RunPythonDetectBeats(audioFilePath As String) As Tuple(Of List(Of Double), Double)
         Try
             Dim scriptPath As String = Path.Combine(Application.StartupPath, "Tools", "detect_beats.py")
             If Not File.Exists(scriptPath) Then
-                Return (Nothing, 0)
+                Return Tuple.Create(Of List(Of Double), Double)(Nothing, 0)
             End If
-            Dim psi As New ProcessStartInfo(GetPythonExecutable(), $"""{scriptPath}""" & " " & $"""{audioFilePath}"""") With {
+
+            Dim args As String = """" & scriptPath & """ " & """" & audioFilePath & """"
+            Dim psi As New ProcessStartInfo(GetPythonExecutable(), args) With {
                 .UseShellExecute = False,
                 .RedirectStandardOutput = True,
                 .RedirectStandardError = True,
                 .CreateNoWindow = True
             }
+
             Using p As Process = Process.Start(psi)
-                If p Is Nothing Then Return (Nothing, 0)
+                If p Is Nothing Then Return Tuple.Create(Of List(Of Double), Double)(Nothing, 0)
                 Dim stdout As String = p.StandardOutput.ReadToEnd()
                 Dim stderr As String = p.StandardError.ReadToEnd()
                 p.WaitForExit(60000)
-                If String.IsNullOrEmpty(stdout) Then Return (Nothing, 0)
+                If String.IsNullOrEmpty(stdout) Then Return Tuple.Create(Of List(Of Double), Double)(Nothing, 0)
+
                 Try
                     Dim doc = JsonDocument.Parse(stdout)
                     Dim root = doc.RootElement
@@ -364,24 +371,22 @@ Public Class WaveformControl
                     If root.TryGetProperty("tempo", Nothing) Then
                         tempo = root.GetProperty("tempo").GetDouble()
                     End If
-                    Return (beats, tempo)
+                    Return Tuple.Create(beats, tempo)
                 Catch
-                    Return (Nothing, 0)
+                    Return Tuple.Create(Of List(Of Double), Double)(Nothing, 0)
                 End Try
             End Using
         Catch
         End Try
-        Return (Nothing, 0)
+        Return Tuple.Create(Of List(Of Double), Double)(Nothing, 0)
     End Function
 
     Private Function GetPythonExecutable() As String
         Try
             ' 1) Prefer embedded Python managed by PythonManager
             Try
-                If PythonManager IsNot Nothing Then
-                    If File.Exists(PythonManager.CheminPython) Then
-                        Return PythonManager.CheminPython
-                    End If
+                If File.Exists(PythonManager.CheminPython) Then
+                    Return PythonManager.CheminPython
                 End If
             Catch
             End Try
@@ -461,8 +466,8 @@ Public Class WaveformControl
                     diffs.Add(cachedBeatPositions(i) - cachedBeatPositions(i - 1))
                 Next
                 diffs.Sort()
-                cachedBeatInterval = diffs(diffs.Count 
-                                            2)
+                Dim midIdx = diffs.Count \ 2
+                cachedBeatInterval = diffs(midIdx)
                 ' clamp to reasonable range
                 If cachedBeatInterval < 4 Then cachedBeatInterval = 4
             Else
@@ -535,8 +540,8 @@ Public Class WaveformControl
         ' Assurer que les beats sont calculés
         ComputeBeatsIfNeeded()
 
-        Dim centerY As Integer = Me.Height \\ 2
-        Dim maxHeight As Integer = Me.Height \\ 2 - 5
+        Dim centerY As Integer = Me.Height \ 2
+        Dim maxHeight As Integer = Me.Height \ 2 - 5
 
         Dim centerLineX As Integer = CInt(Me.Width * 0.5F)
         Dim offset As Integer = 1

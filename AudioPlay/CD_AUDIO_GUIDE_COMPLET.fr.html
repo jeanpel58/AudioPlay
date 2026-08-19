@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AudioPlay - Guide CD Audio Complet (FormCompresser & FormSelecteurPistesCD)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h3 {
+            color: #764ba2;
+            font-size: 1.8em;
+            margin: 30px 0 15px 0;
+        }
+
+        h4 {
+            color: #555;
+            font-size: 1.3em;
+            margin: 20px 0 10px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .button-desc {
+            background: #f0f4ff;
+            padding: 20px;
+            border-left: 5px solid #667eea;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .tip {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .warning {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .print-button:hover {
+            background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(40, 167, 69, 0.6);
+        }
+
+        .print-button:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            .print-button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Bouton d'impression flottant -->
+    <button class="print-button" onclick="window.print()">🖨️ Imprimer le guide</button>
+
+    <div class="container">
+        <header>
+            <h1>💿 AudioPlay - Guide CD Audio Complet</h1>
+            <p>FormCompresser & FormSelecteurPistesCD - Toutes les fonctionnalités expliquées</p>
+        </header>
+
+        <div class="content">
+            <div class="success">
+                <strong>🎉 Fonctionnalité complète !</strong><br>
+                AudioPlay peut maintenant lire et extraire des CD audio directement depuis vos lecteurs CD/DVD avec gestion complète des métadonnées, pochettes d'album multi-sources, et soumission à GnuDB.
+            </div>
+
+            <h2>🎵 Lecture de CD Audio</h2>
+
+            <div class="button-desc">
+                <strong>Accès au lecteur CD</strong><br>
+                Pour lire un CD audio :
+                <ol>
+                    <li>Insérez un CD audio dans votre lecteur CD/DVD</li>
+                    <li>Cliquez sur le bouton <strong>"Ajout" (Button_Ajout)</strong> dans la barre d'outils</li>
+                    <li>Dans le menu contextuel qui apparaît, choisissez <strong>"Ajout d'un CD Audio"</strong></li>
+                    <li>AudioPlay détecte automatiquement les lecteurs contenant un CD audio</li>
+                    <li>Sélectionnez le lecteur dans la liste déroulante</li>
+                    <li>Les pistes du CD s'affichent automatiquement</li>
+                </ol>
+
+                <div class="tip">
+                    <strong>Détection automatique :</strong> AudioPlay surveille en temps réel les lecteurs CD. 
+                    Si vous éjectez ou insérez un CD, l'interface se met à jour automatiquement.
+                </div>
+            </div>
+
+            <h2>🎛️ FormSelecteurPistesCD - Sélection des pistes</h2>
+
+            <div class="button-desc">
+                <strong>Interface de sélection des pistes</strong><br>
+                Lors de l'ouverture d'un CD, le <strong>FormSelecteurPistesCD</strong> s'affiche avec :
+
+                <h3>📋 Liste des pistes disponibles :</h3>
+                <ul>
+                    <li>✅ <strong>Cases à cocher</strong> : Sélectionnez les pistes à extraire</li>
+                    <li>🎵 <strong>Numéro de piste</strong> : Numéro de la piste sur le CD</li>
+                    <li>📝 <strong>Titre</strong> : Nom de la chanson (si métadonnées disponibles)</li>
+                    <li>⏱️ <strong>Durée</strong> : Durée de la piste (mm:ss)</li>
+                </ul>
+
+                <h3>🎯 Boutons de sélection rapide :</h3>
+                <ul>
+                    <li><strong>Tout sélectionner</strong> : Coche toutes les pistes du CD</li>
+                    <li><strong>Tout désélectionner</strong> : Décoche toutes les pistes</li>
+                    <li><strong>Inverser la sélection</strong> : Inverse les cases cochées/décochées</li>
+                </ul>
+
+                <h3>🚀 Lancer l'extraction :</h3>
+                <ul>
+                    <li><strong>Extraction</strong> : Ouvre FormCompresser avec les pistes sélectionnées</li>
+                    <li><strong>Annuler</strong> : Ferme la fenêtre sans extraire</li>
+                </ul>
+
+                <div class="warning">
+                    <strong>Note importante :</strong> Vous devez sélectionner au moins une piste pour pouvoir lancer l'extraction.
+                </div>
+            </div>
+
+            <h2>🎚️ FormCompresser - Extraction et conversion</h2>
+
+            <div class="button-desc">
+                <strong>Interface complète d'extraction CD</strong><br>
+                Le <strong>FormCompresser</strong> est le coeur de l'extraction CD avec toutes les fonctionnalités avancées.
+            </div>
+
+            <h3>🎛️ Section Lecteur et Métadonnées</h3>
+
+            <table>
+                <tr>
+                    <th>Champ</th>
+                    <th>Description</th>
+                    <th>Éditable</th>
+                </tr>
+                <tr>
+                    <td><strong>Lecteur CD</strong></td>
+                    <td>Liste déroulante des lecteurs CD détectés</td>
+                    <td>✅ Oui</td>
+                </tr>
+                <tr>
+                    <td><strong>Artiste du CD</strong></td>
+                    <td>Nom de l'artiste ou du groupe</td>
+                    <td>✅ Oui</td>
+                </tr>
+                <tr>
+                    <td><strong>Titre du CD</strong></td>
+                    <td>Nom de l'album</td>
+                    <td>✅ Oui</td>
+                </tr>
+                <tr>
+                    <td><strong>Année</strong></td>
+                    <td>Année de sortie de l'album</td>
+                    <td>✅ Oui</td>
+                </tr>
+                <tr>
+                    <td><strong>Genre</strong></td>
+                    <td>Style musical (liste déroulante prédéfinie)</td>
+                    <td>✅ Oui</td>
+                </tr>
+                <tr>
+                    <td><strong>Numéro du CD</strong></td>
+                    <td>Pour albums multi-disques (CD 1, CD 2, etc.)</td>
+                    <td>✅ Oui</td>
+                </tr>
+                <tr>
+                    <td><strong>Première piste</strong></td>
+                    <td>Numéro de la première piste (utile pour extractions partielles)</td>
+                    <td>✅ Oui</td>
+                </tr>
+                <tr>
+                    <td><strong>Commentaire</strong></td>
+                    <td>Commentaire personnel à ajouter aux fichiers</td>
+                    <td>✅ Oui</td>
+                </tr>
+            </table>
+
+            <div class="tip">
+                <strong>Édition directe :</strong> Tous les champs de métadonnées peuvent être modifiés manuellement avant l'extraction !
+            </div>
+
+            <h2>🖼️ Pochette d'album - Système multi-sources</h2>
+
+            <div class="button-desc">
+                <strong>Recherche intelligente de pochettes</strong><br>
+                AudioPlay recherche automatiquement les pochettes sur <strong>4 sources différentes</strong> :
+            </div>
+
+            <h3>🌐 Sources de pochettes</h3>
+
+            <table>
+                <tr>
+                    <th>Source</th>
+                    <th>Description</th>
+                    <th>Qualité</th>
+                </tr>
+                <tr>
+                    <td><strong>MusicBrainz</strong></td>
+                    <td>Base de données musicale communautaire (Cover Art Archive)</td>
+                    <td>⭐⭐⭐⭐⭐</td>
+                </tr>
+                <tr>
+                    <td><strong>Last.fm</strong></td>
+                    <td>Service de streaming et base de données</td>
+                    <td>⭐⭐⭐⭐</td>
+                </tr>
+                <tr>
+                    <td><strong>Discogs</strong></td>
+                    <td>Base de données discographique mondiale</td>
+                    <td>⭐⭐⭐⭐</td>
+                </tr>
+                <tr>
+                    <td><strong>Fanart.tv</strong></td>
+                    <td>Collection d'artwork haute qualité</td>
+                    <td>⭐⭐⭐⭐⭐</td>
+                </tr>
+            </table>
+
+            <h3>🎨 Navigation entre les pochettes</h3>
+
+            <ul>
+                <li>⬅️ <strong>Bouton Précédent</strong> : Affiche la pochette précédente dans l'historique</li>
+                <li>➡️ <strong>Bouton Suivant</strong> : Recherche et affiche la prochaine pochette disponible</li>
+                <li>🗑️ <strong>Bouton Effacer</strong> : Supprime la pochette actuelle et passe à la suivante</li>
+            </ul>
+
+            <h3>ℹ️ Informations de la pochette</h3>
+
+            <ul>
+                <li><strong>Site :</strong> Indique la source de la pochette actuellement affichée<br>(MusicBrainz, Last.fm, Discogs, ou Fanart.tv)</li>
+                <li><strong>Dimensions :</strong> Taille de l'image en pixels (ex: 500 x 500)</li>
+                <li><strong>Taille :</strong> Poids du fichier image en Ko ou Mo</li>
+            </ul>
+
+            <div class="success">
+                <strong>Cache temporaire :</strong> Toutes les pochettes trouvées sont mises en cache temporairement. Vous pouvez naviguer entre elles avec les boutons Précédent/Suivant jusqu'à ce que vous trouviez celle qui vous convient.
+            </div>
+
+            <div class="warning">
+                <strong>Conservation de la pochette :</strong> La pochette affichée au moment où vous cliquez sur <strong>"Extraire"</strong> sera celle utilisée pour tous les fichiers extraits. Les autres pochettes du cache seront alors supprimées automatiquement.
+            </div>
+
+            <h2>📝 Édition des pistes</h2>
+
+            <div class="button-desc">
+                <strong>Modifier les informations des pistes</strong>
+
+                <h3>✏️ Bouton "Éditer les pistes"</h3>
+                <p>Cliquez sur le bouton <strong>"Éditer les pistes"</strong> pour ouvrir une fenêtre d'édition avancée où vous pouvez :</p>
+                <ul>
+                    <li>✏️ <strong>Modifier le titre</strong> de chaque piste individuellement</li>
+                    <li>🎤 <strong>Modifier l'artiste</strong> de chaque piste (utile pour compilations)</li>
+                    <li>📋 <strong>Édition en masse</strong> : Modifier plusieurs pistes en une seule fois</li>
+                    <li>🔄 <strong>Renumérotation</strong> : Ajuster les numéros de piste automatiquement</li>
+                </ul>
+            </div>
+
+            <h3>📋 Liste des pistes dans FormCompresser</h3>
+
+            <table>
+                <tr>
+                    <th>Colonne</th>
+                    <th>Information</th>
+                </tr>
+                <tr>
+                    <td><strong>✅</strong></td>
+                    <td>Case à cocher pour sélection/désélection</td>
+                </tr>
+                <tr>
+                    <td><strong>Piste</strong></td>
+                    <td>Numéro de la piste sur le CD</td>
+                </tr>
+                <tr>
+                    <td><strong>Titre</strong></td>
+                    <td>Nom de la chanson</td>
+                </tr>
+                <tr>
+                    <td><strong>Artiste</strong></td>
+                    <td>Interprète de la piste</td>
+                </tr>
+                <tr>
+                    <td><strong>Début</strong></td>
+                    <td>Position de début sur le CD (mm:ss)</td>
+                </tr>
+                <tr>
+                    <td><strong>Longueur</strong></td>
+                    <td>Durée de la piste (mm:ss)</td>
+                </tr>
+                <tr>
+                    <td><strong>Taille</strong></td>
+                    <td>Taille estimée du fichier WAV non compressé</td>
+                </tr>
+                <tr>
+                    <td><strong>Taille comp.</strong></td>
+                    <td>Taille estimée après compression (selon format choisi)</td>
+                </tr>
+            </table>
+
+            <div class="tip">
+                <strong>Sélection/Désélection rapide :</strong> Utilisez la case à cocher en haut de la liste pour sélectionner ou désélectionner toutes les pistes en une fois.
+            </div>
+
+            <h2>📤 Soumission à GnuDB</h2>
+
+            <div class="button-desc">
+                <strong>Contribuer à la base de données GnuDB</strong>
+
+                <h3>🌍 Qu'est-ce que GnuDB ?</h3>
+                <p>GnuDB est une base de données CD gratuite et communautaire. Si votre CD n'a pas été trouvé automatiquement, vous pouvez soumettre ses métadonnées pour aider les autres utilisateurs !</p>
+
+                <h3>📤 Processus de soumission</h3>
+                <ol>
+                    <li><strong>Remplir les métadonnées</strong> : Assurez-vous que tous les champs sont corrects (Artiste, Album, Année, Genre, Titres des pistes)</li>
+                    <li><strong>Cliquer sur "Soumettre à GnuDB"</strong></li>
+                    <li><strong>Entrer votre adresse e-mail</strong> : <span style="color: red; font-weight: bold;">OBLIGATOIRE</span> pour que GnuDB puisse vous notifier</li>
+                    <li><strong>Choisir la catégorie</strong> : AudioPlay propose automatiquement une catégorie basée sur le genre</li>
+                    <li><strong>Mode de soumission</strong> :
+                        <ul>
+                            <li>✅ <strong>Mode TEST</strong> (recommandé) : Le serveur vérifie mais n'enregistre pas</li>
+                            <li>🚀 <strong>Mode SUBMIT</strong> : Soumission réelle ajoutée à GnuDB</li>
+                        </ul>
+                    </li>
+                    <li><strong>Validation</strong> : AudioPlay calcule le DiscID CDDB et envoie les métadonnées</li>
+                    <li><strong>Confirmation</strong> : Message de confirmation + e-mail de GnuDB</li>
+                </ol>
+            </div>
+
+            <div class="success">
+                <strong>Format CDDB conforme :</strong> AudioPlay génère automatiquement un fichier CDDB au format standard avec toutes les métadonnées et le DiscID correct.
+            </div>
+
+            <div class="warning">
+                <strong>Conditions de soumission :</strong>
+                <ul>
+                    <li>Tous les champs métadonnées doivent être remplis</li>
+                    <li>Une adresse e-mail valide est obligatoire</li>
+                    <li>Le DiscID CDDB doit pouvoir être calculé</li>
+                </ul>
+            </div>
+
+            <h2>📝 Métadonnées CD - Sources automatiques</h2>
+
+            <table>
+                <tr>
+                    <th>Source</th>
+                    <th>Description</th>
+                    <th>Avantages</th>
+                </tr>
+                <tr>
+                    <td><strong>Cache local</strong></td>
+                    <td>Métadonnées des CD déjà lus</td>
+                    <td>✅ Instantané<br>✅ Pas besoin d'Internet<br>✅ Fiable à 100%</td>
+                </tr>
+                <tr>
+                    <td><strong>GnuDB</strong></td>
+                    <td>Base de données CD gratuite</td>
+                    <td>✅ Gratuit<br>✅ Rapide<br>✅ Communautaire</td>
+                </tr>
+                <tr>
+                    <td><strong>MusicBrainz</strong></td>
+                    <td>Base musicale open-source</td>
+                    <td>✅ Très complète<br>✅ Pochettes incluses<br>✅ Données vérifiées</td>
+                </tr>
+            </table>
+
+            <div class="tip">
+                <strong>Mise en cache automatique :</strong> Les métadonnées sont sauvegardées localement. La prochaine fois que vous insérerez le même CD, AudioPlay chargera instantanément les informations depuis le cache !
+            </div>
+
+            <h2>💾 Formats d'extraction supportés</h2>
+
+            <table>
+                <tr>
+                    <th>Format</th>
+                    <th>Description</th>
+                    <th>Qualités disponibles</th>
+                </tr>
+                <tr>
+                    <td><strong>MP3</strong></td>
+                    <td>Format compressé universel</td>
+                    <td>
+                        • Basse (128 kbps)<br>
+                        • Moyenne (192 kbps)<br>
+                        • Haute (256 kbps)<br>
+                        • <strong>Très haute (320 kbps)</strong> ⭐
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>FLAC</strong></td>
+                    <td>Compression sans perte</td>
+                    <td>
+                        • Niveau 0 (rapide)<br>
+                        • Niveau 5 (équilibré)<br>
+                        • <strong>Niveau 8 (meilleur)</strong> ⭐
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>WAV</strong></td>
+                    <td>Format non compressé</td>
+                    <td>
+                        • PCM 16-bit 44.1 kHz<br>
+                        • <strong>PCM 24-bit 96 kHz</strong> ⭐<br>
+                        • PCM 32-bit 192 kHz
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>WMA</strong></td>
+                    <td>Windows Media Audio</td>
+                    <td>
+                        • 128 kbps<br>
+                        • 192 kbps<br>
+                        • <strong>256 kbps</strong> ⭐
+                    </td>
+                </tr>
+            </table>
+
+            <div class="tip">
+                <strong>Par défaut :</strong> AudioPlay extrait en <strong>MP3 à 320 kbps</strong> (Très haute qualité)
+            </div>
+
+            <h2>⚙️ Processus d'extraction</h2>
+
+            <ol>
+                <li><strong>Sélectionner les pistes</strong> à extraire</li>
+                <li><strong>Choisir le format</strong> (MP3, FLAC, WAV, WMA)</li>
+                <li><strong>Choisir la qualité</strong></li>
+                <li><strong>Définir le dossier de sauvegarde</strong></li>
+                <li><strong>Ajuster les métadonnées</strong></li>
+                <li><strong>Choisir la pochette</strong> (navigation ⬅️ ➡️)</li>
+                <li><strong>Éditer les pistes</strong> si nécessaire</li>
+                <li><strong>Options avancées</strong> :
+                    <ul>
+                        <li>☑️ Verrouiller le CD</li>
+                        <li>☑️ Éjecter le CD après extraction</li>
+                        <li>🔊 <strong>Normalisation Son</strong> : Ajustez le volume d'extraction (1-100%, défaut 95%)
+                            <ul>
+                                <li><strong>95%</strong> : Valeur recommandée pour éviter la saturation</li>
+                                <li><strong>100%</strong> : Volume maximum (risque de distorsion)</li>
+                                <li><strong>Moins de 95%</strong> : Réduction du volume si les pistes sont trop fortes</li>
+                                <li>💾 <em>La valeur est sauvegardée automatiquement entre les sessions</em></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li><strong>Cliquer sur "Extraire"</strong></li>
+            </ol>
+
+            <div class="success">
+                <strong>Organisation automatique :</strong><br>
+                <code>Dossier\(Année) Artiste - Album\NN - Artiste - Titre.ext</code><br><br>
+                <strong>Exemple :</strong><br>
+                <code>Musique\(2005) Paul McCartney - Never Stop Doing What You Love\01 - Paul McCartney - Another Day.mp3</code>
+            </div>
+
+            <h2>📊 Suivi de progression</h2>
+
+            <ul>
+                <li><strong>Piste en cours</strong> : Affiche "Artiste - Titre"</li>
+                <li><strong>Progression par piste</strong> : Barre 0-100%</li>
+                <li><strong>Progression globale</strong> : Toutes les pistes</li>
+            </ul>
+
+            <h3>🎮 Contrôles pendant l'extraction</h3>
+            <ul>
+                <li><strong>Annuler</strong> : Arrête l'extraction (pistes déjà extraites conservées)</li>
+                <li><strong>Minimiser</strong> : Continue en arrière-plan</li>
+            </ul>
+
+            <div class="tip">
+                <strong>Extraction en arrière-plan :</strong> Vous pouvez même écouter de la musique dans AudioPlay pendant l'extraction !
+            </div>
+
+            <h2>❓ Questions fréquentes</h2>
+
+            <h3>💿 Mon CD n'est pas détecté</h3>
+            <ul>
+                <li>Vérifiez que c'est bien un CD audio</li>
+                <li>Cliquez de nouveau sur <strong>Button_Ajout → "Ajout d'un CD Audio"</strong></li>
+                <li>Redémarrez AudioPlay si nécessaire</li>
+            </ul>
+
+            <h3>📝 Les métadonnées ne se chargent pas</h3>
+            <ul>
+                <li>Vérifiez votre connexion Internet</li>
+                <li>CD rare = saisissez manuellement</li>
+                <li>Soumettez ensuite à GnuDB pour aider les autres !</li>
+            </ul>
+
+            <h3>🖼️ La pochette ne s'affiche pas</h3>
+            <ul>
+                <li>Cliquez sur "Suivant ➡️" pour d'autres sources</li>
+                <li>Vous pouvez extraire sans pochette</li>
+            </ul>
+
+            <h3>⚡ L'extraction est lente</h3>
+            <ul>
+                <li>Normal : extraction = temps réel du CD</li>
+                <li>Une piste de 4 min = 4 min d'extraction</li>
+                <li>WAV = plus rapide (pas de compression)</li>
+            </ul>
+
+            <h3>📤 Soumission GnuDB échoue</h3>
+            <ul>
+                <li>Vérifiez que tous les champs sont remplis</li>
+                <li>E-mail valide obligatoire</li>
+                <li>Essayez d'abord en mode TEST</li>
+            </ul>
+
+            <div class="success">
+                <strong>🎉 Astuce pro :</strong> Remplissez toutes les métadonnées avant extraction, choisissez une pochette haute qualité, et soumettez à GnuDB pour aider la communauté !
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 AudioPlay - Guide complet CD Audio (FormCompresser & FormSelecteurPistesCD)</p>
+            <p>Toutes les fonctionnalités expliquées en détail</p>
+        </footer>
+    </div>
+</body>
+</html>

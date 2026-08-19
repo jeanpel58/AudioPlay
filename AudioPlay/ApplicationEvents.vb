@@ -1,4 +1,4 @@
-﻿Imports Microsoft.VisualBasic.ApplicationServices
+Imports Microsoft.VisualBasic.ApplicationServices
 Imports System.Windows.Forms
 Imports System.IO
 
@@ -26,6 +26,53 @@ Namespace My
     ' End Sub
 
     Partial Friend Class MyApplication
+
+        Private Sub MyApplication_Startup(sender As Object, e As Microsoft.VisualBasic.ApplicationServices.StartupEventArgs) Handles Me.Startup
+            ' Handlers globaux pour capturer les exceptions non gérées
+            Try
+                AddHandler System.Windows.Forms.Application.ThreadException, AddressOf OnThreadException
+            Catch
+                ' Ignorer si non disponible
+            End Try
+
+            Try
+                AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf OnDomainUnhandledException
+            Catch
+                ' Ignorer
+            End Try
+        End Sub
+
+        Private Sub OnThreadException(sender As Object, e As System.Threading.ThreadExceptionEventArgs)
+            Try
+                Dim logDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay")
+                If Not Directory.Exists(logDir) Then Directory.CreateDirectory(logDir)
+                Dim logFile = Path.Combine(logDir, "crash.log")
+                File.AppendAllText(logFile, $"[{DateTime.Now}] ThreadException: {e.Exception.ToString()}{Environment.NewLine}")
+            Catch
+            End Try
+
+            Try
+                MessageBox.Show(AudioPlay.LanguageManager.GetString("UnhandledException_Message", e.Exception.Message, e.Exception.Source, e.Exception.StackTrace),
+                                AudioPlay.LanguageManager.GetString("UnhandledException_Title"), MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Catch
+                MessageBox.Show("An unhandled error occurred. See crash.log in %APPDATA%\\AudioPlay.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+        End Sub
+        Private Sub OnDomainUnhandledException(sender As Object, e As System.UnhandledExceptionEventArgs)
+            Try
+                Dim exObj = TryCast(e.ExceptionObject, Exception)
+                Dim logDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay")
+                If Not Directory.Exists(logDir) Then Directory.CreateDirectory(logDir)
+                Dim logFile = Path.Combine(logDir, "crash.log")
+                If exObj IsNot Nothing Then
+                    File.AppendAllText(logFile, $"[{DateTime.Now}] UnhandledException (Domain): {exObj.ToString()}{Environment.NewLine}")
+                Else
+                    File.AppendAllText(logFile, $"[{DateTime.Now}] UnhandledException (Domain): {e.ExceptionObject.ToString()}{Environment.NewLine}")
+                End If
+            Catch
+            End Try
+            ' Ne pas afficher de MessageBox ici car l'application peut être en train de se terminer
+        End Sub
 
         Private Sub MyApplication_StartupNextInstance(sender As Object, e As StartupNextInstanceEventArgs) Handles Me.StartupNextInstance
             ' Ajoute chaque fichier passé en argument à la liste de l'instance principale
