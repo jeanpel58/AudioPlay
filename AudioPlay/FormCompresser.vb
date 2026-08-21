@@ -5,6 +5,11 @@ Imports System.Diagnostics
 
 Public Class FormCompresser
 
+    ' Reference to the currently shown Run All progress form (if any)
+    Private currentRunAllProgress As FormRunAllProgress = Nothing
+    Private runAllActive As Boolean = False
+    Private runAllCancelRequested As Boolean = False
+
     ' API Windows pour enlever le bouton X
     Private Const SC_CLOSE As Integer = &HF060
     Private Const MF_BYCOMMAND As Integer = &H0
@@ -21,6 +26,422 @@ Public Class FormCompresser
         MyBase.OnLoad(e)
         Dim hMenu As IntPtr = GetSystemMenu(Me.Handle, False)
         RemoveMenu(hMenu, SC_CLOSE, MF_BYCOMMAND)
+    End Sub
+
+    Private Sub BtnRunAllHeadless_Click(sender As Object, e As EventArgs) Handles BtnRunAllHeadless.Click
+        Try
+            ' Run all transitions without prompting; show a completion message box when finished.
+            If pistesCD Is Nothing OrElse (TypeOf pistesCD Is Collections.ICollection AndAlso DirectCast(pistesCD, Collections.ICollection).Count = 0) Then
+                MessageBox.Show("Aucun CD chargé. Insérez un CD et rechargez avant de lancer le run.", "Run all", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Return
+            End If
+            ' Use a dedicated modal progress window so result doesn't overlap UI fields
+            Dim progressForm As New FormRunAllProgress()
+            runAllActive = True
+            Dim btn = TryCast(sender, Button)
+            ' Remember visibility state of in-form progress UI and hide it while run-all uses its own window
+            Dim originalProgressVisible As Boolean = False
+            Dim originalLabelVisible As Boolean = False
+            Try
+                originalProgressVisible = ProgressBarGlobale.Visible
+                originalLabelVisible = LabelProgressionGlobale.Visible
+                Me.BeginInvoke(Sub()
+                                   Try
+                                       ProgressBarGlobale.Visible = False
+                                       LabelProgressionGlobale.Visible = False
+                                       ' Also hide per-track controls to avoid main-form text leakage during RunAll
+                                       LabelPisteEnCours.Visible = False
+                                       ProgressBarPisteActuelle.Visible = False
+                                   Catch
+                                   End Try
+                               End Sub)
+            Catch
+            End Try
+            Dim originalText As String = Nothing
+            If btn IsNot Nothing Then
+                originalText = btn.Text
+                btn.Enabled = False
+                btn.Text = "Running..."
+            End If
+
+            Dim total As Integer = 0
+            Try
+                total = DirectCast(pistesCD, Collections.ICollection).Count
+            Catch
+            End Try
+            Dim steps As Integer = Math.Max(1, Math.Max(0, total - 1))
+            progressForm.SetMaximum(steps)
+            progressForm.SetStatus($"Run all: 0/{steps}")
+
+            ' Remember progress form so other events write into it instead of the main form
+            Try
+                currentRunAllProgress = progressForm
+            Catch
+            End Try
+            ' Show progress form non-modal but centered to parent
+            Try
+                progressForm.Show(Me)
+            Catch
+            End Try
+
+            runAllCancelRequested = False
+            Task.Run(Sub()
+                         Try
+                             If total <= 1 Then Return
+                             Dim sessionStartUtc = DateTime.UtcNow
+                             For tn As Integer = 1 To steps
+                                 Try
+                                    If runAllCancelRequested Then
+                                        System.Diagnostics.Debug.WriteLine("[RunAllHeadless] cancellation requested, stopping run")
+                                        Exit For
+                                    End If
+                                    CDAudioAnalyzer.Debug_SaveTransitionForTrack(pistesCD, tn)
+                                 Catch ex As Exception
+                                     System.Diagnostics.Debug.WriteLine($"[RunAllHeadless] Track {tn} failed: {ex.Message}")
+                                 End Try
+
+                                 ' update progress UI (modal form) and append a log line
+                                 Try
+                                     If (progressForm IsNot Nothing) AndAlso (Not progressForm.IsDisposed) Then
+                                         progressForm.BeginInvoke(Sub()
+                                                                      Try
+                                                                          progressForm.SetValue(tn)
+                                                                          progressForm.SetStatus($"Run all: {tn}/{steps}")
+                                                                          progressForm.AppendLogLine($"Processed track {tn} of {steps}")
+                                                                      Catch
+                                                                      End Try
+                                                                  End Sub)
+                                     End If
+                                 Catch
+                                 End Try
+
+                                 Try
+                                     CDAudioAnalyzer.CleanupSnippetsOlderThan(sessionStartUtc)
+                                 Catch
+                                 End Try
+                             Next
+                         Catch exOuter As Exception
+                             System.Diagnostics.Debug.WriteLine($"[RunAllHeadless] error: {exOuter.Message}")
+                         Finally
+                             ' restore UI and notify user
+                             Try
+                                 If progressForm IsNot Nothing AndAlso Not progressForm.IsDisposed Then
+                                     progressForm.BeginInvoke(Sub()
+                                                                  Try
+                                                                      progressForm.SetValue(steps)
+                                                                      progressForm.SetStatus("Run all: terminé")
+                                                                      ' Determine diagnostics dir and the latest session folder (Snippets_Session_*) if any
+                                                                      Try
+                                                                          Dim diagDir = CDAudioAnalyzer.GetDiagnosticsDirectory()
+                                                                          If String.IsNullOrWhiteSpace(diagDir) Then diagDir = Path.GetTempPath()
+                                                                          Dim sessionDir As String = diagDir
+                                                                          Try
+                                                                              Dim sessionFolders = Directory.GetDirectories(diagDir, "Snippets_Session_*", SearchOption.TopDirectoryOnly)
+                                                                              If sessionFolders IsNot Nothing AndAlso sessionFolders.Length > 0 Then
+                                                                                  sessionDir = sessionFolders(sessionFolders.Length - 1)
+                                                                              End If
+                                                                          Catch
+                                                                              sessionDir = diagDir
+                                                                          End Try
+                                                                          progressForm.SetFolders(sessionDir, diagDir)
+                                                                      Catch
+                                                                      End Try
+                                                                      progressForm.EnableCompletion()
+                                                                  Catch
+                                                                  End Try
+                                                              End Sub)
+                                 End If
+                             Catch
+                             End Try
+
+                             Try
+                                 If Me.IsHandleCreated Then
+                                     Me.BeginInvoke(Sub()
+                                                        Try
+                                                            If btn IsNot Nothing Then
+                                                                btn.Enabled = True
+                                                                btn.Text = If(originalText, "Run all (headless)")
+                                                            End If
+                                                        Catch
+                                                        End Try
+                                                    End Sub)
+                                 End If
+                             Catch
+                             End Try
+
+                            ' Restore original in-form progress visibility
+                            Try
+                                Me.BeginInvoke(Sub()
+                                                   Try
+                                                       ProgressBarGlobale.Visible = originalProgressVisible
+                                                       LabelProgressionGlobale.Visible = originalLabelVisible
+                                                   Catch
+                                                   End Try
+                                               End Sub)
+                            Catch
+                            End Try
+                            runAllActive = False
+
+                            ' Do not close the progress window automatically; user will close it via the Done button.
+                         End Try
+                     End Sub)
+        Catch
+        End Try
+    End Sub
+
+    Private Sub BtnDebugSaveTransition_Click(sender As Object, e As EventArgs) Handles BtnDebugSaveTransition.Click
+        Try
+            ' Ask user which track to debug via simple input box. Accepts a single track number or "all" to process all transitions.
+            Dim input = Microsoft.VisualBasic.Interaction.InputBox("Enter track number to debug (e.g., 3) or 'all' to run for all tracks:", "Debug Save Transition", "all")
+            If String.IsNullOrWhiteSpace(input) Then Return
+
+            If pistesCD Is Nothing OrElse (TypeOf pistesCD Is Collections.ICollection AndAlso DirectCast(pistesCD, Collections.ICollection).Count = 0) Then
+                MessageBox.Show("Aucun CD chargé. Insérez un CD et rechargez avant de lancer le debug.", "Debug Save Transition", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Return
+            End If
+
+            Dim mode = input.Trim().ToLowerInvariant()
+            If mode = "all" OrElse mode = "toutes" Then
+                Task.Run(Sub()
+                             Try
+                                 Dim total As Integer = 0
+                                 Try
+                                     total = DirectCast(pistesCD, Collections.ICollection).Count
+                                 Catch
+                                     ' fallback if pistesCD exposes Count differently
+                                 End Try
+                                 If total <= 1 Then Return
+                                 ' Determine cutoff for purging old snippets: remove anything older than session start
+                                 Dim sessionStartUtc = DateTime.UtcNow
+                                 For tn As Integer = 1 To Math.Max(1, total - 1)
+                                     Try
+                                         CDAudioAnalyzer.Debug_SaveTransitionForTrack(pistesCD, tn)
+                                         ' After each track run, delete snippets older than session start to remove leftovers from previous runs
+                                         Try
+                                             CDAudioAnalyzer.CleanupSnippetsOlderThan(sessionStartUtc)
+                                         Catch exCleanup As Exception
+                                             System.Diagnostics.Debug.WriteLine($"Cleanup after track {tn} failed: {exCleanup.Message}")
+                                         End Try
+                                     Catch ex As Exception
+                                         System.Diagnostics.Debug.WriteLine($"[DebugSaveTransition] Track {tn} failed: {ex.Message}")
+                                     End Try
+                                 Next
+                             Catch exOuter As Exception
+                                 System.Diagnostics.Debug.WriteLine($"[DebugSaveTransition] Error running all tracks: {exOuter.Message}")
+                             End Try
+                         End Sub)
+                Return
+            End If
+
+            Dim tnSingle As Integer
+            If Integer.TryParse(input, tnSingle) Then
+                Task.Run(Sub()
+                             Try
+                                 CDAudioAnalyzer.Debug_SaveTransitionForTrack(pistesCD, tnSingle)
+                             Catch ex As Exception
+                                 System.Diagnostics.Debug.WriteLine($"[DebugSaveTransition] Track {tnSingle} failed: {ex.Message}")
+                             End Try
+                         End Sub)
+            End If
+        Catch ex As Exception
+        End Try
+    End Sub
+
+    ' Handler called when CDAudioAnalyzer generates a transition proposal file
+    Private Sub OnTransitionProposalGenerated(filePath As String)
+        Try
+            If String.IsNullOrWhiteSpace(filePath) Then Return
+            ' Invoke on UI thread
+            ' If a RunAll session is active, append the proposal path to the separate progress window log
+            If runAllActive AndAlso currentRunAllProgress IsNot Nothing AndAlso Not currentRunAllProgress.IsDisposed Then
+                Try
+                    currentRunAllProgress.BeginInvoke(Sub()
+                                                          Try
+                                                              currentRunAllProgress.AppendLogLine($"Proposal: {filePath}")
+                                                          Catch
+                                                          End Try
+                                                      End Sub)
+                Catch
+                End Try
+                Return
+            End If
+
+            If Me.IsHandleCreated Then
+                Me.BeginInvoke(Sub()
+                                   Try
+                                       ' Add to ListBox proposals (create if missing)
+                                       Dim lb As ListBox = Nothing
+                                       If Controls.ContainsKey("ListBoxProposals") Then lb = DirectCast(Controls("ListBoxProposals"), ListBox)
+                                       If lb Is Nothing Then
+                                           lb = New ListBox With {.Name = "ListBoxProposals", .Width = 400, .Height = 120, .Left = 10, .Top = 40}
+                                           Me.Controls.Add(lb)
+                                           ' Add control buttons
+                                           Dim btnPlay As New Button With {.Name = "BtnPlayProposal", .Text = "Lire", .Left = lb.Right + 10, .Top = lb.Top}
+                                           Dim btnAccept As New Button With {.Name = "BtnAcceptProposal", .Text = "Accepter", .Left = lb.Right + 10, .Top = lb.Top + 30}
+                                           Dim btnIgnore As New Button With {.Name = "BtnIgnoreProposal", .Text = "Ignorer", .Left = lb.Right + 10, .Top = lb.Top + 60}
+                                           Me.Controls.Add(btnPlay)
+                                           Me.Controls.Add(btnAccept)
+                                           Me.Controls.Add(btnIgnore)
+                                           AddHandler btnPlay.Click, AddressOf Me.BtnPlayProposal_Click
+                                           AddHandler btnAccept.Click, AddressOf Me.BtnAcceptProposal_Click
+                                           AddHandler btnIgnore.Click, AddressOf Me.BtnIgnoreProposal_Click
+                                       End If
+                                       lb.Items.Add(filePath)
+                                   Catch
+                                   End Try
+                               End Sub)
+            End If
+        Catch
+        End Try
+    End Sub
+
+    Private Sub OnSnippetSaved(filePath As String)
+        Try
+            If String.IsNullOrWhiteSpace(filePath) Then Return
+            ' Append path to run-all progress window if visible
+            Try
+                If currentRunAllProgress IsNot Nothing AndAlso Not currentRunAllProgress.IsDisposed Then
+                    currentRunAllProgress.BeginInvoke(Sub()
+                                                           Try
+                                                               currentRunAllProgress.AppendLogLine($"Saved snippet: {filePath}")
+                                                           Catch
+                                                           End Try
+                                                       End Sub)
+                End If
+            Catch
+            End Try
+        Catch
+        End Try
+    End Sub
+
+    ' Play selected proposal WAV (reads the proposal text to find snippet paths)
+    Private Sub BtnPlayProposal_Click(sender As Object, e As EventArgs)
+        Try
+            Dim lb As ListBox = TryCast(Me.Controls("ListBoxProposals"), ListBox)
+            If lb Is Nothing OrElse lb.SelectedItem Is Nothing Then Return
+            Dim proposalFile As String = lb.SelectedItem.ToString()
+            If Not File.Exists(proposalFile) Then Return
+            ' Read proposal to find Snippet1 or Snippet2 entries
+            Dim lines = File.ReadAllLines(proposalFile)
+            Dim snippetPath As String = Nothing
+            For Each l In lines
+                If l.StartsWith("Snippet1=") Then snippetPath = l.Substring(9).Trim()
+            Next
+            If snippetPath Is Nothing Then Return
+            If Not File.Exists(snippetPath) Then Return
+
+            ' Play snippet using NAudio WaveOutEvent
+            Try
+                Dim wf = New NAudio.Wave.WaveFileReader(snippetPath)
+                Dim wo = New NAudio.Wave.WaveOutEvent()
+                wo.Init(wf)
+                AddHandler wo.PlaybackStopped, Sub(s2, e2)
+                                                   Try
+                                                       wf.Dispose()
+                                                       wo.Dispose()
+                                                   Catch
+                                                   End Try
+                                               End Sub
+                wo.Play()
+            Catch exPlay As Exception
+                System.Diagnostics.Debug.WriteLine($"Play proposal error: {exPlay.Message}")
+            End Try
+        Catch
+        End Try
+    End Sub
+
+    ' Accept the selected proposal: update analysesPistes accordingly (non-destructive change in memory)
+    Private Sub BtnAcceptProposal_Click(sender As Object, e As EventArgs)
+        Try
+            Dim lb As ListBox = TryCast(Me.Controls("ListBoxProposals"), ListBox)
+            If lb Is Nothing OrElse lb.SelectedItem Is Nothing Then Return
+            Dim proposalFile As String = lb.SelectedItem.ToString()
+            If Not File.Exists(proposalFile) Then Return
+            Dim lines = File.ReadAllLines(proposalFile)
+            Dim suggested As Integer? = Nothing
+            For Each l In lines
+                If l.StartsWith("Suggested cut frame =") Then
+                    Dim parts = l.Split("="c)
+                    If parts.Length >= 2 Then
+                        Dim v As Integer
+                        If Integer.TryParse(parts(1).Split("("c)(0).Trim(), v) Then suggested = v
+                    End If
+                End If
+            Next
+            If Not suggested.HasValue Then Return
+
+            ' Find the track number in the proposal header
+            Dim trackNum As Integer = -1
+            For Each l In lines
+                If l.StartsWith("Transition proposal for tracks") Then
+                    Dim m = System.Text.RegularExpressions.Regex.Match(l, "Track(s )?(\d+)")
+                    If m.Success Then Integer.TryParse(m.Groups(2).Value, trackNum)
+                End If
+            Next
+            If trackNum <= 0 Then Return
+
+            ' Move snippet to Accepted folder and update analysesPistes in memory: find TrackAnalysis for trackNum
+            Try
+                Dim dir = CDAudioAnalyzer.GetDiagnosticsDirectory()
+                If String.IsNullOrEmpty(dir) Then dir = Path.GetTempPath()
+                Dim acceptedDir = Path.Combine(dir, "Accepted")
+                Directory.CreateDirectory(acceptedDir)
+                ' Move snippet files mentioned in proposal to Accepted
+                For Each l In lines
+                    If l.StartsWith("Snippet1=") OrElse l.StartsWith("Snippet2=") Then
+                        Dim p = l.Substring(l.IndexOf("=") + 1).Trim()
+                        If File.Exists(p) Then
+                            Try
+                                Dim dest = Path.Combine(acceptedDir, Path.GetFileName(p))
+                                If Not File.Exists(dest) Then File.Move(p, dest)
+                                ' update paths in proposal file
+                            Catch
+                            End Try
+                        End If
+                    End If
+                Next
+            Catch
+            End Try
+
+            ' Update analysesPistes in memory: find TrackAnalysis for trackNum
+            If analysesPistes.ContainsKey(trackNum - 1) Then
+                Dim ta = analysesPistes(trackNum - 1)
+                ta.SilenceStartFrame = suggested.Value
+                ta.SilenceEndFrame = suggested.Value
+                ta.TransitionAnalyzed = True
+                ta.WasAdjusted = True
+                ta.AnalysisMessage = $"Applied proposal: cut frame {suggested.Value} (manual accept)"
+                analysesPistes(trackNum - 1) = ta
+            Else
+                ' fallback: try to find by TrackNumber property in TrackAnalysis list (tempAnalyses)
+                For Each kvp In analysesPistes
+                    Dim ta = kvp.Value
+                    If ta.TrackNumber = trackNum Then
+                        ta.SilenceStartFrame = suggested.Value
+                        ta.SilenceEndFrame = suggested.Value
+                        ta.TransitionAnalyzed = True
+                        ta.WasAdjusted = True
+                        ta.AnalysisMessage = $"Applied proposal: cut frame {suggested.Value} (manual accept)"
+                        analysesPistes(kvp.Key) = ta
+                        Exit For
+                    End If
+                Next
+            End If
+
+            MessageBox.Show(Me, "Proposition acceptée et appliquée en mémoire. Vérifiez la liste des pistes.", "Proposal accepted", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"Accept proposal error: {ex.Message}")
+        End Try
+    End Sub
+
+    ' Ignore selected proposal (remove from list)
+    Private Sub BtnIgnoreProposal_Click(sender As Object, e As EventArgs)
+        Try
+            Dim lb As ListBox = TryCast(Me.Controls("ListBoxProposals"), ListBox)
+            If lb Is Nothing OrElse lb.SelectedItem Is Nothing Then Return
+            lb.Items.Remove(lb.SelectedItem)
+        Catch
+        End Try
     End Sub
 
     ' API Windows pour le contrôle du lecteur CD
@@ -51,6 +472,8 @@ Public Class FormCompresser
     Private derniersEtatsLecteurs As New Dictionary(Of String, Boolean)
     Private ignorerChangementsCD As Boolean = False ' Flag pour ignorer temporairement les changements de CD
     Private discIdActuel As String = Nothing ' DiscID du CD actuellement chargé pour éviter les rechargements inutiles
+    ' Indique si le formulaire est agrandi (taille augmentée)
+    Private Agrandir As Boolean = False
 
     ' Clé API Last.fm pour AudioPlay (publique, lecture seule)
     ' Si vous préférez utiliser votre propre clé gratuite, vous pouvez la modifier ici
@@ -152,6 +575,200 @@ Public Class FormCompresser
     ''' <summary>
     ''' Remplit les informations du CD dans le formulaire
     ''' </summary>
+    ' Aide HTML pour les contrôles analyzer
+    Private Sub OuvrirAideAnalyser(nomBase As String)
+        Try
+            Dim langueActuelle = LanguageManager.CurrentCulture.TwoLetterISOLanguageName.ToLower()
+            Dim suffixeLangue As String = ""
+
+            Select Case langueActuelle
+                Case "fr"
+                    suffixeLangue = ".fr"
+                Case "en"
+                    suffixeLangue = ".en"
+                Case "es"
+                    suffixeLangue = ".es"
+                Case "de"
+                    suffixeLangue = ".de"
+                Case "it"
+                    suffixeLangue = ".it"
+                Case Else
+                    suffixeLangue = ".en"
+            End Select
+
+            ' Première tentative : même convention que Form1 (fichier à la racine de l'application)
+            Dim nomFichierRoot = Path.Combine(Application.StartupPath, (nomBase.ToUpper() & "_GUIDE_USER" & suffixeLangue & ".html"))
+
+            If File.Exists(nomFichierRoot) Then
+                Process.Start(New ProcessStartInfo(nomFichierRoot) With {.UseShellExecute = True})
+                Return
+            End If
+
+            ' Vérification explicite du répertoire de build local (utile en dev : bin\Debug\net8.0-windows)
+            Try
+                Dim devOut As String = Path.GetFullPath("G:\\Visual Studio Projects\\Jean\\AudioPlay 2026-08-20\\AudioPlay\\bin\\Debug\\net8.0-windows")
+                Dim devFile1 = Path.Combine(devOut, nomBase & suffixeLangue & ".html")
+                Dim devFile2 = Path.Combine(devOut, (nomBase.ToUpper() & "_GUIDE_USER" & suffixeLangue & ".html"))
+                If File.Exists(devFile1) Then
+                    Process.Start(New ProcessStartInfo(devFile1) With {.UseShellExecute = True})
+                    Return
+                End If
+                If File.Exists(devFile2) Then
+                    Process.Start(New ProcessStartInfo(devFile2) With {.UseShellExecute = True})
+                    Return
+                End If
+            Catch
+                ' Ignorer les erreurs d'accès au chemin de développement
+            End Try
+
+            ' Deuxième tentative : nom simple à la racine (ex: WindowBefore.fr.html)
+            Dim nomFichierSimpleRoot = Path.Combine(Application.StartupPath, nomBase & suffixeLangue & ".html")
+            If File.Exists(nomFichierSimpleRoot) Then
+                Process.Start(New ProcessStartInfo(nomFichierSimpleRoot) With {.UseShellExecute = True})
+                Return
+            End If
+
+            ' Troisième tentative : structure help/FormCompresser (fichiers ajoutés dans le projet)
+            Dim nomFichier = Path.Combine(Application.StartupPath, "help", "FormCompresser", nomBase & suffixeLangue & ".html")
+            If File.Exists(nomFichier) Then
+                Process.Start(New ProcessStartInfo(nomFichier) With {.UseShellExecute = True})
+                Return
+            End If
+
+            ' Quatrième tentative : convention alternative (nomBase_GUIDE_USER) dans help/FormCompresser
+            Dim nomFichierAlt = Path.Combine(Application.StartupPath, "help", "FormCompresser", (nomBase.ToUpper() & "_GUIDE_USER" & suffixeLangue & ".html"))
+            If File.Exists(nomFichierAlt) Then
+                Process.Start(New ProcessStartInfo(nomFichierAlt) With {.UseShellExecute = True})
+                Return
+            End If
+
+            ' Troisième tentative : rechercher le fichier dans les répertoires parents (utile en mode debug où les fichiers peuvent être à la racine du projet)
+            Try
+                Dim found As String = Nothing
+                Dim start As String = Application.StartupPath
+                For depth As Integer = 0 To 4
+                    Dim root As String = Path.GetFullPath(Path.Combine(start, String.Concat(Enumerable.Repeat(".." & Path.DirectorySeparatorChar, depth))))
+                    If Directory.Exists(root) Then
+                        Dim pattern As String = nomBase & "*" & suffixeLangue & ".html"
+                        Dim files = Directory.GetFiles(root, pattern, SearchOption.AllDirectories)
+                        If files IsNot Nothing AndAlso files.Length > 0 Then
+                            found = files(0)
+                            Exit For
+                        End If
+                    End If
+                Next
+
+                If Not String.IsNullOrEmpty(found) Then
+                    Process.Start(New ProcessStartInfo(found) With {.UseShellExecute = True})
+                    Return
+                End If
+            Catch exSearch As Exception
+                ' Ignorer les erreurs de recherche et tomber sur le message d'erreur standard
+            End Try
+
+            Dim msg As String = LanguageManager.GetString("Help_FilesNotFound") & Environment.NewLine &
+                                LanguageManager.GetString("Help_ExpectedFiles") & Environment.NewLine &
+                                "- " & nomFichier
+
+            ' Titre: utiliser Help_Title si disponible, sinon Help_FilesNotFoundTitle, sinon texte par défaut
+            Dim titre As String = LanguageManager.GetString("Help_Title")
+            If String.IsNullOrWhiteSpace(titre) OrElse titre.StartsWith("[RESX introuvable", StringComparison.OrdinalIgnoreCase) Then
+                titre = LanguageManager.GetString("Help_FilesNotFoundTitle")
+            End If
+            If String.IsNullOrWhiteSpace(titre) OrElse titre.StartsWith("[RESX introuvable", StringComparison.OrdinalIgnoreCase) Then
+                titre = "Aide"
+            End If
+
+            MessageBox.Show(msg, titre, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+
+        Catch ex As Exception
+            MessageBox.Show(LanguageManager.GetString("Help_ErrorOpenFile", ex.Message),
+                            LanguageManager.GetString("Error_Title"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    Private Sub Button_Aide_WindowBefore_Click(sender As Object, e As EventArgs) Handles Button_Aide_WindowBefore.Click
+        OuvrirAideAnalyser("WindowBefore")
+    End Sub
+
+    Private Sub Button_Aide_WindowAfter_Click(sender As Object, e As EventArgs) Handles Button_Aide_WindowAfter.Click
+        OuvrirAideAnalyser("WindowAfter")
+    End Sub
+
+    Private Sub Button_Aide_MinSilence_Click(sender As Object, e As EventArgs) Handles Button_Aide_MinSilence.Click
+        OuvrirAideAnalyser("MinSilence")
+    End Sub
+
+    Private Sub Button_Aide_MaxStartTrim_Click(sender As Object, e As EventArgs) Handles Button_Aide_MaxStartTrim.Click
+        OuvrirAideAnalyser("MaxStartTrim")
+    End Sub
+
+    Private Sub Button_Agrandir_Click(sender As Object, e As EventArgs) Handles Button_Agrandir.Click
+        Try
+            If Not Agrandir Then
+                ' Taille agrandie demandée
+                Me.SuspendLayout()
+                Me.Size = New Size(633, 968)
+                Me.StartPosition = FormStartPosition.Manual
+                Dim screenCenterX = (Screen.PrimaryScreen.WorkingArea.Width - Me.Width)
+                Dim screenCenterY = (Screen.PrimaryScreen.WorkingArea.Height - Me.Height)
+                Me.Location = New Point(screenCenterX \ 2, screenCenterY \ 2)
+                Agrandir = True
+                Button_Agrandir.Visible = False
+                Button_rapetisser.Visible = True
+                ' Déplacer les boutons selon la taille agrandie
+                Try
+                    ButtonExtraire.Location = New Point(373, 864)
+                    ButtonQuitter.Location = New Point(495, 864)
+                    ButtonAnnuler.Location = New Point(373, 864)
+                Catch
+                End Try
+
+                ' Réaffecter explicitement les textes localisés pour s'assurer qu'ils utilisent la culture courante
+                Try
+                    GroupBoxAnalyzerOptions.Text = LanguageManager.GetString("GroupBoxAnalyzerOptions_Text")
+                    LabelWindowBefore.Text = LanguageManager.GetString("LabelWindowBefore_Text")
+                    LabelWindowAfter.Text = LanguageManager.GetString("LabelWindowAfter_Text")
+                    LabelMinSilence.Text = LanguageManager.GetString("LabelMinSilence_Text")
+                    LabelMaxStartTrim.Text = LanguageManager.GetString("LabelMaxStartTrim_Text")
+                Catch ex As Exception
+                    System.Diagnostics.Debug.WriteLine($"[FormCompresser] Erreur affectation textes localisés: {ex.Message}")
+                End Try
+                Me.ResumeLayout()
+            End If
+        Catch ex As Exception
+            Debug.WriteLine($"[FormCompresser] Button_Agrandir_Click erreur: {ex.Message}")
+        End Try
+    End Sub
+
+    Private Sub Button_rapetisser_Click(sender As Object, e As EventArgs) Handles Button_rapetisser.Click
+        Try
+            If Agrandir Then
+                Me.SuspendLayout()
+                Me.Size = New Size(633, 825)
+                Me.StartPosition = FormStartPosition.Manual
+                Dim screenCenterX = (Screen.PrimaryScreen.WorkingArea.Width - Me.Width)
+                Dim screenCenterY = (Screen.PrimaryScreen.WorkingArea.Height - Me.Height)
+                Me.Location = New Point(screenCenterX \ 2, screenCenterY \ 2)
+                Agrandir = False
+                Button_Agrandir.Visible = True
+                Button_rapetisser.Visible = False
+                ' Repositionner les boutons pour la taille par défaut
+                Try
+                    ButtonExtraire.Location = New Point(373, 719)
+                    ButtonQuitter.Location = New Point(495, 719)
+                    ButtonAnnuler.Location = New Point(373, 719)
+                Catch
+                End Try
+                Me.ResumeLayout()
+            End If
+        Catch ex As Exception
+            Debug.WriteLine($"[FormCompresser] Button_rapetisser_Click erreur: {ex.Message}")
+        End Try
+    End Sub
+
     ''' <param name="chargerPochette">Si True, charge la pochette du CD. Si False, conserve la pochette existante.</param>
     Private Async Function RemplirInformationsCD(Optional chargerPochette As Boolean = True) As Task
         Dim stackTrace = New System.Diagnostics.StackTrace(True)
@@ -450,6 +1067,18 @@ Public Class FormCompresser
     Private Sub FormCompresser_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ' Appliquer les traductions
         AppliquerTraductions()
+        ' S'abonner aux changements de langue pour rafraîchir automatiquement
+        Try
+            AddHandler LanguageManager.LanguageChanged, AddressOf OnLanguageChanged
+        Catch ex As Exception
+        End Try
+
+        ' S'abonner aux notifications de propositions de transition de l'analyseur
+        Try
+            AddHandler CDAudioAnalyzer.TransitionProposalGenerated, AddressOf OnTransitionProposalGenerated
+            AddHandler CDAudioAnalyzer.SnippetSaved, AddressOf OnSnippetSaved
+        Catch
+        End Try
 
         ' Configurer le ComboBoxChoixLecteur AVANT d'appliquer le thème
         ' pour éviter que le ThemeManager ne change son DrawMode
@@ -507,6 +1136,182 @@ Public Class FormCompresser
 
         ' NOTE: ChargerPochetteAlbum() est appelé depuis RemplirInformationsCD()
         ' après que metadonneesCD soit initialisé via InitialiserDonneesCD()
+
+        ' Hook up handlers for analyzer UI controls if present
+        Try
+            AddHandler NumericWindowBefore.ValueChanged, AddressOf AnalyzerControl_ValueChanged
+            AddHandler NumericWindowAfter.ValueChanged, AddressOf AnalyzerControl_ValueChanged
+            AddHandler NumericMinSilence.ValueChanged, AddressOf AnalyzerControl_ValueChanged
+            AddHandler NumericMaxStartTrim.ValueChanged, AddressOf AnalyzerControl_ValueChanged
+            ' Handlers to remember previous values and validate on leave
+            AddHandler NumericWindowBefore.Enter, AddressOf AnalyzerControl_Enter
+            AddHandler NumericWindowAfter.Enter, AddressOf AnalyzerControl_Enter
+            AddHandler NumericMinSilence.Enter, AddressOf AnalyzerControl_Enter
+            AddHandler NumericMaxStartTrim.Enter, AddressOf AnalyzerControl_Enter
+            AddHandler NumericWindowBefore.Leave, AddressOf AnalyzerControl_Leave
+            AddHandler NumericWindowAfter.Leave, AddressOf AnalyzerControl_Leave
+            AddHandler NumericMinSilence.Leave, AddressOf AnalyzerControl_Leave
+            AddHandler NumericMaxStartTrim.Leave, AddressOf AnalyzerControl_Leave
+        Catch
+        End Try
+
+        ' S'assurer de la taille par défaut au démarrage (forcé ici pour éviter état persistant)
+        Try
+            Agrandir = False
+            Me.Size = New Size(633, 825)
+            Button_Agrandir.Visible = True
+            Button_rapetisser.Visible = False
+            ' Recentrer sur l'écran de la fenêtre (support multi-écrans)
+            Dim wa = Screen.FromControl(Me).WorkingArea
+            Me.StartPosition = FormStartPosition.Manual
+            Me.Location = New Point(wa.Left + (wa.Width - Me.Width) \ 2, wa.Top + (wa.Height - Me.Height) \ 2)
+            ' Positionner les boutons pour la taille par défaut
+            Try
+                ButtonExtraire.Location = New Point(373, 719)
+                ButtonQuitter.Location = New Point(495, 719)
+            Catch
+            End Try
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"[FormCompresser] Impossible de forcer la taille par défaut: {ex.Message}")
+        End Try
+    End Sub
+
+    Private Sub OnLanguageChanged(newCulture As Globalization.CultureInfo)
+        Try
+            If Me.InvokeRequired Then
+                Me.BeginInvoke(New Action(Sub() AppliquerTraductions()))
+            Else
+                AppliquerTraductions()
+            End If
+        Catch
+        End Try
+    End Sub
+
+    ' Handler to apply analyzer control changes to CDAudioAnalyzer
+    Private Sub AnalyzerControl_ValueChanged(sender As Object, e As EventArgs)
+        Try
+            Dim ctrl = TryCast(sender, NumericUpDown)
+            If ctrl IsNot Nothing Then
+                Select Case ctrl.Name
+                    Case "NumericWindowBefore"
+                        Dim v As Integer = CInt(ctrl.Value)
+                        Dim clamped As Integer = Math.Max(5, Math.Min(120, v))
+                        If clamped <> v Then ctrl.Value = clamped
+                        CDAudioAnalyzer.TransitionWindowBeforeSeconds = clamped
+                        ' Persist user change
+                        Try
+                            ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_WindowBeforeSeconds", clamped.ToString())
+                        Catch
+                        End Try
+
+                    Case "NumericWindowAfter"
+                        Dim v2 As Integer = CInt(ctrl.Value)
+                        Dim clamped2 As Integer = Math.Max(5, Math.Min(120, v2))
+                        If clamped2 <> v2 Then ctrl.Value = clamped2
+                        CDAudioAnalyzer.TransitionWindowAfterSeconds = clamped2
+                        ' Persist user change
+                        Try
+                            ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_WindowAfterSeconds", clamped2.ToString())
+                        Catch
+                        End Try
+
+                    Case "NumericMinSilence"
+                        Dim vd As Double = Convert.ToDouble(ctrl.Value)
+                        Dim clampedD As Double = Math.Max(0.05, Math.Min(10.0, vd))
+                        If Math.Abs(clampedD - vd) > 0.000001 Then ctrl.Value = CDec(clampedD)
+                        CDAudioAnalyzer.MinSustainedSilenceSeconds = clampedD
+                        ' Persist user change (use invariant culture)
+                        Try
+                            ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_MinSustainedSilenceSeconds", clampedD.ToString(System.Globalization.CultureInfo.InvariantCulture))
+                        Catch
+                        End Try
+
+                    Case "NumericMaxStartTrim"
+                        Dim vd2 As Double = Convert.ToDouble(ctrl.Value)
+                        Dim clampedD2 As Double = Math.Max(0.0, Math.Min(10.0, vd2))
+                        If Math.Abs(clampedD2 - vd2) > 0.000001 Then ctrl.Value = CDec(clampedD2)
+                        CDAudioAnalyzer.MaxStartTrimSeconds = clampedD2
+                        ' Persist user change (use invariant culture)
+                        Try
+                            ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_MaxStartTrimSeconds", clampedD2.ToString(System.Globalization.CultureInfo.InvariantCulture))
+                        Catch
+                        End Try
+
+                    Case Else
+                        ' nothing
+                End Select
+            Else
+                ' Fallback: apply all values with clamping
+                Dim nbefore = Math.Max(5, Math.Min(120, CInt(NumericWindowBefore.Value)))
+                Dim nafter = Math.Max(5, Math.Min(120, CInt(NumericWindowAfter.Value)))
+                Dim nmin = Math.Max(0.05, Math.Min(10.0, Convert.ToDouble(NumericMinSilence.Value)))
+                Dim nmax = Math.Max(0.0, Math.Min(10.0, Convert.ToDouble(NumericMaxStartTrim.Value)))
+                CDAudioAnalyzer.TransitionWindowBeforeSeconds = nbefore
+                CDAudioAnalyzer.TransitionWindowAfterSeconds = nafter
+                CDAudioAnalyzer.MinSustainedSilenceSeconds = nmin
+                CDAudioAnalyzer.MaxStartTrimSeconds = nmax
+                ' Persist all
+                Try
+                    ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_WindowBeforeSeconds", nbefore.ToString())
+                    ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_WindowAfterSeconds", nafter.ToString())
+                    ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_MinSustainedSilenceSeconds", nmin.ToString(System.Globalization.CultureInfo.InvariantCulture))
+                    ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_MaxStartTrimSeconds", nmax.ToString(System.Globalization.CultureInfo.InvariantCulture))
+                Catch
+                End Try
+            End If
+
+            CDAudioAnalyzer.DiagnosticWrite($"Analyzer UI updated: before={CDAudioAnalyzer.TransitionWindowBeforeSeconds}, after={CDAudioAnalyzer.TransitionWindowAfterSeconds}, minSilence={CDAudioAnalyzer.MinSustainedSilenceSeconds}, maxStartTrim={CDAudioAnalyzer.MaxStartTrimSeconds}")
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"[FormCompresser] AnalyzerControl_ValueChanged error: {ex.Message}")
+        End Try
+    End Sub
+
+    Protected Overrides Sub OnFormClosed(e As FormClosedEventArgs)
+        Try
+            RemoveHandler LanguageManager.LanguageChanged, AddressOf OnLanguageChanged
+        Catch
+        End Try
+        MyBase.OnFormClosed(e)
+    End Sub
+
+    ' Store last valid values to revert if user enters out-of-range values
+    Private lastValidWindowBefore As Integer = 20
+    Private lastValidWindowAfter As Integer = 20
+    Private lastValidMinSilence As Decimal = 0.5D
+    Private lastValidMaxStartTrim As Decimal = 8D
+
+    Private Sub AnalyzerControl_Enter(sender As Object, e As EventArgs)
+        Dim ctrl = TryCast(sender, NumericUpDown)
+        If ctrl Is Nothing Then Return
+        Select Case ctrl.Name
+            Case "NumericWindowBefore"
+                lastValidWindowBefore = CInt(ctrl.Value)
+            Case "NumericWindowAfter"
+                lastValidWindowAfter = CInt(ctrl.Value)
+            Case "NumericMinSilence"
+                lastValidMinSilence = ctrl.Value
+            Case "NumericMaxStartTrim"
+                lastValidMaxStartTrim = ctrl.Value
+        End Select
+    End Sub
+
+    Private Sub AnalyzerControl_Leave(sender As Object, e As EventArgs)
+        Dim ctrl = TryCast(sender, NumericUpDown)
+        If ctrl Is Nothing Then Return
+        Select Case ctrl.Name
+            Case "NumericWindowBefore"
+                Dim v As Integer = CInt(ctrl.Value)
+                If v < 5 OrElse v > 120 Then ctrl.Value = lastValidWindowBefore
+            Case "NumericWindowAfter"
+                Dim v2 As Integer = CInt(ctrl.Value)
+                If v2 < 5 OrElse v2 > 120 Then ctrl.Value = lastValidWindowAfter
+            Case "NumericMinSilence"
+                Dim d As Double = Convert.ToDouble(ctrl.Value)
+                If d < 0.05 OrElse d > 10.0 Then ctrl.Value = lastValidMinSilence
+            Case "NumericMaxStartTrim"
+                Dim d2 As Double = Convert.ToDouble(ctrl.Value)
+                If d2 < 0.0 OrElse d2 > 10.0 Then ctrl.Value = lastValidMaxStartTrim
+        End Select
     End Sub
 
     ''' <summary>
@@ -1245,6 +2050,8 @@ Public Class FormCompresser
             ' Vider le cache d'analyse des pistes pour forcer une nouvelle analyse
             analysesPistes.Clear()
 
+            ' Debug button is now a design-time control; runtime creation removed.
+
             ' IMPORTANT: Vider aussi pistesCD, metadonneesCD ET discIdActuel pour éviter un rechargement après éjection
             ' Ceci permet de traiter la réinsertion du même CD comme un nouveau CD
             pistesCD = Nothing
@@ -1309,11 +2116,205 @@ Public Class FormCompresser
             Me.TopMost = False
             System.Diagnostics.Debug.WriteLine("[FormCompresser] TopMost désactivé - Form1 utilisable pendant l'extraction")
 
-            ' ═══ NOUVELLE STRATÉGIE : PAS D'ANALYSE EN BATCH ═══
-            ' L'analyse sera faite individuellement pour chaque piste juste avant son extraction
-            ' Ceci permet un réajustement plus précis et évite les problèmes de chansons incomplètes
+            ' Initialise le log de diagnostic pour cette session d'extraction
+            Try
+                CDAudioAnalyzer.InitializeDiagnosticsLog($"Extraction started by user - Drive={lecteurCD}")
+            Catch exInitLog As Exception
+                System.Diagnostics.Debug.WriteLine($"[FormCompresser] InitializeDiagnosticsLog failed: {exInitLog.Message}")
+            End Try
+
+            ' ═══ NOUVELLE STRATÉGIE : ANALYSE EN BATCH AVANT EXTRACTION (pairwise) ═══
+            ' Pré-analyser toutes les pistes sélectionnées afin d'appliquer la logique
+            ' d'analyse appairée et de réconciliation avant l'étape d'extraction.
+            ' Charger les paramètres de l'analyseur depuis parametres.txt si présents
+            Try
+                Dim cfgPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "parametres.txt")
+                If File.Exists(cfgPath) Then
+                    For Each line In File.ReadAllLines(cfgPath)
+                        If Not line.Contains("=") Then Continue For
+                        Dim parts = line.Split("="c, 2)
+                        Dim key = parts(0).Trim()
+                        Dim val = parts(1).Trim()
+                        Select Case key
+                            Case "Analyzer_WindowBeforeSeconds"
+                                Dim v As Integer
+                                If Integer.TryParse(val, v) Then CDAudioAnalyzer.TransitionWindowBeforeSeconds = Math.Max(5, Math.Min(120, v))
+                            Case "Analyzer_WindowAfterSeconds"
+                                Dim v2 As Integer
+                                If Integer.TryParse(val, v2) Then CDAudioAnalyzer.TransitionWindowAfterSeconds = Math.Max(5, Math.Min(120, v2))
+                            Case "Analyzer_SilenceThreshold"
+                                Dim d As Double
+                                If Double.TryParse(val, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, d) Then CDAudioAnalyzer.SilenceThreshold = d
+                            Case "Analyzer_MinSustainedSilenceSeconds"
+                                Dim d2 As Double
+                                If Double.TryParse(val, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, d2) Then CDAudioAnalyzer.MinSustainedSilenceSeconds = Math.Max(0.05, d2)
+                            Case "Analyzer_MaxStartTrimSeconds"
+                                Dim d3 As Double
+                                If Double.TryParse(val, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, d3) Then CDAudioAnalyzer.MaxStartTrimSeconds = Math.Max(0, Math.Min(10, d3))
+                        End Select
+                    Next
+                End If
+            Catch ex As Exception
+                System.Diagnostics.Debug.WriteLine($"[FormCompresser] Erreur lecture paramètres analyseur: {ex.Message}")
+            End Try
             analysesPistes.Clear()
-            System.Diagnostics.Debug.WriteLine($"[FormCompresser] 🔍 Mode analyse individuelle : chaque piste sera analysée juste avant extraction")
+            System.Diagnostics.Debug.WriteLine($"[FormCompresser] 🔍 Pré-analyse des pistes sélectionnées (pairwise)")
+
+            ' Affichage UI pendant l'analyse en batch
+            LabelProgressionGlobale.Visible = False
+            ProgressBarGlobale.Visible = False
+
+            If Not runAllActive Then
+                LabelPisteEnCours.Visible = True
+                LabelPisteEnCours.Text = LanguageManager.GetString("Compressor_AnalysisInProgress")
+            End If
+            ' Activer les diagnostics détaillés si demandé via l'UI debug (désactivé par défaut)
+            ' Le flag peut être activé temporairement pour collecter des logs dans %TEMP%\AudioPlay_AnalysisLog.txt
+            ' Laisser les diagnostics détaillés activés pour la session (tronqués au démarrage)
+            ' Le log sera créé/vidé au démarrage de l'application; écrire pendant la session est voulu
+            ' UseDetailedDiagnostics est en lecture seule et vrai; ne pas tenter de l'affecter
+            If Not runAllActive Then
+                ProgressBarPisteActuelle.Visible = True
+                ProgressBarPisteActuelle.Minimum = 0
+                ProgressBarPisteActuelle.Maximum = indicesPistes.Count
+                If Not runAllActive Then ProgressBarPisteActuelle.Value = 0
+            End If
+            Application.DoEvents()
+
+            ' Analyser piste par piste (off-UI thread) pour pouvoir mettre à jour la barre de progression
+            Dim tempAnalyses As New List(Of CDAudioAnalyzer.TrackAnalysis)
+            For i As Integer = 0 To indicesPistes.Count - 1
+                Dim cdIndex As Integer = indicesPistes(i)
+                If cdIndex >= 0 AndAlso cdIndex < pistesCD.Count Then
+                    Dim track = pistesCD(cdIndex)
+                    Dim nextTrack As CDAudioManager.CDTrack = Nothing
+                    If cdIndex + 1 < pistesCD.Count Then
+                        nextTrack = pistesCD(cdIndex + 1)
+                    End If
+
+                    ' Exécuter l'analyse lourde hors du thread UI
+                    Dim analysis = Await Task.Run(Function() CDAudioAnalyzer.AnalyzeTrack(track, nextTrack, Nothing))
+                    tempAnalyses.Add(analysis)
+
+                    ' Mettre à jour la progression visuelle
+                    If Not runAllActive Then
+                        ProgressBarPisteActuelle.Value = Math.Min(ProgressBarPisteActuelle.Maximum, ProgressBarPisteActuelle.Value + 1)
+                        LabelPisteEnCours.Text = $"Analyse en cours... ({tempAnalyses.Count}/{indicesPistes.Count})"
+                        Application.DoEvents()
+                    Else
+                        ' When running RunAll, route progress to the separate progress window if available
+                        If currentRunAllProgress IsNot Nothing AndAlso Not currentRunAllProgress.IsDisposed Then
+                            Try
+                                ' SetValue expects the current step count; avoid reading internal fields of the progress form
+                                currentRunAllProgress.SetValue(tempAnalyses.Count)
+                                currentRunAllProgress.SetStatus($"Analyse en cours... ({tempAnalyses.Count}/{indicesPistes.Count})")
+                            Catch
+                            End Try
+                        End If
+                    End If
+                End If
+            Next
+
+            ' Réconciliation paire par paire (même logique que CDAudioAnalyzer.AnalyzeSelectedTracks)
+            For i As Integer = 0 To tempAnalyses.Count - 1
+                Dim cdIndex As Integer = indicesPistes(i)
+                If cdIndex >= 0 AndAlso cdIndex < pistesCD.Count Then
+                    ' initialiser mapping
+                    analysesPistes(cdIndex) = tempAnalyses(i)
+                End If
+            Next
+
+            ' Effectuer la réconciliation pour éviter chevauchements
+            For i As Integer = 0 To tempAnalyses.Count - 2
+                Dim cur = tempAnalyses(i)
+                Dim nxt = tempAnalyses(i + 1)
+
+                ' S'assurer que les valeurs par défaut existent
+                If nxt.AdjustedStartFrame <= 0 Then
+                    nxt.AdjustedStartFrame = nxt.OriginalStartFrame
+                End If
+
+                ' Si l'analyse de transition indique que le silence déborde APRÈS la frontière TOC,
+                ' préférer ajuster le début de la piste suivante plutôt que de couper la fin de la courante.
+                If cur.TransitionAnalyzed AndAlso cur.PreferAdjustNextStart Then
+                    Dim proposedStart As Integer = cur.SilenceEndFrame + CDAudioAnalyzer.SafetyMarginFrames
+
+                    If proposedStart >= nxt.AdjustedEndFrame Then
+                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ⚠️ Réconciliation impossible sans inversion (fallback) entre piste {cur.TrackNumber} et {nxt.TrackNumber} - conservation des positions TOC pour la suivante")
+                    ElseIf proposedStart > nxt.AdjustedStartFrame Then
+                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] 🔧 Réconciliation préférentielle: déplacement du début de la piste {nxt.TrackNumber} à {proposedStart} (silence APRÈS TOC de la piste {cur.TrackNumber})")
+                        nxt.AdjustedStartFrame = proposedStart
+                        nxt.TrimmedStartFrames = nxt.AdjustedStartFrame - nxt.OriginalStartFrame
+                        nxt.WasAdjusted = True
+                    End If
+
+                ElseIf cur.AdjustedEndFrame >= nxt.AdjustedStartFrame Then
+                    Dim correctedStart As Integer = cur.AdjustedEndFrame + 1
+
+                    If correctedStart >= nxt.AdjustedEndFrame Then
+                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ⚠️ Réconciliation impossible sans inversion (fallback) entre piste {cur.TrackNumber} et {nxt.TrackNumber} - conservation des positions TOC pour la suivante")
+                        nxt.AdjustedStartFrame = nxt.OriginalStartFrame
+                        nxt.TrimmedStartFrames = 0
+                    Else
+                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] 🔧 Réconciliation: déplacement du début de la piste {nxt.TrackNumber} à {correctedStart} pour éviter chevauchement avec piste {cur.TrackNumber}")
+                        nxt.AdjustedStartFrame = correctedStart
+                        nxt.TrimmedStartFrames = nxt.AdjustedStartFrame - nxt.OriginalStartFrame
+                        nxt.WasAdjusted = True
+                    End If
+                End If
+
+                ' Mettre à jour le message d'analyse pour la piste suivante
+                If nxt.WasAdjusted Then
+                    nxt.AnalysisMessage = $"Piste {nxt.TrackNumber}: Début +{nxt.TrimmedStartFrames / 75.0:F2}s, Fin -{nxt.TrimmedEndFrames / 75.0:F2}s"
+                Else
+                    nxt.AnalysisMessage = $"Piste {nxt.TrackNumber}: OK (pas d'ajustement)"
+                End If
+
+                ' Écrire la réconciliation dans le mapping global
+                Dim nextCdIndex As Integer = indicesPistes(i + 1)
+                If nextCdIndex >= 0 AndAlso nextCdIndex < pistesCD.Count Then
+                    analysesPistes(nextCdIndex) = nxt
+                End If
+                ' Mettre à jour l'actuelle aussi
+                Dim curCdIndex As Integer = indicesPistes(i)
+                If curCdIndex >= 0 AndAlso curCdIndex < pistesCD.Count Then
+                    analysesPistes(curCdIndex) = cur
+                End If
+            Next
+
+            System.Diagnostics.Debug.WriteLine($"[FormCompresser] ✅ Pré-analyse terminée: {analysesPistes.Count} piste(s) analysée(s)")
+
+            ' --- Secondary relaxed pass and snippet capture for analyses (mirror CDAudioAnalyzer behavior) ---
+            Try
+                Dim analysesList As New List(Of CDAudioAnalyzer.TrackAnalysis)
+                For i As Integer = 0 To tempAnalyses.Count - 1
+                    analysesList.Add(tempAnalyses(i))
+                Next
+
+                ' Call helper to perform secondary pass and save diagnostics snippets where applicable
+                Try
+                    Dim indicesCopy As New List(Of Integer)
+                    For Each idx In indicesPistes
+                        indicesCopy.Add(idx)
+                    Next
+                    CDAudioAnalyzer.PerformSecondaryPassForForm(pistesCD, indicesCopy, analysesList)
+                    ' After the call, propagate any adjustments back into tempAnalyses and analysesPistes
+                    For i As Integer = 0 To analysesList.Count - 1
+                        tempAnalyses(i) = analysesList(i)
+                        Dim cdIndex As Integer = indicesPistes(i)
+                        If cdIndex >= 0 AndAlso cdIndex < pistesCD.Count Then
+                            analysesPistes(cdIndex) = analysesList(i)
+                        End If
+                    Next
+                Catch exSec As Exception
+                    System.Diagnostics.Debug.WriteLine($"[FormCompresser] Secondary pass for form failed: {exSec.Message}")
+                End Try
+            Catch
+            End Try
+
+            ' Restaurer l'affichage global de progression pour l'étape d'extraction
+            LabelProgressionGlobale.Visible = True
+            ProgressBarGlobale.Visible = True
 
             ' IMPORTANT: Mettre à jour l'URL de la pochette dans les métadonnées avec l'image actuellement affichée
             ' (qui peut être différente de l'URL initiale si l'utilisateur a navigué avec Prec/Suiv)
@@ -1369,16 +2370,21 @@ Public Class FormCompresser
             End If
 
             ' Maintenant afficher les barres de progression globale pour l'extraction
-            LabelProgressionGlobale.Visible = True
-            ProgressBarGlobale.Visible = True
-            ProgressBarGlobale.Maximum = indicesPistes.Count
-            ProgressBarGlobale.Value = 0
-            LabelProgressionGlobale.Text = String.Format(LanguageManager.GetString("Compressor_GlobalProgress"), 0, indicesPistes.Count)
+            ' Show in-form progress only if not running a RunAll session
+            If Not runAllActive Then
+                LabelProgressionGlobale.Visible = True
+                ProgressBarGlobale.Visible = True
+                ProgressBarGlobale.Maximum = indicesPistes.Count
+                ProgressBarGlobale.Value = 0
+                LabelProgressionGlobale.Text = String.Format(LanguageManager.GetString("Compressor_GlobalProgress"), 0, indicesPistes.Count)
+            End If
 
             ' Afficher aussi la progression individuelle par piste
-            LabelPisteEnCours.Visible = True
-            ProgressBarPisteActuelle.Visible = True
-            ProgressBarPisteActuelle.Value = 0
+            If Not runAllActive Then
+                LabelPisteEnCours.Visible = True
+                ProgressBarPisteActuelle.Visible = True
+                ProgressBarPisteActuelle.Value = 0
+            End If
 
             Try
                 ' Extraire les pistes sélectionnées
@@ -1401,16 +2407,30 @@ Public Class FormCompresser
                         Dim titre As String = If(item.SubItems.Count > 1, item.SubItems(1).Text, $"Piste {item.Text}")
                         Dim artiste As String = If(item.SubItems.Count > 2, item.SubItems(2).Text, TextBoxCDArtiste.Text)
 
-                        LabelPisteEnCours.Text = $"{artiste} - {titre}"
-                        ProgressBarPisteActuelle.Value = 0
-                        Application.DoEvents()
+                        If Not runAllActive Then
+                            LabelPisteEnCours.Text = $"{artiste} - {titre}"
+                            If Not runAllActive Then ProgressBarPisteActuelle.Value = 0
+                            Application.DoEvents()
+                        Else
+                            If currentRunAllProgress IsNot Nothing AndAlso Not currentRunAllProgress.IsDisposed Then
+                                currentRunAllProgress.AppendLogLine($"Extracting: {artiste} - {titre}")
+                            End If
+                        End If
 
                         ' Extraire la piste
                         Await ExtrairePiste(index)
                         pistesReussies += 1
 
                         ' Marquer la piste comme complétée
-                        ProgressBarPisteActuelle.Value = ProgressBarPisteActuelle.Maximum
+                        If runAllActive Then
+                            If currentRunAllProgress IsNot Nothing AndAlso Not currentRunAllProgress.IsDisposed Then
+                                currentRunAllProgress.AppendLogLine($"Completed: {artiste} - {titre}")
+                            End If
+                        Else
+                            If ProgressBarPisteActuelle IsNot Nothing Then
+                                ProgressBarPisteActuelle.Value = ProgressBarPisteActuelle.Maximum
+                            End If
+                        End If
 
                     Catch ex As Exception
                         pistesEchouees += 1
@@ -1418,9 +2438,16 @@ Public Class FormCompresser
                     End Try
 
                     ' Mettre à jour la progression globale
-                    ProgressBarGlobale.Value = pisteNumero
-                    LabelProgressionGlobale.Text = String.Format(LanguageManager.GetString("Compressor_GlobalProgress"), pisteNumero, indicesPistes.Count)
-                    Application.DoEvents()
+                    If Not runAllActive Then
+                        ProgressBarGlobale.Value = pisteNumero
+                        LabelProgressionGlobale.Text = String.Format(LanguageManager.GetString("Compressor_GlobalProgress"), pisteNumero, indicesPistes.Count)
+                        Application.DoEvents()
+                    Else
+                        If currentRunAllProgress IsNot Nothing Then
+                            currentRunAllProgress.SetValue(pisteNumero)
+                            currentRunAllProgress.SetStatus(String.Format(LanguageManager.GetString("Compressor_GlobalProgress"), pisteNumero, indicesPistes.Count))
+                        End If
+                    End If
                 Next
 
                 ' Masquer les barres de progression
@@ -1517,7 +2544,13 @@ Public Class FormCompresser
 
             If resultat = DialogResult.Yes Then
                 annulationDemandee = True
-                LabelPisteEnCours.Text = LanguageManager.GetString("Compressor_CancelInProgress")
+                If Not runAllActive Then
+                    LabelPisteEnCours.Text = LanguageManager.GetString("Compressor_CancelInProgress")
+                Else
+                    If currentRunAllProgress IsNot Nothing AndAlso Not currentRunAllProgress.IsDisposed Then
+                        currentRunAllProgress.AppendLogLine(LanguageManager.GetString("Compressor_CancelInProgress"))
+                    End If
+                End If
                 ButtonAnnuler.Enabled = False
                 System.Diagnostics.Debug.WriteLine("[FormCompresser] ⚠️ Annulation demandée par l'utilisateur")
             End If
@@ -1579,33 +2612,29 @@ Public Class FormCompresser
             ' Mode TOC Précis : utiliser les positions TOC exactes sans modification
             System.Diagnostics.Debug.WriteLine($"[FormCompresser] 📍 Extraction piste {numeroFichier} avec positions TOC EXACTES: {piste.StartFrame}-{piste.EndFrame}")
         Else
-            ' Mode Normal : TOUJOURS analyser individuellement chaque piste
-            System.Diagnostics.Debug.WriteLine($"[FormCompresser] 🔍 Analyse individuelle de la piste {numeroFichier} avant extraction...")
+            ' Mode Normal : utiliser la pré-analyse (pairwise + réconciliation) si disponible
+            Dim analyse As CDAudioAnalyzer.TrackAnalysis = Nothing
 
-            ' Trouver la piste suivante pour analyser la ZONE DE TRANSITION
-            Dim pisteSuivante As CDAudioManager.CDTrack = Nothing
-            If pisteIndex + 1 < pistesCD.Count Then
-                pisteSuivante = pistesCD(pisteIndex + 1)
-                System.Diagnostics.Debug.WriteLine($"[FormCompresser]    └─ Analyse de la transition avec piste {pisteSuivante.TrackNumber}")
+            If analysesPistes.ContainsKey(pisteIndex) Then
+                analyse = analysesPistes(pisteIndex)
+                System.Diagnostics.Debug.WriteLine($"[FormCompresser] 🔍 Pré-analyse utilisée pour la piste {numeroFichier}")
+            Else
+                ' Fallback de sécurité : analyse individuelle si la pré-analyse est absente
+                System.Diagnostics.Debug.WriteLine($"[FormCompresser] 🔍 Fallback analyse individuelle pour la piste {numeroFichier}")
+
+                Dim pisteSuivante As CDAudioManager.CDTrack = Nothing
+                If pisteIndex + 1 < pistesCD.Count Then
+                    pisteSuivante = pistesCD(pisteIndex + 1)
+                    System.Diagnostics.Debug.WriteLine($"[FormCompresser]    └─ Analyse de la transition avec piste {pisteSuivante.TrackNumber}")
+                End If
+
+                analyse = CDAudioAnalyzer.AnalyzeTrack(piste, pisteSuivante, Nothing)
+                analysesPistes(pisteIndex) = analyse
             End If
 
-            ' ANALYSE INDÉPENDANTE : Toujours analyser le début/fin de la piste en cours
-            ' sans utiliser l'analyse précédente afin que l'extraction d'une piste isolée
-            ' (ex. extraire uniquement la piste 8) reste correcte.
-            Dim analyse = CDAudioAnalyzer.AnalyzeTrack(piste, pisteSuivante, Nothing)
             System.Diagnostics.Debug.WriteLine($"[FormCompresser]    └─ {analyse.AnalysisMessage}")
 
-            ' Stocker l'analyse pour la piste suivante
-            analysesPistes(pisteIndex) = analyse
-
-            ' GARDE ANTI-CHEVREMENT : si l'analyse produit des positions ajustées qui chevauchent
-            ' la piste suivante (cas où la détection du silence réduit trop la fin),
-            ' on pourra corriger au moment d'analyser la piste suivante. Ici on ajoute un log.
-            If analyse.WasAdjusted Then
-                System.Diagnostics.Debug.WriteLine($"[FormCompresser] ⚠️ Vérifier chevauchement potentiel après ajustement: piste {numeroFichier} => {analyse.AdjustedStartFrame}-{analyse.AdjustedEndFrame}")
-            End If
-
-            If analyse.WasAdjusted Then
+            If analyse IsNot Nothing AndAlso analyse.WasAdjusted Then
                 ' Créer une nouvelle piste avec les positions ajustées
                 pisteAExtraire = New CDAudioManager.CDTrack With {
                     .Drive = piste.Drive,
@@ -1671,14 +2700,18 @@ Public Class FormCompresser
         Dim lastProgressUpdate As Integer = 0
 
         ' Initialiser la barre de progression de la piste
-        If Me.InvokeRequired Then
-            Me.Invoke(Sub()
-                          ProgressBarPisteActuelle.Maximum = 100
-                          ProgressBarPisteActuelle.Value = 0
-                      End Sub)
-        Else
-            ProgressBarPisteActuelle.Maximum = 100
-            ProgressBarPisteActuelle.Value = 0
+        If Not runAllActive Then
+                                           If Not runAllActive Then
+                                               If Me.InvokeRequired Then
+                                                   Me.Invoke(Sub()
+                                                                 ProgressBarPisteActuelle.Maximum = 100
+                                                                 ProgressBarPisteActuelle.Value = 0
+                                                             End Sub)
+                                               Else
+                                                   ProgressBarPisteActuelle.Maximum = 100
+                                                   ProgressBarPisteActuelle.Value = 0
+                                               End If
+                                           End If
         End If
 
         Dim bytesRead As Integer
@@ -1873,14 +2906,16 @@ Public Class FormCompresser
                                            Dim totalRead As Long = 0
                                            Dim lastProgressUpdate As Integer = 0
 
-                                           If Me.InvokeRequired Then
-                                               Me.Invoke(Sub()
-                                                             ProgressBarPisteActuelle.Maximum = 100
-                                                             ProgressBarPisteActuelle.Value = 0
-                                                         End Sub)
-                                           Else
-                                               ProgressBarPisteActuelle.Maximum = 100
-                                               ProgressBarPisteActuelle.Value = 0
+                                           If Not runAllActive Then
+                                               If Me.InvokeRequired Then
+                                                   Me.Invoke(Sub()
+                                                                 ProgressBarPisteActuelle.Maximum = 100
+                                                                 ProgressBarPisteActuelle.Value = 0
+                                                             End Sub)
+                                               Else
+                                                   ProgressBarPisteActuelle.Maximum = 100
+                                                   ProgressBarPisteActuelle.Value = 0
+                                               End If
                                            End If
 
                                            Do

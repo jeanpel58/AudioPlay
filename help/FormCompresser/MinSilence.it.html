@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔉 Aiuto - Silenzio minimo</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; color: #333; }
+        .container { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #3498db; margin-top: 25px; }
+        .info { background-color: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        ul { line-height: 1.8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="icon">🔉</span>Silenzi sostenuti minimi (secondi)</h1>
+
+        <p>Questo parametro imposta la durata minima di silenzio continuo richiesta dall'analizzatore per considerare una regione come punto di taglio valido.</p>
+
+        <h2>Perché</h2>
+        <p>Brevi pause o passaggi silenziosi non dovrebbero essere trattati come confini di traccia. Richiedere un silenzio sostenuto evita falsi positivi dovuti a brevi cali di volume.</p>
+
+        <h2>Cosa cambia modificandolo</h2>
+        <ul>
+            <li>Valore più piccolo: sensibile, può tagliare dentro passaggi molto brevi.</li>
+            <li>Valore più grande: richiede silenzi più lunghi, più sicuro ma può perdere gap corti.</li>
+        </ul>
+
+        <div class="info">
+            <strong>Raccomandazione:</strong> Default: 0,5s. Non impostare sotto 0,05s per evitare instabilità.
+        </div>
+    </div>
+</body>
+</html>

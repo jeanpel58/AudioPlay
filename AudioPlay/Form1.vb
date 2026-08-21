@@ -28,8 +28,8 @@ Public Class Form1
 
     Private toolTipForm1 As ToolTip = Nothing
 
-    Private Version As String = "1.26.08.14"
-    Private VersionChiffre As String = "1260814"
+    Private Version As String = "1.26.08.20"
+    Private VersionChiffre As String = "1260820"
 
     ' === Volume global partagé ===
     Public Shared VolumeLecture As Integer = 50
@@ -72,6 +72,21 @@ Public Class Form1
 
             ' Rafraîchir la langue pour mettre à jour tous les textes et tooltips
             RefreshLanguage()
+
+            ' Abonner un handler inline pour rafraîchir automatiquement la langue
+            Try
+                AddHandler LanguageManager.LanguageChanged, Sub(c)
+                                                                Try
+                                                                    If Me.InvokeRequired Then
+                                                                        Me.BeginInvoke(New Action(AddressOf RefreshLanguage))
+                                                                    Else
+                                                                        RefreshLanguage()
+                                                                    End If
+                                                                Catch
+                                                                End Try
+                                                            End Sub
+            Catch
+            End Try
 
             ' Appliquer le thème actuel (peut avoir changé dans FormParametres)
             ThemeManager.ApplyThemeToForm(Me)
@@ -1312,6 +1327,21 @@ Public Class Form1
             Catch
             End Try
         Catch
+        End Try
+
+        ' === Initialiser (créer / tronquer) le fichier de diagnostics pour la session ===
+        Try
+            Dim diagPath As String = CDAudioAnalyzer.DiagnosticsLogPath
+            Try
+                ' Crée ou tronque le fichier et écrit un en-tête de session pour vérifier l'I/O
+                Dim header As String = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] SESSION START{Environment.NewLine}"
+                System.IO.File.WriteAllText(diagPath, header, System.Text.Encoding.UTF8)
+                System.Diagnostics.Debug.WriteLine($"[Form1] Diagnostics log initialisé: {diagPath}")
+            Catch ex As Exception
+                System.Diagnostics.Debug.WriteLine($"[Form1] Impossible d'initialiser le log de diagnostics: {ex.Message}")
+            End Try
+        Catch
+            ' Ignorer si CDAudioAnalyzer n'est pas disponible pour une raison quelconque
         End Try
 
         ' === Vérifier le Mode Mixeur DJ ===

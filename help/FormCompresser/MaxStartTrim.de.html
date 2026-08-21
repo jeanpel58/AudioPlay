@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⏮️ Hilfe - Max Start Trim</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; color: #333; }
+        .container { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #3498db; margin-top: 25px; }
+        .info { background-color: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .icon { font-size: 1.3em; margin-right: 5px; }
+        ul { line-height: 1.8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="icon">⏮️</span>Maximales Start-Trimming (Sekunden)</h1>
+
+        <p>Dieser Parameter begrenzt, wie weit der Analyzer den erkannten Anfang des nächsten Tracks nach vorne verschieben darf, um Überlappungen oder falsch ausgerichtete TOC-Grenzen auszugleichen.</p>
+
+        <h2>Warum</h2>
+        <p>Bei einigen CDs überlappen sich Tracks oder der Start im TOC ist leicht verzögert. Das Limit verhindert, dass zu viel wichtiges Audio entfernt wird.</p>
+
+        <h2>Auswirkung einer Änderung</h2>
+        <ul>
+            <li>Kleinerer Wert: konservativ, schützt vor dem Abschneiden von Audio, kann Überlappungen belassen.</li>
+            <li>Größerer Wert: aggressiver beim Entfernen von Überlappungen, risikoreicher bei zu großen Werten.</li>
+        </ul>
+
+        <div class="info">
+            <strong>Empfehlung:</strong> Standard: 8.0s. Bei stark überlappenden Masters erhöhen, sonst geringer setzen. Keine extremen Werte verwenden.
+        </div>
+    </div>
+</body>
+</html>

@@ -23,6 +23,25 @@ Partial Public Class FormParametres
         RemoveMenu(hMenu, SC_CLOSE, MF_BYCOMMAND)
     End Sub
 
+    Private Sub OnLanguageChanged(newCulture As Globalization.CultureInfo)
+        Try
+            If Me.InvokeRequired Then
+                Me.BeginInvoke(New Action(Sub() RefreshLanguage()))
+            Else
+                RefreshLanguage()
+            End If
+        Catch
+        End Try
+    End Sub
+
+    Protected Overrides Sub OnFormClosed(e As FormClosedEventArgs)
+        Try
+            RemoveHandler LanguageManager.LanguageChanged, AddressOf OnLanguageChanged
+        Catch
+        End Try
+        MyBase.OnFormClosed(e)
+    End Sub
+
     ' Helper type pour stocker la clé interne du thème et le label affiché
     Private Class ThemeDisplayItem
         Public Property Key As String
@@ -84,6 +103,23 @@ Partial Public Class FormParametres
     ' Propriétés pour stocker les paramètres
     <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Property RepertoireParDefaut As String
+
+    ' Paramètres audio/analysis exposés à l'UI
+    <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
+    Public Property Analyzer_WindowBeforeSeconds As Integer = 30
+
+    <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
+    Public Property Analyzer_WindowAfterSeconds As Integer = 30
+
+    <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
+    Public Property Analyzer_SilenceThreshold As Double = 0.001
+
+    ' Par défaut afficher 0.50 seconde
+    <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
+    Public Property Analyzer_MinSustainedSilenceSeconds As Double = 0.5
+
+    <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
+    Public Property Analyzer_MaxStartTrimSeconds As Double = 0.5
 
     ' États des cases à cocher audio
     Private EtatCheckBoxMP3 As Boolean = False
@@ -538,6 +574,21 @@ Partial Public Class FormParametres
                                 Boolean.TryParse(valeur, ParametresGlobaux.SupprimerSilenceDebut)
                             Case "SupprimerSilenceFin"
                                 Boolean.TryParse(valeur, ParametresGlobaux.SupprimerSilenceFin)
+                            Case "Analyzer_WindowBeforeSeconds"
+                                Dim v As Integer = 20
+                                If Integer.TryParse(valeur, v) Then Analyzer_WindowBeforeSeconds = Math.Max(5, Math.Min(120, v))
+                            Case "Analyzer_WindowAfterSeconds"
+                                Dim v2 As Integer = 20
+                                If Integer.TryParse(valeur, v2) Then Analyzer_WindowAfterSeconds = Math.Max(5, Math.Min(120, v2))
+                            Case "Analyzer_SilenceThreshold"
+                                Dim d As Double = Analyzer_SilenceThreshold
+                                If Double.TryParse(valeur, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, d) Then Analyzer_SilenceThreshold = d
+                            Case "Analyzer_MinSustainedSilenceSeconds"
+                                Dim d2 As Double = Analyzer_MinSustainedSilenceSeconds
+                                If Double.TryParse(valeur, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, d2) Then Analyzer_MinSustainedSilenceSeconds = Math.Max(0.1, d2)
+                            Case "Analyzer_MaxStartTrimSeconds"
+                                Dim d3 As Double = Analyzer_MaxStartTrimSeconds
+                                If Double.TryParse(valeur, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, d3) Then Analyzer_MaxStartTrimSeconds = Math.Max(0, Math.Min(10, d3))
                             Case "EffacerChansons"
                                 If CheckBox_EffacerChansons IsNot Nothing Then
                                     Dim b As Boolean = True
@@ -886,6 +937,11 @@ Partial Public Class FormParametres
                 "EffetPhaserFeedback=" & ParametresGlobaux.EffetPhaserFeedback.ToString(Globalization.CultureInfo.InvariantCulture),
                 "EffetPhaserMix=" & ParametresGlobaux.EffetPhaserMix.ToString(Globalization.CultureInfo.InvariantCulture),
                 "EffetPhaserStages=" & ParametresGlobaux.EffetPhaserStages.ToString(),
+                "Analyzer_WindowBeforeSeconds=" & Analyzer_WindowBeforeSeconds.ToString(),
+                "Analyzer_WindowAfterSeconds=" & Analyzer_WindowAfterSeconds.ToString(),
+                "Analyzer_SilenceThreshold=" & Analyzer_SilenceThreshold.ToString(Globalization.CultureInfo.InvariantCulture),
+                "Analyzer_MinSustainedSilenceSeconds=" & Analyzer_MinSustainedSilenceSeconds.ToString(Globalization.CultureInfo.InvariantCulture),
+                "Analyzer_MaxStartTrimSeconds=" & Analyzer_MaxStartTrimSeconds.ToString(Globalization.CultureInfo.InvariantCulture),
                 "ModeMixeurDJ=" & ParametresGlobaux.ModeMixeurDJ.ToString()
             }
 

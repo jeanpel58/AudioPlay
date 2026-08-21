@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⏭️ Aiuto - Finestra dopo (TOC)</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; color: #333; }
+        .container { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #3498db; margin-top: 25px; }
+        .info { background-color: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .icon { font-size: 1.3em; margin-right: 5px; }
+        ul { line-height: 1.8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="icon">⏭️</span>Finestra dopo il TOC (secondi)</h1>
+
+        <p>Questa impostazione controlla quanti secondi di audio vengono analizzati DOPO il TOC (confine di traccia) per cercare transizioni tra le tracce.</p>
+
+        <h2>Perché</h2>
+        <p>Talvolta la vera fine di una traccia si trova dopo il TOC (lead-out nascosto) o la traccia successiva inizia più tardi. Analizzare dopo il TOC aiuta a trovare silenzi o fade che avvengono subito dopo il confine.</p>
+
+        <h2>Cos'è il TOC?</h2>
+        <p>Il TOC (Table of Contents) di un CD audio è una tabella registrata sul disco che elenca le posizioni di inizio di ogni traccia (in minuti:secondi:frame) e la posizione del lead-out. Serve come indice logico per i lettori CD. Il TOC non descrive la forma d'onda reale intorno a queste posizioni: non dice se le tracce si sovrappongono, contengono crossfade o silenzi. Per questo è necessario analizzare l'audio attorno al TOC per trovare il silenzio sicuro dove effettuare il taglio.</p>
+
+        <h2>Cosa cambia modificandolo</h2>
+        <ul>
+            <li>Valore più piccolo: più veloce, può perdere brevi silenzi post-TOC.</li>
+            <li>Valore più grande: analizza più audio e può trovare una separazione migliore, a costo di tempo.</li>
+        </ul>
+
+        <div class="info">
+            <strong>Raccomandazione:</strong> valore conservativo predefinito: 20 secondi. Usare 10–30s per dischi con lunghi lead-out.
+        </div>
+    </div>
+</body>
+</html>

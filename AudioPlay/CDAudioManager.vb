@@ -765,7 +765,12 @@ Public Class CDAudioManager
                                                       bytesReturned, IntPtr.Zero)
 
                         If Not success OrElse bytesReturned = 0 Then
-                            System.Diagnostics.Debug.WriteLine($"[CDReader] Erreur lecture secteur {currentFrame}")
+                            Dim lastErr = Marshal.GetLastWin32Error()
+                            System.Diagnostics.Debug.WriteLine($"[CDReader] Erreur lecture secteur {currentFrame} (lastErr={lastErr})")
+                            Try
+                                CDAudioAnalyzer.DiagnosticWrite($"CDReader: DeviceIoControl failed at frame {currentFrame} (lastErr={lastErr})")
+                            Catch
+                            End Try
                             Exit While
                         End If
 
