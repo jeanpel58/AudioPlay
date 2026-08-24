@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AudioPlay - Vollständige Anleitung</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); overflow: hidden; }
+        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; text-align: center; }
+        header h1 { font-size: 3em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        header p { font-size: 1.2em; opacity: 0.9; }
+        nav { background: #f8f9fa; padding: 20px 40px; border-bottom: 3px solid #667eea; position: sticky; top: 0; z-index: 100; }
+        nav ul { list-style: none; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+        nav a { text-decoration: none; color: #667eea; font-weight: 600; padding: 10px 20px; border-radius: 25px; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: all 0.3s; }
+        nav a:hover { background: #667eea; color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4); }
+        .content { padding: 40px; }
+        section { margin-bottom: 50px; }
+        h2 { color: #667eea; font-size: 2.5em; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #667eea; }
+        h3 { color: #764ba2; font-size: 1.8em; margin: 30px 0 15px 0; }
+        h4 { color: #555; font-size: 1.3em; margin: 20px 0 10px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        th { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; text-align: left; font-weight: 600; }
+        td { padding: 12px 15px; border-bottom: 1px solid #e0e0e0; }
+        tr:hover { background: #f8f9fa; }
+        .key { display: inline-block; background: #667eea; color: white; padding: 5px 12px; border-radius: 5px; font-family: 'Courier New', monospace; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .button-desc { background: #f0f4ff; padding: 20px; border-left: 5px solid #667eea; margin: 15px 0; border-radius: 5px; }
+        .button-desc strong { color: #667eea; font-size: 1.1em; }
+        .tip { background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 5px; }
+        .tip::before { content: "💡 "; font-size: 1.5em; }
+        .warning { background: #f8d7da; border-left: 5px solid #dc3545; padding: 15px; margin: 20px 0; border-radius: 5px; }
+        .warning::before { content: "⚠️ "; font-size: 1.5em; }
+        .success { background: #d4edda; border-left: 5px solid #28a745; padding: 15px; margin: 20px 0; border-radius: 5px; }
+        .success::before { content: "✅ "; font-size: 1.5em; }
+        ul, ol { margin: 15px 0 15px 30px; }
+        li { margin: 8px 0; }
+        footer { background: #2c3e50; color: white; text-align: center; padding: 30px; margin-top: 50px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎵 AudioPlay</h1>
+            <p>Vollständige Benutzeranleitung</p>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#tastenkombinationen">⌨️ Tastenkombinationen</a></li>
+                <li><a href="#schaltflaechen">🎛️ Schaltflächen</a></li>
+                <li><a href="#einstellungen">⚙️ Einstellungen</a></li>
+                <li><a href="#djmodus">🎧 DJ-Modus</a></li>
+                <li><a href="#metadaten">📝 Metadaten</a></li>
+                <li><a href="#funktionen">✨ Funktionen</a></li>
+            </ul>
+        </nav>
+
+        <div class="content">
+            <section id="tastenkombinationen">
+                <h2>⌨️ Tastenkombinationen</h2>
+
+                <h3>🎮 Wiedergabesteuerung</h3>
+                <table>
+                    <tr><th>Taste</th><th>Aktion</th><th>Beschreibung</th></tr>
+                    <tr><td><span class="key">Leertaste</span></td><td><strong>Wiedergabe / Pause</strong></td><td>Wenn nichts spielt → startet das ausgewählte Lied<br>Wenn es spielt → Pause<br>Wenn pausiert → Wiedergabe fortsetzen</td></tr>
+                    <tr><td><span class="key">Esc</span></td><td><strong>BPM-Berechnung abbrechen</strong></td><td>Bricht laufende BPM-Berechnung/Neuberechnung ab:<br>• Zeigt Bestätigungsdialog (Ja/Nein)<br>• Titel spielt weiter<br>• Löscht auch Suchfeld, falls aktiv</td></tr>
+                    <tr><td><span class="key">Strg</span> + <span class="key">Leertaste</span></td><td><strong>ALLES Stoppen</strong></td><td>Stoppt vollständig:<br>• BPM-Berechnung (ohne Bestätigung)<br>• Audiowiedergabe (Position auf 0:00)<br>• Karaoke<br>• Gibt alle Ressourcen frei</td></tr>
+                    <tr><td><span class="key">Strg</span> + <span class="key">P</span></td><td><strong>Pause / Fortsetzen</strong></td><td>Wechselt zwischen Pause und Wiedergabe</td></tr>
+                    <tr><td><span class="key">Strg</span> + <span class="key">S</span></td><td><strong>Stummschaltung (Mute)</strong></td><td>Aktiviert/deaktiviert den Stummschaltungsmodus</td></tr>
+                    <tr><td><span class="key">Strg</span> + <span class="key">A</span></td><td><strong>Zufallsmodus</strong></td><td>Aktiviert/deaktiviert zufällige Wiedergabe</td></tr>
+                    <tr><td><span class="key">Strg</span> + <span class="key">←</span></td><td><strong>Vorheriges Lied</strong></td><td>Spielt das vorherige Lied in der Wiedergabeliste</td></tr>
+                    <tr><td><span class="key">Strg</span> + <span class="key">→</span></td><td><strong>Nächstes Lied</strong></td><td>Spielt das nächste Lied in der Wiedergabeliste</td></tr>
+                </table>
+
+                <h3>🔄 Schleife (Loop)</h3>
+                <table>
+                    <tr><th>Taste</th><th>Aktion</th><th>Beschreibung</th></tr>
+                    <tr><td><span class="key">I</span></td><td><strong>Schleifenbeginn</strong></td><td>Erfasst die aktuelle Position als Schleifenbeginn (während der Wiedergabe)</td></tr>
+                    <tr><td><span class="key">O</span></td><td><strong>Schleifenende</strong></td><td>Erfasst die aktuelle Position als Schleifenende (während der Wiedergabe)</td></tr>
+                </table>
+
+                <div class="tip"><strong>Tipp:</strong> Nach dem Markieren von I und O klicken Sie auf die Loop-Schaltfläche, um die Schleife zu aktivieren. Die I/O-Markierungen werden über dem Fortschrittsbalken angezeigt.</div>
+
+                <h3>📋 Navigation in der Wiedergabeliste</h3>
+                <table>
+                    <tr><th>Taste</th><th>Aktion</th><th>Beschreibung</th></tr>
+                    <tr><td><span class="key">↑</span></td><td><strong>Nach oben</strong></td><td>Wählt das vorherige Lied aus</td></tr>
+                    <tr><td><span class="key">↓</span></td><td><strong>Nach unten</strong></td><td>Wählt das nächste Lied aus</td></tr>
+                    <tr><td><span class="key">Strg</span> + <span class="key">↑</span></td><td><strong>Nach oben verschieben</strong></td><td>Verschiebt das ausgewählte Lied in der Liste nach oben</td></tr>
+                    <tr><td><span class="key">Strg</span> + <span class="key">↓</span></td><td><strong>Nach unten verschieben</strong></td><td>Verschiebt das ausgewählte Lied in der Liste nach unten</td></tr>
+                    <tr><td><span class="key">Pos1</span></td><td><strong>Erstes Lied</strong></td><td>Wählt das erste Lied aus</td></tr>
+                    <tr><td><span class="key">Ende</span></td><td><strong>Letztes Lied</strong></td><td>Wählt das letzte Lied aus</td></tr>
+                    <tr><td><span class="key">Entf</span></td><td><strong>Löschen</strong></td><td>Entfernt das ausgewählte Lied aus der Liste</td></tr>
+                </table>
+
+                <h3>🔍 Suche in der Playlist</h3>
+                <p>
+                    AudioPlay bietet eine Sofortsuche-Funktion zum schnellen Filtern von Liedern in Ihrer Playlist.
+                </p>
+                <ul>
+                    <li><strong>Suchleiste:</strong> Über der Wiedergabeliste gelegen, geben Sie Text ein, um sofort zu suchen</li>
+                    <li><strong>Suchtyp-Auswahl:</strong> Wählen Sie aus drei Optionen:
+                        <ul>
+                            <li><strong>Dateiname:</strong> Suche in Liedernamen</li>
+                            <li><strong>BPM:</strong> Suche nach Tempowert</li>
+                            <li><strong>Dauer:</strong> Suche nach Liedlänge (Format "3:45")</li>
+                        </ul>
+                    </li>
+                    <li><strong>Sofortsuche:</strong> Ergebnisse werden während der Eingabe aktualisiert</li>
+                    <li><strong>Automatische Auswahl:</strong> Alle passenden Lieder werden ausgewählt</li>
+                    <li><strong>Suche löschen:</strong> 
+                        <ul>
+                            <li>Klicken Sie auf die Schaltfläche <strong>✕</strong> rechts neben dem Suchfeld (wird beim Überfahren <span style="color: lime;">grün</span>, beim Klicken <span style="color: red;">rot</span>)</li>
+                            <li>Drücken Sie <span class="key">Esc</span></li>
+                            <li>Löschen Sie den Text manuell</li>
+                        </ul>
+                        Alle diese Aktionen kehren zur vollständigen Liste zurück und stellen den Fokus auf das ListView wieder her
+                    </li>
+                </ul>
+                <div class="tip">
+                    <strong>💡 Tipp:</strong> Tastenkombinationen werden automatisch deaktiviert, wenn Sie in die Suchleiste eingeben, um Konflikte mit Ihrer Eingabe zu vermeiden.
+                </div>
+            </section>
+
+            <section id="schaltflaechen">
+                <h2>🎛️ Steuerungsschaltflächen</h2>
+
+                <h3>🎵 Audiowiedergabe</h3>
+                <div class="button-desc"><strong>▶️ Wiedergeben</strong><br>Startet die Wiedergabe des ausgewählten Liedes. Wenn ein Lied pausiert ist, wird die Wiedergabe fortgesetzt.</div>
+                <div class="button-desc"><strong>⏸️ Pause / Fortsetzen</strong><br>Pausiert die aktuelle Wiedergabe oder setzt eine pausierte Wiedergabe fort. Die Position wird beibehalten.</div>
+                <div class="button-desc"><strong>⏹️ Stoppen</strong><br>Stoppt die Wiedergabe vollständig und setzt die Position auf 0:00 zurück. <strong>Hinweis:</strong> Stoppt NICHT die laufende BPM-Berechnung/Neuberechnung (verwenden Sie <span class="key">Esc</span> dafür).</div>
+                <div class="button-desc"><strong>⏮️ Zurück</strong><br>Springt zum vorherigen Lied in der Wiedergabeliste.</div>
+                <div class="button-desc"><strong>⏭️ Weiter</strong><br>Springt zum nächsten Lied in der Wiedergabeliste.</div>
+                <div class="button-desc"><strong>🔇 Stummschaltung (Mute)</strong><br>Aktiviert/deaktiviert den Stummschaltungsmodus. Der Ton wird stummgeschaltet, aber die Wiedergabe läuft weiter.</div>
+
+                <h3>📋 Verwaltung der Wiedergabeliste</h3>
+                <div class="button-desc"><strong>➕ Hinzufügen</strong><br>Öffnet einen Dialog zum Hinzufügen von Audiodateien zur Liste.<br>Unterstützte Formate: MP3, WAV, FLAC, OGG, M4A, WMA, AAC</div>
+                <div class="button-desc"><strong>📝 Metadaten (Info)</strong><br>Öffnet den Metadaten-Editor für das ausgewählte Lied. Ermöglicht die Bearbeitung von: Titel, Interpret, Album, Jahr, Genre, Kommentar, BPM, Titelnummer.</div>
+                <div class="button-desc"><strong>📚 Wiedergabeliste</strong><br>Verwaltungsmenü für Listen:<br>• Neue Liste<br>• Liste öffnen<br>• Speichern<br>• Speichern unter<br>• Verzeichnis hinzufügen<br>• Liste leeren</div>
+
+                <h3>🎚️ Audio-Steuerungen</h3>
+                <div class="button-desc"><strong>🔊 Lautstärke</strong><br>Hauptlautstärkeregler (0-100%). Die Lautstärke wird zwischen Sitzungen gespeichert.</div>
+                <div class="button-desc"><strong>🎵 Höhen (Treble)</strong><br>Equalizer für hohe Frequenzen (-15 dB bis +15 dB). Beeinflusst hohe Töne.</div>
+                <div class="button-desc"><strong>🔉 Bässe (Bass)</strong><br>Equalizer für tiefe Frequenzen (-15 dB bis +15 dB). Beeinflusst tiefe Töne.</div>
+
+                <h3>🎯 Erweiterte Funktionen</h3>
+                <div class="button-desc"><strong>🎼 BPM (Berechnen)</strong><br>Berechnet automatisch die Schläge pro Minute (BPM) eines Liedes:<br>• <strong>Auto-Methode</strong>: Verwendet librosa, falls Python verfügbar ist (95%+ Genauigkeit), sonst SoundTouch<br>• <strong>Librosa-Methode</strong>: Verwendet Python (sehr genau, erfordert Installation)<br>• <strong>SoundTouch-Methode</strong>: Integriert, schnell, Genauigkeit ±75%</div>
+                <div class="button-desc"><strong>🔄 Loop (Schleife)</strong><br>Aktiviert/deaktiviert die Wiederholung eines Abschnitts des Liedes:<br>1. Drücken Sie während der Wiedergabe <span class="key">I</span> am Anfang des Abschnitts<br>2. Drücken Sie <span class="key">O</span> am Ende des Abschnitts<br>3. Klicken Sie auf die Loop-Schaltfläche, um die Schleife zu aktivieren<br>4. Der Abschnitt wird endlos wiederholt, bis er deaktiviert wird</div>
+                <div class="warning"><strong>Hinweis:</strong> Die BPM-Berechnung ist blockiert, während eine Schleife aktiv ist. Deaktivieren Sie zuerst die Schleife.</div>
+                <div class="button-desc"><strong>🎲 Zufällig (Random)</strong><br>Aktiviert/deaktiviert die zufällige Wiedergabe. Bei Aktivierung werden die Lieder in zufälliger Reihenfolge abgespielt.</div>
+                <div class="button-desc"><strong>⚙️ Einstellungen</strong><br>Öffnet das Einstellungsfenster der Anwendung.</div>
+                <div class="button-desc"><strong>ℹ️ Über</strong><br>Zeigt Informationen über die Anwendung, Version und Autor an.</div>
+                <div class="button-desc"><strong>🔌 Ausschalten</strong><br>Schließt die AudioPlay-Anwendung. Alle Ressourcen werden ordnungsgemäß freigegeben.</div>
+            </section>
+
+            <section id="einstellungen">
+                <h2>⚙️ Anwendungseinstellungen</h2>
+
+                <h3>🌍 Sprache</h3>
+                <div class="button-desc"><strong>Sprachauswahl</strong><br>Wählen Sie die Schnittstellensprache aus: 🇫🇷 Français, 🇬🇧 English, 🇪🇸 Español, 🇩🇪 Deutsch, 🇮🇹 Italiano<br><div class="warning"><strong>Wichtig:</strong> Starten Sie die Anwendung neu, um die Sprachänderung anzuwenden.</div></div>
+
+                <h3>📁 Standardverzeichnis</h3>
+                <div class="button-desc"><strong>Musikordner</strong><br>Legt das Verzeichnis fest, das beim Hinzufügen von Dateien standardmäßig geöffnet wird. Klicken Sie auf <strong>Durchsuchen</strong>, um einen Ordner auszuwählen.</div>
+
+                <h3>🎵 Wiedergabe</h3>
+                <div class="button-desc">
+                    <strong>☑️ Kontinuierliche Wiedergabe</strong> - Wechselt automatisch zum nächsten Lied, wenn eines endet.<br>
+                    <strong>☑️ BPM anzeigen</strong> - Zeigt die BPM-Spalte in der Liste an, wenn BPM-Metadaten verfügbar sind.<br>
+                    <strong>☑️ Lautstärke-Normalisierung</strong> - Gleicht die Lautstärke zwischen Liedern automatisch aus.<br>
+                    <strong>☑️ Stille am Anfang entfernen</strong> - Erkennt und überspringt automatisch Stille am Anfang von Titeln.<br>
+                    <strong>☑️ Stille am Ende entfernen</strong> - Erkennt und überspringt automatisch Stille am Ende von Titeln.<br>
+                    <strong>☑️ Löschen bestätigen</strong> - Fordert Bestätigung vor dem Entfernen von Liedern aus der Liste.
+                </div>
+
+                <h3>🎧 DJ-Modus</h3>
+                <div class="button-desc">
+                    <strong>☑️ DJ-Mixer-Modus (2 Decks mit Crossfader und DJ-Steuerung)</strong><br>
+                    Aktiviert oder deaktiviert den professionellen DJ-Modus von AudioPlay.<br><br>
+                    <strong>Einfacher Modus (Standard):</strong> Klassische Oberfläche mit einer einzigen Playlist, lineare Songwiedergabe und grundlegende Audiosteuerung.<br><br>
+                    <strong>DJ-Modus (2 Decks):</strong> 2 unabhängige Decks, Crossfader zum Mischen, Pitch-Steuerung (-50% bis +50%), automatische BPM-Erkennung, Sync-Tasten, Audio-Effekte pro Deck (Phaser, Reverb, Echo), Cue-Punkte, VU-Meter und Playlist mit Drag & Drop.<br><br>
+                    <strong>⚡ Automatischer Wechsel:</strong> Wenn Sie diese Option aktivieren oder deaktivieren und auf "Speichern" klicken, wechselt AudioPlay automatisch zwischen den Modi ohne Neustart.
+                </div>
+
+                <h3>🎼 BPM-Berechnung</h3>
+                <div class="button-desc"><strong>BPM-Berechnungsmethode</strong><br>Wählen Sie die Methode zur Berechnung der Schläge pro Minute:<br>• <strong>Auto</strong>: Verwendet librosa, falls Python installiert ist, sonst SoundTouch<br>• <strong>Librosa (Python)</strong>: Sehr genau (95%+), erfordert Python + librosa<br>• <strong>SoundTouch</strong>: Integriert, schnell, Genauigkeit ±75%</div>
+
+                <h3>🥁 Metronom</h3>
+                <div class="button-desc">
+                    <strong>☑️ Metronom aktivieren</strong> - Aktiviert das Metronom während der Wiedergabe von Liedern mit BPM.<br>
+                    <strong>☑️ Metronom-Ton</strong> - Gibt bei jedem Schlag einen hörbaren Ton aus (Tick-Tack).<br>
+                    <strong>☑️ Metronom-Licht</strong> - Zeigt einen synchronisierten blinkenden visuellen Indikator an.<br>
+                    <strong>Schläge pro Takt</strong> - Legt die Anzahl der Schläge pro Takt fest (1-16). Standard: 4 (4/4).
+                </div>
+
+                <h3>🎨 Themen</h3>
+                <div class="button-desc">
+                    <strong>Visuelle Anpassung</strong><br>
+                    AudioPlay enthält ein vollständiges Themensystem:<br>
+                    • <strong>Standard</strong>: Hellblaues Thema<br>
+                    • <strong>Dunkel</strong>: Schwarzes Thema zur Reduzierung der Augenbelastung<br>
+                    • <strong>Ozean</strong>: Blaue und Cyan-Töne<br>
+                    • <strong>Herbst</strong>: Warme Orange- und Brauntöne<br>
+                    • <strong>Sonne</strong>: Gelbe und goldene Töne<br><br>
+                    <strong>Themenoptionen:</strong> Auswählen, Anpassen, Vorschau, Speichern unter, Duplizieren, Löschen, Zurücksetzen<br><br>
+                    <strong>15 anpassbare Elemente:</strong> Formularhintergrund, Steuerelemente-Hintergrund, Steuerelemente-Text, Schaltflächen-Hintergrund, Schaltflächen-Text, ListView-Hintergrund, ListView-Text, Kopfzeilen-Hintergrund, Kopfzeilen-Text, Auswahl-Hintergrund, Auswahl-Text, TextBox-Hintergrund, TextBox-Text, GroupBox-Text, GroupBox-Rahmen, TrackBar-Hintergrund.
+                </div>
+                <div class="warning"><strong>Geschützte Themen:</strong> Die 5 Standardthemen können nicht gelöscht oder überschrieben werden, nur dupliziert oder mit einem neuen Namen angepasst werden.</div>
+
+                <h3>🔗 Dateiverknüpfungen</h3>
+                <div class="button-desc"><strong>Unterstützte Audioformate</strong><br>Konfigurieren Sie AudioPlay als Standardanwendung zum Öffnen von: .mp3, .wav, .flac, .ogg, .m4a, .wma, .aac<br><div class="tip"><strong>Doppelklick:</strong> Nach der Konfiguration doppelklicken Sie auf eine Audiodatei im Explorer, um sie in AudioPlay zu öffnen.</div></div>
+            </section>
+
+            <!-- DJ-MODUS ABSCHNITT -->
+            <section id="djmodus">
+                <h2>🎧 DJ-Modus - Benutzerhandbuch</h2>
+
+                <p>Der DJ-Modus verwandelt AudioPlay in ein professionelles Mischsystem mit zwei unabhängigen Decks, einem Crossfader und erweiterten DJ-Steuerelementen.</p>
+
+                <div class="success">
+                    <strong>💡 So aktivieren Sie den DJ-Modus:</strong> Gehen Sie zu Einstellungen → aktivieren Sie "DJ-Mixer-Modus (2 Decks mit Crossfader und DJ-Steuerelementen)" → klicken Sie auf Speichern. AudioPlay wechselt automatisch in den DJ-Modus.
+                </div>
+
+                <h3>🎛️ DJ-Modus-Oberfläche</h3>
+
+                <div class="button-desc">
+                    <strong>Überblick</strong><br>
+                    Der DJ-Modus ist in 4 Hauptbereiche unterteilt:
+                    <ul>
+                        <li><strong>🎧 Deck A (Links)</strong>: Linkes Deck mit allen Steuerelementen</li>
+                        <li><strong>🎧 Deck B (Rechts)</strong>: Rechtes Deck mit allen Steuerelementen</li>
+                        <li><strong>🎚️ Mixer-Bereich (Mitte)</strong>: Crossfader und Steuerungstasten</li>
+                        <li><strong>📋 Wiedergabeliste (Unten)</strong>: Titelliste mit Verwaltung</li>
+                    </ul>
+                </div>
+
+                <h3>🎵 Titel laden</h3>
+
+                <div class="button-desc">
+                    <strong>Methode 1: Drag & Drop aus der Wiedergabeliste</strong><br>
+                    <ol>
+                        <li>Klicken und halten Sie einen Titel in der Wiedergabeliste</li>
+                        <li>Ziehen Sie ihn in den Bereich "Titel hier ablegen ⬇" von Deck A oder Deck B</li>
+                        <li>Loslassen, um den Titel auf das Deck zu laden</li>
+                    </ol>
+                </div>
+
+                <div class="button-desc">
+                    <strong>Methode 2: Zur Wiedergabeliste hinzufügen</strong><br>
+                    <ul>
+                        <li>Klicken Sie auf <strong>➕ Hinzufügen</strong>, um das Menü zu öffnen</li>
+                        <li>Wählen Sie "Datei hinzufügen" oder "Ordner hinzufügen"</li>
+                        <li>Hinzugefügte Titel erscheinen in der Wiedergabeliste</li>
+                    </ul>
+                </div>
+
+                <h3>🎮 Deck-Steuerelemente</h3>
+
+                <table>
+                    <tr>
+                        <th>Steuerelement</th>
+                        <th>Beschreibung</th>
+                    </tr>
+                    <tr>
+                        <td><strong>▶ Play</strong></td>
+                        <td>Startet die Wiedergabe des geladenen Titels auf dem Deck</td>
+                    </tr>
+                    <tr>
+                        <td><strong>⏸ Pause</strong></td>
+                        <td>Pausiert die Wiedergabe (wird am selben Punkt fortgesetzt)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>⏹ Stop</strong></td>
+                        <td>Stoppt die Wiedergabe und kehrt zum Anfang (oder Cue-Punkt) zurück</td>
+                    </tr>
+                    <tr>
+                        <td><strong>📍 Cue</strong></td>
+                        <td>Setzt einen Startpunkt. Klicken Sie während der Wiedergabe, um einen Punkt zu markieren, klicken Sie erneut, um dorthin zurückzukehren</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Positionsleiste</strong></td>
+                        <td>Zeigt und steuert die Position im Titel. Klicken Sie, um schnell zu navigieren</td>
+                    </tr>
+                </table>
+
+                <h3>🎚️ Audio-Steuerelemente pro Deck</h3>
+
+                <table>
+                    <tr>
+                        <th>Steuerelement</th>
+                        <th>Funktion</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Lautstärke</strong></td>
+                        <td>Passt die Deck-Lautstärke an (0-100%). Jedes Deck hat seine eigene unabhängige Lautstärke</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pitch</strong></td>
+                        <td>Passt die Wiedergabegeschwindigkeit von -50% bis +50% an. Ändert sowohl Tempo ALS AUCH Tonhöhe. Ideal für BPM-Synchronisation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>BPM</strong></td>
+                        <td>Zeigt automatisch erkannte Beats pro Minute an. Nützlich für harmonisches Mischen</td>
+                    </tr>
+                    <tr>
+                        <td><strong>📊 VU-Meter</strong></td>
+                        <td>Echtzeit-Visualanzeige des Audiopegels. Zeigt die Klangintensität an</td>
+                    </tr>
+                </table>
+
+                <h3>🔀 Der Crossfader</h3>
+
+                <div class="button-desc">
+                    <strong>Hauptfunktion des Crossfaders</strong><br>
+                    Der Crossfader ist das Herzstück des DJ-Mixings. Er ermöglicht einen sanften Übergang zwischen den beiden Decks:
+                    <ul>
+                        <li><strong>Position 0% (Links)</strong>: Nur Deck A ist hörbar</li>
+                        <li><strong>Position 50% (Mitte)</strong>: Beide Decks sind mit gleicher Lautstärke hörbar</li>
+                        <li><strong>Position 100% (Rechts)</strong>: Nur Deck B ist hörbar</li>
+                    </ul>
+                    <div class="tip">
+                        <strong>Mischtechnik:</strong> Starten Sie einen Titel auf Deck A (Crossfader nach links). Bereiten Sie den nächsten Titel auf Deck B vor. Wenn Sie bereit sind, bewegen Sie den Crossfader allmählich zur Mitte und dann nach rechts, um den Übergang durchzuführen.
+                    </div>
+                </div>
+
+                <h3>🔄 BPM-Synchronisation (Sync)</h3>
+
+                <div class="button-desc">
+                    <strong>Sync A→B und Sync B→A Tasten</strong><br>
+                    Diese Tasten ermöglichen automatische Tempo-Synchronisation:
+                    <ul>
+                        <li><strong>Sync A→B</strong>: Passt automatisch den Pitch von Deck B an, um dem BPM von Deck A zu entsprechen</li>
+                        <li><strong>Sync B→A</strong>: Passt automatisch den Pitch von Deck A an, um dem BPM von Deck B zu entsprechen</li>
+                    </ul>
+                    <div class="success">
+                        <strong>Verwendung:</strong> Laden Sie zwei Titel, starten Sie sie, klicken Sie dann auf Sync, damit sie im gleichen Tempo spielen. Perfekt für harmonisches Mischen!
+                    </div>
+                </div>
+
+                <h3>🎛️ Audio-Effekte pro Deck</h3>
+
+                <div class="button-desc">
+                    <strong>Jedes Deck hat 3 einzeln aktivierbare Effekte:</strong>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Effekt</th>
+                        <th>Beschreibung</th>
+                    </tr>
+                    <tr>
+                        <td><strong>🌀 Phaser</strong></td>
+                        <td>Phasen-Sweep-Effekt, der einen "räumlichen" und wellenförmigen Klang erzeugt. Perfekt für Übergänge</td>
+                    </tr>
+                    <tr>
+                        <td><strong>🔊 Reverb</strong></td>
+                        <td>Hall, der Echo und Tiefe zum Klang hinzufügt. Simuliert Raumakustik</td>
+                    </tr>
+                    <tr>
+                        <td><strong>📢 Echo</strong></td>
+                        <td>Klangwiederholung, die einen Echo-Effekt erzeugt. Nützlich für musikalische Phrasenenden</td>
+                    </tr>
+                </table>
+
+                <div class="tip">
+                    <strong>Tipp:</strong> Aktivieren Sie die Effekte während der Wiedergabe, um sie in Echtzeit zu aktivieren. Effekte sind pro Deck unabhängig, sodass Sie gleichzeitig Phaser auf A und Reverb auf B haben können.
+                </div>
+
+                <h3>📋 DJ-Wiedergabelistenverwaltung</h3>
+
+                <div class="button-desc">
+                    <strong>➕ Hinzufügen-Taste</strong><br>
+                    Dropdown-Menü zum Hinzufügen von Inhalten:
+                    <ul>
+                        <li><strong>Datei hinzufügen</strong>: Eine oder mehrere Audiodateien auswählen</li>
+                        <li><strong>Ordner hinzufügen</strong>: Alle Audiodateien aus einem Ordner hinzufügen</li>
+                    </ul>
+                </div>
+
+                <div class="button-desc">
+                    <strong>⚙️ Verwalten-Taste</strong><br>
+                    Dropdown-Menü zur Verwaltung der Wiedergabeliste:
+                    <ul>
+                        <li><strong>Liste öffnen</strong>: Eine gespeicherte Wiedergabeliste laden (.txt)</li>
+                        <li><strong>Liste speichern</strong>: Die aktuelle Wiedergabeliste speichern</li>
+                        <li><strong>Neue Liste</strong>: Eine leere Wiedergabeliste erstellen</li>
+                        <li><strong>Liste löschen</strong>: Die Wiedergabeliste vollständig leeren</li>
+                        <li><strong>Ausgewähltes Element entfernen</strong>: Den ausgewählten Titel entfernen</li>
+                    </ul>
+                </div>
+
+                <div class="button-desc">
+                    <strong>Wiedergabelisten-Spalten</strong><br>
+                    <ul>
+                        <li><strong>#</strong>: Titelnummer</li>
+                        <li><strong>Song</strong>: Dateiname</li>
+                        <li><strong>BPM</strong>: Automatisch erkanntes Tempo</li>
+                        <li><strong>Dauer</strong>: Titeldauer (mm:ss)</li>
+                    </ul>
+                </div>
+
+                <h3>⚙️ Weitere Steuerelemente</h3>
+
+                <div class="button-desc">
+                    <strong>⚙️ Einstellungen</strong><br>
+                    Zugriff auf AudioPlay-Einstellungen. Sie können "DJ-Mixer-Modus" deaktivieren, um zum einfachen Modus zurückzukehren.
+                </div>
+
+                <div class="button-desc">
+                    <strong>🔙 Zurück zum einfachen Modus</strong><br>
+                    Schnelle Abkürzung zum Deaktivieren des DJ-Modus und Rückkehr zur klassischen AudioPlay-Oberfläche.
+                </div>
+
+                <h3>💡 Tipps für gutes Mischen</h3>
+
+                <div class="success">
+                    <strong>Empfohlener Misch-Workflow:</strong>
+                    <ol>
+                        <li>📋 Laden Sie Ihre Wiedergabeliste mit Ihren Titeln</li>
+                        <li>🎵 Ziehen Sie einen ersten Titel auf Deck A und starten Sie ihn (Crossfader nach links)</li>
+                        <li>🎵 Ziehen Sie den nächsten Titel auf Deck B</li>
+                        <li>🔊 Passen Sie die Lautstärke von Deck B an, um ihn vorab zu hören (Crossfader noch links = für das Publikum unhörbar)</li>
+                        <li>🔄 Verwenden Sie die Sync-Taste, um die BPMs anzugleichen</li>
+                        <li>📍 Setzen Sie einen Cue-Punkt auf Deck B, um zum richtigen Zeitpunkt zu starten</li>
+                        <li>▶ Starten Sie Deck B und bewegen Sie den Crossfader allmählich zur Mitte und dann nach rechts</li>
+                        <li>🔁 Wiederholen: Bereiten Sie jetzt den nächsten Titel auf Deck A vor, während Deck B spielt</li>
+                    </ol>
+                </div>
+
+                <div class="warning">
+                    <strong>⚠️ Wichtig:</strong> Der DJ-Modus speichert Ihre Wiedergabeliste automatisch. Sie wird beim nächsten Start des DJ-Modus neu geladen.
+                </div>
+
+                <div class="tip">
+                    <strong>🎓 Um weiterzugehen:</strong>
+                    <ul>
+                        <li>Experimentieren Sie mit Audio-Effekten, um einzigartige Übergänge zu schaffen</li>
+                        <li>Verwenden Sie Cue-Punkte, um direkt auf dem ersten Beat eines Titels zu starten</li>
+                        <li>Beobachten Sie die VU-Meter, um Audio-Sättigung zu vermeiden</li>
+                        <li>Mischen Sie Titel mit ähnlichen BPMs für natürlichere Übergänge</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="metadaten">
+                <h2>📝 Metadaten-Editor</h2>
+                <p>Der Metadaten-Editor ermöglicht es Ihnen, die in Ihren Audiodateien eingebetteten Informationen anzuzeigen und zu ändern.</p>
+
+                <h3>📋 Dateiinformationen (Nur Lesen)</h3>
+                <table>
+                    <tr><th>Feld</th><th>Beschreibung</th></tr>
+                    <tr><td>Dateiname</td><td>Vollständiger Dateiname mit Erweiterung</td></tr>
+                    <tr><td>Vollständiger Pfad</td><td>Speicherort der Datei auf der Festplatte</td></tr>
+                    <tr><td>Größe</td><td>Dateigröße (KB, MB, GB)</td></tr>
+                    <tr><td>Änderungsdatum</td><td>Letzte Änderung der Datei</td></tr>
+                </table>
+
+                <h3>🎵 Audioinformationen (Nur Lesen)</h3>
+                <table>
+                    <tr><th>Feld</th><th>Beschreibung</th></tr>
+                    <tr><td>Audioformat</td><td>Dateityp (MP3, WAV, FLAC, etc.)</td></tr>
+                    <tr><td>Dauer</td><td>Gesamtdauer des Titels (mm:ss)</td></tr>
+                    <tr><td>Abtastrate</td><td>Audioqualität in Hz (z.B. 44100 Hz = CD)</td></tr>
+                    <tr><td>Bitrate</td><td>Bitrate in kbps (Kompressionsqualität)</td></tr>
+                    <tr><td>Bits pro Sample</td><td>Audioauflösung (8, 16, 24, 32 Bit)</td></tr>
+                    <tr><td>Kanäle</td><td>Mono, Stereo oder mehrkanalig</td></tr>
+                </table>
+
+                <h3>🏷️ ID3-Tags / Metadaten (Bearbeitbar)</h3>
+                <table>
+                    <tr><th>Feld</th><th>Beschreibung</th></tr>
+                    <tr><td>Titel</td><td>Name des Liedes</td></tr>
+                    <tr><td>Interpret</td><td>Name des Interpreten oder der Gruppe</td></tr>
+                    <tr><td>Album-Interpret</td><td>Haupt-Albuminterpret</td></tr>
+                    <tr><td>Album</td><td>Name des Albums</td></tr>
+                    <tr><td>Jahr</td><td>Erscheinungsjahr (JJJJ)</td></tr>
+                    <tr><td>Genre</td><td>Musikstil (Rock, Pop, Jazz, etc.)</td></tr>
+                    <tr><td>Titel</td><td>Titelnummer im Album (N oder N/Gesamt)</td></tr>
+                    <tr><td>Komponist</td><td>Autor der Musik</td></tr>
+                    <tr><td>BPM</td><td>Schläge Pro Minute (Tempo des Liedes)</td></tr>
+                    <tr><td>Kommentar</td><td>Persönliche Notizen</td></tr>
+                </table>
+
+                <div class="warning"><strong>Datei in Wiedergabe:</strong> Wenn die Datei gerade abgespielt wird, bietet AudioPlay an, sie vor dem Speichern zu stoppen. Akzeptieren Sie, um das Schreiben zu ermöglichen.</div>
+            </section>
+
+            <!-- CD AUDIO SEKTION -->
+            <section id="cd-audio">
+                <h2>💿 CD Audio - Wiedergabe und Extraktion</h2>
+
+                <div class="success">
+                    <strong>Neue Funktion!</strong><br>
+                    AudioPlay kann jetzt Audio-CDs direkt von Ihren CD/DVD-Laufwerken abspielen und extrahieren.
+                </div>
+
+                <h3>🎵 CD Audio Wiedergabe</h3>
+
+                <div class="button-desc">
+                    <strong>CD-Laufwerkzugriff</strong><br>
+                    Um eine Audio-CD abzuspielen:
+                    <ol>
+                        <li>Legen Sie eine Audio-CD in Ihr CD/DVD-Laufwerk ein</li>
+                        <li>Klicken Sie auf die Schaltfläche <strong>"Hinzufügen" (Button_Ajout)</strong> in der Symbolleiste</li>
+                        <li>Wählen Sie im erscheinenden Kontextmenü <strong>"CD Audio hinzufügen"</strong></li>
+                        <li>AudioPlay erkennt automatisch Laufwerke mit einer Audio-CD</li>
+                        <li>Wählen Sie das Laufwerk aus der Dropdown-Liste</li>
+                        <li>CD-Titel werden automatisch angezeigt</li>
+                    </ol>
+
+                    <div class="tip">
+                        <strong>Automatische Erkennung:</strong> AudioPlay überwacht CD-Laufwerke in Echtzeit. 
+                        Wenn Sie eine CD auswerfen oder einlegen, wird die Oberfläche automatisch aktualisiert.
+                    </div>
+                </div>
+
+                <h3>📝 CD-Metadaten</h3>
+
+                <div class="button-desc">
+                    <strong>Automatisches Laden von Informationen</strong><br>
+                    AudioPlay ruft automatisch CD-Metadaten ab:
+                    <ul>
+                        <li><strong>Künstler</strong>: Name des Künstlers oder der Band</li>
+                        <li><strong>Album</strong>: Albumtitel</li>
+                        <li><strong>Jahr</strong>: Erscheinungsjahr</li>
+                        <li><strong>Genre</strong>: Musikstil</li>
+                        <li><strong>Titelnamen</strong>: Name jedes Liedes</li>
+                        <li><strong>Cover</strong>: Albumcover-Bild (falls verfügbar)</li>
+                    </ul>
+
+                    <div class="warning">
+                        <strong>Metadaten-Quellen:</strong>
+                        <ul>
+                            <li><strong>GnuDB</strong>: Kostenlose CD-Datenbank (Standard)</li>
+                            <li><strong>MusicBrainz</strong>: Community-Musikdatenbank</li>
+                            <li><strong>Lokaler Cache</strong>: Gespeicherte Metadaten von zuvor gelesenen CDs</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>💾 CD Audio Extraktion</h3>
+
+                <div class="button-desc">
+                    <strong>Konvertieren Sie Ihre CDs in Audiodateien</strong><br>
+                    AudioPlay kann Titel von einer Audio-CD auf Ihre Festplatte extrahieren:
+
+                    <h4>📂 Unterstützte Extraktionsformate:</h4>
+                    <table>
+                        <tr>
+                            <th>Format</th>
+                            <th>Beschreibung</th>
+                            <th>Verfügbare Qualitäten</th>
+                        </tr>
+                        <tr>
+                            <td><strong>MP3</strong></td>
+                            <td>Universelles komprimiertes Format</td>
+                            <td>
+                                • Niedrig (128 kbps)<br>
+                                • Mittel (192 kbps)<br>
+                                • Hoch (256 kbps)<br>
+                                • <strong>Sehr Hoch (320 kbps)</strong> ⭐
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>FLAC</strong></td>
+                            <td>Verlustfreie Kompression</td>
+                            <td>
+                                • Level 0 (schnell)<br>
+                                • Level 5 (ausgewogen)<br>
+                                • <strong>Level 8 (beste)</strong> ⭐
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>WAV</strong></td>
+                            <td>Unkomprimiertes Format (CD-Qualität)</td>
+                            <td>
+                                • PCM 16-bit 44.1 kHz<br>
+                                • <strong>PCM 24-bit 96 kHz</strong> ⭐<br>
+                                • PCM 32-bit 192 kHz
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>WMA</strong></td>
+                            <td>Windows Media Audio</td>
+                            <td>
+                                • 128 kbps<br>
+                                • 192 kbps<br>
+                                • <strong>256 kbps</strong> ⭐
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="tip">
+                        <strong>Standard:</strong> AudioPlay extrahiert in <strong>MP3</strong> mit <strong>Sehr Hoher Qualität (320 kbps)</strong>
+                    </div>
+                </div>
+
+                <h3>⚙️ Extraktionsprozess</h3>
+
+                <div class="button-desc">
+                    <strong>So extrahieren Sie eine CD:</strong>
+                    <ol>
+                        <li><strong>Titel auswählen</strong>: Markieren Sie die zu extrahierenden Titel in der Liste</li>
+                        <li><strong>Format wählen</strong>: MP3, FLAC, WAV oder WMA</li>
+                        <li><strong>Qualität wählen</strong>: Je nach gewähltem Format</li>
+                        <li><strong>Speicherordner festlegen</strong>: Wo die Dateien gespeichert werden sollen</li>
+                        <li><strong>Metadaten anpassen</strong>:
+                            <ul>
+                                <li>Künstler, Album, Jahr</li>
+                                <li>Genre, Kommentar</li>
+                                <li>Erste Titelnummer (für Teilalben)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Erweiterte Optionen</strong>:
+                            <ul>
+                                <li>☑️ <strong>CD sperren</strong>: Verhindert das Auswerfen während der Extraktion</li>
+                                <li>☑️ <strong>CD auswerfen</strong>: Wirft die CD automatisch am Ende aus</li>
+                                <li>🔊 <strong>Klang-Normalisierung</strong>: Extraktionslautstärke anpassen (1-100%, Standard 95%)
+                                    <ul>
+                                        <li><strong>95%</strong>: Empfohlener Wert zur Vermeidung von Sättigung</li>
+                                        <li><strong>100%</strong>: Maximale Lautstärke (Verzerrungsrisiko)</li>
+                                        <li><strong>Weniger als 95%</strong>: Lautstärke reduzieren, wenn Titel zu laut sind</li>
+                                        <li>💾 <em>Wert wird automatisch zwischen Sitzungen gespeichert</em></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><strong>Klicken Sie auf "Extrahieren"</strong></li>
+                    </ol>
+
+                    <div class="success">
+                        <strong>Automatische Organisation:</strong><br>
+                        Dateien werden automatisch so organisiert:<br>
+                        <code>Speicherordner\(Jahr) Künstler - Album\NN - Künstler - Titel.ext</code><br><br>
+                        <strong>Beispiel:</strong><br>
+                        <code>Musik\(2005) Paul McCartney - Never Stop Doing What You Love\01 - Paul McCartney - Another Day.mp3</code>
+                    </div>
+
+                    <div class="warning">
+                        <strong>Intelligente Nummerierung:</strong> Titelnummern werden automatisch mit führenden Nullen formatiert (01, 02... 09, 10, usw.)
+                    </div>
+                </div>
+
+                <h3>📊 Fortschrittsverfolgung</h3>
+
+                <div class="button-desc">
+                    <strong>Echtzeit-Indikatoren:</strong>
+                    <ul>
+                        <li><strong>Aktueller Titel</strong>: Zeigt "Künstler - Titel" des aktuell extrahierenden Titels an</li>
+                        <li><strong>Titel-Fortschritt</strong>: Fortschrittsbalken für den aktuellen Titel</li>
+                        <li><strong>Gesamtfortschritt</strong>: Fortschrittsbalken für alle ausgewählten Titel</li>
+                    </ul>
+
+                    <div class="tip">
+                        <strong>Hintergrund-Extraktion:</strong> Sie können das Fenster während der Extraktion minimieren. 
+                        AudioPlay arbeitet im Hintergrund weiter.
+                    </div>
+                </div>
+
+                <h3>🔧 Automatische FFMpeg-Installation</h3>
+
+                <div class="button-desc">
+                    <strong>Für FLAC- und WMA-Formate:</strong><br>
+                    AudioPlay benötigt FFMpeg zum Extrahieren in FLAC und WMA. Wenn FFMpeg nicht installiert ist:
+                    <ol>
+                        <li>AudioPlay erkennt automatisch dessen Fehlen</li>
+                        <li>Ein Download-Fenster erscheint</li>
+                        <li>FFMpeg wird automatisch heruntergeladen und installiert</li>
+                        <li>Die Extraktion startet dann normal</li>
+                    </ol>
+
+                    <div class="success">
+                        <strong>Nahtlose Installation:</strong> Sie müssen nichts tun! AudioPlay kümmert sich automatisch um alles.
+                    </div>
+
+                    <div class="warning">
+                        <strong>Speicherort:</strong> FFMpeg wird in <code>Tools\ffmpeg.exe</code> im AudioPlay-Ordner installiert
+                    </div>
+                </div>
+
+                <h3>❓ Häufig gestellte Fragen</h3>
+
+                <h4>💿 Meine CD wird nicht erkannt</h4>
+                <ul>
+                    <li>Überprüfen Sie, ob die CD richtig im Laufwerk eingelegt ist</li>
+                    <li>Stellen Sie sicher, dass es eine Audio-CD ist (nicht MP3 oder Daten)</li>
+                    <li>Klicken Sie erneut auf <strong>Button_Ajout → "CD Audio hinzufügen"</strong></li>
+                    <li>Starten Sie AudioPlay neu, wenn das Problem weiterhin besteht</li>
+                </ul>
+
+                <h4>📝 Metadaten werden nicht geladen</h4>
+                <ul>
+                    <li>Überprüfen Sie Ihre Internetverbindung (GnuDB und MusicBrainz benötigen sie)</li>
+                    <li>Versuchen Sie, die Metadaten-Quelle zu ändern</li>
+                    <li>Die CD könnte selten sein oder nicht in den Datenbanken aufgeführt sein</li>
+                    <li>Sie können Metadaten manuell im Extraktionsformular eingeben</li>
+                </ul>
+
+                <h4>⚡ Extraktion ist langsam</h4>
+                <ul>
+                    <li>Echtzeit-Extraktion dauert genauso lange wie das Abspielen der CD</li>
+                    <li>Komprimierte Formate (MP3, FLAC, WMA) fügen Codierungszeit hinzu</li>
+                    <li>WAV-Format ist am schnellsten (keine Kompression)</li>
+                    <li>Schließen Sie andere Anwendungen, um Ressourcen freizugeben</li>
+                </ul>
+
+                <h4>🔒 Die CD ist blockiert</h4>
+                <ul>
+                    <li>Wenn die Option "CD sperren" aktiviert ist, kann die CD während der Extraktion nicht ausgeworfen werden</li>
+                    <li>Warten Sie auf das Ende der Extraktion</li>
+                    <li>Wenn aktiviert, wirft die Option "CD auswerfen" sie am Ende automatisch aus</li>
+                    <li>Im Problemfall schließen Sie AudioPlay und die CD wird entsperrt</li>
+                </ul>
+
+                <h4>💾 Wo werden meine Dateien gespeichert?</h4>
+                <ul>
+                    <li>Dateien werden in dem von Ihnen gewählten Ordner gespeichert</li>
+                    <li>Ein Unterordner wird automatisch erstellt: <code>(Jahr) Künstler - Album</code></li>
+                    <li>Dateien werden benannt: <code>NN - Künstler - Titel.ext</code></li>
+                    <li>Sie können den Speicherordner bei jeder Extraktion ändern</li>
+                </ul>
+            </section>
+
+            <section id="funktionen">
+                <h2>✨ Erweiterte Funktionen</h2>
+
+                <h3>🎤 Karaoke CDG</h3>
+                <div class="button-desc"><strong>CD+G (Karaoke) Datei-Wiedergabe</strong><br>AudioPlay unterstützt nativ Karaoke-Dateien: Fügen Sie eine Audiodatei mit einer .cdg-Datei des gleichen Namens hinzu. Das Karaoke-Fenster öffnet sich automatisch mit synchronisierten Texten und CDG-Grafiken.</div>
+
+                <h3>🔄 Lautstärke-Normalisierung</h3>
+                <div class="button-desc"><strong>Automatische Lautstärke-Anpassung</strong><br>Die Normalisierung analysiert und passt die Lautstärke jedes Liedes an: RMS-Pegelberechnung, Erkennung von Audio-Spitzen, Anwendung korrigierender Verstärkung, Keine dauerhafte Dateiänderung.</div>
+                <div class="success"><strong>Vorteile:</strong> Sie müssen die Lautstärke nicht zwischen den Liedern anpassen. Das Hören ist homogen und komfortabel.</div>
+
+                <h3>🎵 Synchronisiertes Metronom</h3>
+                <div class="button-desc"><strong>Musikalische Praxis mit Metronom</strong><br>Das Metronom von AudioPlay synchronisiert sich mit dem erkannten BPM: Hörbarer Ton (Tick-Tack), Synchronisierte visuelle LED-Anzeige, Konfigurierbare Takte (1-16 Schläge), Betonung des ersten Schlags.</div>
+
+                <h3>✂️ Entfernung von Stille</h3>
+                <div class="button-desc"><strong>Erkennung und Entfernung von Stille</strong><br>AudioPlay kann automatisch: Anfangsstille überspringen, Zum nächsten Lied wechseln, ohne auf die Schlussstille zu warten, Einstellbarer Schwellenwert mit intelligenter Erkennung.</div>
+
+                <h3>🖱️ Drag & Drop</h3>
+                <div class="button-desc"><strong>Schnelles Hinzufügen von Dateien</strong><br>Ziehen und Ablegen direkt in AudioPlay: Einzelne Audiodateien, Ganze Ordner (rekursives Scannen), Mehrfachauswahlen, .m3u-Wiedergabelisten</div>
+
+                <h3>🌐 Mehrsprachig</h3>
+                <div class="button-desc"><strong>Schnittstelle in 5 Sprachen</strong><br>AudioPlay ist vollständig übersetzt: Vollständig lokalisierte Schnittstelle, Alle Nachrichten und Dialoge, HTML-Dokumentation in jeder Sprache, Sprachwechsel ohne Neuinstallation.</div>
+
+                <h3>💡 Leistung</h3>
+                <div class="button-desc"><strong>Optimiert für flüssige Leistung</strong><br>Geringer Speicher- und CPU-Verbrauch, Unterstützung großer Wiedergabelisten (mehrere tausend Titel), Schnelles Scannen von Ordnern, Reaktionsschnelle Schnittstelle.</div>
+
+                <h3>🔒 Sicherheit</h3>
+                <div class="button-desc"><strong>Keine Datenerfassung</strong><br>AudioPlay respektiert Ihre Privatsphäre: Keine Telemetrie, Alle Daten bleiben lokal, Keine Internet-Verbindung erforderlich (außer für CD-Metadaten), Open-Source-Code.</div>
+            </section>
+
+            <!-- ABSCHNITT TIPPS UND TRICKS -->
+            <section id="tipps">
+                <h2>💡 Tipps und Ratschläge</h2>
+
+                <h3>🎯 Optimale Nutzung</h3>
+
+                <div class="tip">
+                    <strong>Wesentliche Tastenkombinationen</strong><br>
+                    Merken Sie sich diese 3 Tastenkombinationen für eine flüssige Nutzung:
+                    <ul>
+                        <li><span class="key">Leertaste</span>: Wiedergabe / Pause</li>
+                        <li><span class="key">Strg</span> + <span class="key">S</span>: Stummschaltung</li>
+                        <li><span class="key">Entf</span>: Aus Wiedergabeliste entfernen</li>
+                    </ul>
+                </div>
+
+                <div class="tip">
+                    <strong>Schnelle BPM-Berechnung</strong><br>
+                    Um den BPM Ihrer gesamten Wiedergabeliste zu berechnen:
+                    <ol>
+                        <li>Klicken Sie auf die BPM-Schaltfläche</li>
+                        <li>Wählen Sie "BPM für alle Songs neu berechnen"</li>
+                        <li>Lassen Sie AudioPlay im Hintergrund arbeiten</li>
+                    </ol>
+                </div>
+
+                <div class="tip">
+                    <strong>Benutzerdefiniertes Theme</strong><br>
+                    Erstellen Sie ganz einfach Ihr eigenes Theme:
+                    <ol>
+                        <li>Öffnen Sie Einstellungen > Themes</li>
+                        <li>Wählen Sie ein Theme aus, das dem entspricht, was Sie möchten</li>
+                        <li>Klicken Sie auf "Duplizieren"</li>
+                        <li>Passen Sie die Farben an</li>
+                        <li>Speichern Sie mit einem eindeutigen Namen</li>
+                    </ol>
+                </div>
+
+                <div class="tip">
+                    <strong>Organisation der Wiedergabelisten</strong><br>
+                    Organisieren Sie Ihre Songs effizient:
+                    <ul>
+                        <li>Verwenden Sie <span class="key">Strg</span> + <span class="key">↑↓</span> zum Neuordnen</li>
+                        <li>Erstellen Sie thematische Wiedergabelisten (Training, Party, Entspannung)</li>
+                        <li>Speichern Sie Ihre Wiedergabelisten regelmäßig</li>
+                    </ul>
+                </div>
+
+                <h3>⚠️ Wichtige Punkte</h3>
+
+                <div class="warning">
+                    <strong>Änderung von Metadaten</strong><br>
+                    Metadaten-Änderungen sind dauerhaft. Überprüfen Sie vor dem Speichern.
+                </div>
+
+                <div class="warning">
+                    <strong>BPM-Berechnung und Schleife</strong><br>
+                    Sie können den BPM nicht berechnen, während eine Schleife aktiv ist. Deaktivieren Sie zuerst die Schleife.
+                </div>
+
+                <div class="warning">
+                    <strong>Geschützte Dateien</strong><br>
+                    Wenn eine Datei schreibgeschützt oder geschützt ist, können die Metadaten nicht geändert werden.
+                </div>
+
+                <h3>🚀 Erweiterte Tastenkombinationen</h3>
+
+                <div class="success">
+                    <strong>Kontextmenü</strong><br>
+                    Klicken Sie mit der rechten Maustaste auf einen Song für schnellen Zugriff auf:
+                    <ul>
+                        <li>BPM berechnen</li>
+                        <li>Metadaten anzeigen</li>
+                        <li>Aus Liste entfernen</li>
+                    </ul>
+                </div>
+
+                <div class="success">
+                    <strong>Doppelklick</strong><br>
+                    Doppelklicken Sie auf einen Song, um ihn sofort abzuspielen.
+                </div>
+
+                <div class="success">
+                    <strong>Mehrfachauswahl</strong><br>
+                    <ul>
+                        <li><span class="key">Strg</span> + Klick: Nicht aufeinanderfolgende Mehrfachauswahl</li>
+                        <li><span class="key">Umschalt</span> + Klick: Bereichsauswahl</li>
+                        <li><span class="key">Strg</span> + <span class="key">A</span>: Alles auswählen</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ABSCHNITT FEHLERBEHEBUNG -->
+            <section id="fehlerbehebung">
+                <h2>🔧 Fehlerbehebung</h2>
+
+                <h3>❓ Häufige Probleme</h3>
+
+                <h4>🔇 Kein Ton</h4>
+                <ul>
+                    <li>Überprüfen Sie, ob die Lautstärke nicht auf 0% steht</li>
+                    <li>Überprüfen Sie, ob der Stummschaltungsmodus nicht aktiviert ist</li>
+                    <li>Überprüfen Sie die Windows-Systemlautstärke</li>
+                    <li>Testen Sie mit einer anderen Audiodatei</li>
+                </ul>
+
+                <h4>❌ Datei öffnet sich nicht</h4>
+                <ul>
+                    <li>Überprüfen Sie, ob das Format unterstützt wird</li>
+                    <li>Überprüfen Sie, ob die Datei nicht beschädigt ist</li>
+                    <li>Überprüfen Sie die Dateiberechtigungen</li>
+                    <li>Versuchen Sie, die Datei in einen anderen Ordner zu kopieren</li>
+                </ul>
+
+                <h4>🐌 BPM-Berechnung langsam</h4>
+                <ul>
+                    <li>Die BPM-Berechnung mit SoundTouch ist schnell</li>
+                    <li>Die Berechnung mit librosa (Python) ist genauer, aber langsamer</li>
+                    <li>Sie können mit <span class="key">Esc</span> (mit Bestätigung) oder <span class="key">Strg</span> + <span class="key">Leertaste</span> (ohne Bestätigung) abbrechen</li>
+                    <li>Ändern Sie die Methode in Einstellungen > BPM-Berechnung</li>
+                </ul>
+
+                <h4>🎨 Theme wird nicht angewendet</h4>
+                <ul>
+                    <li>Stellen Sie sicher, dass Sie auf "Anwenden" geklickt haben</li>
+                    <li>Schließen und öffnen Sie andere Fenster erneut (Metadaten, Einstellungen)</li>
+                    <li>Überprüfen Sie, ob das Theme im Ordner Themes/ vorhanden ist</li>
+                </ul>
+
+                <h4>🌍 Sprachwechsel funktioniert nicht</h4>
+                <ul>
+                    <li>Schließen Sie AudioPlay vollständig</li>
+                    <li>Starten Sie die Anwendung neu</li>
+                    <li>Die Sprache wird beim Start angewendet</li>
+                </ul>
+
+                <h3>📞 Support</h3>
+
+                <div class="success">
+                    <strong>Benötigen Sie zusätzliche Hilfe?</strong><br>
+                    AudioPlay ist eine freie und Open-Source-Software. Bei Fragen oder Problemen konsultieren Sie die Dokumentation oder kontaktieren Sie den Autor.
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            <p><strong>AudioPlay</strong> - Mehrsprachiger Audio-Player mit BPM-Analyse und Karaoke</p>
+            <p>© 2024 - Alle Rechte vorbehalten</p>
+            <p>Version 1.0</p>
+        </footer>
+    </div>
+</body>
+</html>

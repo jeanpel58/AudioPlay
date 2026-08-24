@@ -1,0 +1,15 @@
+﻿FormBackColor=#F0E68C
+ControlBackColor=#F0E68C
+ControlForeColor=#000000
+ButtonBackColor=#DAA520
+ButtonForeColor=#000000
+ListViewBackColor=#FFFACD
+ListViewForeColor=#000000
+ListViewHeaderBackColor=#DAA520
+ListViewHeaderForeColor=#000000
+ListViewSelectionBackColor=#B8860B
+ListViewSelectionForeColor=#FFFFFF
+TextBoxBackColor=#FFFACD
+TextBoxForeColor=#000000
+GroupBoxForeColor=#000000`r`nGroupBoxBorderColor=#07C0FE
+TrackBarBackColor=#FFFACD

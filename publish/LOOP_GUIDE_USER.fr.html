@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aide - Fonction Loop (Boucle)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #3498db;
+            margin-top: 25px;
+        }
+        .step {
+            background-color: #ecf0f1;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #3498db;
+            border-radius: 5px;
+        }
+        .step-number {
+            font-weight: bold;
+            color: #3498db;
+            font-size: 1.2em;
+        }
+        .key {
+            display: inline-block;
+            background-color: #34495e;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            margin: 0 3px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 0 3px;
+        }
+        .marker {
+            display: inline-block;
+            background-color: #e74c3c;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        ul {
+            line-height: 1.8;
+        }
+        .icon {
+            font-size: 1.3em;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="icon">🔁</span>Fonction Loop (Boucle)</h1>
+
+        <p>Le bouton <strong>Loop</strong> permet de répéter une section spécifique de la chanson en cours, idéal pour l'apprentissage d'un passage musical ou la pratique d'un instrument.</p>
+
+        <h2><span class="icon">📝</span>Comment utiliser la fonction Loop</h2>
+
+        <div class="step">
+            <span class="step-number">1️⃣</span> <strong>Démarrez la lecture</strong><br>
+            Lancez la lecture d'une chanson avec le bouton <span class="button">Jouer</span> ou en double-cliquant sur une chanson dans la liste.
+        </div>
+
+        <div class="step">
+            <span class="step-number">2️⃣</span> <strong>Marquez le début de la boucle</strong><br>
+            Pendant la lecture, appuyez sur la touche <span class="key">I</span> (comme "In" ou "Début") à l'endroit où vous souhaitez que la boucle commence.
+        </div>
+
+        <div class="step">
+            <span class="step-number">3️⃣</span> <strong>Marquez la fin de la boucle</strong><br>
+            Continuez l'écoute et appuyez sur la touche <span class="key">O</span> (comme "Out" ou "Fin") à l'endroit où vous souhaitez que la boucle se termine.
+        </div>
+
+        <div class="step">
+            <span class="step-number">4️⃣</span> <strong>Visualisez les marqueurs</strong><br>
+            Deux petits marqueurs <span class="marker">I</span> et <span class="marker">O</span> apparaissent au-dessus de la barre de progression pour indiquer la zone de boucle.
+        </div>
+
+        <div class="step">
+            <span class="step-number">5️⃣</span> <strong>Activez la boucle</strong><br>
+            Cliquez sur le bouton <span class="button">Loop</span>. Le bouton devient vert clair pour indiquer que la boucle est active.
+        </div>
+
+        <div class="step">
+            <span class="step-number">6️⃣</span> <strong>La section joue en boucle</strong><br>
+            La partie entre <span class="marker">I</span> et <span class="marker">O</span> se répète automatiquement sans arrêt.
+        </div>
+
+        <h2><span class="icon">🔄</span>Désactiver la boucle</h2>
+        <p>Pour arrêter la répétition en boucle, cliquez à nouveau sur le bouton <span class="button">Loop</span>. Le bouton reprend sa couleur normale et la lecture continue normalement.</p>
+
+        <h2><span class="icon">🗑️</span>Réinitialisation des marqueurs</h2>
+        <p>Les marqueurs <span class="marker">I</span> et <span class="marker">O</span> disparaissent automatiquement lorsque :</p>
+        <ul>
+            <li>Vous chargez une nouvelle chanson (double-clic ou bouton <span class="button">Jouer</span>)</li>
+            <li>Vous arrêtez complètement la lecture avec le bouton <span class="button">Arrêter</span> ou <span class="key">Ctrl</span>+<span class="key">Espace</span></li>
+        </ul>
+        <div class="info">
+            <strong>💡 Note :</strong> Les boucles sont spécifiques à chaque chanson. Chaque fois que vous jouez une nouvelle chanson, vous devez définir de nouveaux marqueurs.
+        </div>
+
+        <h2><span class="icon">⏸️</span>Comportement avec Pause et Mute</h2>
+        <ul>
+            <li><strong>Pause/Reprise :</strong> La boucle se met en pause avec la lecture et reprend au même endroit quand vous cliquez sur <span class="button">Pause/Reprise</span> ou appuyez sur <span class="key">Espace</span>.</li>
+            <li><strong>Mute (Muet) :</strong> La boucle continue de tourner silencieusement. Le son revient dès que vous désactivez le mode muet.</li>
+        </ul>
+
+        <h2><span class="icon">🎨</span>Couleur des marqueurs</h2>
+        <div class="info">
+            Les marqueurs <span class="marker">I</span> et <span class="marker">O</span> s'affichent en <strong style="color: #e74c3c;">rouge</strong> par défaut. Si vous avez créé un thème avec un fond rouge ou très sombre, les marqueurs s'affichent automatiquement en <strong style="color: #f1c40f;">jaune</strong> pour rester bien visibles.
+        </div>
+
+        <h2><span class="icon">🚫</span>Restrictions</h2>
+        <div class="warning">
+            <strong>⚠️ Calcul BPM bloqué :</strong> Le bouton <span class="button">Calcul BPM</span> ne fonctionne pas pendant qu'une boucle est active. Désactivez d'abord la boucle si vous souhaitez calculer le tempo de la chanson.
+        </div>
+
+        <h2><span class="icon">💡</span>Astuce</h2>
+        <p>La fonction Loop est particulièrement utile pour :</p>
+        <ul>
+            <li>Apprendre les paroles d'une chanson</li>
+            <li>Pratiquer un solo de guitare ou de piano</li>
+            <li>Travailler des passages difficiles</li>
+            <li>Analyser une section musicale en détail</li>
+        </ul>
+    </div>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hilfe - Lautstärke-Normalisierung</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 20px;
+        }
+        .info-box {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .warning-box {
+            background-color: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .step {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 3px solid #3498db;
+        }
+        ul {
+            line-height: 1.8;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Lautstärke-Normalisierung - Option 1</h1>
+
+        <h2>📋 Funktion</h2>
+        <p>Diese Funktion ermöglicht es Ihnen, <strong>die Lautstärke aller Audiodateien automatisch zu normalisieren</strong>, sodass sie während der Wiedergabe einen ähnlichen wahrgenommenen Lautstärkepegel haben.</p>
+
+        <h2>⚙️ Wie Es Funktioniert</h2>
+
+        <h3>1. Automatische Analyse</h3>
+        <div class="step">
+            <p>Wenn eine Audiodatei zum ersten Mal abgespielt wird, analysiert das System schnell ihre Lautstärke (erste 30 Sekunden)</p>
+            <p>Die Analyse berechnet:</p>
+            <ul>
+                <li><strong>RMS-Lautstärke (Root Mean Square)</strong>: Die durchschnittliche wahrgenommene Lautstärke</li>
+                <li><strong>Spitzenlautstärke</strong>: Die maximale Lautstärke</li>
+                <li><strong>Vorgeschlagene Verstärkung</strong>: Der Multiplikator für die Normalisierung</li>
+            </ul>
+        </div>
+
+        <h3>2. Automatische Anpassung</h3>
+        <div class="step">
+            <p>Das System passt die Lautstärke automatisch basierend auf der berechneten Verstärkung an</p>
+            <p>Die Anpassung wird in Echtzeit angewendet, ohne die Originaldatei zu ändern</p>
+        </div>
+
+        <h3>3. Datenspeicherung</h3>
+        <div class="step">
+            <p>Die Analyseergebnisse werden in einer Datenbank gespeichert, damit sie bei jeder Wiedergabe nicht neu berechnet werden müssen</p>
+            <p>Datenbankspeicherort: <code>%AppData%\AudioPlay\audioplay.db</code></p>
+        </div>
+
+        <h2>🎯 Ziel-Lautstärke</h2>
+        <div class="info-box">
+            <p><strong>Standard-Ziel:</strong> -23 LUFS (Loudness Units Full Scale)</p>
+            <p>Dies ist der Standard, der von Streaming-Plattformen wie Spotify und YouTube verwendet wird</p>
+        </div>
+
+        <h2>✅ Vorteile</h2>
+        <ul>
+            <li>✅ <strong>Konsistente Lautstärke</strong> zwischen allen Titeln</li>
+            <li>✅ <strong>Keine manuelle Lautstärkeanpassung</strong> erforderlich</li>
+            <li>✅ <strong>Originaldateien unverändert</strong></li>
+            <li>✅ <strong>Schnell und automatisch</strong></li>
+            <li>✅ <strong>Funktioniert mit allen Audioformaten</strong></li>
+        </ul>
+
+        <h2>⚙️ Aktivieren/Deaktivieren</h2>
+        <div class="step">
+            <ol>
+                <li><strong>Einstellungen</strong> öffnen</li>
+                <li>Den Abschnitt <strong>"Lautstärke-Normalisierung"</strong> finden</li>
+                <li>Das Normalisierungs-Kontrollkästchen aktivieren oder deaktivieren</li>
+                <li>Die Einstellung wird sofort wirksam</li>
+            </ol>
+        </div>
+
+        <h2>🔍 Technische Details</h2>
+
+        <h3>Analysemethode</h3>
+        <div class="info-box">
+            <ul>
+                <li><strong>Analysierte Probe:</strong> Erste 30 Sekunden der Datei</li>
+                <li><strong>RMS-Berechnung:</strong> Quadratwurzel des Mittelwerts der quadrierten Proben</li>
+                <li><strong>Spitzenerkennung:</strong> Maximaler Absolutwert aller Proben</li>
+                <li><strong>Verstärkungsberechnung:</strong> Verhältnis zwischen Ziel und gemessenem RMS</li>
+            </ul>
+        </div>
+
+        <h3>Grenzen</h3>
+        <div class="warning-box">
+            <ul>
+                <li><strong>Maximale Verstärkung:</strong> +20 dB (zur Vermeidung von Clipping)</li>
+                <li><strong>Minimale Verstärkung:</strong> -20 dB (zur Vermeidung zu leiser Audiowiedergabe)</li>
+                <li><strong>Spitzenschutz:</strong> Reduziert automatisch die Verstärkung, wenn sie Clipping verursachen würde</li>
+            </ul>
+        </div>
+
+        <h2>❓ Häufig Gestellte Fragen</h2>
+
+        <h3>Warum hat die erste Sekunde der Wiedergabe manchmal eine falsche Lautstärke?</h3>
+        <div class="info-box">
+            <p>Die Analyse wird während der Wiedergabe durchgeführt. Die korrekte Lautstärke wird nach der ersten Sekunde angewendet.</p>
+        </div>
+
+        <h3>Kann ich die Ziel-Lautstärke ändern?</h3>
+        <div class="info-box">
+            <p>Die aktuelle Version verwendet ein festes Ziel von -23 LUFS, was dem Industriestandard entspricht.</p>
+        </div>
+
+        <h3>Werden meine Originaldateien geändert?</h3>
+        <div class="warning-box">
+            <p><strong>Nein!</strong> Die Lautstärkeanpassung wird nur während der Wiedergabe angewendet. Ihre Originaldateien bleiben unverändert.</p>
+        </div>
+
+        <h3>Was passiert, wenn ich die Normalisierung deaktiviere?</h3>
+        <div class="info-box">
+            <p>Die Dateien werden mit ihrer Originallautstärke wiedergegeben. Die Analysedaten bleiben erhalten und werden wiederverwendet, wenn Sie die Normalisierung erneut aktivieren.</p>
+        </div>
+
+        <h2>🔧 Fehlerbehebung</h2>
+
+        <h3>Die Normalisierung scheint nicht zu funktionieren</h3>
+        <div class="step">
+            <ol>
+                <li>Überprüfen Sie, ob die Normalisierung in den Einstellungen aktiviert ist</li>
+                <li>AudioPlay neu starten</li>
+                <li>Versuchen Sie, eine neue Datei abzuspielen</li>
+            </ol>
+        </div>
+
+        <h3>Einige Dateien sind immer noch zu laut oder zu leise</h3>
+        <div class="warning-box">
+            <p>Dies kann bei Dateien auftreten, die Folgendes aufweisen:</p>
+            <ul>
+                <li>Eine sehr lange Stille am Anfang</li>
+                <li>Sehr dynamisches Audio (z.B. klassische Musik)</li>
+                <li>Clipping oder Verzerrung in der Originaldatei</li>
+            </ul>
+        </div>
+
+        <h2>🔊 CD-Extraktionslautstärke-Steuerung</h2>
+        <div class="info-box">
+            <p><strong>Funktion:</strong> Passen Sie die Extraktionslautstärke beim Rippen von Audio-CDs an</p>
+            <p>Dies unterscheidet sich von der Wiedergabe-Normalisierung - es setzt die Lautstärke der extrahierten Dateien dauerhaft fest.</p>
+        </div>
+
+        <h3>⚙️ Verwendung</h3>
+        <div class="step">
+            <ol>
+                <li>Öffnen Sie das <strong>CD-Extraktionsformular</strong> (FormCompresser)</li>
+                <li>Finden Sie das Steuerelement <strong>"Klang-Normalisierung"</strong></li>
+                <li>Passen Sie den Wert an (1-100%, Standard: 95%)</li>
+                <li>Die Einstellung wird <strong>automatisch gespeichert</strong> für zukünftige Sitzungen</li>
+            </ol>
+        </div>
+
+        <h3>📊 Empfohlene Werte</h3>
+        <ul>
+            <li>🎵 <strong>95% (Standard):</strong> Empfohlen zur Vermeidung von Sättigung/Clipping</li>
+            <li>⚠️ <strong>100%:</strong> Maximale Lautstärke (Verzerrungsrisiko bei lauten Tracks)</li>
+            <li>🔽 <strong>Weniger als 95%:</strong> Lautstärke reduzieren, wenn Tracks zu laut sind</li>
+            <li>💾 <strong>Dauerhaft:</strong> Ihr gewählter Wert wird zwischen Sitzungen gespeichert</li>
+        </ul>
+
+        <div class="warning-box">
+            <strong>⚠️ Wichtig:</strong> Diese Einstellung beeinflusst die <strong>extrahierten Dateien dauerhaft</strong>. 
+            Im Gegensatz zur Wiedergabe-Normalisierung können Sie sie nach der Extraktion nicht mehr ändern.
+        </div>
+
+        <div class="info-box" style="margin-top: 40px;">
+            <strong>💡 Tipp:</strong> Für optimale Ergebnisse lassen Sie AudioPlay alle Ihre Dateien bei der ersten Wiedergabe analysieren. 
+            Nachfolgende Wiedergaben verwenden automatisch die korrekte Lautstärke!
+        </div>
+    </div>
+</body>
+</html>

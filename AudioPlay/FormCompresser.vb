@@ -81,14 +81,63 @@ Public Class FormCompresser
             ' Show progress form non-modal but centered to parent
             Try
                 progressForm.Show(Me)
+                Try
+                    CDAudioAnalyzer.DiagnosticWrite("FormCompresser: progressForm shown and assigned to currentRunAllProgress")
+                Catch
+                End Try
             Catch
             End Try
 
             runAllCancelRequested = False
+            ' Ensure progress form is shown/assigned right before background run starts
+            Try
+                If progressForm IsNot Nothing Then
+                    If Not progressForm.Visible Then progressForm.Show(Me)
+                    currentRunAllProgress = progressForm
+                    Try
+                        CDAudioAnalyzer.DiagnosticWrite("FormCompresser: progressForm shown and assigned to currentRunAllProgress (pre-run)")
+                    Catch
+                    End Try
+                End If
+            Catch exShow As Exception
+                Try
+                    CDAudioAnalyzer.DiagnosticWrite($"FormCompresser: failed to show/assign progressForm: {exShow.Message}")
+                Catch
+                End Try
+            End Try
+
             Task.Run(Sub()
                          Try
-                             If total <= 1 Then Return
+                             ' Purge previous sessions and diagnostic params off the UI thread
+                             Try
+                                 CDAudioAnalyzer.PurgeOldSessionsAndDiagnosticParams()
+                                 Try
+                                     CDAudioAnalyzer.DiagnosticWrite("RunAllHeadless: workspace purged")
+                                 Catch
+                                 End Try
+                             Catch exPurge As Exception
+                                 Try
+                                     CDAudioAnalyzer.DiagnosticWrite($"RunAllHeadless: purge failed: {exPurge.Message}")
+                                 Catch
+                                 End Try
+                             End Try
+
+                             Try
+                                 CDAudioAnalyzer.DiagnosticWrite("RunAllHeadless: background run starting")
+                             Catch
+                             End Try
+                             If total <= 1 Then
+                                 Try
+                                     CDAudioAnalyzer.DiagnosticWrite("RunAllHeadless: not enough tracks to run")
+                                 Catch
+                                 End Try
+                                 Return
+                             End If
                              Dim sessionStartUtc = DateTime.UtcNow
+                             Try
+                                 CDAudioAnalyzer.DiagnosticWrite($"RunAllHeadless: sessionStartUtc={sessionStartUtc:O}")
+                             Catch
+                             End Try
                              For tn As Integer = 1 To steps
                                  Try
                                     If runAllCancelRequested Then
@@ -98,22 +147,35 @@ Public Class FormCompresser
                                     CDAudioAnalyzer.Debug_SaveTransitionForTrack(pistesCD, tn)
                                  Catch ex As Exception
                                      System.Diagnostics.Debug.WriteLine($"[RunAllHeadless] Track {tn} failed: {ex.Message}")
+                                     Try
+                                         CDAudioAnalyzer.DiagnosticWrite($"[RunAllHeadless] Track {tn} failed: {ex.Message}")
+                                     Catch
+                                     End Try
                                  End Try
 
-                                 ' update progress UI (modal form) and append a log line
+                             ' update progress UI (modal form) and append a log line
+                             Try
+                                 If (currentRunAllProgress IsNot Nothing) AndAlso (Not currentRunAllProgress.IsDisposed) Then
+                                     CDAudioAnalyzer.DiagnosticWrite($"RunAllHeadless: attempting UI update for track {tn}")
+                                     currentRunAllProgress.BeginInvoke(Sub()
+                                                                          Try
+                                                                              currentRunAllProgress.SetValue(tn)
+                                                                              currentRunAllProgress.SetStatus($"Run all: {tn}/{steps}")
+                                                                              currentRunAllProgress.AppendLogLine($"Processed track {tn} of {steps}")
+                                                                          Catch exInner As Exception
+                                                                              Try
+                                                                                  CDAudioAnalyzer.DiagnosticWrite($"RunAllHeadless: UI update exception: {exInner.Message}")
+                                                                              Catch
+                                                                              End Try
+                                                                          End Try
+                                                                      End Sub)
+                                 End If
+                             Catch exUiOuter As Exception
                                  Try
-                                     If (progressForm IsNot Nothing) AndAlso (Not progressForm.IsDisposed) Then
-                                         progressForm.BeginInvoke(Sub()
-                                                                      Try
-                                                                          progressForm.SetValue(tn)
-                                                                          progressForm.SetStatus($"Run all: {tn}/{steps}")
-                                                                          progressForm.AppendLogLine($"Processed track {tn} of {steps}")
-                                                                      Catch
-                                                                      End Try
-                                                                  End Sub)
-                                     End If
+                                     CDAudioAnalyzer.DiagnosticWrite($"RunAllHeadless: failed BeginInvoke/UI update: {exUiOuter.Message}")
                                  Catch
                                  End Try
+                             End Try
 
                                  Try
                                      CDAudioAnalyzer.CleanupSnippetsOlderThan(sessionStartUtc)
@@ -134,14 +196,16 @@ Public Class FormCompresser
                                                                       Try
                                                                           Dim diagDir = CDAudioAnalyzer.GetDiagnosticsDirectory()
                                                                           If String.IsNullOrWhiteSpace(diagDir) Then diagDir = Path.GetTempPath()
-                                                                          Dim sessionDir As String = diagDir
+                                                                          ' Find the latest session folder if any; otherwise leave sessionDir empty so
+                                                                          ' the Open Folders button will only open the diagnostics folder.
+                                                                          Dim sessionDir As String = Nothing
                                                                           Try
                                                                               Dim sessionFolders = Directory.GetDirectories(diagDir, "Snippets_Session_*", SearchOption.TopDirectoryOnly)
                                                                               If sessionFolders IsNot Nothing AndAlso sessionFolders.Length > 0 Then
                                                                                   sessionDir = sessionFolders(sessionFolders.Length - 1)
                                                                               End If
                                                                           Catch
-                                                                              sessionDir = diagDir
+                                                                              sessionDir = Nothing
                                                                           End Try
                                                                           progressForm.SetFolders(sessionDir, diagDir)
                                                                       Catch
@@ -2118,6 +2182,11 @@ Public Class FormCompresser
 
             ' Initialise le log de diagnostic pour cette session d'extraction
             Try
+                ' Purger les anciennes sessions et fichiers params avant d'initialiser la nouvelle session
+                Try
+                    CDAudioAnalyzer.PurgeOldSessionsAndDiagnosticParams()
+                Catch
+                End Try
                 CDAudioAnalyzer.InitializeDiagnosticsLog($"Extraction started by user - Drive={lecteurCD}")
             Catch exInitLog As Exception
                 System.Diagnostics.Debug.WriteLine($"[FormCompresser] InitializeDiagnosticsLog failed: {exInitLog.Message}")
@@ -2635,19 +2704,38 @@ Public Class FormCompresser
             System.Diagnostics.Debug.WriteLine($"[FormCompresser]    └─ {analyse.AnalysisMessage}")
 
             If analyse IsNot Nothing AndAlso analyse.WasAdjusted Then
-                ' Créer une nouvelle piste avec les positions ajustées
-                pisteAExtraire = New CDAudioManager.CDTrack With {
-                    .Drive = piste.Drive,
-                    .TrackNumber = piste.TrackNumber,
-                    .Title = piste.Title,
-                    .Artist = piste.Artist,
-                    .StartFrame = analyse.AdjustedStartFrame,
-                    .EndFrame = analyse.AdjustedEndFrame,
-                    .Duration = TimeSpan.FromSeconds((analyse.AdjustedEndFrame - analyse.AdjustedStartFrame) / 75.0)
-                }
-                System.Diagnostics.Debug.WriteLine($"[FormCompresser] ✅ Extraction avec positions AJUSTÉES: {analyse.AdjustedStartFrame}-{analyse.AdjustedEndFrame}")
-                System.Diagnostics.Debug.WriteLine($"[FormCompresser]    └─ Début: +{analyse.TrimmedStartFrames / 75.0:F2}s ({analyse.TrimmedStartFrames} frames)")
-                System.Diagnostics.Debug.WriteLine($"[FormCompresser]    └─ Fin: -{analyse.TrimmedEndFrames / 75.0:F2}s ({analyse.TrimmedEndFrames} frames)")
+                ' Si l'option AutoApply est activée et que l'analyse a été approuvée pour auto-apply,
+                ' construire une piste temporaire utilisant les bornes ajustées et la marge configurée.
+                Dim applied As Boolean = False
+                Try
+                    If ParametresGlobaux.AutoApplyAnalysis AndAlso analyse.AutoApplyApproved Then
+                        Dim marginFrames As Integer = CInt(Math.Round(ParametresGlobaux.AnalysisMarginMs * 75.0 / 1000.0))
+                        Dim newStart As Integer = Math.Max(piste.StartFrame, analyse.AdjustedStartFrame - marginFrames)
+                        Dim newEnd As Integer = Math.Min(piste.EndFrame, analyse.AdjustedEndFrame + marginFrames)
+
+                        pisteAExtraire = New CDAudioManager.CDTrack With {
+                            .Drive = piste.Drive,
+                            .TrackNumber = piste.TrackNumber,
+                            .Title = piste.Title,
+                            .Artist = piste.Artist,
+                            .StartFrame = newStart,
+                            .EndFrame = newEnd,
+                            .Duration = TimeSpan.FromSeconds(Math.Max(0, (newEnd - newStart) / 75.0))
+                        }
+                        applied = True
+                        System.Diagnostics.Debug.WriteLine($"[FormCompresser] ✅ Auto-applied analysis adjustment for track {piste.TrackNumber}: {newStart}-{newEnd} (margin {marginFrames} frames)")
+                        If currentRunAllProgress IsNot Nothing AndAlso runAllActive Then
+                            currentRunAllProgress.AppendLogLine($"Auto-applied adjustment: Track {piste.TrackNumber} => frames {newStart}-{newEnd}")
+                        End If
+                    Else
+                        System.Diagnostics.Debug.WriteLine($"[FormCompresser] Analyse disponible pour piste {piste.TrackNumber} mais auto-apply non approuvé ou désactivé (AutoApply={ParametresGlobaux.AutoApplyAnalysis}, Approved={analyse.AutoApplyApproved})")
+                        If currentRunAllProgress IsNot Nothing AndAlso runAllActive Then
+                            currentRunAllProgress.AppendLogLine($"Adjustment proposed but not auto-applied: Track {piste.TrackNumber}")
+                        End If
+                    End If
+                Catch ex As Exception
+                    System.Diagnostics.Debug.WriteLine($"[FormCompresser] Erreur auto-apply adjustment: {ex.Message}")
+                End Try
             Else
                 System.Diagnostics.Debug.WriteLine($"[FormCompresser] ℹ️ Extraction avec positions TOC (pas d'ajustement nécessaire)")
             End If

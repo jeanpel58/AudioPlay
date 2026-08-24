@@ -183,6 +183,51 @@ Public Class CDAudioAnalyzer
         End Try
     End Sub
 
+    ''' <summary>
+    ''' Purge all previous Snippets_Session_* directories and AudioPlay_DiagnosticParams.txt files
+    ''' from the diagnostics directory (or %TEMP% fallback). This is used to ensure a clean
+    ''' workspace before starting a new extraction session (invoked by UI handlers).
+    ''' </summary>
+    Public Shared Sub PurgeOldSessionsAndDiagnosticParams()
+        Try
+            Dim dir As String = GetDiagnosticsDirectory()
+            If String.IsNullOrEmpty(dir) Then dir = Path.GetTempPath()
+            If Not Directory.Exists(dir) Then Return
+
+            ' Delete Snippets_Session_* directories at top level
+            Try
+                Dim sessions = Directory.GetDirectories(dir, "Snippets_Session_*", SearchOption.TopDirectoryOnly)
+                For Each d In sessions
+                    Try
+                        Directory.Delete(d, True)
+                        DiagnosticWrite($"PurgeOldSessionsAndDiagnosticParams: deleted session dir {d}")
+                    Catch exDel As Exception
+                        DiagnosticWrite($"PurgeOldSessionsAndDiagnosticParams: failed delete session dir {d}: {exDel.Message}")
+                    End Try
+                Next
+            Catch exSess As Exception
+                DiagnosticWrite($"PurgeOldSessionsAndDiagnosticParams: error enumerating session dirs: {exSess.Message}")
+            End Try
+
+            ' Delete any AudioPlay_DiagnosticParams.txt files at top level
+            Try
+                Dim paramsFiles = Directory.GetFiles(dir, "AudioPlay_DiagnosticParams.txt", SearchOption.TopDirectoryOnly)
+                For Each f In paramsFiles
+                    Try
+                        File.Delete(f)
+                        DiagnosticWrite($"PurgeOldSessionsAndDiagnosticParams: deleted diagnostic params {f}")
+                    Catch exDel As Exception
+                        DiagnosticWrite($"PurgeOldSessionsAndDiagnosticParams: failed delete params {f}: {exDel.Message}")
+                    End Try
+                Next
+            Catch exParams As Exception
+                DiagnosticWrite($"PurgeOldSessionsAndDiagnosticParams: error enumerating params files: {exParams.Message}")
+            End Try
+        Catch ex As Exception
+            DiagnosticWrite($"PurgeOldSessionsAndDiagnosticParams error: {ex.Message}")
+        End Try
+    End Sub
+
     ' Cleanup snippet WAV files older than the provided UTC cutoff time.
     Public Shared Sub CleanupSnippetsOlderThan(cutoffUtc As DateTime)
         Try
@@ -331,11 +376,51 @@ Public Class CDAudioAnalyzer
                 Directory.CreateDirectory(sessionDir)
             Catch
             End Try
-            Dim fileName As String = Path.Combine(sessionDir, $"AudioPlay_Snippet_Track{currentTrack.TrackNumber}_{DateTime.Now:yyyyMMddHHmmss}.wav")
+            ' Write to a temporary .partial file and rename to .wav once complete to avoid incomplete files
+            Dim fileName As String = Nothing
+            Dim tmpFile As String = Path.Combine(sessionDir, $"AudioPlay_Snippet_Track{currentTrack.TrackNumber}_{DateTime.Now:yyyyMMddHHmmss}.partial")
+            Dim finalFile As String = Path.Combine(sessionDir, $"AudioPlay_Snippet_Track{currentTrack.TrackNumber}_{DateTime.Now:yyyyMMddHHmmss}.wav")
             Dim wf = New WaveFormat(44100, 16, 2)
-            Using w As New WaveFileWriter(fileName, wf)
-                w.Write(buffer, 0, bytesRead)
-            End Using
+            Try
+                Using w As New WaveFileWriter(tmpFile, wf)
+                    w.Write(buffer, 0, bytesRead)
+                End Using
+                ' If we read less than expected, attempt to move to final, but if move fails keep the .partial
+                Try
+                    If File.Exists(finalFile) Then File.Delete(finalFile)
+                Catch
+                End Try
+                Try
+                    File.Move(tmpFile, finalFile)
+                    fileName = finalFile
+                Catch moveEx As Exception
+                    Try
+                        DiagnosticWrite($"SaveTransitionSnippetFile: move to final failed: {moveEx.Message}; keeping partial file {tmpFile}")
+                    Catch
+                    End Try
+                    fileName = tmpFile
+                End Try
+            Catch exWrite As Exception
+                Try
+                    DiagnosticWrite($"SaveTransitionSnippetFile: failed to write snippet file: {exWrite.Message}")
+                Catch
+                End Try
+                ' If tmp exists, keep it instead of failing the whole run
+                Try
+                    If File.Exists(tmpFile) Then
+                        Try
+                            DiagnosticWrite($"SaveTransitionSnippetFile: write failed but partial exists, continuing with {tmpFile}")
+                        Catch
+                        End Try
+                        fileName = tmpFile
+                    Else
+                        Throw
+                    End If
+                Catch
+                    ' If we cannot recover, rethrow to let caller handle
+                    Throw
+                End Try
+            End Try
             DiagnosticWrite($"Saved transition snippet for track {currentTrack.TrackNumber} -> {fileName}")
             Try
                 RaiseEvent SnippetSaved(fileName)
@@ -542,10 +627,11 @@ Public Class CDAudioAnalyzer
 
                     DiagnosticWrite($"PerformSecondaryPassForForm: re-analyzing Track {track.TrackNumber}")
                     Dim relaxedAnalysis = AnalyzeTrack(track, nextTrack, Nothing)
+                    ' Placeholder: keep secondary-pass output as current result for future auto-apply integration.
+                    analyses(i) = relaxedAnalysis
 
                     If relaxedAnalysis.WasAdjusted Then
                         DiagnosticWrite($"PerformSecondaryPassForForm: Track {track.TrackNumber} adjusted StartTrim={relaxedAnalysis.TrimmedStartFrames} EndTrim={relaxedAnalysis.TrimmedEndFrames}")
-                        analyses(i) = relaxedAnalysis
                     Else
                         DiagnosticWrite($"PerformSecondaryPassForForm: Track {track.TrackNumber} no adjustment found; saving snippet(s) and generating proposal if enabled")
                         If EnableSnippetCapture Or ForceSaveSnippetsForAllTracks Then
@@ -610,7 +696,7 @@ Public Class CDAudioAnalyzer
     End Sub
 
     ' Helper to perform robust reads with retries when reading large chunks from CDReader
-    Private Shared Function ReadWithRetries(reader As CDAudioManager.CDReader, buffer() As Byte, offset As Integer, count As Integer, Optional maxAttempts As Integer = 3, Optional delayMs As Integer = 200) As Integer
+    Private Shared Function ReadWithRetries(reader As CDAudioManager.CDReader, buffer() As Byte, offset As Integer, count As Integer, Optional maxAttempts As Integer = 5, Optional delayMs As Integer = 200) As Integer
         If reader Is Nothing Then Return 0
 
         Dim totalRead As Integer = 0
@@ -628,6 +714,7 @@ Public Class CDAudioAnalyzer
             Dim attempt As Integer = 0
             Dim blockRead As Integer = 0
             Dim backoff As Integer = delayMs
+            Dim partialAttempts As Integer = 0
 
             While attempt < maxAttempts AndAlso blockRead < blockBytes
                 Try
@@ -638,15 +725,29 @@ Public Class CDAudioAnalyzer
                         If blockRead >= blockBytes Then Exit While
                     Else
                         attempt += 1
+                        partialAttempts += 1
                         DiagnosticWrite($"ReadWithRetries: no progress on attempt {attempt}/{maxAttempts} for block ({blockRead}/{blockBytes})")
+                        ' If intermittent, try a short seek to re-sync the drive before retrying
+                        Try
+                            Dim currentPos = reader.Position
+                            reader.Seek(Math.Max(0, currentPos - sectorSize), SeekOrigin.Begin)
+                        Catch
+                        End Try
                         If attempt < maxAttempts Then Thread.Sleep(backoff)
-                        backoff = Math.Min(2000, backoff * 2)
+                        backoff = Math.Min(4000, backoff * 2)
                     End If
                 Catch ex As Exception
                     attempt += 1
+                    partialAttempts += 1
                     DiagnosticWrite($"ReadWithRetries: exception on attempt {attempt}/{maxAttempts}: {ex.Message}")
+                    ' Try to reposition slightly before retrying
+                    Try
+                        Dim currentPos = reader.Position
+                        reader.Seek(Math.Max(0, currentPos - sectorSize * 2), SeekOrigin.Begin)
+                    Catch
+                    End Try
                     If attempt < maxAttempts Then Thread.Sleep(backoff)
-                    backoff = Math.Min(2000, backoff * 2)
+                    backoff = Math.Min(4000, backoff * 2)
                 End Try
             End While
 
@@ -654,6 +755,11 @@ Public Class CDAudioAnalyzer
                 ' Failed to read this block after retries -> give up
                 DiagnosticWrite($"ReadWithRetries: failed to read block of {blockBytes} bytes after {maxAttempts} attempts. TotalRead={totalRead}")
                 Exit While
+            End If
+
+            ' If we had partial progress but not full block, allow caller to handle partial writes
+            If blockRead < blockBytes Then
+                DiagnosticWrite($"ReadWithRetries: partial block read ({blockRead}/{blockBytes}) after {partialAttempts} partial attempts; returning partial data")
             End If
 
             totalRead += blockRead
@@ -879,6 +985,10 @@ Public Class CDAudioAnalyzer
         Public Property SilenceEndFrame As Integer = -1    ' Position où se termine le silence
         Public Property TransitionAnalyzed As Boolean = False  ' Indique si une analyse de transition a été faite
         Public Property PreferAdjustNextStart As Boolean = False ' Si true, préférer ajuster le début de la piste suivante
+        ' Confiance (0.0-1.0) indiquant la qualité de l'ajustement détecté
+        Public Property Confidence As Double = 1.0
+        ' Indique si l'ajustement est jugé suffisamment sûr pour application automatique
+        Public Property AutoApplyApproved As Boolean = False
 
         Public Overrides Function ToString() As String
             If WasAdjusted Then
@@ -1486,6 +1596,92 @@ Public Class CDAudioAnalyzer
         End If
     End Function
 
+    ' Passe de réconciliation générique pour éviter les chevauchements résiduels entre pistes adjacentes
+    Private Shared Sub ReconcileTrackBoundaries(results As List(Of TrackAnalysis))
+        If results Is Nothing OrElse results.Count < 2 Then Return
+
+        Try
+            For i As Integer = 0 To results.Count - 2
+                Dim cur = results(i)
+                Dim nxt = results(i + 1)
+
+                If cur Is Nothing OrElse nxt Is Nothing Then Continue For
+
+                If cur.AdjustedStartFrame <= 0 Then cur.AdjustedStartFrame = cur.OriginalStartFrame
+                If cur.AdjustedEndFrame <= 0 Then cur.AdjustedEndFrame = cur.OriginalEndFrame
+                If nxt.AdjustedStartFrame <= 0 Then nxt.AdjustedStartFrame = nxt.OriginalStartFrame
+                If nxt.AdjustedEndFrame <= 0 Then nxt.AdjustedEndFrame = nxt.OriginalEndFrame
+
+                If cur.AdjustedEndFrame >= nxt.AdjustedStartFrame Then
+                    Dim correctedStart As Integer = cur.AdjustedEndFrame + 1
+                    If correctedStart < nxt.AdjustedEndFrame Then
+                        nxt.AdjustedStartFrame = correctedStart
+                        nxt.TrimmedStartFrames = nxt.AdjustedStartFrame - nxt.OriginalStartFrame
+                        nxt.WasAdjusted = True
+                        DiagnosticWrite($"Reconciliation pass: adjusted start of track {nxt.TrackNumber} to {correctedStart} to avoid overlap with track {cur.TrackNumber}")
+                    Else
+                        Dim correctedEnd As Integer = Math.Max(cur.AdjustedStartFrame, nxt.AdjustedEndFrame - 1)
+                        cur.AdjustedEndFrame = correctedEnd
+                        cur.TrimmedEndFrames = cur.OriginalEndFrame - cur.AdjustedEndFrame
+                        cur.WasAdjusted = True
+                        DiagnosticWrite($"Reconciliation pass: adjusted end of track {cur.TrackNumber} to {correctedEnd} (fallback) to avoid overlap with track {nxt.TrackNumber}")
+                    End If
+                End If
+            Next
+        Catch ex As Exception
+            DiagnosticWrite($"ReconcileTrackBoundaries failed: {ex.Message}")
+        End Try
+    End Sub
+
+    ' Décision d'auto-application des ajustements selon les paramètres globaux + seuils de confiance/taille
+    Private Shared Sub EvaluateAutoApplyDecision(results As List(Of TrackAnalysis))
+        If results Is Nothing Then Return
+
+        Dim autoApplyEnabled As Boolean = False
+        Try
+            autoApplyEnabled = ParametresGlobaux.AutoApplyAnalysis
+        Catch
+            autoApplyEnabled = False
+        End Try
+
+        If Not autoApplyEnabled Then
+            For Each r In results
+                If r IsNot Nothing Then r.AutoApplyApproved = False
+            Next
+            Return
+        End If
+
+        Dim confidenceThreshold As Double = 0.8
+        Dim maxAdjustmentSeconds As Double = MaxTrimSeconds
+
+        Try
+            confidenceThreshold = ParametresGlobaux.AnalysisAutoApplyConfidenceThreshold
+        Catch
+        End Try
+
+        Try
+            maxAdjustmentSeconds = ParametresGlobaux.AnalysisAutoApplyMaxSeconds
+        Catch
+        End Try
+
+        confidenceThreshold = Math.Max(0.0, Math.Min(1.0, confidenceThreshold))
+        maxAdjustmentSeconds = Math.Max(0.0, maxAdjustmentSeconds)
+
+        For Each r In results
+            If r Is Nothing Then Continue For
+            Dim adjustmentFrames As Integer = Math.Abs(r.AdjustedStartFrame - r.OriginalStartFrame) + Math.Abs(r.OriginalEndFrame - r.AdjustedEndFrame)
+            Dim adjustmentSeconds As Double = adjustmentFrames / 75.0
+
+            r.AutoApplyApproved = r.WasAdjusted AndAlso r.Confidence >= confidenceThreshold AndAlso adjustmentSeconds <= maxAdjustmentSeconds
+
+            If r.AutoApplyApproved Then
+                DiagnosticWrite($"AutoApply approved for track {r.TrackNumber}: confidence={r.Confidence:F2}, adjustment={adjustmentSeconds:F2}s")
+            Else
+                DiagnosticWrite($"AutoApply skipped for track {r.TrackNumber}: confidence={r.Confidence:F2}/{confidenceThreshold:F2}, adjustment={adjustmentSeconds:F2}s/{maxAdjustmentSeconds:F2}s")
+            End If
+        Next
+    End Sub
+
     '''
     ''' <summary>
     ''' Analyse toutes les pistes sélectionnées et retourne les résultats
@@ -1555,11 +1751,11 @@ Public Class CDAudioAnalyzer
 
                             DiagnosticWrite($"Secondary pass: re-analyzing Track {track.TrackNumber} with relaxed params (threshold={SilenceThreshold:F6}, minSustained={MinSustainedSilenceSeconds:F2}, windowBefore={TransitionWindowBeforeSeconds:F1}, windowAfter={TransitionWindowAfterSeconds:F1})")
                             Dim relaxedAnalysis = AnalyzeTrack(track, nextTrack, Nothing)
+                            ' Placeholder: keep secondary-pass output as current result for future auto-apply integration.
+                            results(idx) = relaxedAnalysis
 
                             If relaxedAnalysis.WasAdjusted Then
-                                DiagnosticWrite($"Secondary pass: Track {track.TrackNumber} produced adjustment: StartTrim={relaxedAnalysis.TrimmedStartFrames} EndTrim={relaxedAnalysis.TrimmedEndFrames} (applying)")
-                                ' Appliquer l'ajustement retourné
-                                results(idx) = relaxedAnalysis
+                                DiagnosticWrite($"Secondary pass: Track {track.TrackNumber} produced adjustment: StartTrim={relaxedAnalysis.TrimmedStartFrames} EndTrim={relaxedAnalysis.TrimmedEndFrames} (stored)")
                             Else
                                 DiagnosticWrite($"Secondary pass: Track {track.TrackNumber} no adjustment found with relaxed params")
                                 ' Sauvegarder un extrait autour du TOC pour diagnostic (±10s)
@@ -1639,6 +1835,8 @@ Public Class CDAudioAnalyzer
                 DiagnosticWrite($"Secondary pass failed: {exSecondary.Message}")
             End Try
 
+            ReconcileTrackBoundaries(results)
+            EvaluateAutoApplyDecision(results)
             Return results
         End If
 
@@ -1750,10 +1948,11 @@ Public Class CDAudioAnalyzer
 
                         DiagnosticWrite($"Pairwise secondary: re-analyzing Track {track.TrackNumber} with relaxed params (threshold={SilenceThreshold:F6}, minSustained={MinSustainedSilenceSeconds:F2}, windowBefore={TransitionWindowBeforeSeconds:F1}, windowAfter={TransitionWindowAfterSeconds:F1})")
                         Dim relaxedAnalysis = AnalyzeTrack(track, nextTrack, Nothing)
+                        ' Placeholder: keep secondary-pass output as current result for future auto-apply integration.
+                        results(i) = relaxedAnalysis
 
                         If relaxedAnalysis.WasAdjusted Then
-                            DiagnosticWrite($"Pairwise secondary: Track {track.TrackNumber} produced adjustment: StartTrim={relaxedAnalysis.TrimmedStartFrames} EndTrim={relaxedAnalysis.TrimmedEndFrames} (applying)")
-                            results(i) = relaxedAnalysis
+                            DiagnosticWrite($"Pairwise secondary: Track {track.TrackNumber} produced adjustment: StartTrim={relaxedAnalysis.TrimmedStartFrames} EndTrim={relaxedAnalysis.TrimmedEndFrames} (stored)")
                         Else
                             DiagnosticWrite($"Pairwise secondary: Track {track.TrackNumber} no adjustment found with relaxed params")
                             If EnableSnippetCapture Or ForceSaveSnippetsForAllTracks Then
@@ -1862,6 +2061,8 @@ Public Class CDAudioAnalyzer
             End Try
         End If
 
+        ReconcileTrackBoundaries(results)
+        EvaluateAutoApplyDecision(results)
         Return results
     End Function
 

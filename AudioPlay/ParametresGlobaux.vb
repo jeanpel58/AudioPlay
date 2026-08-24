@@ -63,6 +63,15 @@ Public Module ParametresGlobaux
     Public volumeExtractionCD As Integer = 95
     ' === Mode TOC précis pour extraction CD (pour les albums sans silences) ===
     Public ModeTOCPrecis As Boolean = False
+    ' === Auto-apply analysis adjustments ===
+    ' Si True, AudioPlay appliquera automatiquement les ajustements calculés par l'analyse
+    Public AutoApplyAnalysis As Boolean = True
+    ' Marge en millisecondes ajoutée autour des points d'ajustement détectés (sécurité)
+    Public AnalysisMarginMs As Integer = 50
+    ' Seuil de confiance minimal (0.0-1.0) requis pour appliquer automatiquement un ajustement
+    Public AnalysisAutoApplyConfidenceThreshold As Double = 0.5
+    ' Seuil maximal d'ajustement en secondes autorisé pour l'auto-apply
+    Public AnalysisAutoApplyMaxSeconds As Double = 2.0
     ' === Suppression des silences ===
     Public SupprimerSilenceDebut As Boolean = False
     Public SupprimerSilenceFin As Boolean = False

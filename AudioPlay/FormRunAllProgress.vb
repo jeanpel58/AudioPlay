@@ -110,6 +110,10 @@ Public Class FormRunAllProgress
         Try
             Dim v = Math.Max(progressBar.Minimum, Math.Min(progressBar.Maximum, value))
             progressBar.Value = v
+            Try
+                CDAudioAnalyzer.DiagnosticWrite($"FormRunAllProgress.SetValue: set to {v}")
+            Catch
+            End Try
         Catch
         End Try
     End Sub
@@ -118,6 +122,10 @@ Public Class FormRunAllProgress
         Try
             statusLabel.Text = text
             ' Do not duplicate status in the log by default; caller can AppendLogLine explicitly
+            Try
+                CDAudioAnalyzer.DiagnosticWrite($"FormRunAllProgress.SetStatus: {text}")
+            Catch
+            End Try
         Catch
         End Try
     End Sub
@@ -129,6 +137,10 @@ Public Class FormRunAllProgress
                 logBox.Visible = True
             End If
             logBox.AppendText(line & Environment.NewLine)
+            Try
+                CDAudioAnalyzer.DiagnosticWrite($"FormRunAllProgress.AppendLogLine: {line}")
+            Catch
+            End Try
             ' autoscroll to end
             Try
                 logBox.SelectionStart = logBox.Text.Length
@@ -193,7 +205,10 @@ Public Class FormRunAllProgress
 
     Public Sub EnableCompletion(Optional sessionFolder As String = Nothing)
         Try
-            sessionFolderPath = sessionFolder
+            ' Only update sessionFolderPath if a non-empty value was provided.
+            If Not String.IsNullOrEmpty(sessionFolder) Then
+                sessionFolderPath = sessionFolder
+            End If
             btnDone.Enabled = True
             btnCopyAll.Enabled = True
             btnOpenFolders.Enabled = True

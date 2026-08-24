@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aiuto - Funzione Loop (Ciclo)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #3498db;
+            margin-top: 25px;
+        }
+        .step {
+            background-color: #ecf0f1;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #3498db;
+            border-radius: 5px;
+        }
+        .step-number {
+            font-weight: bold;
+            color: #3498db;
+            font-size: 1.2em;
+        }
+        .key {
+            display: inline-block;
+            background-color: #34495e;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            margin: 0 3px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 0 3px;
+        }
+        .marker {
+            display: inline-block;
+            background-color: #e74c3c;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        ul {
+            line-height: 1.8;
+        }
+        .icon {
+            font-size: 1.3em;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="icon">🔁</span>Funzione Loop (Ciclo)</h1>
+
+        <p>Il pulsante <strong>Loop</strong> consente di ripetere una sezione specifica della canzone corrente, ideale per imparare un passaggio musicale o praticare uno strumento.</p>
+
+        <h2><span class="icon">📝</span>Come utilizzare la funzione Loop</h2>
+
+        <div class="step">
+            <span class="step-number">1️⃣</span> <strong>Avviare la riproduzione</strong><br>
+            Avviare la riproduzione di una canzone con il pulsante <span class="button">Riproduci</span> o facendo doppio clic su una canzone nell'elenco.
+        </div>
+
+        <div class="step">
+            <span class="step-number">2️⃣</span> <strong>Contrassegnare l'inizio del ciclo</strong><br>
+            Durante la riproduzione, premere il tasto <span class="key">I</span> (come "Inizio") nel punto in cui si desidera che inizi il ciclo.
+        </div>
+
+        <div class="step">
+            <span class="step-number">3️⃣</span> <strong>Contrassegnare la fine del ciclo</strong><br>
+            Continuare l'ascolto e premere il tasto <span class="key">O</span> (come "Fine") nel punto in cui si desidera che termini il ciclo.
+        </div>
+
+        <div class="step">
+            <span class="step-number">4️⃣</span> <strong>Visualizzare i marcatori</strong><br>
+            Due piccoli marcatori <span class="marker">I</span> e <span class="marker">O</span> appaiono sopra la barra di avanzamento per indicare la zona del ciclo.
+        </div>
+
+        <div class="step">
+            <span class="step-number">5️⃣</span> <strong>Attivare il ciclo</strong><br>
+            Fare clic sul pulsante <span class="button">Loop</span>. Il pulsante diventa verde chiaro per indicare che il ciclo è attivo.
+        </div>
+
+        <div class="step">
+            <span class="step-number">6️⃣</span> <strong>La sezione viene riprodotta in ciclo</strong><br>
+            La parte tra <span class="marker">I</span> e <span class="marker">O</span> si ripete automaticamente senza interruzioni.
+        </div>
+
+        <h2><span class="icon">🔄</span>Disattivare il ciclo</h2>
+        <p>Per interrompere la riproduzione in ciclo, fare nuovamente clic sul pulsante <span class="button">Loop</span>. Il pulsante torna al suo colore normale e la riproduzione continua normalmente.</p>
+
+        <h2><span class="icon">🗑️</span>Ripristino dei marcatori</h2>
+        <p>I marcatori <span class="marker">I</span> e <span class="marker">O</span> scompaiono automaticamente quando:</p>
+        <ul>
+            <li>Si carica una nuova canzone (doppio clic o pulsante <span class="button">Riproduci</span>)</li>
+            <li>Si interrompe completamente la riproduzione con il pulsante <span class="button">Stop</span> o <span class="key">Ctrl</span>+<span class="key">Spazio</span></li>
+        </ul>
+        <div class="info">
+            <strong>💡 Nota:</strong> I cicli sono specifici per ogni canzone. Ogni volta che si riproduce una nuova canzone, è necessario definire nuovi marcatori.
+        </div>
+
+        <h2><span class="icon">⏸️</span>Comportamento con Pausa e Muto</h2>
+        <ul>
+            <li><strong>Pausa/Riprendi:</strong> Il ciclo si mette in pausa con la riproduzione e riprende nello stesso punto quando si fa clic su <span class="button">Pausa/Riprendi</span> o si preme <span class="key">Spazio</span>.</li>
+            <li><strong>Muto:</strong> Il ciclo continua a funzionare silenziosamente. Il suono ritorna non appena si disattiva la modalità muto.</li>
+        </ul>
+
+        <h2><span class="icon">🎨</span>Colore dei marcatori</h2>
+        <div class="info">
+            I marcatori <span class="marker">I</span> e <span class="marker">O</span> vengono visualizzati in <strong style="color: #e74c3c;">rosso</strong> per impostazione predefinita. Se hai creato un tema con uno sfondo rosso o molto scuro, i marcatori vengono visualizzati automaticamente in <strong style="color: #f1c40f;">giallo</strong> per rimanere chiaramente visibili.
+        </div>
+
+        <h2><span class="icon">🚫</span>Restrizioni</h2>
+        <div class="warning">
+            <strong>⚠️ Calcolo BPM bloccato:</strong> Il pulsante <span class="button">Calcolo BPM</span> non funziona mentre un ciclo è attivo. Disattivare prima il ciclo se si desidera calcolare il tempo della canzone.
+        </div>
+
+        <h2><span class="icon">💡</span>Suggerimenti</h2>
+        <p>La funzione Loop è particolarmente utile per:</p>
+        <ul>
+            <li>Imparare il testo di una canzone</li>
+            <li>Praticare un assolo di chitarra o pianoforte</li>
+            <li>Lavorare su passaggi difficili</li>
+            <li>Analizzare una sezione musicale in dettaglio</li>
+        </ul>
+    </div>
+</body>
+</html>

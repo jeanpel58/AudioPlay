@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help - Loop Function</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #3498db;
+            margin-top: 25px;
+        }
+        .step {
+            background-color: #ecf0f1;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #3498db;
+            border-radius: 5px;
+        }
+        .step-number {
+            font-weight: bold;
+            color: #3498db;
+            font-size: 1.2em;
+        }
+        .key {
+            display: inline-block;
+            background-color: #34495e;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            margin: 0 3px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 0 3px;
+        }
+        .marker {
+            display: inline-block;
+            background-color: #e74c3c;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        ul {
+            line-height: 1.8;
+        }
+        .icon {
+            font-size: 1.3em;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="icon">🔁</span>Loop Function</h1>
+
+        <p>The <strong>Loop</strong> button allows you to repeat a specific section of the current song, ideal for learning a musical passage or practicing an instrument.</p>
+
+        <h2><span class="icon">📝</span>How to Use the Loop Function</h2>
+
+        <div class="step">
+            <span class="step-number">1️⃣</span> <strong>Start Playback</strong><br>
+            Start playing a song with the <span class="button">Play</span> button or by double-clicking a song in the list.
+        </div>
+
+        <div class="step">
+            <span class="step-number">2️⃣</span> <strong>Mark the Loop Start</strong><br>
+            During playback, press the <span class="key">I</span> key (for "In" or "Start") at the point where you want the loop to begin.
+        </div>
+
+        <div class="step">
+            <span class="step-number">3️⃣</span> <strong>Mark the Loop End</strong><br>
+            Continue listening and press the <span class="key">O</span> key (for "Out" or "End") at the point where you want the loop to end.
+        </div>
+
+        <div class="step">
+            <span class="step-number">4️⃣</span> <strong>View the Markers</strong><br>
+            Two small markers <span class="marker">I</span> and <span class="marker">O</span> appear above the progress bar to indicate the loop zone.
+        </div>
+
+        <div class="step">
+            <span class="step-number">5️⃣</span> <strong>Activate the Loop</strong><br>
+            Click the <span class="button">Loop</span> button. The button turns light green to indicate the loop is active.
+        </div>
+
+        <div class="step">
+            <span class="step-number">6️⃣</span> <strong>The Section Plays in a Loop</strong><br>
+            The part between <span class="marker">I</span> and <span class="marker">O</span> repeats automatically without stopping.
+        </div>
+
+        <h2><span class="icon">🔄</span>Disable the Loop</h2>
+        <p>To stop looping, click the <span class="button">Loop</span> button again. The button returns to its normal color and playback continues normally.</p>
+
+        <h2><span class="icon">🗑️</span>Marker Reset</h2>
+        <p>The <span class="marker">I</span> and <span class="marker">O</span> markers disappear automatically when:</p>
+        <ul>
+            <li>You load a new song (double-click or <span class="button">Play</span> button)</li>
+            <li>You completely stop playback with the <span class="button">Stop</span> button or <span class="key">Ctrl</span>+<span class="key">Space</span></li>
+        </ul>
+        <div class="info">
+            <strong>💡 Note:</strong> Loops are specific to each song. Each time you play a new song, you must define new markers.
+        </div>
+
+        <h2><span class="icon">⏸️</span>Behavior with Pause and Mute</h2>
+        <ul>
+            <li><strong>Pause/Resume:</strong> The loop pauses with playback and resumes at the same point when you click <span class="button">Pause/Resume</span> or press <span class="key">Space</span>.</li>
+            <li><strong>Mute:</strong> The loop continues running silently. Sound returns as soon as you disable mute mode.</li>
+        </ul>
+
+        <h2><span class="icon">🎨</span>Marker Color</h2>
+        <div class="info">
+            The <span class="marker">I</span> and <span class="marker">O</span> markers display in <strong style="color: #e74c3c;">red</strong> by default. If you have created a theme with a red or very dark background, the markers automatically display in <strong style="color: #f1c40f;">yellow</strong> to remain clearly visible.
+        </div>
+
+        <h2><span class="icon">🚫</span>Restrictions</h2>
+        <div class="warning">
+            <strong>⚠️ BPM Calculation Blocked:</strong> The <span class="button">BPM Calculation</span> button does not work while a loop is active. Disable the loop first if you want to calculate the song's tempo.
+        </div>
+
+        <h2><span class="icon">💡</span>Tips</h2>
+        <p>The Loop function is particularly useful for:</p>
+        <ul>
+            <li>Learning song lyrics</li>
+            <li>Practicing a guitar or piano solo</li>
+            <li>Working on difficult passages</li>
+            <li>Analyzing a musical section in detail</li>
+        </ul>
+    </div>
+</body>
+</html>

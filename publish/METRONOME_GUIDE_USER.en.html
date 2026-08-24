@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metronome Guide - AudioPlay</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #e74c3c;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            border-left: 4px solid #e74c3c;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 20px;
+        }
+        .step {
+            background-color: #ffebee;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #e74c3c;
+        }
+        .warning {
+            background-color: #fff3cd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #ffc107;
+        }
+        .info {
+            background-color: #d1ecf1;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #17a2b8;
+        }
+        .success {
+            background-color: #d4edda;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #28a745;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #e74c3c;
+            color: white;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        .emoji {
+            font-size: 1.2em;
+        }
+        .visual-example {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border: 2px dashed #e74c3c;
+            text-align: center;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 AudioPlay - Pre-roll Metronome Guide</h1>
+
+        <div class="info">
+            <strong>🎯 What is the pre-roll metronome?</strong><br>
+            The pre-roll metronome is a rhythmic countdown that plays <strong>before</strong> each song. 
+            It helps you prepare for the music tempo, ideal for musicians, dancers, 
+            or simply to get into the rhythm before the song starts!
+        </div>
+
+        <h2>🚀 Quick Setup</h2>
+
+        <h3>How to enable the metronome?</h3>
+        <div class="step">
+            <ol>
+                <li>Open <strong>Settings</strong> (⚙️ button in the interface)</li>
+                <li>Find the <strong>"Playback"</strong> section</li>
+                <li>Check the <strong>"Metronome before playback"</strong> checkbox</li>
+                <li>Set the <strong>number of beats</strong> (1 to 16, recommended: 4)</li>
+                <li>Click <strong>"Save"</strong></li>
+                <li>✅ The metronome is now active!</li>
+            </ol>
+        </div>
+
+        <h2>⚙️ Beat Count Configuration</h2>
+
+        <h3>What is a "beat"?</h3>
+        <div class="info">
+            <p>A <strong>beat</strong> is one metronome click. For example:</p>
+            <ul>
+                <li><strong>4 beats</strong> = 4 clicks before the song (most common)</li>
+                <li><strong>8 beats</strong> = 8 clicks (for more preparation time)</li>
+                <li><strong>1 beat</strong> = One quick click</li>
+            </ul>
+        </div>
+
+        <h3>Configuration Examples</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Number of Beats</th>
+                    <th>Recommended Use</th>
+                    <th>Example</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>1-2 beats</strong></td>
+                    <td>Quick start, slow music</td>
+                    <td>Ballad, ambient music</td>
+                </tr>
+                <tr>
+                    <td><strong>4 beats</strong> ⭐</td>
+                    <td>Standard, 4/4 music</td>
+                    <td>Pop, rock, most songs</td>
+                </tr>
+                <tr>
+                    <td><strong>6-8 beats</strong></td>
+                    <td>Complex music, waltz (3/4)</td>
+                    <td>Jazz, classical music</td>
+                </tr>
+                <tr>
+                    <td><strong>16 beats</strong></td>
+                    <td>Long preparation, instrumental practice</td>
+                    <td>Musical exercises, rehearsals</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>🎼 Automatic BPM Synchronization</h2>
+
+        <div class="info">
+            <strong>🎵 Smart Synchronization</strong><br>
+            The metronome automatically adapts to the <strong>BPM (Beats Per Minute)</strong> 
+            of each song. This means a fast song will have a fast metronome, 
+            and a slow song will have a slow metronome!
+        </div>
+
+        <h3>How does the metronome know the BPM?</h3>
+        <div class="step">
+            <p><strong>The BPM must be calculated and saved beforehand:</strong></p>
+            <ol>
+                <li>Open AudioPlay and load your audio files</li>
+                <li>Select one or more songs in the list</li>
+                <li>Right-click → <strong>"Calculate BPM"</strong></li>
+                <li>⏳ AudioPlay analyzes the song (may take a few seconds)</li>
+                <li>✅ The BPM is detected and saved in metadata</li>
+                <li>🎵 The metronome will now use this BPM!</li>
+            </ol>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ Important:</strong> If a song doesn't have a calculated BPM, the metronome 
+            will use <strong>120 BPM by default</strong> (average tempo). For the best experience, 
+            calculate the BPM for all your songs!
+        </div>
+
+        <h3>Visual Example</h3>
+        <div class="visual-example">
+            <strong>Slow song (80 BPM)</strong><br>
+            🥁 .... 🥁 .... 🥁 .... 🥁 .... ♪♪ MUSIC ♪♪<br>
+            <em>(spaced clicks, slow tempo)</em><br><br>
+
+            <strong>Fast song (160 BPM)</strong><br>
+            🥁 . 🥁 . 🥁 . 🥁 . ♪♪ MUSIC ♪♪<br>
+            <em>(close clicks, fast tempo)</em>
+        </div>
+
+        <h2>🎯 Detailed Operation</h2>
+
+        <h3>Playback Sequence with Metronome</h3>
+        <div class="step">
+            <ol>
+                <li><strong>You click "Play"</strong> or double-click a song</li>
+                <li><strong>The metronome starts</strong>
+                    <ul>
+                        <li>First beat: higher pitch (🔊 1000 Hz) to mark the start</li>
+                        <li>Following beats: standard pitch (🔊 800 Hz)</li>
+                        <li>Tempo synchronized to the song's BPM</li>
+                    </ul>
+                </li>
+                <li><strong>Automatic silence removal</strong>
+                    <ul>
+                        <li>AudioPlay detects silence at the beginning of the song</li>
+                        <li>Silence is automatically removed</li>
+                    </ul>
+                </li>
+                <li><strong>Music starts immediately</strong> after the last beat</li>
+            </ol>
+        </div>
+
+        <h3>Technical Sound Details</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>First beat (start)</td>
+                    <td>1000 Hz (high pitch)</td>
+                </tr>
+                <tr>
+                    <td>Following beats</td>
+                    <td>800 Hz (standard pitch)</td>
+                </tr>
+                <tr>
+                    <td>Each click duration</td>
+                    <td>50 milliseconds</td>
+                </tr>
+                <tr>
+                    <td>Volume</td>
+                    <td>30% of maximum amplitude</td>
+                </tr>
+                <tr>
+                    <td>Default BPM</td>
+                    <td>120 BPM (if not calculated)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>🎼 BPM Calculation</h2>
+
+        <div class="info">
+            <strong>📊 Why calculate BPM?</strong><br>
+            BPM calculation allows the metronome to adapt perfectly to each song's tempo. 
+            Without calculated BPM, the metronome uses 120 BPM (average tempo) which may not match 
+            your music.
+        </div>
+
+        <h3>How to calculate BPM?</h3>
+        <div class="step">
+            <strong>Method 1: Manual calculation for one song</strong>
+            <ol>
+                <li>Select a song in the list</li>
+                <li>Right-click on the song</li>
+                <li>Choose <strong>"Calculate BPM"</strong></li>
+                <li>⏳ Wait during analysis (a few seconds)</li>
+                <li>✅ BPM appears in the "BPM" column</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <strong>Method 2: Automatic calculation</strong>
+            <ol>
+                <li>In <strong>Settings</strong> > <strong>Playback</strong></li>
+                <li>Select the <strong>BPM calculation method</strong>:
+                    <ul>
+                        <li><strong>Manual</strong> - You decide when to calculate</li>
+                        <li><strong>First playback</strong> - Calculates automatically on first play</li>
+                        <li><strong>Background</strong> - Progressively calculates all songs</li>
+                    </ul>
+                </li>
+                <li>Click <strong>"Save"</strong></li>
+            </ol>
+        </div>
+
+        <h2>✅ Metronome Benefits</h2>
+
+        <div class="success">
+            <ul>
+                <li>🎸 <strong>For musicians</strong>: Prepare for the tempo before playing along</li>
+                <li>💃 <strong>For dancers</strong>: Get into the rhythm before dancing starts</li>
+                <li>🎤 <strong>For singers</strong>: Lock into the tempo before singing</li>
+                <li>🏃 <strong>For sports</strong>: Synchronize your movements with music</li>
+                <li>📚 <strong>For learning</strong>: Understand and feel a song's tempo</li>
+            </ul>
+        </div>
+
+        <h2>❓ Frequently Asked Questions</h2>
+
+        <h3>The metronome is too loud or too quiet</h3>
+        <div class="warning">
+            <p><strong>Solution:</strong> The metronome volume is fixed at 30% of maximum amplitude. 
+            To adjust it, change your system's general volume before the music starts.</p>
+        </div>
+
+        <h3>The metronome doesn't adapt to my song's tempo</h3>
+        <div class="warning">
+            <p><strong>Solution:</strong> Make sure the BPM has been calculated for this song. 
+            Right-click on the song → "Calculate BPM". Without calculated BPM, the metronome 
+            uses 120 BPM by default.</p>
+        </div>
+
+        <h3>I don't hear the metronome</h3>
+        <div class="warning">
+            <p><strong>Check:</strong></p>
+            <ul>
+                <li>✅ The "Metronome before playback" checkbox is checked in settings</li>
+                <li>✅ The number of beats is greater than 0</li>
+                <li>✅ Your system volume is sufficient</li>
+                <li>✅ You clicked "Save" after modifying settings</li>
+            </ul>
+        </div>
+
+        <h3>Can I temporarily disable the metronome?</h3>
+        <div class="info">
+            <p><strong>Yes!</strong> Simply uncheck the "Metronome before playback" checkbox in settings 
+            and click "Save". The metronome will be disabled until you enable it again.</p>
+        </div>
+
+        <h2>🎯 Usage Tips</h2>
+
+        <div class="step">
+            <ul>
+                <li><strong>Start with 4 beats</strong>: It's the most common and natural configuration</li>
+                <li><strong>Calculate your BPMs</strong>: Take time to calculate BPM for your music library</li>
+                <li><strong>Adapt to usage</strong>: More beats for practice, fewer for casual listening</li>
+                <li><strong>Listen for the first beat</strong>: The high pitch of the first beat signals the start</li>
+                <li><strong>Use automatic method</strong>: Let AudioPlay calculate BPMs in the background</li>
+            </ul>
+        </div>
+
+        <div class="success" style="margin-top: 40px;">
+            <strong>🎵 Enjoy your music with AudioPlay's metronome!</strong><br>
+            The pre-roll metronome helps you get into the rhythm and fully enjoy your music. 
+            Whether you're a musician, dancer, or music lover, this feature enriches your listening experience!
+        </div>
+    </div>
+</body>
+</html>
