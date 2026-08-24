@@ -10,6 +10,22 @@ Public Class FormCompresser
     Private runAllActive As Boolean = False
     Private runAllCancelRequested As Boolean = False
 
+    Private Sub OnRunAllCancelRequested()
+        Try
+            runAllCancelRequested = True
+            Try
+                CDAudioAnalyzer.DiagnosticWrite("FormCompresser: user requested RunAll cancellation")
+            Catch
+            End Try
+            ' Also request analyzer-level external cancel so long-running reads are aborted promptly
+            Try
+                CDAudioAnalyzer.RequestExternalCancel()
+            Catch
+            End Try
+        Catch
+        End Try
+    End Sub
+
     ' API Windows pour enlever le bouton X
     Private Const SC_CLOSE As Integer = &HF060
     Private Const MF_BYCOMMAND As Integer = &H0
@@ -71,11 +87,14 @@ Public Class FormCompresser
             End Try
             Dim steps As Integer = Math.Max(1, Math.Max(0, total - 1))
             progressForm.SetMaximum(steps)
+
             progressForm.SetStatus($"Run all: 0/{steps}")
 
             ' Remember progress form so other events write into it instead of the main form
             Try
                 currentRunAllProgress = progressForm
+                ' Wire cancel event so user can request cancellation from the progress window
+                AddHandler progressForm.CancelRequested, AddressOf OnRunAllCancelRequested
             Catch
             End Try
             ' Show progress form non-modal but centered to parent
@@ -83,6 +102,19 @@ Public Class FormCompresser
                 progressForm.Show(Me)
                 Try
                     CDAudioAnalyzer.DiagnosticWrite("FormCompresser: progressForm shown and assigned to currentRunAllProgress")
+                Catch
+                End Try
+                ' Provide an immediate UI heartbeat so the progress window shows it's active
+                Try
+                    If currentRunAllProgress IsNot Nothing AndAlso Not currentRunAllProgress.IsDisposed Then
+                        currentRunAllProgress.BeginInvoke(Sub()
+                                                             Try
+                                                                 currentRunAllProgress.SetValue(0)
+                                                                 currentRunAllProgress.AppendLogLine("RunAll: UI initialized")
+                                                             Catch
+                                                             End Try
+                                                         End Sub)
+                    End If
                 Catch
                 End Try
             Catch
@@ -144,6 +176,11 @@ Public Class FormCompresser
                                         System.Diagnostics.Debug.WriteLine("[RunAllHeadless] cancellation requested, stopping run")
                                         Exit For
                                     End If
+                                    ' Periodically log cancel flag state
+                                    Try
+                                        CDAudioAnalyzer.DiagnosticWrite($"RunAllHeadless: runAllCancelRequested={runAllCancelRequested}")
+                                    Catch
+                                    End Try
                                     CDAudioAnalyzer.Debug_SaveTransitionForTrack(pistesCD, tn)
                                  Catch ex As Exception
                                      System.Diagnostics.Debug.WriteLine($"[RunAllHeadless] Track {tn} failed: {ex.Message}")

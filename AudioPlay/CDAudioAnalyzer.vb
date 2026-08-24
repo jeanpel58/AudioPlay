@@ -183,6 +183,24 @@ Public Class CDAudioAnalyzer
         End Try
     End Sub
 
+    ' External cancellation flag that UI can set to request immediate abort of long reads
+    Public Shared Property ExternalCancelRequested As Boolean = False
+
+    Public Shared Sub RequestExternalCancel()
+        Try
+            ExternalCancelRequested = True
+            DiagnosticWrite("CDAudioAnalyzer: External cancel requested")
+        Catch
+        End Try
+    End Sub
+
+    Public Shared Sub ClearExternalCancel()
+        Try
+            ExternalCancelRequested = False
+        Catch
+        End Try
+    End Sub
+
     ''' <summary>
     ''' Purge all previous Snippets_Session_* directories and AudioPlay_DiagnosticParams.txt files
     ''' from the diagnostics directory (or %TEMP% fallback). This is used to ensure a clean
@@ -235,21 +253,41 @@ Public Class CDAudioAnalyzer
             If String.IsNullOrEmpty(dir) Then dir = Path.GetTempPath()
             If Not Directory.Exists(dir) Then Return
 
-            Dim wavs = Directory.GetFiles(dir, "*.wav", SearchOption.AllDirectories)
-            For Each f In wavs
+            ' Walk directories manually and ignore directories we cannot access
+            Dim stack As New Collections.Generic.Stack(Of String)()
+            stack.Push(dir)
+            While stack.Count > 0
+                Dim d As String = stack.Pop()
                 Try
-                    Dim info = New FileInfo(f)
-                    If info.LastWriteTimeUtc < cutoffUtc.ToUniversalTime() Then
+                    Dim files = Directory.GetFiles(d, "*.wav", SearchOption.TopDirectoryOnly)
+                    For Each f In files
                         Try
-                            info.Delete()
-                            DiagnosticWrite($"CleanupSnippetsOlderThan: deleted old snippet {f}")
-                        Catch exDel As Exception
-                            DiagnosticWrite($"CleanupSnippetsOlderThan: failed delete {f}: {exDel.Message}")
+                            Dim info = New FileInfo(f)
+                            If info.LastWriteTimeUtc < cutoffUtc.ToUniversalTime() Then
+                                Try
+                                    info.Delete()
+                                    DiagnosticWrite($"CleanupSnippetsOlderThan: deleted old snippet {f}")
+                                Catch exDel As Exception
+                                    DiagnosticWrite($"CleanupSnippetsOlderThan: failed delete {f}: {exDel.Message}")
+                                End Try
+                            End If
+                        Catch exFile As Exception
+                            DiagnosticWrite($"CleanupSnippetsOlderThan: error inspecting file {f}: {exFile.Message}")
                         End Try
-                    End If
-                Catch
+                    Next
+                    ' push subdirectories for processing
+                    Try
+                        Dim subdirs = Directory.GetDirectories(d, "*", SearchOption.TopDirectoryOnly)
+                        For Each sd In subdirs
+                            stack.Push(sd)
+                        Next
+                    Catch exSub As Exception
+                        DiagnosticWrite($"CleanupSnippetsOlderThan: cannot enumerate subdirs of {d}: {exSub.Message}")
+                    End Try
+                Catch exDir As Exception
+                    DiagnosticWrite($"CleanupSnippetsOlderThan: skipping dir {d} due to {exDir.Message}")
                 End Try
-            Next
+            End While
         Catch ex As Exception
             DiagnosticWrite($"CleanupSnippetsOlderThan error: {ex.Message}")
         End Try
@@ -717,6 +755,14 @@ Public Class CDAudioAnalyzer
             Dim partialAttempts As Integer = 0
 
             While attempt < maxAttempts AndAlso blockRead < blockBytes
+                ' Honor external cancel requests (set by UI) to abort long reads quickly
+                Try
+                    If ExternalCancelRequested Then
+                        DiagnosticWrite("ReadWithRetries: external cancel requested, aborting read")
+                        Return totalRead
+                    End If
+                Catch
+                End Try
                 Try
                     Dim readNow As Integer = reader.Read(buffer, offset + totalRead + blockRead, blockBytes - blockRead)
                     If readNow > 0 Then
