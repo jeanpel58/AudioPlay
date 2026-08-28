@@ -144,6 +144,21 @@
   <data name="APropos_Error_BrowserOpen" xml:space="preserve">
     <value>Unable to open the browser.</value>
   </data>
+  <data name="GroupBoxAnalyzerOptions_Text" xml:space="preserve">
+    <value>Analyzer options</value>
+  </data>
+  <data name="LabelWindowBefore_Text" xml:space="preserve">
+    <value>Window before TOC (s):</value>
+  </data>
+  <data name="LabelWindowAfter_Text" xml:space="preserve">
+    <value>Window after TOC (s):</value>
+  </data>
+  <data name="LabelMinSilence_Text" xml:space="preserve">
+    <value>Minimal sustained silence (s):</value>
+  </data>
+  <data name="LabelMaxStartTrim_Text" xml:space="preserve">
+    <value>Max start trim (s):</value>
+  </data>
   <data name="Button_APropos" xml:space="preserve">
     <value>About...</value>
   </data>
@@ -2072,6 +2087,9 @@ The current track will be completed before stopping.</value>
   </data>
   <data name="Compressor_GlobalProgress" xml:space="preserve">
     <value>Overall progress: {0} / {1}</value>
+  </data>
+  <data name="Compressor_AnalysisInProgress" xml:space="preserve">
+    <value>Analysis in progress...</value>
   </data>
   <data name="Compressor_DefaultComment" xml:space="preserve">
     <value>Extracted by AudioPlay...</value>

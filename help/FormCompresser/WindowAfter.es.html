@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⏭️ Ayuda - Ventana después (TOC)</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; color: #333; }
+        .container { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #3498db; margin-top: 25px; }
+        .info { background-color: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .icon { font-size: 1.3em; margin-right: 5px; }
+        ul { line-height: 1.8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="icon">⏭️</span>Ventana después del TOC (segundos)</h1>
+
+        <p>Esta configuración controla cuántos segundos de audio se analizan DESPUÉS del TOC (el punto registrado en la tabla del disco, normalmente el inicio de la siguiente pista) al buscar transiciones entre pistas.</p>
+
+        <h2>¿Qué es el TOC?</h2>
+        <p>El TOC (Tabla de Contenidos) de un CD de audio es una tabla grabada en el disco que lista las posiciones de inicio de cada pista (en minutos:segundos:frames) y la posición del lead-out. Es un índice lógico usado por los reproductores de CD. El TOC no describe la forma de onda real alrededor de esas posiciones: no indica si las pistas se solapan, contienen crossfades o silencios. Por eso es necesario analizar el audio alrededor del TOC para encontrar el silencio seguro donde cortar.</p>
+
+        <h2>Por qué</h2>
+        <p>A veces el final real de una pista está después del TOC (lead-out oculto) o la siguiente pista comienza más tarde. Analizar después del TOC ayuda a detectar silencios o fundidos que ocurren justo después de la frontera.</p>
+
+        <h2>Qué cambia si lo modifica</h2>
+        <ul>
+            <li>Valor menor: más rápido, puede perder silencios cortos posteriores al TOC.</li>
+            <li>Valor mayor: examina más audio y puede encontrar una mejor separación, a costa de tiempo.</li>
+        </ul>
+
+        <div class="info">
+            <strong>Recomendación:</strong> valor conservador por defecto: 20 segundos. Use 10–30s para discos con largos lead-outs.
+        </div>
+    </div>
+</body>
+</html>

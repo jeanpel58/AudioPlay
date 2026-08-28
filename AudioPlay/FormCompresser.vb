@@ -13,6 +13,8 @@ Public Class FormCompresser
     Private Shared Function GetSystemMenu(hWnd As IntPtr, bRevert As Boolean) As IntPtr
     End Function
 
+
+
     <System.Runtime.InteropServices.DllImport("user32.dll")>
     Private Shared Function RemoveMenu(hMenu As IntPtr, uPosition As UInteger, uFlags As UInteger) As Boolean
     End Function
@@ -51,6 +53,8 @@ Public Class FormCompresser
     Private derniersEtatsLecteurs As New Dictionary(Of String, Boolean)
     Private ignorerChangementsCD As Boolean = False ' Flag pour ignorer temporairement les changements de CD
     Private discIdActuel As String = Nothing ' DiscID du CD actuellement chargé pour éviter les rechargements inutiles
+    ' Indique si le formulaire est agrandi (taille augmentée)
+    Private Agrandir As Boolean = False
 
     ' Clé API Last.fm pour AudioPlay (publique, lecture seule)
     ' Si vous préférez utiliser votre propre clé gratuite, vous pouvez la modifier ici
@@ -152,6 +156,200 @@ Public Class FormCompresser
     ''' <summary>
     ''' Remplit les informations du CD dans le formulaire
     ''' </summary>
+    ' Aide HTML pour les contrôles analyzer
+    Private Sub OuvrirAideAnalyser(nomBase As String)
+        Try
+            Dim langueActuelle = LanguageManager.CurrentCulture.TwoLetterISOLanguageName.ToLower()
+            Dim suffixeLangue As String = ""
+
+            Select Case langueActuelle
+                Case "fr"
+                    suffixeLangue = ".fr"
+                Case "en"
+                    suffixeLangue = ".en"
+                Case "es"
+                    suffixeLangue = ".es"
+                Case "de"
+                    suffixeLangue = ".de"
+                Case "it"
+                    suffixeLangue = ".it"
+                Case Else
+                    suffixeLangue = ".en"
+            End Select
+
+            ' Première tentative : même convention que Form1 (fichier à la racine de l'application)
+            Dim nomFichierRoot = Path.Combine(Application.StartupPath, (nomBase.ToUpper() & "_GUIDE_USER" & suffixeLangue & ".html"))
+
+            If File.Exists(nomFichierRoot) Then
+                Process.Start(New ProcessStartInfo(nomFichierRoot) With {.UseShellExecute = True})
+                Return
+            End If
+
+            ' Vérification explicite du répertoire de build local (utile en dev : bin\Debug\net8.0-windows)
+            Try
+                Dim devOut As String = Path.GetFullPath("G:\\Visual Studio Projects\\Jean\\AudioPlay 2026-08-20\\AudioPlay\\bin\\Debug\\net8.0-windows")
+                Dim devFile1 = Path.Combine(devOut, nomBase & suffixeLangue & ".html")
+                Dim devFile2 = Path.Combine(devOut, (nomBase.ToUpper() & "_GUIDE_USER" & suffixeLangue & ".html"))
+                If File.Exists(devFile1) Then
+                    Process.Start(New ProcessStartInfo(devFile1) With {.UseShellExecute = True})
+                    Return
+                End If
+                If File.Exists(devFile2) Then
+                    Process.Start(New ProcessStartInfo(devFile2) With {.UseShellExecute = True})
+                    Return
+                End If
+            Catch
+                ' Ignorer les erreurs d'accès au chemin de développement
+            End Try
+
+            ' Deuxième tentative : nom simple à la racine (ex: WindowBefore.fr.html)
+            Dim nomFichierSimpleRoot = Path.Combine(Application.StartupPath, nomBase & suffixeLangue & ".html")
+            If File.Exists(nomFichierSimpleRoot) Then
+                Process.Start(New ProcessStartInfo(nomFichierSimpleRoot) With {.UseShellExecute = True})
+                Return
+            End If
+
+            ' Troisième tentative : structure help/FormCompresser (fichiers ajoutés dans le projet)
+            Dim nomFichier = Path.Combine(Application.StartupPath, "help", "FormCompresser", nomBase & suffixeLangue & ".html")
+            If File.Exists(nomFichier) Then
+                Process.Start(New ProcessStartInfo(nomFichier) With {.UseShellExecute = True})
+                Return
+            End If
+
+            ' Quatrième tentative : convention alternative (nomBase_GUIDE_USER) dans help/FormCompresser
+            Dim nomFichierAlt = Path.Combine(Application.StartupPath, "help", "FormCompresser", (nomBase.ToUpper() & "_GUIDE_USER" & suffixeLangue & ".html"))
+            If File.Exists(nomFichierAlt) Then
+                Process.Start(New ProcessStartInfo(nomFichierAlt) With {.UseShellExecute = True})
+                Return
+            End If
+
+            ' Troisième tentative : rechercher le fichier dans les répertoires parents (utile en mode debug où les fichiers peuvent être à la racine du projet)
+            Try
+                Dim found As String = Nothing
+                Dim start As String = Application.StartupPath
+                For depth As Integer = 0 To 4
+                    Dim root As String = Path.GetFullPath(Path.Combine(start, String.Concat(Enumerable.Repeat(".." & Path.DirectorySeparatorChar, depth))))
+                    If Directory.Exists(root) Then
+                        Dim pattern As String = nomBase & "*" & suffixeLangue & ".html"
+                        Dim files = Directory.GetFiles(root, pattern, SearchOption.AllDirectories)
+                        If files IsNot Nothing AndAlso files.Length > 0 Then
+                            found = files(0)
+                            Exit For
+                        End If
+                    End If
+                Next
+
+                If Not String.IsNullOrEmpty(found) Then
+                    Process.Start(New ProcessStartInfo(found) With {.UseShellExecute = True})
+                    Return
+                End If
+            Catch exSearch As Exception
+                ' Ignorer les erreurs de recherche et tomber sur le message d'erreur standard
+            End Try
+
+            Dim msg As String = LanguageManager.GetString("Help_FilesNotFound") & Environment.NewLine &
+                                LanguageManager.GetString("Help_ExpectedFiles") & Environment.NewLine &
+                                "- " & nomFichier
+
+            ' Titre: utiliser Help_Title si disponible, sinon Help_FilesNotFoundTitle, sinon texte par défaut
+            Dim titre As String = LanguageManager.GetString("Help_Title")
+            If String.IsNullOrWhiteSpace(titre) OrElse titre.StartsWith("[RESX introuvable", StringComparison.OrdinalIgnoreCase) Then
+                titre = LanguageManager.GetString("Help_FilesNotFoundTitle")
+            End If
+            If String.IsNullOrWhiteSpace(titre) OrElse titre.StartsWith("[RESX introuvable", StringComparison.OrdinalIgnoreCase) Then
+                titre = "Aide"
+            End If
+
+            MessageBox.Show(msg, titre, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+
+        Catch ex As Exception
+            MessageBox.Show(LanguageManager.GetString("Help_ErrorOpenFile", ex.Message),
+                            LanguageManager.GetString("Error_Title"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    Private Sub Button_Aide_WindowBefore_Click(sender As Object, e As EventArgs) Handles Button_Aide_WindowBefore.Click
+        OuvrirAideAnalyser("WindowBefore")
+    End Sub
+
+    Private Sub Button_Aide_WindowAfter_Click(sender As Object, e As EventArgs) Handles Button_Aide_WindowAfter.Click
+        OuvrirAideAnalyser("WindowAfter")
+    End Sub
+
+    Private Sub Button_Aide_MinSilence_Click(sender As Object, e As EventArgs) Handles Button_Aide_MinSilence.Click
+        OuvrirAideAnalyser("MinSilence")
+    End Sub
+
+    Private Sub Button_Aide_MaxStartTrim_Click(sender As Object, e As EventArgs) Handles Button_Aide_MaxStartTrim.Click
+        OuvrirAideAnalyser("MaxStartTrim")
+    End Sub
+
+    Private Sub Button_Agrandir_Click(sender As Object, e As EventArgs) Handles Button_Agrandir.Click
+        Try
+            If Not Agrandir Then
+                ' Taille agrandie demandée
+                Me.SuspendLayout()
+                Me.Size = New Size(633, 968)
+                Me.StartPosition = FormStartPosition.Manual
+                Dim screenCenterX = (Screen.PrimaryScreen.WorkingArea.Width - Me.Width)
+                Dim screenCenterY = (Screen.PrimaryScreen.WorkingArea.Height - Me.Height)
+                Me.Location = New Point(screenCenterX \ 2, screenCenterY \ 2)
+                Agrandir = True
+                Button_Agrandir.Visible = False
+                Button_rapetisser.Visible = True
+                ' Déplacer les boutons selon la taille agrandie
+                Try
+                    ButtonExtraire.Location = New Point(373, 864)
+                    ButtonQuitter.Location = New Point(495, 864)
+                    ButtonAnnuler.Location = New Point(373, 864)
+                Catch
+                End Try
+
+                ' Réaffecter explicitement les textes localisés pour s'assurer qu'ils utilisent la culture courante
+                Try
+                    GroupBoxAnalyzerOptions.Text = LanguageManager.GetString("GroupBoxAnalyzerOptions_Text")
+                    LabelWindowBefore.Text = LanguageManager.GetString("LabelWindowBefore_Text")
+                    LabelWindowAfter.Text = LanguageManager.GetString("LabelWindowAfter_Text")
+                    LabelMinSilence.Text = LanguageManager.GetString("LabelMinSilence_Text")
+                    LabelMaxStartTrim.Text = LanguageManager.GetString("LabelMaxStartTrim_Text")
+                Catch ex As Exception
+                    System.Diagnostics.Debug.WriteLine($"[FormCompresser] Erreur affectation textes localisés: {ex.Message}")
+                End Try
+                Me.ResumeLayout()
+            End If
+        Catch ex As Exception
+            Debug.WriteLine($"[FormCompresser] Button_Agrandir_Click erreur: {ex.Message}")
+        End Try
+    End Sub
+
+    Private Sub Button_rapetisser_Click(sender As Object, e As EventArgs) Handles Button_rapetisser.Click
+        Try
+            If Agrandir Then
+                Me.SuspendLayout()
+                Me.Size = New Size(633, 825)
+                Me.StartPosition = FormStartPosition.Manual
+                Dim screenCenterX = (Screen.PrimaryScreen.WorkingArea.Width - Me.Width)
+                Dim screenCenterY = (Screen.PrimaryScreen.WorkingArea.Height - Me.Height)
+                Me.Location = New Point(screenCenterX \ 2, screenCenterY \ 2)
+                Agrandir = False
+                Button_Agrandir.Visible = True
+                Button_rapetisser.Visible = False
+                ' Repositionner les boutons pour la taille par défaut
+                Try
+                    ButtonExtraire.Location = New Point(373, 719)
+                    ButtonQuitter.Location = New Point(495, 719)
+                    ButtonAnnuler.Location = New Point(373, 719)
+                Catch
+                End Try
+                Me.ResumeLayout()
+            End If
+        Catch ex As Exception
+            Debug.WriteLine($"[FormCompresser] Button_rapetisser_Click erreur: {ex.Message}")
+        End Try
+    End Sub
+
     ''' <param name="chargerPochette">Si True, charge la pochette du CD. Si False, conserve la pochette existante.</param>
     Private Async Function RemplirInformationsCD(Optional chargerPochette As Boolean = True) As Task
         Dim stackTrace = New System.Diagnostics.StackTrace(True)
@@ -450,6 +648,11 @@ Public Class FormCompresser
     Private Sub FormCompresser_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ' Appliquer les traductions
         AppliquerTraductions()
+        ' S'abonner aux changements de langue pour rafraîchir automatiquement
+        Try
+            AddHandler LanguageManager.LanguageChanged, AddressOf OnLanguageChanged
+        Catch ex As Exception
+        End Try
 
         ' Configurer le ComboBoxChoixLecteur AVANT d'appliquer le thème
         ' pour éviter que le ThemeManager ne change son DrawMode
@@ -507,6 +710,182 @@ Public Class FormCompresser
 
         ' NOTE: ChargerPochetteAlbum() est appelé depuis RemplirInformationsCD()
         ' après que metadonneesCD soit initialisé via InitialiserDonneesCD()
+
+        ' Hook up handlers for analyzer UI controls if present
+        Try
+            AddHandler NumericWindowBefore.ValueChanged, AddressOf AnalyzerControl_ValueChanged
+            AddHandler NumericWindowAfter.ValueChanged, AddressOf AnalyzerControl_ValueChanged
+            AddHandler NumericMinSilence.ValueChanged, AddressOf AnalyzerControl_ValueChanged
+            AddHandler NumericMaxStartTrim.ValueChanged, AddressOf AnalyzerControl_ValueChanged
+            ' Handlers to remember previous values and validate on leave
+            AddHandler NumericWindowBefore.Enter, AddressOf AnalyzerControl_Enter
+            AddHandler NumericWindowAfter.Enter, AddressOf AnalyzerControl_Enter
+            AddHandler NumericMinSilence.Enter, AddressOf AnalyzerControl_Enter
+            AddHandler NumericMaxStartTrim.Enter, AddressOf AnalyzerControl_Enter
+            AddHandler NumericWindowBefore.Leave, AddressOf AnalyzerControl_Leave
+            AddHandler NumericWindowAfter.Leave, AddressOf AnalyzerControl_Leave
+            AddHandler NumericMinSilence.Leave, AddressOf AnalyzerControl_Leave
+            AddHandler NumericMaxStartTrim.Leave, AddressOf AnalyzerControl_Leave
+        Catch
+        End Try
+
+        ' S'assurer de la taille par défaut au démarrage (forcé ici pour éviter état persistant)
+        Try
+            Agrandir = False
+            Me.Size = New Size(633, 825)
+            Button_Agrandir.Visible = True
+            Button_rapetisser.Visible = False
+            ' Recentrer sur l'écran de la fenêtre (support multi-écrans)
+            Dim wa = Screen.FromControl(Me).WorkingArea
+            Me.StartPosition = FormStartPosition.Manual
+            Me.Location = New Point(wa.Left + (wa.Width - Me.Width) \ 2, wa.Top + (wa.Height - Me.Height) \ 2)
+            ' Positionner les boutons pour la taille par défaut
+            Try
+                ButtonExtraire.Location = New Point(373, 719)
+                ButtonQuitter.Location = New Point(495, 719)
+            Catch
+            End Try
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"[FormCompresser] Impossible de forcer la taille par défaut: {ex.Message}")
+        End Try
+    End Sub
+
+    Private Sub OnLanguageChanged(newCulture As Globalization.CultureInfo)
+        Try
+            If Me.InvokeRequired Then
+                Me.BeginInvoke(New Action(Sub() AppliquerTraductions()))
+            Else
+                AppliquerTraductions()
+            End If
+        Catch
+        End Try
+    End Sub
+
+    ' Handler to apply analyzer control changes to CDAudioAnalyzer
+    Private Sub AnalyzerControl_ValueChanged(sender As Object, e As EventArgs)
+        Try
+            Dim ctrl = TryCast(sender, NumericUpDown)
+            If ctrl IsNot Nothing Then
+                Select Case ctrl.Name
+                    Case "NumericWindowBefore"
+                        Dim v As Integer = CInt(ctrl.Value)
+                        Dim clamped As Integer = Math.Max(5, Math.Min(120, v))
+                        If clamped <> v Then ctrl.Value = clamped
+                        CDAudioAnalyzer.TransitionWindowBeforeSeconds = clamped
+                        ' Persist user change
+                        Try
+                            ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_WindowBeforeSeconds", clamped.ToString())
+                        Catch
+                        End Try
+
+                    Case "NumericWindowAfter"
+                        Dim v2 As Integer = CInt(ctrl.Value)
+                        Dim clamped2 As Integer = Math.Max(5, Math.Min(120, v2))
+                        If clamped2 <> v2 Then ctrl.Value = clamped2
+                        CDAudioAnalyzer.TransitionWindowAfterSeconds = clamped2
+                        ' Persist user change
+                        Try
+                            ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_WindowAfterSeconds", clamped2.ToString())
+                        Catch
+                        End Try
+
+                    Case "NumericMinSilence"
+                        Dim vd As Double = Convert.ToDouble(ctrl.Value)
+                        Dim clampedD As Double = Math.Max(0.05, Math.Min(10.0, vd))
+                        If Math.Abs(clampedD - vd) > 0.000001 Then ctrl.Value = CDec(clampedD)
+                        CDAudioAnalyzer.MinSustainedSilenceSeconds = clampedD
+                        ' Persist user change (use invariant culture)
+                        Try
+                            ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_MinSustainedSilenceSeconds", clampedD.ToString(System.Globalization.CultureInfo.InvariantCulture))
+                        Catch
+                        End Try
+
+                    Case "NumericMaxStartTrim"
+                        Dim vd2 As Double = Convert.ToDouble(ctrl.Value)
+                        Dim clampedD2 As Double = Math.Max(0.0, Math.Min(10.0, vd2))
+                        If Math.Abs(clampedD2 - vd2) > 0.000001 Then ctrl.Value = CDec(clampedD2)
+                        CDAudioAnalyzer.MaxStartTrimSeconds = clampedD2
+                        ' Persist user change (use invariant culture)
+                        Try
+                            ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_MaxStartTrimSeconds", clampedD2.ToString(System.Globalization.CultureInfo.InvariantCulture))
+                        Catch
+                        End Try
+
+                    Case Else
+                        ' nothing
+                End Select
+            Else
+                ' Fallback: apply all values with clamping
+                Dim nbefore = Math.Max(5, Math.Min(120, CInt(NumericWindowBefore.Value)))
+                Dim nafter = Math.Max(5, Math.Min(120, CInt(NumericWindowAfter.Value)))
+                Dim nmin = Math.Max(0.05, Math.Min(10.0, Convert.ToDouble(NumericMinSilence.Value)))
+                Dim nmax = Math.Max(0.0, Math.Min(10.0, Convert.ToDouble(NumericMaxStartTrim.Value)))
+                CDAudioAnalyzer.TransitionWindowBeforeSeconds = nbefore
+                CDAudioAnalyzer.TransitionWindowAfterSeconds = nafter
+                CDAudioAnalyzer.MinSustainedSilenceSeconds = nmin
+                CDAudioAnalyzer.MaxStartTrimSeconds = nmax
+                ' Persist all
+                Try
+                    ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_WindowBeforeSeconds", nbefore.ToString())
+                    ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_WindowAfterSeconds", nafter.ToString())
+                    ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_MinSustainedSilenceSeconds", nmin.ToString(System.Globalization.CultureInfo.InvariantCulture))
+                    ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_MaxStartTrimSeconds", nmax.ToString(System.Globalization.CultureInfo.InvariantCulture))
+                Catch
+                End Try
+            End If
+
+            CDAudioAnalyzer.DiagnosticWrite($"Analyzer UI updated: before={CDAudioAnalyzer.TransitionWindowBeforeSeconds}, after={CDAudioAnalyzer.TransitionWindowAfterSeconds}, minSilence={CDAudioAnalyzer.MinSustainedSilenceSeconds}, maxStartTrim={CDAudioAnalyzer.MaxStartTrimSeconds}")
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"[FormCompresser] AnalyzerControl_ValueChanged error: {ex.Message}")
+        End Try
+    End Sub
+
+    Protected Overrides Sub OnFormClosed(e As FormClosedEventArgs)
+        Try
+            RemoveHandler LanguageManager.LanguageChanged, AddressOf OnLanguageChanged
+        Catch
+        End Try
+        MyBase.OnFormClosed(e)
+    End Sub
+
+    ' Store last valid values to revert if user enters out-of-range values
+    Private lastValidWindowBefore As Integer = 20
+    Private lastValidWindowAfter As Integer = 20
+    Private lastValidMinSilence As Decimal = 0.5D
+    Private lastValidMaxStartTrim As Decimal = 8D
+
+    Private Sub AnalyzerControl_Enter(sender As Object, e As EventArgs)
+        Dim ctrl = TryCast(sender, NumericUpDown)
+        If ctrl Is Nothing Then Return
+        Select Case ctrl.Name
+            Case "NumericWindowBefore"
+                lastValidWindowBefore = CInt(ctrl.Value)
+            Case "NumericWindowAfter"
+                lastValidWindowAfter = CInt(ctrl.Value)
+            Case "NumericMinSilence"
+                lastValidMinSilence = ctrl.Value
+            Case "NumericMaxStartTrim"
+                lastValidMaxStartTrim = ctrl.Value
+        End Select
+    End Sub
+
+    Private Sub AnalyzerControl_Leave(sender As Object, e As EventArgs)
+        Dim ctrl = TryCast(sender, NumericUpDown)
+        If ctrl Is Nothing Then Return
+        Select Case ctrl.Name
+            Case "NumericWindowBefore"
+                Dim v As Integer = CInt(ctrl.Value)
+                If v < 5 OrElse v > 120 Then ctrl.Value = lastValidWindowBefore
+            Case "NumericWindowAfter"
+                Dim v2 As Integer = CInt(ctrl.Value)
+                If v2 < 5 OrElse v2 > 120 Then ctrl.Value = lastValidWindowAfter
+            Case "NumericMinSilence"
+                Dim d As Double = Convert.ToDouble(ctrl.Value)
+                If d < 0.05 OrElse d > 10.0 Then ctrl.Value = lastValidMinSilence
+            Case "NumericMaxStartTrim"
+                Dim d2 As Double = Convert.ToDouble(ctrl.Value)
+                If d2 < 0.0 OrElse d2 > 10.0 Then ctrl.Value = lastValidMaxStartTrim
+        End Select
     End Sub
 
     ''' <summary>
@@ -1309,11 +1688,169 @@ Public Class FormCompresser
             Me.TopMost = False
             System.Diagnostics.Debug.WriteLine("[FormCompresser] TopMost désactivé - Form1 utilisable pendant l'extraction")
 
-            ' ═══ NOUVELLE STRATÉGIE : PAS D'ANALYSE EN BATCH ═══
-            ' L'analyse sera faite individuellement pour chaque piste juste avant son extraction
-            ' Ceci permet un réajustement plus précis et évite les problèmes de chansons incomplètes
+            ' Initialise le log de diagnostic pour cette session d'extraction
+            Try
+                ' Force reset the diagnostics log at the start of a user-initiated extraction session
+                CDAudioAnalyzer.InitializeDiagnosticsLog($"Extraction started by user - Drive={lecteurCD}", True)
+                ' SANITY TEST: entrée de log + fichier témoin discret pour valider le chemin exécuté
+                Try
+                    CDAudioAnalyzer.DiagnosticWrite("SANITY_TEST: ButtonExtraire invoked - writing sanity file")
+                    Dim sanityPath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AudioPlay_Sanity.txt")
+                    File.WriteAllText(sanityPath, $"SANITY {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}")
+                Catch
+                End Try
+            Catch exInitLog As Exception
+                System.Diagnostics.Debug.WriteLine($"[FormCompresser] InitializeDiagnosticsLog failed: {exInitLog.Message}")
+            End Try
+
+            ' ═══ NOUVELLE STRATÉGIE : ANALYSE EN BATCH AVANT EXTRACTION (pairwise) ═══
+            ' Pré-analyser toutes les pistes sélectionnées afin d'appliquer la logique
+            ' d'analyse appairée et de réconciliation avant l'étape d'extraction.
+            ' Charger les paramètres de l'analyseur depuis parametres.txt si présents
+            Try
+                Dim cfgPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "parametres.txt")
+                If File.Exists(cfgPath) Then
+                    For Each line In File.ReadAllLines(cfgPath)
+                        If Not line.Contains("=") Then Continue For
+                        Dim parts = line.Split("="c, 2)
+                        Dim key = parts(0).Trim()
+                        Dim val = parts(1).Trim()
+                        Select Case key
+                            Case "Analyzer_WindowBeforeSeconds"
+                                Dim v As Integer
+                                If Integer.TryParse(val, v) Then CDAudioAnalyzer.TransitionWindowBeforeSeconds = Math.Max(5, Math.Min(120, v))
+                            Case "Analyzer_WindowAfterSeconds"
+                                Dim v2 As Integer
+                                If Integer.TryParse(val, v2) Then CDAudioAnalyzer.TransitionWindowAfterSeconds = Math.Max(5, Math.Min(120, v2))
+                            Case "Analyzer_SilenceThreshold"
+                                Dim d As Double
+                                If Double.TryParse(val, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, d) Then CDAudioAnalyzer.SilenceThreshold = d
+                            Case "Analyzer_MinSustainedSilenceSeconds"
+                                Dim d2 As Double
+                                If Double.TryParse(val, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, d2) Then CDAudioAnalyzer.MinSustainedSilenceSeconds = Math.Max(0.05, d2)
+                            Case "Analyzer_MaxStartTrimSeconds"
+                                Dim d3 As Double
+                                If Double.TryParse(val, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, d3) Then CDAudioAnalyzer.MaxStartTrimSeconds = Math.Max(0, Math.Min(10, d3))
+                        End Select
+                    Next
+                End If
+            Catch ex As Exception
+                System.Diagnostics.Debug.WriteLine($"[FormCompresser] Erreur lecture paramètres analyseur: {ex.Message}")
+            End Try
             analysesPistes.Clear()
-            System.Diagnostics.Debug.WriteLine($"[FormCompresser] 🔍 Mode analyse individuelle : chaque piste sera analysée juste avant extraction")
+            System.Diagnostics.Debug.WriteLine($"[FormCompresser] 🔍 Pré-analyse des pistes sélectionnées (pairwise)")
+
+            ' Affichage UI pendant l'analyse en batch
+            LabelProgressionGlobale.Visible = False
+            ProgressBarGlobale.Visible = False
+
+            LabelPisteEnCours.Visible = True
+            LabelPisteEnCours.Text = LanguageManager.GetString("Compressor_AnalysisInProgress")
+            ' Activer les diagnostics détaillés si demandé via l'UI debug (désactivé par défaut)
+            ' Le flag peut être activé temporairement pour collecter des logs dans %TEMP%\AudioPlay_AnalysisLog.txt
+            ' Laisser les diagnostics détaillés activés pour la session (tronqués au démarrage)
+            ' Le log sera créé/vidé au démarrage de l'application; écrire pendant la session est voulu
+            ' UseDetailedDiagnostics est en lecture seule et vrai; ne pas tenter de l'affecter
+            ProgressBarPisteActuelle.Visible = True
+            ProgressBarPisteActuelle.Minimum = 0
+            ProgressBarPisteActuelle.Maximum = indicesPistes.Count
+            ProgressBarPisteActuelle.Value = 0
+            Application.DoEvents()
+
+            ' Analyser piste par piste (off-UI thread) pour pouvoir mettre à jour la barre de progression
+            Dim tempAnalyses As New List(Of CDAudioAnalyzer.TrackAnalysis)
+            For i As Integer = 0 To indicesPistes.Count - 1
+                Dim cdIndex As Integer = indicesPistes(i)
+                If cdIndex >= 0 AndAlso cdIndex < pistesCD.Count Then
+                    Dim track = pistesCD(cdIndex)
+                    Dim nextTrack As CDAudioManager.CDTrack = Nothing
+                    If cdIndex + 1 < pistesCD.Count Then
+                        nextTrack = pistesCD(cdIndex + 1)
+                    End If
+
+                    ' Exécuter l'analyse lourde hors du thread UI
+                    Dim analysis = Await Task.Run(Function() CDAudioAnalyzer.AnalyzeTrack(track, nextTrack, Nothing))
+                    tempAnalyses.Add(analysis)
+
+                    ' Mettre à jour la progression visuelle
+                    ProgressBarPisteActuelle.Value = Math.Min(ProgressBarPisteActuelle.Maximum, ProgressBarPisteActuelle.Value + 1)
+                    LabelPisteEnCours.Text = $"Analyse en cours... ({tempAnalyses.Count}/{indicesPistes.Count})"
+                    Application.DoEvents()
+                End If
+            Next
+
+            ' Réconciliation paire par paire (même logique que CDAudioAnalyzer.AnalyzeSelectedTracks)
+            For i As Integer = 0 To tempAnalyses.Count - 1
+                Dim cdIndex As Integer = indicesPistes(i)
+                If cdIndex >= 0 AndAlso cdIndex < pistesCD.Count Then
+                    ' initialiser mapping
+                    analysesPistes(cdIndex) = tempAnalyses(i)
+                End If
+            Next
+
+            ' Effectuer la réconciliation pour éviter chevauchements
+            For i As Integer = 0 To tempAnalyses.Count - 2
+                Dim cur = tempAnalyses(i)
+                Dim nxt = tempAnalyses(i + 1)
+
+                ' S'assurer que les valeurs par défaut existent
+                If nxt.AdjustedStartFrame <= 0 Then
+                    nxt.AdjustedStartFrame = nxt.OriginalStartFrame
+                End If
+
+                ' Si l'analyse de transition indique que le silence déborde APRÈS la frontière TOC,
+                ' préférer ajuster le début de la piste suivante plutôt que de couper la fin de la courante.
+                If cur.TransitionAnalyzed AndAlso cur.PreferAdjustNextStart Then
+                    Dim proposedStart As Integer = cur.SilenceEndFrame + CDAudioAnalyzer.SafetyMarginFrames
+
+                    If proposedStart >= nxt.AdjustedEndFrame Then
+                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ⚠️ Réconciliation impossible sans inversion (fallback) entre piste {cur.TrackNumber} et {nxt.TrackNumber} - conservation des positions TOC pour la suivante")
+                    ElseIf proposedStart > nxt.AdjustedStartFrame Then
+                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] 🔧 Réconciliation préférentielle: déplacement du début de la piste {nxt.TrackNumber} à {proposedStart} (silence APRÈS TOC de la piste {cur.TrackNumber})")
+                        nxt.AdjustedStartFrame = proposedStart
+                        nxt.TrimmedStartFrames = nxt.AdjustedStartFrame - nxt.OriginalStartFrame
+                        nxt.WasAdjusted = True
+                    End If
+
+                ElseIf cur.AdjustedEndFrame >= nxt.AdjustedStartFrame Then
+                    Dim correctedStart As Integer = cur.AdjustedEndFrame + 1
+
+                    If correctedStart >= nxt.AdjustedEndFrame Then
+                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] ⚠️ Réconciliation impossible sans inversion (fallback) entre piste {cur.TrackNumber} et {nxt.TrackNumber} - conservation des positions TOC pour la suivante")
+                        nxt.AdjustedStartFrame = nxt.OriginalStartFrame
+                        nxt.TrimmedStartFrames = 0
+                    Else
+                        System.Diagnostics.Debug.WriteLine($"[CDAudioAnalyzer] 🔧 Réconciliation: déplacement du début de la piste {nxt.TrackNumber} à {correctedStart} pour éviter chevauchement avec piste {cur.TrackNumber}")
+                        nxt.AdjustedStartFrame = correctedStart
+                        nxt.TrimmedStartFrames = nxt.AdjustedStartFrame - nxt.OriginalStartFrame
+                        nxt.WasAdjusted = True
+                    End If
+                End If
+
+                ' Mettre à jour le message d'analyse pour la piste suivante
+                If nxt.WasAdjusted Then
+                    nxt.AnalysisMessage = $"Piste {nxt.TrackNumber}: Début +{nxt.TrimmedStartFrames / 75.0:F2}s, Fin -{nxt.TrimmedEndFrames / 75.0:F2}s"
+                Else
+                    nxt.AnalysisMessage = $"Piste {nxt.TrackNumber}: OK (pas d'ajustement)"
+                End If
+
+                ' Écrire la réconciliation dans le mapping global
+                Dim nextCdIndex As Integer = indicesPistes(i + 1)
+                If nextCdIndex >= 0 AndAlso nextCdIndex < pistesCD.Count Then
+                    analysesPistes(nextCdIndex) = nxt
+                End If
+                ' Mettre à jour l'actuelle aussi
+                Dim curCdIndex As Integer = indicesPistes(i)
+                If curCdIndex >= 0 AndAlso curCdIndex < pistesCD.Count Then
+                    analysesPistes(curCdIndex) = cur
+                End If
+            Next
+
+            System.Diagnostics.Debug.WriteLine($"[FormCompresser] ✅ Pré-analyse terminée: {analysesPistes.Count} piste(s) analysée(s)")
+
+            ' Restaurer l'affichage global de progression pour l'étape d'extraction
+            LabelProgressionGlobale.Visible = True
+            ProgressBarGlobale.Visible = True
 
             ' IMPORTANT: Mettre à jour l'URL de la pochette dans les métadonnées avec l'image actuellement affichée
             ' (qui peut être différente de l'URL initiale si l'utilisateur a navigué avec Prec/Suiv)
@@ -1566,9 +2103,10 @@ Public Class FormCompresser
         Dim numeroFormate As String = Integer.Parse(numeroFichier).ToString("D2")
         Dim nomFichier As String = NettoyerNomFichier($"{numeroFormate} - {artiste} - {titre}")
 
-        ' Obtenir le format et l'extension
+        ' Obtenir le format, l'extension et la qualité choisie
         Dim format As String = If(ComboBoxTypeConversion.SelectedItem?.ToString(), "MP3").ToUpper()
         Dim extension As String = "." & format.ToLower()
+        Dim qualiteIndex As Integer = ComboBoxQualiteConversion.SelectedIndex
 
         Dim cheminComplet As String = Path.Combine(cheminRepertoireAlbum, nomFichier & extension)
 
@@ -1579,48 +2117,77 @@ Public Class FormCompresser
             ' Mode TOC Précis : utiliser les positions TOC exactes sans modification
             System.Diagnostics.Debug.WriteLine($"[FormCompresser] 📍 Extraction piste {numeroFichier} avec positions TOC EXACTES: {piste.StartFrame}-{piste.EndFrame}")
         Else
-            ' Mode Normal : TOUJOURS analyser individuellement chaque piste
-            System.Diagnostics.Debug.WriteLine($"[FormCompresser] 🔍 Analyse individuelle de la piste {numeroFichier} avant extraction...")
+            ' Mode Normal : effectuer une ré-analyse finale pour chaque piste juste avant l''extraction
+            Dim preAnalyse As CDAudioAnalyzer.TrackAnalysis = Nothing
+            If analysesPistes.ContainsKey(pisteIndex) Then
+                preAnalyse = analysesPistes(pisteIndex)
+                System.Diagnostics.Debug.WriteLine($"[FormCompresser] 🔍 Pré-analyse disponible pour la piste {numeroFichier}")
+            Else
+                System.Diagnostics.Debug.WriteLine($"[FormCompresser] 🔍 Pas de pré-analyse en cache pour la piste {numeroFichier}")
+            End If
 
-            ' Trouver la piste suivante pour analyser la ZONE DE TRANSITION
+            ' Construire référence à la piste suivante et à l'analyse précédente (si disponible)
             Dim pisteSuivante As CDAudioManager.CDTrack = Nothing
+            Dim previousAnalysis As CDAudioAnalyzer.TrackAnalysis = Nothing
             If pisteIndex + 1 < pistesCD.Count Then
                 pisteSuivante = pistesCD(pisteIndex + 1)
-                System.Diagnostics.Debug.WriteLine($"[FormCompresser]    └─ Analyse de la transition avec piste {pisteSuivante.TrackNumber}")
+                System.Diagnostics.Debug.WriteLine($"[FormCompresser]    └─ Ré-analyse de la transition avec piste {pisteSuivante.TrackNumber}")
+            End If
+            If analysesPistes.ContainsKey(pisteIndex - 1) Then
+                previousAnalysis = analysesPistes(pisteIndex - 1)
             End If
 
-            ' ANALYSE INDÉPENDANTE : Toujours analyser le début/fin de la piste en cours
-            ' sans utiliser l'analyse précédente afin que l'extraction d'une piste isolée
-            ' (ex. extraire uniquement la piste 8) reste correcte.
-            Dim analyse = CDAudioAnalyzer.AnalyzeTrack(piste, pisteSuivante, Nothing)
-            System.Diagnostics.Debug.WriteLine($"[FormCompresser]    └─ {analyse.AnalysisMessage}")
+            ' Ré-analyse finale, toujours exécutée pour s'assurer des positions justes
+            Dim finalAnalyse As CDAudioAnalyzer.TrackAnalysis = Nothing
+            Try
+                finalAnalyse = CDAudioAnalyzer.AnalyzeTrack(piste, pisteSuivante, previousAnalysis)
+            Catch ex As Exception
+                System.Diagnostics.Debug.WriteLine($"[FormCompresser] Erreur ré-analyse piste {numeroFichier}: {ex.Message}")
+                finalAnalyse = preAnalyse
+            End Try
 
-            ' Stocker l'analyse pour la piste suivante
-            analysesPistes(pisteIndex) = analyse
-
-            ' GARDE ANTI-CHEVREMENT : si l'analyse produit des positions ajustées qui chevauchent
-            ' la piste suivante (cas où la détection du silence réduit trop la fin),
-            ' on pourra corriger au moment d'analyser la piste suivante. Ici on ajoute un log.
-            If analyse.WasAdjusted Then
-                System.Diagnostics.Debug.WriteLine($"[FormCompresser] ⚠️ Vérifier chevauchement potentiel après ajustement: piste {numeroFichier} => {analyse.AdjustedStartFrame}-{analyse.AdjustedEndFrame}")
+            ' Mettre à jour le cache d'analyses
+            If finalAnalyse IsNot Nothing Then
+                analysesPistes(pisteIndex) = finalAnalyse
             End If
 
-            If analyse.WasAdjusted Then
-                ' Créer une nouvelle piste avec les positions ajustées
+            ' Log avant/après pour diagnostic
+            Try
+                Dim beforeStart As Integer = If(preAnalyse IsNot Nothing, preAnalyse.AdjustedStartFrame, piste.StartFrame)
+                Dim beforeEnd As Integer = If(preAnalyse IsNot Nothing, preAnalyse.AdjustedEndFrame, piste.EndFrame)
+                CDAudioAnalyzer.DiagnosticWrite($"FINAL_REANALYSE_BEFORE: Track={piste.TrackNumber} Start={beforeStart} End={beforeEnd} FromPreAnalysis={(preAnalyse IsNot Nothing)}")
+                If finalAnalyse IsNot Nothing Then
+                    CDAudioAnalyzer.DiagnosticWrite($"FINAL_REANALYSE_AFTER: Track={piste.TrackNumber} Start={finalAnalyse.AdjustedStartFrame} End={finalAnalyse.AdjustedEndFrame} WasAdjusted={finalAnalyse.WasAdjusted} SilenceCenter={finalAnalyse.SilenceCenterFrame} PreferAdjustNextStart={finalAnalyse.PreferAdjustNextStart}")
+                End If
+            Catch
+            End Try
+
+            ' Appliquer le résultat final de l'analyse si un ajustement est proposé, sinon conserver les valeurs précédentes/TOC
+            Dim appliedAnalyse As CDAudioAnalyzer.TrackAnalysis = finalAnalyse
+            If appliedAnalyse Is Nothing OrElse Not appliedAnalyse.WasAdjusted Then
+                appliedAnalyse = preAnalyse
+            End If
+
+            If appliedAnalyse IsNot Nothing AndAlso appliedAnalyse.WasAdjusted Then
+                ' Créer une nouvelle piste avec les positions ajustées issues de la ré-analyse finale
                 pisteAExtraire = New CDAudioManager.CDTrack With {
                     .Drive = piste.Drive,
                     .TrackNumber = piste.TrackNumber,
                     .Title = piste.Title,
                     .Artist = piste.Artist,
-                    .StartFrame = analyse.AdjustedStartFrame,
-                    .EndFrame = analyse.AdjustedEndFrame,
-                    .Duration = TimeSpan.FromSeconds((analyse.AdjustedEndFrame - analyse.AdjustedStartFrame) / 75.0)
+                    .StartFrame = appliedAnalyse.AdjustedStartFrame,
+                    .EndFrame = appliedAnalyse.AdjustedEndFrame,
+                    .Duration = TimeSpan.FromSeconds((appliedAnalyse.AdjustedEndFrame - appliedAnalyse.AdjustedStartFrame) / 75.0)
                 }
-                System.Diagnostics.Debug.WriteLine($"[FormCompresser] ✅ Extraction avec positions AJUSTÉES: {analyse.AdjustedStartFrame}-{analyse.AdjustedEndFrame}")
-                System.Diagnostics.Debug.WriteLine($"[FormCompresser]    └─ Début: +{analyse.TrimmedStartFrames / 75.0:F2}s ({analyse.TrimmedStartFrames} frames)")
-                System.Diagnostics.Debug.WriteLine($"[FormCompresser]    └─ Fin: -{analyse.TrimmedEndFrames / 75.0:F2}s ({analyse.TrimmedEndFrames} frames)")
+                System.Diagnostics.Debug.WriteLine($"[FormCompresser] ✅ Extraction avec positions AJUSTÉES (appliquées): {appliedAnalyse.AdjustedStartFrame}-{appliedAnalyse.AdjustedEndFrame}")
+                System.Diagnostics.Debug.WriteLine($"[FormCompresser]    └─ Début: +{appliedAnalyse.TrimmedStartFrames / 75.0:F2}s ({appliedAnalyse.TrimmedStartFrames} frames)")
+                System.Diagnostics.Debug.WriteLine($"[FormCompresser]    └─ Fin: -{appliedAnalyse.TrimmedEndFrames / 75.0:F2}s ({appliedAnalyse.TrimmedEndFrames} frames)")
+                Try
+                    CDAudioAnalyzer.DiagnosticWrite($"FINAL_APPLY: Track={piste.TrackNumber} Original={piste.StartFrame}-{piste.EndFrame} Adjusted={appliedAnalyse.AdjustedStartFrame}-{appliedAnalyse.AdjustedEndFrame} TrimStartFrames={appliedAnalyse.TrimmedStartFrames} TrimEndFrames={appliedAnalyse.TrimmedEndFrames} SilenceCenter={appliedAnalyse.SilenceCenterFrame} PreferAdjustNextStart={appliedAnalyse.PreferAdjustNextStart} Message={appliedAnalyse.AnalysisMessage}")
+                Catch
+                End Try
             Else
-                System.Diagnostics.Debug.WriteLine($"[FormCompresser] ℹ️ Extraction avec positions TOC (pas d'ajustement nécessaire)")
+                System.Diagnostics.Debug.WriteLine($"[FormCompresser] ℹ️ Extraction avec positions TOC (pas d'ajustement final)")
             End If
         End If
 
@@ -1633,9 +2200,55 @@ Public Class FormCompresser
             ' Extraire selon le format choisi
             Select Case format
                 Case "MP3"
-                    Await ExtraireMp3(cdReader, cheminComplet, titre, artiste, numeroFichier)
+                    ' Pipeline WAV-first: extraire d'abord en WAV, puis convertir en MP3
+                    ' Create WAV temporary file in album directory for easier inspection and to avoid Temp folder AV interference
+                    Dim nomWavTemp As String = $"audioplay_temp_{Guid.NewGuid()}.wav"
+                    Dim cheminWavTemp As String = Path.Combine(cheminRepertoireAlbum, nomWavTemp)
+                    Try
+                        Try
+                            CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_BEGIN: Track={piste.TrackNumber} WAVTemp={cheminWavTemp} FinalFile={cheminComplet} StartFrame={pisteAExtraire.StartFrame} EndFrame={pisteAExtraire.EndFrame}")
+                        Catch
+                        End Try
+
+                        ' Extraire en WAV temporaire
+                        Await ExtraireWav(cdReader, cheminWavTemp, titre, artiste, numeroFichier)
+
+                        ' Vérifier l'existence du WAV
+                        If Not File.Exists(cheminWavTemp) Then
+                            CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_WAV_ERROR: Track={piste.TrackNumber} WAV not created: {cheminWavTemp}")
+                        Else
+                            CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_WAV_CREATED: Track={piste.TrackNumber} WAV={cheminWavTemp}")
+
+                            ' Convertir WAV -> MP3 selon la qualité choisie
+                            Dim conversionOk As Boolean = Await ConvertWavToMp3(cheminWavTemp, cheminComplet, qualiteIndex, titre, artiste, numeroFichier, TextBoxCDTitre.Text, TextBoxCDArtiste.Text, TextBoxAnnee.Text, If(ComboBoxGenre.SelectedItem?.ToString(), ""), TextBoxCommentaire.Text, If(PictureBoxPochette.Image IsNot Nothing, New Bitmap(PictureBoxPochette.Image), Nothing))
+
+                            ' Supprimer le WAV temporaire uniquement si la conversion a réussi
+                            If conversionOk Then
+                                Try
+                                    If File.Exists(cheminWavTemp) Then
+                                        File.Delete(cheminWavTemp)
+                                        CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_WAV_DELETED: Track={piste.TrackNumber} WAV={cheminWavTemp}")
+                                    End If
+                                Catch exDel As Exception
+                                    CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_WAV_DELETE_ERROR: Track={piste.TrackNumber} WAV={cheminWavTemp} - {exDel.Message}")
+                                End Try
+                            Else
+                                Try
+                                    CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_WAV_PRESERVED: Track={piste.TrackNumber} WAV={cheminWavTemp}")
+                                Catch
+                                End Try
+                            End If
+                        End If
+                    Catch ex As Exception
+                        CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_MP3_FROM_WAV_ERROR: Track={piste.TrackNumber} - {ex.Message}")
+                    End Try
                 Case "WAV"
-                    Await ExtraireWav(cdReader, cheminComplet, titre, artiste, numeroFichier)
+                        ' Log the extraction begin info to diagnostics
+                        Try
+                            CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_BEGIN: Track={piste.TrackNumber} File={cheminComplet} StartFrame={pisteAExtraire.StartFrame} EndFrame={pisteAExtraire.EndFrame}")
+                        Catch
+                        End Try
+                        Await ExtraireWav(cdReader, cheminComplet, titre, artiste, numeroFichier)
                 Case "FLAC"
                     Await ExtraireFlac(cdReader, cheminComplet, titre, artiste, numeroFichier)
                 Case "WMA"
@@ -1759,7 +2372,7 @@ Public Class FormCompresser
     ''' <summary>
     ''' Extrait une piste en MP3
     ''' </summary>
-    Private Async Function ExtraireMp3(source As NAudio.Wave.WaveStream, cheminFichier As String,
+    Private Async Function ExtraireMp3(source As NAudio.Wave.WaveStream, piste As CDAudioManager.CDTrack, cheminFichier As String,
                                        titre As String, artiste As String, numeroPiste As String) As Task
         ' Capturer toutes les valeurs UI AVANT Task.Run pour éviter les erreurs inter-threads
         Dim qualiteIndex As Integer = ComboBoxQualiteConversion.SelectedIndex
@@ -1791,12 +2404,12 @@ Public Class FormCompresser
 
         Try
             Await Task.Run(Sub()
+                               ' This MP3 method is now bypassed when WAV-first pipeline is used.
+                               ' If called directly, fall back to direct write (legacy behavior)
                                Using writer As New NAudio.Lame.LameMP3FileWriter(cheminFichier, sourceAvecVolume.WaveFormat, bitrate)
-                                   ' Copier les données audio avec progression
                                    CopierAvecProgression(sourceAvecVolume, writer)
                                End Using
 
-                               ' Écrire les métadonnées avec TagLib
                                EcrireMetadonnees(cheminFichier, titre, artiste, numeroPiste,
                                                album, artisteAlbum, annee, genre, commentaire, pochette, TextBoxNumCD.Text)
                            End Sub)
@@ -1918,8 +2531,16 @@ Public Class FormCompresser
                                End If
 
                                ' Écrire les métadonnées avec TagLib (supporté pour WAV via RIFF INFO)
-                               EcrireMetadonnees(cheminFichier, titre, artiste, numeroPiste,
-                                               album, artisteAlbum, annee, genre, commentaire, pochette, TextBoxNumCD.Text)
+                               ' Avant d'écrire les métadonnées, s'assurer que le WAV a la bonne longueur
+                               Try
+                                   ' Ne pas utiliser source.Length (peut être en unités différentes après resampling)
+                                   ' Demander à TruncateWavDataChunk d'utiliser la taille réelle disponible en passant <=0
+                                   TruncateWavDataChunk(cheminFichier, -1)
+                               Catch exTrunc As Exception
+                                   CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_WAV_TRUNCATE_ERROR: {cheminFichier} - {exTrunc.Message}")
+                               End Try
+
+                               EcrireMetadonnees(cheminFichier, titre, artiste, numeroPiste, album, artisteAlbum, annee, genre, commentaire, pochette, TextBoxNumCD.Text)
                            End Sub)
         Finally
             ' Disposer le stream de volume si c'est un wrapper différent de la source
@@ -1931,6 +2552,252 @@ Public Class FormCompresser
             pochette?.Dispose()
         End Try
     End Function
+
+    ''' <summary>
+    ''' Tronque le chunk DATA d'un fichier WAV pour qu'il corresponde à expectedDataBytes.
+    ''' expectedDataBytes représente la taille des données audio (pas l'ensemble du fichier).
+    ''' Cette fonction ouvre le fichier WAV, vérifie le header RIFF/WAVE et ajuste la taille du chunk "data"
+    ''' en modifiant les champs de taille dans l'en-tête si le fichier contient plus d'octets que prévu.
+    ''' </summary>
+    Private Sub TruncateWavDataChunk(wavPath As String, expectedDataBytes As Long)
+        Try
+            If String.IsNullOrWhiteSpace(wavPath) Then Return
+            If Not File.Exists(wavPath) Then Return
+            If expectedDataBytes <= 0 Then Return
+
+            Using fs As New FileStream(wavPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None)
+                Dim br As New BinaryReader(fs, System.Text.Encoding.ASCII, leaveOpen:=True)
+                Dim bw As New BinaryWriter(fs, System.Text.Encoding.ASCII, leaveOpen:=True)
+
+                ' Lire RIFF header
+                fs.Seek(0, SeekOrigin.Begin)
+                Dim riff = br.ReadBytes(4)
+                If System.Text.Encoding.ASCII.GetString(riff) <> "RIFF" Then Return
+
+                ' Taille RIFF file size (4 bytes)
+                Dim riffSize As UInt32 = br.ReadUInt32()
+
+                Dim wave = br.ReadBytes(4)
+                If System.Text.Encoding.ASCII.GetString(wave) <> "WAVE" Then Return
+
+                ' Parcourir les chunks jusqu'à trouver 'data' et récupérer fmt si présent
+                Dim foundData As Boolean = False
+                Dim dataChunkOffset As Long = -1
+                Dim dataChunkSize As UInt32 = 0
+                Dim channels As Integer = -1
+                Dim sampleRate As Integer = -1
+                Dim bitsPerSample As Integer = -1
+
+                While fs.Position < fs.Length - 8
+                    Dim chunkIdBytes = br.ReadBytes(4)
+                    If chunkIdBytes.Length < 4 Then Exit While
+                    Dim chunkId = System.Text.Encoding.ASCII.GetString(chunkIdBytes)
+                    Dim chunkSize As UInt32 = 0
+                    Try
+                        chunkSize = br.ReadUInt32()
+                    Catch ex As EndOfStreamException
+                        Exit While
+                    End Try
+
+                    If chunkId = "fmt " Then
+                        ' Lire le chunk fmt pour obtenir format audio
+                        Dim fmtStart As Long = fs.Position
+                        Try
+                            Dim audioFormat As UInt16 = br.ReadUInt16()
+                            channels = br.ReadUInt16()
+                            sampleRate = br.ReadInt32()
+                            Dim byteRate As UInt32 = br.ReadUInt32()
+                            Dim blockAlign As UInt16 = br.ReadUInt16()
+                            bitsPerSample = br.ReadUInt16()
+                        Catch
+                            ' Si lecture fmt échoue, on ignore et continue
+                        End Try
+                        ' Avancer à la fin du chunk (gestion de padding si nécessaire)
+                        Dim consumed As Long = fs.Position - fmtStart
+                        Dim remaining As Long = CLng(chunkSize) - consumed
+                        If remaining > 0 Then fs.Seek(remaining, SeekOrigin.Current)
+                    ElseIf chunkId = "data" Then
+                        foundData = True
+                        dataChunkOffset = fs.Position
+                        dataChunkSize = chunkSize
+                        Exit While
+                    Else
+                        ' Saute le chunk (possiblement avec padding pour alignement pair)
+                        fs.Seek(chunkSize, SeekOrigin.Current)
+                    End If
+                    ' Si chunkSize est impair, il y a un octet de padding
+                    If (chunkSize And 1) = 1 Then
+                        fs.Seek(1, SeekOrigin.Current)
+                    End If
+                End While
+
+                If Not foundData Then
+                    ' Pas de chunk data détecté proprement
+                End If
+
+                ' Préparer les valeurs pour le log
+                Dim actualDataAvailable As Long = fs.Length - dataChunkOffset
+
+                Dim needRebuild As Boolean = False
+                If channels <= 0 OrElse sampleRate <= 0 OrElse bitsPerSample <= 0 Then
+                    needRebuild = True
+                End If
+                If dataChunkSize > fs.Length Then
+                    needRebuild = True
+                End If
+                If dataChunkOffset < 44 Then
+                    ' Offset anormalement petit -> header corrompu
+                    needRebuild = True
+                End If
+
+                If needRebuild Then
+                    ' Fermer le flux courant avant de reconstruire
+                    bw.Flush()
+                    br.Close()
+                    bw.Close()
+                    fs.Close()
+
+                    Try
+                        ' Déterminer paramètres audio valides ou par défaut
+                        Dim outChannels As Integer = If(channels > 0, channels, 2)
+                        Dim outSampleRate As Integer = If(sampleRate > 0, sampleRate, 44100)
+                        Dim outBitsPerSample As Integer = If(bitsPerSample > 0, bitsPerSample, 16)
+
+                        Dim audioStart As Long = If(foundData AndAlso dataChunkOffset >= 0, dataChunkOffset, 44L)
+                        If audioStart < 0 Then audioStart = 44L
+
+                        ' Combien d'octets d'audio sont disponibles
+                        Dim available As Long = 0
+                        Using inFs As New FileStream(wavPath, FileMode.Open, FileAccess.Read, FileShare.Read)
+                            available = Math.Max(0, inFs.Length - audioStart)
+                        End Using
+
+                        ' Lors de la reconstruction du header, copier TOUS les octets audio réellement disponibles
+                        Dim dataLen As Long = available
+                        If dataLen < 0 Then dataLen = 0
+
+                        ' Construire un nouveau fichier WAV temporaire dans le même dossier
+                        Dim dir As String = Path.GetDirectoryName(wavPath)
+                        Dim tempPath As String = Path.Combine(dir, Path.GetFileNameWithoutExtension(wavPath) & "_fixed" & Path.GetExtension(wavPath))
+                        If File.Exists(tempPath) Then File.Delete(tempPath)
+
+                        Using inFs As New FileStream(wavPath, FileMode.Open, FileAccess.Read, FileShare.Read)
+                            Using outFs As New FileStream(tempPath, FileMode.CreateNew, FileAccess.Write, FileShare.None)
+                                Dim outBw As New BinaryWriter(outFs, System.Text.Encoding.ASCII, leaveOpen:=True)
+
+                                ' Écrire header RIFF
+                                outBw.Write(System.Text.Encoding.ASCII.GetBytes("RIFF"))
+                                Dim newRiffSizeLocal As UInt32 = CUInt(36 + dataLen)
+                                outBw.Write(newRiffSizeLocal)
+                                outBw.Write(System.Text.Encoding.ASCII.GetBytes("WAVE"))
+
+                                ' fmt chunk (PCM)
+                                outBw.Write(System.Text.Encoding.ASCII.GetBytes("fmt "))
+                                outBw.Write(CUInt(16)) ' PCM fmt chunk size
+                                outBw.Write(CUShort(1)) ' audio format = PCM
+                                outBw.Write(CUShort(outChannels))
+                                outBw.Write(CInt(outSampleRate))
+                                Dim byteRate As UInt32 = CUInt(outSampleRate * outChannels * (outBitsPerSample \ 8))
+                                outBw.Write(byteRate)
+                                Dim blockAlign As UInt16 = CUShort(outChannels * (outBitsPerSample \ 8))
+                                outBw.Write(blockAlign)
+                                outBw.Write(CUShort(outBitsPerSample))
+
+                                ' data chunk
+                                outBw.Write(System.Text.Encoding.ASCII.GetBytes("data"))
+                                outBw.Write(CUInt(dataLen))
+
+                                ' Copier les données audio depuis l'offset audioStart
+                                inFs.Seek(audioStart, SeekOrigin.Begin)
+                                Dim bufferSize As Integer = 65536
+                                Dim buffer(bufferSize - 1) As Byte
+                                Dim remaining As Long = dataLen
+                                While remaining > 0
+                                    Dim toRead As Integer = CInt(Math.Min(bufferSize, remaining))
+                                    Dim rd As Integer = inFs.Read(buffer, 0, toRead)
+                                    If rd <= 0 Then Exit While
+                                    outFs.Write(buffer, 0, rd)
+                                    remaining -= rd
+                                End While
+
+                                outBw.Flush()
+                                outFs.Flush()
+                            End Using
+                        End Using
+
+                        ' Remplacer le fichier original par le fixe
+                        Try
+                            File.Delete(wavPath)
+                        Catch
+                        End Try
+                        File.Move(tempPath, wavPath)
+
+                        CDAudioAnalyzer.DiagnosticWrite($"TRUNCATE_REBUILD_HEADER: rebuilt header for {wavPath}, channels={outChannels}, sampleRate={outSampleRate}, bits={outBitsPerSample}, dataLen={dataLen}")
+                    Catch exRebuild As Exception
+                        CDAudioAnalyzer.DiagnosticWrite($"TRUNCATE_REBUILD_ERROR: {wavPath} - {exRebuild.Message}")
+                    End Try
+
+                    Return
+                End If
+
+                ' Si le chunk data dans l'en-tête est manifestement incorrect (> taille fichier), on l'ignore
+                If dataChunkSize > fs.Length Then
+                    ' Remplacer dataChunkSize par la taille réelle disponible
+                    dataChunkSize = CUInt(actualDataAvailable)
+                End If
+
+                ' Si le chunk data est plus grand que expectedDataBytes, on tronque
+                If dataChunkSize > expectedDataBytes Then
+                    Dim newDataSize As UInt32 = CUInt(expectedDataBytes)
+
+                    ' Écrire la nouvelle taille du chunk 'data' (position = dataChunkOffset - 4)
+                    fs.Seek(dataChunkOffset - 4, SeekOrigin.Begin)
+                    bw.Write(newDataSize)
+
+                    ' Calculer et écrire la nouvelle taille RIFF (file size - 8)
+                    Dim newRiffSize As UInt32 = CUInt((dataChunkOffset + newDataSize) - 8)
+                    fs.Seek(4, SeekOrigin.Begin)
+                    bw.Write(newRiffSize)
+
+                    ' Truncate the file to cut extra data
+                    fs.SetLength(dataChunkOffset + newDataSize)
+                End If
+
+                ' Extrait un extrait de fin pour diagnostic (dernier 64KB ou moins)
+                Try
+                    Dim snippetSize As Integer = 65536
+                    Dim toRead As Integer = CInt(Math.Min(snippetSize, Math.Max(0, fs.Length - dataChunkOffset)))
+                    If toRead > 0 Then
+                        fs.Seek(Math.Max(dataChunkOffset, fs.Length - toRead), SeekOrigin.Begin)
+                        Dim snippet As Byte() = br.ReadBytes(toRead)
+                        Dim tailPath = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(wavPath) & "_tail.bin")
+                        File.WriteAllBytes(tailPath, snippet)
+                        Try
+                            System.IO.File.AppendAllText(CDAudioAnalyzer.DiagnosticsLogPath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] TruncateWavDataChunk: tailSaved={tailPath}{Environment.NewLine}", System.Text.Encoding.UTF8)
+                        Catch
+                        End Try
+                    End If
+                Catch
+                End Try
+
+                bw.Flush()
+
+                ' Logging détaillé pour diagnostic
+                Try
+                    Dim logLine As String = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] TruncateWavDataChunk: file={wavPath}, fileLength={fs.Length}, dataChunkSize={dataChunkSize}, expectedDataBytes={expectedDataBytes}, dataChunkOffset={dataChunkOffset}, channels=?, sampleRate=?, bitsPerSample=?{Environment.NewLine}"
+                    Try
+                        System.IO.File.AppendAllText(CDAudioAnalyzer.DiagnosticsLogPath, logLine, System.Text.Encoding.UTF8)
+                    Catch
+                        ' Ignorer les erreurs de log pour ne pas casser l'extraction
+                    End Try
+                Catch
+                End Try
+            End Using
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"[FormCompresser] TruncateWavDataChunk error: {ex.Message}")
+            Throw
+        End Try
+    End Sub
 
     ''' <summary>
     ''' Extrait une piste en FLAC avec compression sans perte via FFMpeg
@@ -2015,8 +2882,8 @@ Public Class FormCompresser
             If File.Exists(cheminWavTemp) Then
                 Try
                     File.Delete(cheminWavTemp)
-                Catch
-                    ' Ignorer les erreurs de suppression
+                Catch exDel As Exception
+                    CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_FLAC_CLEANUP_ERROR: {cheminWavTemp} - {exDel.Message}")
                 End Try
             End If
         End Try
@@ -3121,7 +3988,6 @@ Public Class FormCompresser
             Return ".jpg" ' Par défaut
         End If
 
-        ' Vérifier les "magic numbers" (signatures de fichier)
         ' PNG: 89 50 4E 47
         If imageBytes.Length >= 4 AndAlso
            imageBytes(0) = &H89 AndAlso imageBytes(1) = &H50 AndAlso
@@ -3153,6 +4019,121 @@ Public Class FormCompresser
         ' Par défaut, supposer JPEG
         Return ".jpg"
     End Function
+
+    ''' <summary>
+    ''' Convertit un WAV en MP3 en utilisant LAME via NAudio.Lame
+    ''' </summary>
+    Private Async Function ConvertWavToMp3(cheminWav As String, cheminMp3 As String, qualiteIndex As Integer,
+                                          titre As String, artiste As String, numeroPiste As String,
+                                          album As String, artisteAlbum As String, annee As String,
+                                          genre As String, commentaire As String, pochette As Image) As Task(Of Boolean)
+        Return Await Task.Run(Function() As Boolean
+                                  Dim tmpPath As String = cheminMp3 & ".tmp"
+                                  Dim result As Boolean = False
+                                  Try
+                                      Using reader As New NAudio.Wave.AudioFileReader(cheminWav)
+                                          Dim bitrate As Integer = 320
+                                          Select Case qualiteIndex
+                                              Case 0
+                                                  bitrate = 128
+                                              Case 1
+                                                  bitrate = 192
+                                              Case 2
+                                                  bitrate = 256
+                                              Case 3
+                                                  bitrate = 320
+                                          End Select
+
+                                          ' Resample to 44100 Hz 16-bit PCM for LAME compatibility
+                                          Dim targetFormat = New NAudio.Wave.WaveFormat(44100, 16, reader.WaveFormat.Channels)
+                                          Try
+                                              CDAudioAnalyzer.DiagnosticWrite($"CONVERT_MP3_START: Track={numeroPiste} WAV={cheminWav} TMP={tmpPath} Target={cheminMp3} Bitrate={bitrate} OrigFormat={reader.WaveFormat} ResampleTo={targetFormat}")
+                                          Catch
+                                          End Try
+
+                                          Using resampler As New NAudio.Wave.MediaFoundationResampler(reader, targetFormat)
+                                              resampler.ResamplerQuality = 60
+                                              ' Encode to temporary file first using resampled PCM
+                                              Using writer As New NAudio.Lame.LameMP3FileWriter(tmpPath, resampler.WaveFormat, bitrate)
+                                                  ' Manually copy from resampler to writer (avoid WaveStream type mismatch)
+                                                  Const bufSize As Integer = 32768
+                                                  Dim buffer(bufSize - 1) As Byte
+                                                  Dim read As Integer = 0
+                                                  Do
+                                                      read = resampler.Read(buffer, 0, bufSize)
+                                                      If read <= 0 Then Exit Do
+                                                      writer.Write(buffer, 0, read)
+                                                  Loop
+                                              End Using
+                                          End Using
+
+                                          ' After writer closed, validate tmp file
+                                          Dim fileOk As Boolean = False
+                                          Try
+                                              If File.Exists(tmpPath) Then
+                                                  Dim fi As New FileInfo(tmpPath)
+                                                  CDAudioAnalyzer.DiagnosticWrite($"CONVERT_MP3_TMP_CREATED: Track={numeroPiste} TMP={tmpPath} Size={fi.Length}")
+                                                  If fi.Length > 0 Then
+                                                      fileOk = True
+                                                  End If
+                                              Else
+                                                  CDAudioAnalyzer.DiagnosticWrite($"CONVERT_MP3_TMP_MISSING: Track={numeroPiste} TMP={tmpPath} not found after encode")
+                                              End If
+                                          Catch exInfo As Exception
+                                              CDAudioAnalyzer.DiagnosticWrite($"CONVERT_MP3_TMP_INFO_ERROR: Track={numeroPiste} TMP={tmpPath} - {exInfo.ToString}")
+                                          End Try
+
+                                          If fileOk Then
+                                              ' Write metadata to the temp file
+                                              Try
+                                                  EcrireMetadonnees(tmpPath, titre, artiste, numeroPiste, album, artisteAlbum, annee, genre, commentaire, pochette, TextBoxNumCD.Text)
+                                              Catch exMeta As Exception
+                                                  CDAudioAnalyzer.DiagnosticWrite($"CONVERT_MP3_META_ERROR: Track={numeroPiste} TMP={tmpPath} - {exMeta.ToString}")
+                                              End Try
+
+                                              ' Move temp to final atomically (delete existing if present)
+                                              Try
+                                                  If File.Exists(cheminMp3) Then
+                                                      File.Delete(cheminMp3)
+                                                  End If
+                                                  File.Move(tmpPath, cheminMp3)
+                                                  Dim fi2 As New FileInfo(cheminMp3)
+                                                  CDAudioAnalyzer.DiagnosticWrite($"CONVERT_MP3_DONE: Track={numeroPiste} MP3={cheminMp3} Size={fi2.Length}")
+                                                  result = True
+                                              Catch exMove As Exception
+                                                  CDAudioAnalyzer.DiagnosticWrite($"CONVERT_MP3_MOVE_ERROR: Track={numeroPiste} TMP={tmpPath} -> {cheminMp3} - {exMove.ToString}")
+                                                  ' Attempt cleanup
+                                                  Try
+                                                      If File.Exists(tmpPath) Then File.Delete(tmpPath)
+                                                  Catch
+                                                  End Try
+                                                  result = False
+                                              End Try
+                                          Else
+                                              ' tmp file invalid -> cleanup
+                                              Try
+                                                  If File.Exists(tmpPath) Then File.Delete(tmpPath)
+                                              Catch
+                                              End Try
+                                              CDAudioAnalyzer.DiagnosticWrite($"CONVERT_MP3_FAILED_EMPTY: Track={numeroPiste} WAV={cheminWav}")
+                                              result = False
+                                          End If
+                                      End Using
+                                  Catch ex As Exception
+                                      CDAudioAnalyzer.DiagnosticWrite($"CONVERT_MP3_EXCEPTION: Track={numeroPiste} WAV={cheminWav} - {ex.ToString}")
+                                      ' Ensure tmp removed
+                                      Try
+                                          If File.Exists(tmpPath) Then File.Delete(tmpPath)
+                                      Catch
+                                      End Try
+                                      result = False
+                                  End Try
+
+                                  Return result
+                              End Function)
+    End Function
+
+
 
     ''' <summary>
     ''' Met à jour les labels d'information de la pochette (dimensions et taille)

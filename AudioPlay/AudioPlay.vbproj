@@ -41,6 +41,40 @@
     <None Update="LOOP_GUIDE_USER.*.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="WindowBefore.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="WindowBefore_GUIDE_USER.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="WindowAfter.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="WindowAfter_GUIDE_USER.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="MinSilence.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="MinSilence_GUIDE_USER.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="MaxStartTrim.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="MaxStartTrim_GUIDE_USER.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="help\FormCompresser\*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="help\FormCompresser\*.html">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="help\**\*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="AUDIOPLAY_GUIDE_COMPLET.*.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -123,5 +157,14 @@
 
   <!-- Correction automatique du bug du designer Visual Studio -->
   <Import Project="AudioPlay.targets" Condition="Exists('AudioPlay.targets')" />
+
+  <!-- Copier explicitement les fichiers d'aide de help\FormCompresser vers le dossier de sortie racine -->
+  <Target Name="CopyFormCompresserHelp" AfterTargets="Build">
+    <ItemGroup>
+      <FormCompresserHelp Include="help\FormCompresser\*.html" />
+    </ItemGroup>
+    <Message Text="Copying FormCompresser help files to $(OutputPath)" Importance="high" />
+    <Copy SourceFiles="@(FormCompresserHelp)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>

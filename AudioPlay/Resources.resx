@@ -2089,6 +2089,9 @@ La piste en cours sera terminée avant l'arrêt.</value>
   <data name="Compressor_GlobalProgress" xml:space="preserve">
     <value>Progression globale: {0} / {1}</value>
   </data>
+  <data name="Compressor_AnalysisInProgress" xml:space="preserve">
+    <value>Analyse en cours...</value>
+  </data>
   <data name="Compressor_DefaultComment" xml:space="preserve">
     <value>Extraction par AudioPlay...</value>
   </data>
@@ -2499,6 +2502,21 @@ NON = Mode SUBMIT (soumission reelle)
   </data>
   <data name="FCompress_Label_Normalization" xml:space="preserve">
     <value>Normalisation Son</value>
+  </data>
+  <data name="GroupBoxAnalyzerOptions_Text" xml:space="preserve">
+    <value>Options d'analyse</value>
+  </data>
+  <data name="LabelWindowBefore_Text" xml:space="preserve">
+    <value>Fenêtre avant TOC (s):</value>
+  </data>
+  <data name="LabelWindowAfter_Text" xml:space="preserve">
+    <value>Fenêtre après TOC (s):</value>
+  </data>
+  <data name="LabelMinSilence_Text" xml:space="preserve">
+    <value>Silence minimal soutenu (s):</value>
+  </data>
+  <data name="LabelMaxStartTrim_Text" xml:space="preserve">
+    <value>Trim début max (s):</value>
   </data>
   <data name="FormInputEmail_Title" xml:space="preserve">
     <value>Envoie Courriel à GnuDB</value>

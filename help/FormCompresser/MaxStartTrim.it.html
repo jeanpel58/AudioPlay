@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⏮️ Aiuto - Trim massimo d'inizio</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; color: #333; }
+        .container { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #3498db; margin-top: 25px; }
+        .info { background-color: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .icon { font-size: 1.3em; margin-right: 5px; }
+        ul { line-height: 1.8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="icon">⏮️</span>Trim massimo d'inizio (secondi)</h1>
+
+        <p>Questo parametro limita quanto l'analizzatore può spostare l'inizio rilevato della traccia successiva indietro per compensare sovrapposizioni o TOC disallineato.</p>
+
+        <h2>Perché</h2>
+        <p>Su alcuni CD le tracce si sovrappongono o l'inizio nel TOC è leggermente in ritardo. Limitare il trim impedisce di rimuovere troppo audio importante.</p>
+
+        <h2>Cosa cambia modificandolo</h2>
+        <ul>
+            <li>Valore più piccolo: conservativo, protegge l'audio desiderato ma può lasciare sovrapposizioni.</li>
+            <li>Valore più grande: più aggressivo nell'eliminare sovrapposizioni, ma rischioso se troppo grande.</li>
+        </ul>
+
+        <div class="info">
+            <strong>Raccomandazione:</strong> Default: 8.0s. Aumentare per master con forte sovrapposizione, diminuire per sicurezza. Evitare valori estremi.
+        </div>
+    </div>
+</body>
+</html>

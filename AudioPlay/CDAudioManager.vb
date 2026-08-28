@@ -1,4 +1,5 @@
 Imports System.IO
+Imports System.Text.Json
 Imports System.Runtime.InteropServices
 Imports NAudio.Wave
 
@@ -22,6 +23,65 @@ Public Class CDAudioManager
     ' Constantes pour la lecture CD
     Private Const CD_SECTOR_SIZE As Integer = 2352 ' Taille d'un secteur CD audio brut
     Private Const CD_FRAMES_PER_SECOND As Integer = 75 ' 75 frames par seconde
+    ' Cache en mémoire pour la méthode de lecture par lecteur (clé = lettre de lecteur, ex: "D:")
+    ' Valeurs: 0 = LBA sector (frame), 1 = original (frame*2048, TrackMode=2), 2 = fallback (frame*2048, TrackMode=1)
+    Private Shared readerModeCache As New Dictionary(Of String, Integer)()
+    ' Logging verbeux pour la lecture CD (hex-dumps et messages par secteur) - désactivé par défaut
+    Private Shared VerboseCDReadLogging As Boolean = False
+
+    ' Fichier persistant pour mémoriser la méthode de lecture par lecteur
+    Private Shared ReadOnly readerModeCacheFile As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "reader_mode.json")
+
+    ' Charger le cache persisté au démarrage de la classe
+    Shared Sub New()
+        LoadReaderModeCache()
+    End Sub
+
+    Private Shared Sub LoadReaderModeCache()
+        Try
+            Dim dir = Path.GetDirectoryName(readerModeCacheFile)
+            If Not Directory.Exists(dir) Then
+                Directory.CreateDirectory(dir)
+            End If
+
+            If File.Exists(readerModeCacheFile) Then
+                Dim json = File.ReadAllText(readerModeCacheFile)
+                If Not String.IsNullOrWhiteSpace(json) Then
+                    Dim data = JsonSerializer.Deserialize(Of Dictionary(Of String, Integer))(json)
+                    If data IsNot Nothing Then
+                        SyncLock readerModeCache
+                            readerModeCache = New Dictionary(Of String, Integer)(data, StringComparer.OrdinalIgnoreCase)
+                        End SyncLock
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            ' Ne pas interrompre l'exécution si le chargement échoue
+            System.Diagnostics.Debug.WriteLine($"[CDAudioManager] LoadReaderModeCache failed: {ex.Message}")
+        End Try
+    End Sub
+
+    Private Shared Sub SaveReaderModeCache()
+        Try
+            Dim dir = Path.GetDirectoryName(readerModeCacheFile)
+            If Not Directory.Exists(dir) Then
+                Directory.CreateDirectory(dir)
+            End If
+
+            Dim options As New JsonSerializerOptions(JsonSerializerDefaults.Web) With {
+                .WriteIndented = True
+            }
+            Dim snapshot As Dictionary(Of String, Integer)
+            SyncLock readerModeCache
+                snapshot = New Dictionary(Of String, Integer)(readerModeCache, StringComparer.OrdinalIgnoreCase)
+            End SyncLock
+
+            Dim json = JsonSerializer.Serialize(snapshot, options)
+            File.WriteAllText(readerModeCacheFile, json)
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"[CDAudioManager] SaveReaderModeCache failed: {ex.Message}")
+        End Try
+    End Sub
 
     <DllImport("kernel32.dll", SetLastError:=True, CharSet:=CharSet.Auto)>
     Private Shared Function CreateFile(lpFileName As String, dwDesiredAccess As UInteger,
@@ -413,6 +473,11 @@ Public Class CDAudioManager
         Try
             System.Diagnostics.Debug.WriteLine($"[CDAudioManager] Création lecteur pour {track.Drive} piste {track.TrackNumber}")
             System.Diagnostics.Debug.WriteLine($"[CDAudioManager] Frames stockés: {track.StartFrame} à {track.EndFrame} (durée: {track.Duration:mm\:ss})")
+            ' Écrire dans le log de diagnostic pour prouver les frames passées au lecteur
+            Try
+                CDAudioAnalyzer.DiagnosticWrite($"CREER_LECTEUR: Track={track.TrackNumber} Start={track.StartFrame} End={track.EndFrame} Duration={track.Duration.TotalSeconds:F2}s")
+            Catch
+            End Try
 
             ' Créer un lecteur CD avec les informations de la piste, en passant les frames précalculés
             Dim cdReader As New CDReader(track.Drive, track.TrackNumber, track.Duration, track.StartFrame, track.EndFrame)
@@ -668,14 +733,9 @@ Public Class CDAudioManager
             Dim totalFrames = _endFrame - _startFrame
             _length = CLng(totalFrames) * 2352L
 
-            ' CORRECTION SPÉCIALE pour piste 1 : Réduire légèrement _length pour compenser
-            ' la différence entre -150 et -337 frames et éviter débordement de 3-4 secondes
-            If trackNumber = 1 Then
-                ' Réduire de 215 frames (187 + 28 de marge) = environ 2.87 secondes
-                ' Les 28 frames supplémentaires (≈0.37s) éliminent complètement la note résiduelle
-                _length = Math.Max(0, _length - (215L * 2352L))
-                System.Diagnostics.Debug.WriteLine($"[CDReader] Piste 1: _length réduit de 215 frames pour éviter débordement")
-            End If
+            ' NOTE: ne pas appliquer de corrections fixes sur les offsets de lecture ici.
+            ' Les frames de début/fin (_startFrame/_endFrame) sont calculées par l'analyse
+            ' et doivent être respectées telles quelles lors de la lecture.
 
             _position = 0
 
@@ -734,43 +794,209 @@ Public Class CDAudioManager
                     ' - Piste 1: Correction de -150 frames (limitée par frame de départ ~152)
                     ' - Autres pistes: Correction de -337 frames (~4.5 secondes)
                     ' MAIS pour la piste 1, on limite aussi framesToRead à la fin pour éviter débordement
-                    Dim frameALire As Long
-                    If _trackNumber = 1 Then
-                        ' Piste 1: -150 frames = environ 2 secondes
-                        frameALire = currentFrame - 150
-                        If frameALire < 0 Then frameALire = 0
-                    Else
-                        ' Autres pistes: -337 frames = environ 4.5 secondes
-                        frameALire = currentFrame - 337
-                        If frameALire < 0 Then frameALire = 0
+                    ' Lire exactement à partir de la frame courante (aucune correction fixe)
+                    Dim frameALire As Long = currentFrame
+
+                    ' Prepare default raw read (LBA sector index, TrackMode=2)
+                    Dim rawRead As New RAW_READ_INFO()
+                    rawRead.DiskOffset = frameALire
+                    rawRead.SectorCount = CUInt(framesToRead)
+                    rawRead.TrackMode = 2 ' CDDA (audio)
+
+                    ' Check if we have a cached working mode for this drive
+                    Dim cacheKey As String = _drive.TrimEnd("\"c, ":"c).ToUpper()
+                    Dim cachedMode As Integer = -1
+                    Dim hasCache As Boolean = False
+                    SyncLock readerModeCache
+                        hasCache = readerModeCache.TryGetValue(cacheKey, cachedMode)
+                    End SyncLock
+
+                    Dim forcedMode As Integer = -1 ' -1 = none, 0 = LBA, 1 = orig, 2 = fallback
+                    If hasCache Then
+                        forcedMode = cachedMode
                     End If
 
-                    Dim rawRead As New RAW_READ_INFO With {
-                        .DiskOffset = frameALire * 2048L,
-                        .SectorCount = CUInt(framesToRead),
-                        .TrackMode = 2 ' CDDA (audio)
-                    }
-
                     If _position = 0 Then
-                        System.Diagnostics.Debug.WriteLine($"[CDReader] ⭐ PREMIÈRE LECTURE Piste {_trackNumber} - currentFrame={currentFrame}, frameALire={frameALire} (correction={If(_trackNumber = 1, "-150", "-337")}), DiskOffset={rawRead.DiskOffset}, framesToRead={framesToRead}, framesRestants={framesRestants}, _startFrame={_startFrame}, _endFrame={_endFrame}")
+                        System.Diagnostics.Debug.WriteLine($"[CDReader] ⭐ PREMIÈRE LECTURE Piste {_trackNumber} - currentFrame={currentFrame}, frameALire={frameALire} (no offset), DiskOffset={rawRead.DiskOffset}, framesToRead={framesToRead}, framesRestants={framesRestants}, _startFrame={_startFrame}, _endFrame={_endFrame}")
+                        ' Écrire la première frame lue dans le log de diagnostic
+                        Try
+                            CDAudioAnalyzer.DiagnosticWrite($"CDREAD_FIRST: Track={_trackNumber} currentFrame={currentFrame} startFrame={_startFrame} endFrame={_endFrame}")
+                        Catch
+                        End Try
                     End If
 
                     Dim bytesReturned As UInteger = 0
                     Dim bufferHandle As GCHandle = GCHandle.Alloc(_buffer, GCHandleType.Pinned)
 
                     Try
-                        Dim success = DeviceIoControl(_hDevice, IOCTL_CDROM_RAW_READ,
-                                                      rawRead, CUInt(Marshal.SizeOf(rawRead)),
-                                                      bufferHandle.AddrOfPinnedObject(), CUInt(_buffer.Length),
-                                                      bytesReturned, IntPtr.Zero)
+                        Dim success As Boolean = False
+                        Dim bytesReturnedLocal As UInteger = 0
+
+                        ' If we have a cached/forced mode for this drive, use it
+                        If forcedMode = 1 Then
+                            ' Original behavior: DiskOffset = frame*2048, TrackMode = 2
+                            Dim rawReadOrig As RAW_READ_INFO = rawRead
+                            rawReadOrig.DiskOffset = frameALire * 2048L
+                            rawReadOrig.TrackMode = 2
+                            success = DeviceIoControl(_hDevice, IOCTL_CDROM_RAW_READ, rawReadOrig, CUInt(Marshal.SizeOf(rawReadOrig)), bufferHandle.AddrOfPinnedObject(), CUInt(_buffer.Length), bytesReturnedLocal, IntPtr.Zero)
+                        ElseIf forcedMode = 2 Then
+                            ' Fallback: DiskOffset = frame*2048, TrackMode = 1
+                            Dim rawRead2 As RAW_READ_INFO = rawRead
+                            rawRead2.DiskOffset = frameALire * 2048L
+                            rawRead2.TrackMode = 1
+                            success = DeviceIoControl(_hDevice, IOCTL_CDROM_RAW_READ, rawRead2, CUInt(Marshal.SizeOf(rawRead2)), bufferHandle.AddrOfPinnedObject(), CUInt(_buffer.Length), bytesReturnedLocal, IntPtr.Zero)
+                        Else
+                            ' Default: DiskOffset = LBA sector index, TrackMode = 2
+                            success = DeviceIoControl(_hDevice, IOCTL_CDROM_RAW_READ, rawRead, CUInt(Marshal.SizeOf(rawRead)), bufferHandle.AddrOfPinnedObject(), CUInt(_buffer.Length), bytesReturnedLocal, IntPtr.Zero)
+                        End If
+
+                        bytesReturned = bytesReturnedLocal
 
                         If Not success OrElse bytesReturned = 0 Then
                             System.Diagnostics.Debug.WriteLine($"[CDReader] Erreur lecture secteur {currentFrame}")
+
                             Exit While
                         End If
 
                         _bufferDataLength = CInt(bytesReturned)
                         _bufferPosition = 0
+
+                        ' Diagnostic: analyser les premiers octets lus pour détecter données nulles/corrompues
+                        Try
+                            Dim nz As Integer = 0
+                            For i As Integer = 0 To CInt(bytesReturned) - 1
+                                If _buffer(i) <> 0 Then nz += 1
+                            Next
+
+                            ' Construire un petit hex dump des premiers 64 octets (ou moins) seulement si le logging verbeux est activé
+                            If VerboseCDReadLogging Then
+                                Dim dumpLen As Integer = Math.Min(CInt(bytesReturned), 64)
+                                Dim sb As New System.Text.StringBuilder()
+                                For i As Integer = 0 To dumpLen - 1
+                                    sb.Append(_buffer(i).ToString("X2"))
+                                    If i < dumpLen - 1 Then sb.Append(" ")
+                                Next
+
+                                CDAudioAnalyzer.DiagnosticWrite($"CDREAD_RAW: Track={_trackNumber} currentFrame={currentFrame} bytesReturned={bytesReturned} nonZeroBytes={nz} hexFirst{dumpLen}={sb.ToString}")
+                            Else
+                                ' Minimal logging: juste un résumé pour ce bloc
+                                CDAudioAnalyzer.DiagnosticWrite($"CDREAD_SUMMARY: Track={_trackNumber} currentFrame={currentFrame} bytesReturned={bytesReturned} nonZeroBytes={nz}")
+                            End If
+
+                            ' If we read only zeros, attempt a fallback with alternate parameters
+                            If nz = 0 Then
+                                Try
+                                    ' First try: attempt to mimic the original behavior used previously by the app
+                                    ' Some systems expected DiskOffset = frame * 2048 and TrackMode = 2
+                                    Try
+                                        CDAudioAnalyzer.DiagnosticWrite($"CDREAD_ORIG_TRY: Track={_trackNumber} currentFrame={currentFrame} - trying original mode (DiskOffset=frame*2048, TrackMode=2)")
+
+                                        Dim rawReadOrig As RAW_READ_INFO = rawRead
+                                        rawReadOrig.DiskOffset = frameALire * 2048L
+                                        rawReadOrig.SectorCount = CUInt(framesToRead)
+                                        rawReadOrig.TrackMode = 2
+
+                                        Dim bytesReturnedOrig As UInteger = 0
+                                        Dim successOrig = DeviceIoControl(_hDevice, IOCTL_CDROM_RAW_READ,
+                                                                          rawReadOrig, CUInt(Marshal.SizeOf(rawReadOrig)),
+                                                                          bufferHandle.AddrOfPinnedObject(), CUInt(_buffer.Length),
+                                                                          bytesReturnedOrig, IntPtr.Zero)
+
+                                        If successOrig AndAlso bytesReturnedOrig > 0 Then
+                                            Dim nzOrig As Integer = 0
+                                            For i As Integer = 0 To CInt(bytesReturnedOrig) - 1
+                                                If _buffer(i) <> 0 Then nzOrig += 1
+                                            Next
+
+                                            Dim dumpLenOrig As Integer = Math.Min(CInt(bytesReturnedOrig), 64)
+                                            Dim sbOrig As New System.Text.StringBuilder()
+                                            For i As Integer = 0 To dumpLenOrig - 1
+                                                sbOrig.Append(_buffer(i).ToString("X2"))
+                                                If i < dumpLenOrig - 1 Then sbOrig.Append(" ")
+                                            Next
+
+                                        If VerboseCDReadLogging Then
+                                            CDAudioAnalyzer.DiagnosticWrite($"CDREAD_ORIG_RESULT: Track={_trackNumber} currentFrame={currentFrame} bytesReturned={bytesReturnedOrig} nonZeroBytes={nzOrig} hexFirst{dumpLenOrig}={sbOrig.ToString}")
+                                        Else
+                                            CDAudioAnalyzer.DiagnosticWrite($"CDREAD_ORIG_RESULT_SUMMARY: Track={_trackNumber} currentFrame={currentFrame} bytesReturned={bytesReturnedOrig} nonZeroBytes={nzOrig}")
+                                        End If
+
+                                            If nzOrig > 0 Then
+                                                _bufferDataLength = CInt(bytesReturnedOrig)
+                                                _bufferPosition = 0
+                                                ' Found valid data using original mode; skip other fallbacks
+                                        ' Cache this mode for the drive so future reads use it directly
+                                        Try
+                                            SyncLock readerModeCache
+                                                readerModeCache(cacheKey) = 1
+                                            End SyncLock
+                                        Catch
+                                        End Try
+                                        Continue While
+                                            End If
+                                        Else
+                                            CDAudioAnalyzer.DiagnosticWrite($"CDREAD_ORIG_ERROR: Track={_trackNumber} currentFrame={currentFrame} successOrig={successOrig} bytesReturnedOrig={bytesReturnedOrig}")
+                                        End If
+                                    Catch exOrig As Exception
+                                        CDAudioAnalyzer.DiagnosticWrite($"CDREAD_ORIG_EXCEPTION: Track={_trackNumber} currentFrame={currentFrame} - {exOrig.Message}")
+                                    End Try
+
+                                    ' Second try: fallback previously implemented (2048 blocks, TrackMode=1)
+                                    CDAudioAnalyzer.DiagnosticWrite($"CDREAD_FALLBACK: Track={_trackNumber} currentFrame={currentFrame} - attempting alternate read (2048-byte units, TrackMode=1)")
+
+                                    Dim rawRead2 As RAW_READ_INFO = rawRead
+                                    rawRead2.DiskOffset = frameALire * 2048L
+                                    rawRead2.SectorCount = CUInt(framesToRead)
+                                    rawRead2.TrackMode = 1
+
+                                    Dim bytesReturned2 As UInteger = 0
+                                    Dim success2 = DeviceIoControl(_hDevice, IOCTL_CDROM_RAW_READ,
+                                                                   rawRead2, CUInt(Marshal.SizeOf(rawRead2)),
+                                                                   bufferHandle.AddrOfPinnedObject(), CUInt(_buffer.Length),
+                                                                   bytesReturned2, IntPtr.Zero)
+
+                                    If success2 AndAlso bytesReturned2 > 0 Then
+                                        Dim nz2 As Integer = 0
+                                        For i As Integer = 0 To CInt(bytesReturned2) - 1
+                                            If _buffer(i) <> 0 Then nz2 += 1
+                                        Next
+
+                                        Dim dumpLen2 As Integer = Math.Min(CInt(bytesReturned2), 64)
+                                        Dim sb2 As New System.Text.StringBuilder()
+                                        For i As Integer = 0 To dumpLen2 - 1
+                                            sb2.Append(_buffer(i).ToString("X2"))
+                                            If i < dumpLen2 - 1 Then sb2.Append(" ")
+                                        Next
+
+                                        If VerboseCDReadLogging Then
+                                            CDAudioAnalyzer.DiagnosticWrite($"CDREAD_FALLBACK_RESULT: Track={_trackNumber} currentFrame={currentFrame} bytesReturned={bytesReturned2} nonZeroBytes={nz2} hexFirst{dumpLen2}={sb2.ToString}")
+                                        Else
+                                            CDAudioAnalyzer.DiagnosticWrite($"CDREAD_FALLBACK_RESULT_SUMMARY: Track={_trackNumber} currentFrame={currentFrame} bytesReturned={bytesReturned2} nonZeroBytes={nz2}")
+                                        End If
+
+                                        If nz2 > 0 Then
+                                            _bufferDataLength = CInt(bytesReturned2)
+                                            _bufferPosition = 0
+                                            ' Cache this successful fallback for the drive
+                                            Try
+                                                SyncLock readerModeCache
+                                                    readerModeCache(cacheKey) = 2
+                                                End SyncLock
+                                            Catch
+                                            End Try
+                                        Else
+                                            CDAudioAnalyzer.DiagnosticWrite($"CDREAD_FALLBACK_FAILED: Track={_trackNumber} currentFrame={currentFrame} - still zero-filled")
+                                        End If
+                                    Else
+                                        CDAudioAnalyzer.DiagnosticWrite($"CDREAD_FALLBACK_ERROR: Track={_trackNumber} currentFrame={currentFrame} success2={success2} bytesReturned2={bytesReturned2}")
+                                    End If
+                                Catch exFb As Exception
+                                    CDAudioAnalyzer.DiagnosticWrite($"CDREAD_FALLBACK_EXCEPTION: Track={_trackNumber} currentFrame={currentFrame} - {exFb.Message}")
+                                End Try
+                            End If
+                        Catch exDiag As Exception
+                            System.Diagnostics.Debug.WriteLine($"[CDReader] Diagnostic error: {exDiag.Message}")
+                        End Try
                     Finally
                         bufferHandle.Free()
                     End Try

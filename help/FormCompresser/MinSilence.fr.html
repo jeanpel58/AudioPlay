@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔇 Aide - Silence minimal</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; color: #333; }
+        .container { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #3498db; margin-top: 25px; }
+        .info { background-color: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .icon { font-size: 1.3em; margin-right: 5px; }
+        ul { line-height: 1.8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="icon">🔇</span>Silence soutenu minimal (secondes)</h1>
+
+        <p>Ce paramètre définit la durée minimale de silence continu requise pour qu'une zone soit considérée comme un point de coupe valide.</p>
+
+        <h2>Pourquoi</h2>
+        <p>Des passages très courts ou faibles ne doivent pas être pris pour des frontières de piste. Exiger un silence soutenu évite les faux positifs dus à de brèves baisses de volume.</p>
+
+        <h2>Effet d'un changement</h2>
+        <ul>
+            <li>Valeur plus petite : plus sensible, risque de couper dans de brefs passages faibles.</li>
+            <li>Valeur plus grande : nécessite un silence plus long, plus sûr mais peut manquer de courts gaps.</li>
+        </ul>
+
+        <div class="info">
+            <strong>Recommandation :</strong> par défaut : 0,5s. Ne pas régler en dessous de 0,05s pour éviter des comportements instables.
+        </div>
+    </div>
+</body>
+</html>

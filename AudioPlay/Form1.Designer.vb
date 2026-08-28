@@ -96,7 +96,7 @@ Partial Class Form1
         GroupBox1.Controls.Add(Label_Bitrate)
         GroupBox1.Controls.Add(LabelBitrateTitre)
         GroupBox1.Controls.Add(TextBox_Display)
-        GroupBox1.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        GroupBox1.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0)
         GroupBox1.Location = New Point(12, 6)
         GroupBox1.Name = "GroupBox1"
         GroupBox1.Size = New Size(534, 117)
@@ -106,12 +106,12 @@ Partial Class Form1
         ' Button_AudioPlay_Aide
         ' 
         Button_AudioPlay_Aide.BackgroundImageLayout = ImageLayout.Stretch
-        Button_AudioPlay_Aide.FlatAppearance.BorderColor = Color.FromArgb(CByte(224), CByte(224), CByte(224))
+        Button_AudioPlay_Aide.FlatAppearance.BorderColor = Color.FromArgb(224, 224, 224)
         Button_AudioPlay_Aide.FlatAppearance.BorderSize = 0
         Button_AudioPlay_Aide.FlatAppearance.MouseDownBackColor = Color.Transparent
         Button_AudioPlay_Aide.FlatAppearance.MouseOverBackColor = Color.Transparent
         Button_AudioPlay_Aide.FlatStyle = FlatStyle.Flat
-        Button_AudioPlay_Aide.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Button_AudioPlay_Aide.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
         Button_AudioPlay_Aide.Location = New Point(407, 14)
         Button_AudioPlay_Aide.Name = "Button_AudioPlay_Aide"
         Button_AudioPlay_Aide.Size = New Size(30, 30)
@@ -123,12 +123,12 @@ Partial Class Form1
         ' 
         Button_APropos.BackColor = Color.Transparent
         Button_APropos.BackgroundImageLayout = ImageLayout.Stretch
-        Button_APropos.FlatAppearance.BorderColor = Color.FromArgb(CByte(224), CByte(224), CByte(224))
+        Button_APropos.FlatAppearance.BorderColor = Color.FromArgb(224, 224, 224)
         Button_APropos.FlatAppearance.BorderSize = 0
         Button_APropos.FlatAppearance.MouseDownBackColor = Color.Red
         Button_APropos.FlatAppearance.MouseOverBackColor = Color.Lime
         Button_APropos.FlatStyle = FlatStyle.Flat
-        Button_APropos.Font = New Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Button_APropos.Font = New Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0)
         Button_APropos.Location = New Point(443, 14)
         Button_APropos.Name = "Button_APropos"
         Button_APropos.Size = New Size(80, 30)
@@ -146,7 +146,7 @@ Partial Class Form1
         ' 
         ' Label3
         ' 
-        Label3.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Label3.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0)
         Label3.Location = New Point(415, 71)
         Label3.Name = "Label3"
         Label3.Size = New Size(94, 17)
@@ -164,7 +164,7 @@ Partial Class Form1
         ' 
         ' Label1
         ' 
-        Label1.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Label1.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0)
         Label1.Location = New Point(302, 71)
         Label1.Name = "Label1"
         Label1.Size = New Size(94, 17)
@@ -185,7 +185,7 @@ Partial Class Form1
         ' 
         ' LabelVolume
         ' 
-        LabelVolume.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        LabelVolume.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0)
         LabelVolume.Location = New Point(138, 71)
         LabelVolume.Name = "LabelVolume"
         LabelVolume.Size = New Size(150, 17)
@@ -195,7 +195,7 @@ Partial Class Form1
         ' 
         ' Label2
         ' 
-        Label2.Font = New Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Label2.Font = New Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0)
         Label2.Location = New Point(18, 71)
         Label2.Name = "Label2"
         Label2.Size = New Size(95, 17)
@@ -205,7 +205,7 @@ Partial Class Form1
         ' 
         ' Label_DureeRestante
         ' 
-        Label_DureeRestante.Font = New Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Label_DureeRestante.Font = New Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0)
         Label_DureeRestante.Location = New Point(18, 88)
         Label_DureeRestante.Name = "Label_DureeRestante"
         Label_DureeRestante.Size = New Size(95, 16)
@@ -259,7 +259,7 @@ Partial Class Form1
         ' 
         TextBox_Display.BackColor = Color.LightCyan
         TextBox_Display.BorderStyle = BorderStyle.None
-        TextBox_Display.Font = New Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        TextBox_Display.Font = New Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0)
         TextBox_Display.Location = New Point(7, 50)
         TextBox_Display.Name = "TextBox_Display"
         TextBox_Display.ReadOnly = True
@@ -278,7 +278,7 @@ Partial Class Form1
         GroupBox2.Controls.Add(Button_PauseReprise)
         GroupBox2.Controls.Add(Button_CalculBPM)
         GroupBox2.Controls.Add(Button_Mute)
-        GroupBox2.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        GroupBox2.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0)
         GroupBox2.Location = New Point(13, 129)
         GroupBox2.Name = "GroupBox2"
         GroupBox2.Size = New Size(533, 54)
@@ -289,12 +289,12 @@ Partial Class Form1
         ' 
         Button_Aleatoire.BackColor = Color.Transparent
         Button_Aleatoire.BackgroundImageLayout = ImageLayout.Stretch
-        Button_Aleatoire.FlatAppearance.BorderColor = Color.FromArgb(CByte(224), CByte(224), CByte(224))
+        Button_Aleatoire.FlatAppearance.BorderColor = Color.FromArgb(224, 224, 224)
         Button_Aleatoire.FlatAppearance.BorderSize = 0
         Button_Aleatoire.FlatAppearance.MouseDownBackColor = Color.Transparent
         Button_Aleatoire.FlatAppearance.MouseOverBackColor = Color.Transparent
         Button_Aleatoire.FlatStyle = FlatStyle.Flat
-        Button_Aleatoire.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Button_Aleatoire.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, 0)
         Button_Aleatoire.Location = New Point(285, 8)
         Button_Aleatoire.Name = "Button_Aleatoire"
         Button_Aleatoire.Size = New Size(40, 40)
@@ -306,12 +306,12 @@ Partial Class Form1
         ' 
         Button_Power.BackColor = Color.Transparent
         Button_Power.BackgroundImageLayout = ImageLayout.Stretch
-        Button_Power.FlatAppearance.BorderColor = Color.FromArgb(CByte(224), CByte(224), CByte(224))
+        Button_Power.FlatAppearance.BorderColor = Color.FromArgb(224, 224, 224)
         Button_Power.FlatAppearance.BorderSize = 0
         Button_Power.FlatAppearance.MouseDownBackColor = Color.Transparent
         Button_Power.FlatAppearance.MouseOverBackColor = Color.Transparent
         Button_Power.FlatStyle = FlatStyle.Flat
-        Button_Power.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Button_Power.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, 0)
         Button_Power.Location = New Point(487, 8)
         Button_Power.Name = "Button_Power"
         Button_Power.Size = New Size(40, 40)
@@ -323,12 +323,12 @@ Partial Class Form1
         ' 
         Button_Suivant.BackColor = Color.Transparent
         Button_Suivant.BackgroundImageLayout = ImageLayout.Stretch
-        Button_Suivant.FlatAppearance.BorderColor = Color.FromArgb(CByte(224), CByte(224), CByte(224))
+        Button_Suivant.FlatAppearance.BorderColor = Color.FromArgb(224, 224, 224)
         Button_Suivant.FlatAppearance.BorderSize = 0
         Button_Suivant.FlatAppearance.MouseDownBackColor = Color.Transparent
         Button_Suivant.FlatAppearance.MouseOverBackColor = Color.Transparent
         Button_Suivant.FlatStyle = FlatStyle.Flat
-        Button_Suivant.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Button_Suivant.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, 0)
         Button_Suivant.Location = New Point(55, 8)
         Button_Suivant.Name = "Button_Suivant"
         Button_Suivant.Size = New Size(40, 40)
@@ -340,12 +340,12 @@ Partial Class Form1
         ' 
         Button_Precedent.BackColor = Color.Transparent
         Button_Precedent.BackgroundImageLayout = ImageLayout.Stretch
-        Button_Precedent.FlatAppearance.BorderColor = Color.FromArgb(CByte(224), CByte(224), CByte(224))
+        Button_Precedent.FlatAppearance.BorderColor = Color.FromArgb(224, 224, 224)
         Button_Precedent.FlatAppearance.BorderSize = 0
         Button_Precedent.FlatAppearance.MouseDownBackColor = Color.Transparent
         Button_Precedent.FlatAppearance.MouseOverBackColor = Color.Transparent
         Button_Precedent.FlatStyle = FlatStyle.Flat
-        Button_Precedent.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Button_Precedent.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, 0)
         Button_Precedent.Location = New Point(9, 8)
         Button_Precedent.Name = "Button_Precedent"
         Button_Precedent.Size = New Size(40, 40)
@@ -357,12 +357,12 @@ Partial Class Form1
         ' 
         Button_Arreter.BackColor = Color.Transparent
         Button_Arreter.BackgroundImageLayout = ImageLayout.Stretch
-        Button_Arreter.FlatAppearance.BorderColor = Color.FromArgb(CByte(224), CByte(224), CByte(224))
+        Button_Arreter.FlatAppearance.BorderColor = Color.FromArgb(224, 224, 224)
         Button_Arreter.FlatAppearance.BorderSize = 0
         Button_Arreter.FlatAppearance.MouseDownBackColor = Color.Transparent
         Button_Arreter.FlatAppearance.MouseOverBackColor = Color.Transparent
         Button_Arreter.FlatStyle = FlatStyle.Flat
-        Button_Arreter.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Button_Arreter.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, 0)
         Button_Arreter.Location = New Point(239, 8)
         Button_Arreter.Name = "Button_Arreter"
         Button_Arreter.Size = New Size(40, 40)
@@ -374,12 +374,12 @@ Partial Class Form1
         ' 
         Button_Jouer.BackColor = Color.Transparent
         Button_Jouer.BackgroundImageLayout = ImageLayout.Stretch
-        Button_Jouer.FlatAppearance.BorderColor = Color.FromArgb(CByte(224), CByte(224), CByte(224))
+        Button_Jouer.FlatAppearance.BorderColor = Color.FromArgb(224, 224, 224)
         Button_Jouer.FlatAppearance.BorderSize = 0
         Button_Jouer.FlatAppearance.MouseDownBackColor = Color.Transparent
         Button_Jouer.FlatAppearance.MouseOverBackColor = Color.Transparent
         Button_Jouer.FlatStyle = FlatStyle.Flat
-        Button_Jouer.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Button_Jouer.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, 0)
         Button_Jouer.Location = New Point(101, 8)
         Button_Jouer.Name = "Button_Jouer"
         Button_Jouer.Size = New Size(40, 40)
@@ -391,12 +391,12 @@ Partial Class Form1
         ' 
         Button_PauseReprise.BackColor = Color.Transparent
         Button_PauseReprise.BackgroundImageLayout = ImageLayout.Stretch
-        Button_PauseReprise.FlatAppearance.BorderColor = Color.FromArgb(CByte(224), CByte(224), CByte(224))
+        Button_PauseReprise.FlatAppearance.BorderColor = Color.FromArgb(224, 224, 224)
         Button_PauseReprise.FlatAppearance.BorderSize = 0
         Button_PauseReprise.FlatAppearance.MouseDownBackColor = Color.Transparent
         Button_PauseReprise.FlatAppearance.MouseOverBackColor = Color.Transparent
         Button_PauseReprise.FlatStyle = FlatStyle.Flat
-        Button_PauseReprise.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Button_PauseReprise.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, 0)
         Button_PauseReprise.Location = New Point(147, 8)
         Button_PauseReprise.Name = "Button_PauseReprise"
         Button_PauseReprise.Size = New Size(40, 40)
@@ -408,12 +408,12 @@ Partial Class Form1
         ' 
         Button_CalculBPM.BackColor = Color.Transparent
         Button_CalculBPM.BackgroundImageLayout = ImageLayout.Stretch
-        Button_CalculBPM.FlatAppearance.BorderColor = Color.FromArgb(CByte(224), CByte(224), CByte(224))
+        Button_CalculBPM.FlatAppearance.BorderColor = Color.FromArgb(224, 224, 224)
         Button_CalculBPM.FlatAppearance.BorderSize = 0
         Button_CalculBPM.FlatAppearance.MouseDownBackColor = Color.Transparent
         Button_CalculBPM.FlatAppearance.MouseOverBackColor = Color.Transparent
         Button_CalculBPM.FlatStyle = FlatStyle.Flat
-        Button_CalculBPM.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Button_CalculBPM.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, 0)
         Button_CalculBPM.Location = New Point(331, 8)
         Button_CalculBPM.Name = "Button_CalculBPM"
         Button_CalculBPM.Size = New Size(40, 40)
@@ -425,12 +425,12 @@ Partial Class Form1
         ' 
         Button_Mute.BackColor = Color.Transparent
         Button_Mute.BackgroundImageLayout = ImageLayout.Stretch
-        Button_Mute.FlatAppearance.BorderColor = Color.FromArgb(CByte(224), CByte(224), CByte(224))
+        Button_Mute.FlatAppearance.BorderColor = Color.FromArgb(224, 224, 224)
         Button_Mute.FlatAppearance.BorderSize = 0
         Button_Mute.FlatAppearance.MouseDownBackColor = Color.Transparent
         Button_Mute.FlatAppearance.MouseOverBackColor = Color.Transparent
         Button_Mute.FlatStyle = FlatStyle.Flat
-        Button_Mute.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Button_Mute.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, 0)
         Button_Mute.Location = New Point(193, 8)
         Button_Mute.Name = "Button_Mute"
         Button_Mute.Size = New Size(40, 40)
@@ -442,12 +442,12 @@ Partial Class Form1
         ' 
         Button_InfoSelect.BackColor = Color.Transparent
         Button_InfoSelect.BackgroundImageLayout = ImageLayout.Stretch
-        Button_InfoSelect.FlatAppearance.BorderColor = Color.FromArgb(CByte(224), CByte(224), CByte(224))
+        Button_InfoSelect.FlatAppearance.BorderColor = Color.FromArgb(224, 224, 224)
         Button_InfoSelect.FlatAppearance.BorderSize = 0
         Button_InfoSelect.FlatAppearance.MouseDownBackColor = Color.Transparent
         Button_InfoSelect.FlatAppearance.MouseOverBackColor = Color.Transparent
         Button_InfoSelect.FlatStyle = FlatStyle.Flat
-        Button_InfoSelect.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Button_InfoSelect.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, 0)
         Button_InfoSelect.Location = New Point(84, 8)
         Button_InfoSelect.Name = "Button_InfoSelect"
         Button_InfoSelect.Size = New Size(35, 35)
@@ -459,10 +459,10 @@ Partial Class Form1
         ' 
         Button_Ajout.BackColor = Color.Transparent
         Button_Ajout.BackgroundImageLayout = ImageLayout.Stretch
-        Button_Ajout.FlatAppearance.BorderColor = Color.FromArgb(CByte(224), CByte(224), CByte(224))
+        Button_Ajout.FlatAppearance.BorderColor = Color.FromArgb(224, 224, 224)
         Button_Ajout.FlatAppearance.BorderSize = 0
         Button_Ajout.FlatStyle = FlatStyle.Flat
-        Button_Ajout.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Button_Ajout.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, 0)
         Button_Ajout.Location = New Point(48, 8)
         Button_Ajout.Name = "Button_Ajout"
         Button_Ajout.Size = New Size(35, 35)
@@ -474,12 +474,12 @@ Partial Class Form1
         ' 
         Button_Playlist.BackColor = Color.Transparent
         Button_Playlist.BackgroundImageLayout = ImageLayout.Stretch
-        Button_Playlist.FlatAppearance.BorderColor = Color.FromArgb(CByte(224), CByte(224), CByte(224))
+        Button_Playlist.FlatAppearance.BorderColor = Color.FromArgb(224, 224, 224)
         Button_Playlist.FlatAppearance.BorderSize = 0
         Button_Playlist.FlatAppearance.MouseDownBackColor = Color.Transparent
         Button_Playlist.FlatAppearance.MouseOverBackColor = Color.Transparent
         Button_Playlist.FlatStyle = FlatStyle.Flat
-        Button_Playlist.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Button_Playlist.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, 0)
         Button_Playlist.Location = New Point(120, 8)
         Button_Playlist.Name = "Button_Playlist"
         Button_Playlist.Size = New Size(35, 35)
@@ -493,7 +493,7 @@ Partial Class Form1
         GroupBox3.Controls.Add(TextBox_Recherche)
         GroupBox3.Controls.Add(ComboBox_TypeRecherche)
         GroupBox3.Controls.Add(ListView1)
-        GroupBox3.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        GroupBox3.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0)
         GroupBox3.Location = New Point(13, 189)
         GroupBox3.Name = "GroupBox3"
         GroupBox3.Size = New Size(534, 467)
@@ -510,7 +510,7 @@ Partial Class Form1
         Button_ClearRecherche.FlatAppearance.MouseDownBackColor = Color.Red
         Button_ClearRecherche.FlatAppearance.MouseOverBackColor = Color.Lime
         Button_ClearRecherche.FlatStyle = FlatStyle.Flat
-        Button_ClearRecherche.Font = New Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Button_ClearRecherche.Font = New Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0)
         Button_ClearRecherche.Location = New Point(500, 15)
         Button_ClearRecherche.Name = "Button_ClearRecherche"
         Button_ClearRecherche.Size = New Size(25, 25)
@@ -520,7 +520,7 @@ Partial Class Form1
         ' 
         ' TextBox_Recherche
         ' 
-        TextBox_Recherche.Font = New Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        TextBox_Recherche.Font = New Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0)
         TextBox_Recherche.Location = New Point(149, 18)
         TextBox_Recherche.Name = "TextBox_Recherche"
         TextBox_Recherche.PlaceholderText = "Rechercher..."
@@ -530,7 +530,7 @@ Partial Class Form1
         ' ComboBox_TypeRecherche
         ' 
         ComboBox_TypeRecherche.DropDownStyle = ComboBoxStyle.DropDownList
-        ComboBox_TypeRecherche.Font = New Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        ComboBox_TypeRecherche.Font = New Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0)
         ComboBox_TypeRecherche.FormattingEnabled = True
         ComboBox_TypeRecherche.Location = New Point(8, 18)
         ComboBox_TypeRecherche.Name = "ComboBox_TypeRecherche"
@@ -542,13 +542,13 @@ Partial Class Form1
         ListView1.BackColor = Color.LightCyan
         ListView1.BorderStyle = BorderStyle.None
         ListView1.Columns.AddRange(New ColumnHeader() {Num, Chansons, BPM, Durée})
-        ListView1.Font = New Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        ListView1.Font = New Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0)
         ListView1.FullRowSelect = True
         ListView1.GridLines = True
         ListView1.Location = New Point(8, 47)
         ListView1.Name = "ListView1"
         ListView1.OwnerDraw = True
-        ListView1.Size = New Size(517, 408)
+        ListView1.Size = New Size(517, 281)
         ListView1.TabIndex = 1
         ListView1.UseCompatibleStateImageBehavior = False
         ListView1.View = View.Details
@@ -585,7 +585,7 @@ Partial Class Form1
         GroupBox4.Controls.Add(Button_Playlist)
         GroupBox4.Controls.Add(Button_InfoSelect)
         GroupBox4.Controls.Add(Button_Ajout)
-        GroupBox4.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        GroupBox4.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0)
         GroupBox4.Location = New Point(14, 720)
         GroupBox4.Name = "GroupBox4"
         GroupBox4.Size = New Size(533, 50)
@@ -596,12 +596,12 @@ Partial Class Form1
         ' 
         ButtonModeDJ.BackColor = Color.Transparent
         ButtonModeDJ.BackgroundImageLayout = ImageLayout.Stretch
-        ButtonModeDJ.FlatAppearance.BorderColor = Color.FromArgb(CByte(224), CByte(224), CByte(224))
+        ButtonModeDJ.FlatAppearance.BorderColor = Color.FromArgb(224, 224, 224)
         ButtonModeDJ.FlatAppearance.BorderSize = 0
         ButtonModeDJ.FlatAppearance.MouseDownBackColor = Color.Transparent
         ButtonModeDJ.FlatAppearance.MouseOverBackColor = Color.Transparent
         ButtonModeDJ.FlatStyle = FlatStyle.Flat
-        ButtonModeDJ.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        ButtonModeDJ.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, 0)
         ButtonModeDJ.Location = New Point(12, 8)
         ButtonModeDJ.Name = "ButtonModeDJ"
         ButtonModeDJ.Size = New Size(35, 35)
@@ -616,7 +616,7 @@ Partial Class Form1
         Button_Loop_Aide.FlatAppearance.MouseDownBackColor = Color.Red
         Button_Loop_Aide.FlatAppearance.MouseOverBackColor = Color.Lime
         Button_Loop_Aide.FlatStyle = FlatStyle.Flat
-        Button_Loop_Aide.Font = New Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Button_Loop_Aide.Font = New Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0)
         Button_Loop_Aide.Location = New Point(301, 15)
         Button_Loop_Aide.Name = "Button_Loop_Aide"
         Button_Loop_Aide.Size = New Size(58, 25)
@@ -628,12 +628,12 @@ Partial Class Form1
         ' 
         Button_Loop.BackColor = Color.Transparent
         Button_Loop.BackgroundImageLayout = ImageLayout.Stretch
-        Button_Loop.FlatAppearance.BorderColor = Color.FromArgb(CByte(224), CByte(224), CByte(224))
+        Button_Loop.FlatAppearance.BorderColor = Color.FromArgb(224, 224, 224)
         Button_Loop.FlatAppearance.BorderSize = 0
         Button_Loop.FlatAppearance.MouseDownBackColor = Color.Transparent
         Button_Loop.FlatAppearance.MouseOverBackColor = Color.Transparent
         Button_Loop.FlatStyle = FlatStyle.Flat
-        Button_Loop.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Button_Loop.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, 0)
         Button_Loop.Location = New Point(260, 8)
         Button_Loop.Name = "Button_Loop"
         Button_Loop.Size = New Size(35, 35)
@@ -645,12 +645,12 @@ Partial Class Form1
         ' 
         Button_Parametres.BackColor = Color.Transparent
         Button_Parametres.BackgroundImageLayout = ImageLayout.Stretch
-        Button_Parametres.FlatAppearance.BorderColor = Color.FromArgb(CByte(224), CByte(224), CByte(224))
+        Button_Parametres.FlatAppearance.BorderColor = Color.FromArgb(224, 224, 224)
         Button_Parametres.FlatAppearance.BorderSize = 0
         Button_Parametres.FlatAppearance.MouseDownBackColor = Color.Transparent
         Button_Parametres.FlatAppearance.MouseOverBackColor = Color.Transparent
         Button_Parametres.FlatStyle = FlatStyle.Flat
-        Button_Parametres.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Button_Parametres.Font = New Font("Segoe UI", 6.75F, FontStyle.Regular, GraphicsUnit.Point, 0)
         Button_Parametres.Location = New Point(492, 8)
         Button_Parametres.Name = "Button_Parametres"
         Button_Parametres.Size = New Size(35, 35)
@@ -661,7 +661,7 @@ Partial Class Form1
         ' GroupBox_Avancement
         ' 
         GroupBox_Avancement.Controls.Add(TrackBar_Avancement)
-        GroupBox_Avancement.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        GroupBox_Avancement.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0)
         GroupBox_Avancement.Location = New Point(14, 662)
         GroupBox_Avancement.Name = "GroupBox_Avancement"
         GroupBox_Avancement.Size = New Size(533, 52)

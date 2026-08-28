@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⏮️ Ayuda - Ventana antes (TOC)</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; color: #333; }
+        .container { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #3498db; margin-top: 25px; }
+        .info { background-color: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        ul { line-height: 1.8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="icon">⏮️</span>Ventana antes del TOC (segundos)</h1>
+
+        <p>Esta configuración controla cuántos segundos de audio se analizan ANTES del TOC (el punto registrado en la tabla del disco, normalmente el inicio de la siguiente pista) al buscar transiciones entre pistas.</p>
+
+        <h2>Por qué</h2>
+        <p>El TOC marca la frontera lógica de la pista, pero el contenido real puede superponerse (crossfades). Analizar antes del TOC permite detectar silencios o fundidos que indican el final real de la pista anterior.</p>
+
+        <h2>¿Qué es el TOC?</h2>
+        <p>El TOC (Tabla de Contenidos) de un CD de audio es una tabla grabada en el disco que enumera los puntos de inicio de cada pista (en minutos:segundos:frames) y la posición de lead-out. Es un índice lógico utilizado por los reproductores de CD. El TOC no describe la forma de onda real alrededor de esos puntos: no indica si las pistas se solapan, si hay crossfades o si existe silencio. Por eso es necesario analizar el audio alrededor del TOC para encontrar un punto de corte seguro.</p>
+
+        <h2>Qué cambia si lo modifica</h2>
+        <ul>
+            <li>Valor menor: más rápido, menos probable detectar fundidos largos antes del TOC.</li>
+            <li>Valor mayor: analiza más audio antes del TOC y puede detectar mejor silencios, pero cuesta más tiempo.</li>
+        </ul>
+
+        <div class="info">
+            <strong>Recomendación:</strong> valor conservador por defecto: 20 segundos. Use 10–30s según el mastering del disco.
+        </div>
+    </div>
+</body>
+</html>

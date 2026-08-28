@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⏮️ Aide - Trim début maximum</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; color: #333; }
+        .container { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #3498db; margin-top: 25px; }
+        .info { background-color: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .icon { font-size: 1.3em; margin-right: 5px; }
+        ul { line-height: 1.8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="icon">⏮️</span>Trim début maximum (secondes)</h1>
+
+        <p>Ce paramètre limite jusqu'où l'analyseur peut reculer le début détecté de la piste suivante pour compenser un chevauchement ou un TOC mal aligné.</p>
+
+        <h2>Pourquoi</h2>
+        <p>Sur certains CD, les pistes se chevauchent ou le démarrage indiqué dans le TOC est en retard. Limiter le trim empêche de supprimer trop d'audio important.</p>
+
+        <h2>Effet d'un changement</h2>
+        <ul>
+            <li>Valeur plus petite : conservatrice, évite de couper trop d'audio mais peut conserver des chevauchements.</li>
+            <li>Valeur plus grande : plus agressive pour enlever les chevauchements, mais risquée si trop élevée.</li>
+        </ul>
+
+        <div class="info">
+            <strong>Recommandation :</strong> par défaut : 8.0s. Augmentez pour masters fortement chevauchés, réduisez pour être conservateur. Évitez les valeurs extrêmes.
+        </div>
+    </div>
+</body>
+</html>
