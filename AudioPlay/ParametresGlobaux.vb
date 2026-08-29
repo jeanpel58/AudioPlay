@@ -63,6 +63,12 @@ Public Module ParametresGlobaux
     Public volumeExtractionCD As Integer = 95
     ' === Mode TOC précis pour extraction CD (pour les albums sans silences) ===
     Public ModeTOCPrecis As Boolean = False
+    ' === Forcer l'utilisation uniquement du ripper externe (désactive le fallback interne) ===
+    ' Par défaut False : freac est prioritaire mais l'extracteur interne sert de fallback.
+    Public ForceOnlyExternalRipper As Boolean = False
+    ' === Option de test: empêcher temporairement le resampling/post-traitement WAV
+    ' Utilisez True pour conserver strictement le WAV produit par le ripper externe (freac)
+    Public SkipEnsureWavQuality As Boolean = False
     ' === Suppression des silences ===
     Public SupprimerSilenceDebut As Boolean = False
     Public SupprimerSilenceFin As Boolean = False

@@ -939,7 +939,10 @@ Les nouvelles informations sont maintenant enregistrées dans le fichier.</value
     <value>Couleur bordure GroupBox</value>
   </data>
   <data name="Theme_Pick_TrackBarBack" xml:space="preserve">
-    <value>Couleur de fond TrackBar</value>
+    <value>Couleur d'arrière-plan du TrackBar</value>
+  </data>
+  <data name="Theme_Pick_AccentColor" xml:space="preserve">
+    <value>Accent (couleur des barres de progression)</value>
   </data>
   <data name="Theme_Apply" xml:space="preserve">
     <value>Appliquer</value>
@@ -2520,6 +2523,41 @@ NON = Mode SUBMIT (soumission reelle)
   </data>
   <data name="FormInputEmail_Title" xml:space="preserve">
     <value>Envoie Courriel à GnuDB</value>
+  </data>
+
+  <!-- Added keys for picture box context menu and prompts -->
+  <data name="Menu_SearchCover" xml:space="preserve">
+    <value>Rechercher pochette</value>
+  </data>
+  <data name="Menu_AddCoverFromFile" xml:space="preserve">
+    <value>Ajouter depuis fichier...</value>
+  </data>
+  <data name="Tooltip_PictureBox_Prompt" xml:space="preserve">
+    <value>Clic droit pour options: rechercher / ajouter image</value>
+  </data>
+  <data name="Compressor_EnterArtistAlbum" xml:space="preserve">
+    <value>Indiquez artiste et album avant recherche.</value>
+  </data>
+  <data name="Compressor_SelectCoverFile" xml:space="preserve">
+    <value>Sélectionner un fichier image...</value>
+  </data>
+  <data name="Compressor_InvalidImage" xml:space="preserve">
+    <value>Image invalide</value>
+  </data>
+  <data name="Compressor_Error" xml:space="preserve">
+    <value>Erreur</value>
+  </data>
+  <data name="Menu_Size" xml:space="preserve">
+    <value>Affichage</value>
+  </data>
+  <data name="Menu_Size_Normal" xml:space="preserve">
+    <value>Tel quel</value>
+  </data>
+  <data name="Menu_Size_Stretch" xml:space="preserve">
+    <value>Étiré</value>
+  </data>
+  <data name="Menu_Size_Zoom" xml:space="preserve">
+    <value>Ajuster (Zoom)</value>
   </data>
 
 

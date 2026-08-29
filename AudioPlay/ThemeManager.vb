@@ -19,6 +19,8 @@ Public Class ThemeColors
     Public Property GroupBoxForeColor As Color
     Public Property GroupBoxBorderColor As Color
     Public Property TrackBarBackColor As Color
+    ' Accent color used for progress bars and highlights
+    Public Property AccentColor As Color
 End Class
 
 Public Class ThemeManager
@@ -58,7 +60,8 @@ Public Class ThemeManager
             .TextBoxForeColor = SystemColors.ControlText,
             .GroupBoxForeColor = SystemColors.ControlText,
             .GroupBoxBorderColor = Color.FromArgb(7, 192, 254),
-            .TrackBarBackColor = Color.LightCyan
+            .TrackBarBackColor = Color.LightCyan,
+            .AccentColor = Color.FromArgb(&H0, &H78, &HD7) ' default blue #0078D7
         }
     End Function
 
@@ -147,7 +150,8 @@ Public Class ThemeManager
                 $"{NameOf(ThemeColors.TextBoxForeColor)}={ColorToString(theme.TextBoxForeColor)}",
                 $"{NameOf(ThemeColors.GroupBoxForeColor)}={ColorToString(theme.GroupBoxForeColor)}",
                 $"{NameOf(ThemeColors.GroupBoxBorderColor)}={ColorToString(theme.GroupBoxBorderColor)}",
-                $"{NameOf(ThemeColors.TrackBarBackColor)}={ColorToString(theme.TrackBarBackColor)}"
+                $"{NameOf(ThemeColors.TrackBarBackColor)}={ColorToString(theme.TrackBarBackColor)}",
+                $"{NameOf(ThemeColors.AccentColor)}={ColorToString(theme.AccentColor)}"
             }
 
             File.WriteAllLines(themeFilePath, lines)
@@ -213,6 +217,8 @@ Public Class ThemeManager
                         theme.GroupBoxBorderColor = color
                     Case NameOf(ThemeColors.TrackBarBackColor)
                         theme.TrackBarBackColor = color
+                    Case NameOf(ThemeColors.AccentColor)
+                        theme.AccentColor = color
                 End Select
             Next
         Catch
@@ -293,6 +299,12 @@ Public Class ThemeManager
     Public Shared Sub ApplyThemeToForm(form As Form, theme As ThemeColors)
         form.BackColor = theme.FormBackColor
         form.ForeColor = theme.ControlForeColor
+        ' Remplacer dynamiquement les ProgressBar standards par CustomProgressBar pour permettre
+        ' l'application complète de AccentColor (owner-drawn)
+        Try
+            ReplaceProgressBarsInControl(form, theme)
+        Catch
+        End Try
 
         For Each ctrl As Control In form.Controls
             ApplyThemeToControl(ctrl, theme)
@@ -387,9 +399,136 @@ Public Class ThemeManager
             ctrl.ForeColor = theme.ControlForeColor
         End If
 
+        ' Appliquer AccentColor aux contrôles ProgressBar (standards) et ToolStripProgressBar
+        Try
+            If TypeOf ctrl Is ProgressBar Then
+                If TypeOf ctrl Is CustomProgressBar Then
+                    CType(ctrl, CustomProgressBar).FillColor = theme.AccentColor
+                Else
+                    ' Les ProgressBar standards n'acceptent pas toujours la couleur de remplissage
+                    ' on définit au moins les couleurs de fond/avant-plan pour cohérence
+                    ctrl.BackColor = theme.ControlBackColor
+                    ctrl.ForeColor = theme.AccentColor
+                End If
+            End If
+
+            ' Gérer ToolStrip / StatusStrip contenant ToolStripProgressBar
+            If TypeOf ctrl Is ToolStrip OrElse TypeOf ctrl Is StatusStrip Then
+                Dim ts As ToolStrip = CType(ctrl, ToolStrip)
+                For Each it As ToolStripItem In ts.Items
+                    If TypeOf it Is ToolStripProgressBar Then
+                        Try
+                            Dim tpb = CType(it, ToolStripProgressBar)
+                            ' Le contrôle ProgressBar hébergé peut être accessible via la propriété ProgressBar
+                            Try
+                                Dim innerPb = tpb.ProgressBar
+                                If innerPb IsNot Nothing Then
+                                    If TypeOf innerPb Is CustomProgressBar Then
+                                        CType(innerPb, CustomProgressBar).FillColor = theme.AccentColor
+                                    Else
+                                        innerPb.BackColor = theme.ControlBackColor
+                                        innerPb.ForeColor = theme.AccentColor
+                                    End If
+                                End If
+                            Catch
+                                ' Ignore si la propriété n'est pas accessible
+                            End Try
+                        Catch
+                        End Try
+                    End If
+                Next
+            End If
+        Catch
+        End Try
+
+        ' Appliquer AccentColor aux contrôles CustomProgressBar
+        Try
+            If TypeOf ctrl Is CustomProgressBar Then
+                Dim cpb = CType(ctrl, CustomProgressBar)
+                cpb.FillColor = theme.AccentColor
+            End If
+        Catch
+        End Try
+
         For Each child As Control In ctrl.Controls
             ApplyThemeToControl(child, theme)
         Next
+    End Sub
+
+    Private Shared Sub ReplaceProgressBarsInControl(parent As Control, theme As ThemeColors)
+        If parent Is Nothing Then Return
+        Try
+            For i As Integer = parent.Controls.Count - 1 To 0 Step -1
+                Dim c As Control = parent.Controls(i)
+                If TypeOf c Is System.Windows.Forms.ProgressBar AndAlso Not TypeOf c Is CustomProgressBar Then
+                    Try
+                        Dim oldPb As System.Windows.Forms.ProgressBar = CType(c, System.Windows.Forms.ProgressBar)
+                        Dim newPb As New CustomProgressBar()
+                        ' copier les propriétés essentielles
+                        newPb.Name = oldPb.Name
+                        newPb.Location = oldPb.Location
+                        newPb.Size = oldPb.Size
+                        newPb.Anchor = oldPb.Anchor
+                        newPb.Dock = oldPb.Dock
+                        newPb.Minimum = oldPb.Minimum
+                        newPb.Maximum = oldPb.Maximum
+                        Try
+                            newPb.Value = Math.Min(newPb.Maximum, Math.Max(newPb.Minimum, oldPb.Value))
+                        Catch
+                        End Try
+                        newPb.Visible = oldPb.Visible
+                        newPb.TabIndex = oldPb.TabIndex
+                        newPb.Enabled = oldPb.Enabled
+                        newPb.FillColor = theme.AccentColor
+
+                        ' remplacer dans la collection au même index
+                        parent.Controls.RemoveAt(i)
+                        parent.Controls.Add(newPb)
+                        parent.Controls.SetChildIndex(newPb, i)
+                    Catch
+                        ' ignore et continuer
+                    End Try
+                Else
+                    ' récursif
+                    Try
+                        ReplaceProgressBarsInControl(c, theme)
+                    Catch
+                    End Try
+                End If
+            Next
+        Catch
+        End Try
+    End Sub
+
+    Private Shared Sub ReplaceToolStripProgressBarsInToolStrip(ts As System.Windows.Forms.ToolStrip, theme As ThemeColors)
+        If ts Is Nothing Then Return
+        Try
+            For idx As Integer = ts.Items.Count - 1 To 0 Step -1
+                Dim it = ts.Items(idx)
+                If TypeOf it Is System.Windows.Forms.ToolStripProgressBar Then
+                    Try
+                        Dim tpb = CType(it, System.Windows.Forms.ToolStripProgressBar)
+                        Dim innerPb As New CustomProgressBar()
+                        innerPb.Size = New Size(Math.Max(80, tpb.Width), Math.Max(16, tpb.Height))
+                        innerPb.Minimum = tpb.Minimum
+                        innerPb.Maximum = tpb.Maximum
+                        Try
+                            innerPb.Value = Math.Min(innerPb.Maximum, Math.Max(innerPb.Minimum, tpb.Value))
+                        Catch
+                        End Try
+                        innerPb.FillColor = theme.AccentColor
+
+                        Dim host As New System.Windows.Forms.ToolStripControlHost(innerPb)
+                        host.Name = tpb.Name
+                        ts.Items.RemoveAt(idx)
+                        ts.Items.Insert(idx, host)
+                    Catch
+                        ' ignore
+                    End Try
+                End If
+            Next
+        Catch
+        End Try
     End Sub
 
     Private Shared Function ColorToString(color As Color) As String

@@ -25,7 +25,7 @@ Partial Class FormTelechargerFFMpeg
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FormTelechargerFFMpeg))
         LabelTitre = New Label()
         LabelMessage = New Label()
-        ProgressBarTelechargemEnt = New ProgressBar()
+        ProgressBarTelechargemEnt = New CustomProgressBar()
         LabelProgression = New Label()
         ButtonAnnuler = New Button()
         PictureBoxIcon = New PictureBox()
@@ -35,7 +35,7 @@ Partial Class FormTelechargerFFMpeg
         ' LabelTitre
         ' 
         LabelTitre.AutoSize = True
-        LabelTitre.Font = New Font("Segoe UI", 12F, FontStyle.Bold)
+        LabelTitre.Font = New Font("Segoe UI", 12.0F, FontStyle.Bold)
         LabelTitre.Location = New Point(80, 20)
         LabelTitre.Name = "LabelTitre"
         LabelTitre.Size = New Size(220, 21)
@@ -86,7 +86,7 @@ Partial Class FormTelechargerFFMpeg
         ' 
         ' FormTelechargerFFMpeg
         ' 
-        AutoScaleDimensions = New SizeF(7F, 15F)
+        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(534, 241)
         Controls.Add(PictureBoxIcon)
@@ -110,7 +110,7 @@ Partial Class FormTelechargerFFMpeg
 
     Friend WithEvents LabelTitre As Label
     Friend WithEvents LabelMessage As Label
-    Friend WithEvents ProgressBarTelechargemEnt As ProgressBar
+    Friend WithEvents ProgressBarTelechargemEnt As CustomProgressBar
     Friend WithEvents LabelProgression As Label
     Friend WithEvents ButtonAnnuler As Button
     Friend WithEvents PictureBoxIcon As PictureBox

@@ -1416,7 +1416,8 @@ Partial Public Class FormParametres
             .TextBoxForeColor = source.TextBoxForeColor,
             .GroupBoxForeColor = source.GroupBoxForeColor,
             .GroupBoxBorderColor = source.GroupBoxBorderColor,
-            .TrackBarBackColor = source.TrackBarBackColor
+            .TrackBarBackColor = source.TrackBarBackColor,
+            .AccentColor = source.AccentColor
         }
     End Function
 
@@ -1438,6 +1439,7 @@ Partial Public Class FormParametres
             Case NameOf(ThemeColors.GroupBoxForeColor) : Return theme.GroupBoxForeColor
             Case NameOf(ThemeColors.GroupBoxBorderColor) : Return theme.GroupBoxBorderColor
             Case NameOf(ThemeColors.TrackBarBackColor) : Return theme.TrackBarBackColor
+            Case NameOf(ThemeColors.AccentColor) : Return theme.AccentColor
         End Select
 
         Return Color.White
@@ -1461,6 +1463,7 @@ Partial Public Class FormParametres
             Case NameOf(ThemeColors.GroupBoxForeColor) : theme.GroupBoxForeColor = value
             Case NameOf(ThemeColors.GroupBoxBorderColor) : theme.GroupBoxBorderColor = value
             Case NameOf(ThemeColors.TrackBarBackColor) : theme.TrackBarBackColor = value
+            Case NameOf(ThemeColors.AccentColor) : theme.AccentColor = value
         End Select
     End Sub
 
@@ -1516,7 +1519,8 @@ Partial Public Class FormParametres
             New ThemeColorOption With {.Key = NameOf(ThemeColors.ListViewSelectionForeColor), .Label = LanguageManager.GetString("Theme_Pick_ListViewSelText")},
             New ThemeColorOption With {.Key = NameOf(ThemeColors.GroupBoxForeColor), .Label = LanguageManager.GetString("Theme_Pick_GroupBoxText")},
             New ThemeColorOption With {.Key = NameOf(ThemeColors.GroupBoxBorderColor), .Label = LanguageManager.GetString("Theme_Pick_GroupBoxBorder")},
-            New ThemeColorOption With {.Key = NameOf(ThemeColors.TrackBarBackColor), .Label = LanguageManager.GetString("Theme_Pick_TrackBarBack")}
+            New ThemeColorOption With {.Key = NameOf(ThemeColors.TrackBarBackColor), .Label = LanguageManager.GetString("Theme_Pick_TrackBarBack")},
+            New ThemeColorOption With {.Key = NameOf(ThemeColors.AccentColor), .Label = LanguageManager.GetString("Theme_Pick_AccentColor")}
         }
 
         For Each opt In options

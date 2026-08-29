@@ -1,5 +1,6 @@
 Imports System.IO
 Imports System.Text.Json
+Imports System.Text.RegularExpressions
 Imports System.Runtime.InteropServices
 Imports NAudio.Wave
 
@@ -28,6 +29,8 @@ Public Class CDAudioManager
     Private Shared readerModeCache As New Dictionary(Of String, Integer)()
     ' Logging verbeux pour la lecture CD (hex-dumps et messages par secteur) - désactivé par défaut
     Private Shared VerboseCDReadLogging As Boolean = False
+    ' Allow configuration of logging frequency to reduce log size
+    Private Shared ReadOnly CDReadSummaryInterval As Integer = 100
 
     ' Fichier persistant pour mémoriser la méthode de lecture par lecteur
     Private Shared ReadOnly readerModeCacheFile As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "reader_mode.json")
@@ -36,6 +39,564 @@ Public Class CDAudioManager
     Shared Sub New()
         LoadReaderModeCache()
     End Sub
+
+    ''' <summary>
+    ''' Tentative d'extraction d'une piste via un ripper externe freac (freaccmd) si présent.
+    ''' Recherche freaccmd.exe dans le dossier de l'application puis dans PATH.
+    ''' Retourne True si un fichier WAV valide a été produit.
+    ''' </summary>
+    Public Shared Function RipTrackWithFreac(track As CDTrack, outputWavPath As String, Optional timeoutMs As Integer = 5 * 60 * 1000, Optional outputFolder As String = Nothing, Optional cancellationCheck As Func(Of Boolean) = Nothing, Optional progressCallback As Action(Of Integer) = Nothing) As Boolean
+        Try
+            If track Is Nothing Then Return False
+            If String.IsNullOrWhiteSpace(outputWavPath) Then Return False
+
+            ' Chercher binaire dans le répertoire de l'application
+            Dim appDir As String = AppDomain.CurrentDomain.BaseDirectory
+            Dim candidates As New List(Of String)()
+            ' Chercher les binaires freaccmd*.exe (fre:ac) dans le répertoire de l'application
+            Try
+                For Each f In Directory.GetFiles(appDir, "freaccmd*.exe")
+                    candidates.Add(f)
+                Next
+                ' intentionally only search for freaccmd
+            Catch
+            End Try
+
+            ' Rechercher dans PATH avec pattern
+            Dim pathEnv = Environment.GetEnvironmentVariable("PATH")
+            If Not String.IsNullOrEmpty(pathEnv) Then
+                For Each p In pathEnv.Split({";"c}, StringSplitOptions.RemoveEmptyEntries)
+                    Try
+                        For Each f In Directory.GetFiles(p.Trim(), "freaccmd*.exe")
+                            candidates.Add(f)
+                        Next
+                    Catch
+                    End Try
+                Next
+            End If
+
+            Dim exePath As String = Nothing
+            For Each c In candidates
+                Try
+                    If File.Exists(c) Then
+                        exePath = c
+                        Exit For
+                    End If
+                Catch
+                End Try
+            Next
+
+            ' Écrire un marqueur de détection du ripper dans le dossier d'extraction si fourni, sinon dans le dossier de l'application
+            Try
+                Dim detectDir As String = If(String.IsNullOrEmpty(outputFolder), appDir, outputFolder)
+                Dim detectPath = Path.Combine(detectDir, "freac.detect.txt")
+                If String.IsNullOrEmpty(exePath) Then
+                    File.WriteAllText(detectPath, "NOT FOUND")
+                Else
+                    File.WriteAllText(detectPath, exePath)
+                End If
+            Catch
+            End Try
+
+            If String.IsNullOrEmpty(exePath) Then
+                ' Pas trouvé
+                Return False
+            End If
+
+            ' Construire arguments - utilisation conservative : device = lettre de lecteur (ex: "D:") et track number
+            ' Note: l'argument exact dépend de la version du binaire; cette implémentation utilise un template commun.
+            Dim driveLetter As String = If(String.IsNullOrEmpty(track.Drive), "", track.Drive)
+            Dim trackNum = track.TrackNumber
+            ' Template d'arguments par défaut : freaccmd compatible fallback (will be overridden for freaccmd)
+            Dim args As String = $"-D ""{driveLetter}"" -t {trackNum} -O wav -o ""{outputWavPath}"""
+
+            ' Si l'exécutable détecté est freaccmd, préparer des arguments de rip WAV
+            Dim exeName As String = Path.GetFileName(exePath).ToLowerInvariant()
+            If exeName.Contains("freaccmd") Then
+                Try
+                    CDAudioAnalyzer.DiagnosticWrite($"FREACCMD_DETECTED: exe={exePath} - will invoke for ripping")
+                Catch
+                End Try
+
+                Try
+                    Dim outDir = Path.GetDirectoryName(outputWavPath)
+                    Dim outFileName = Path.GetFileName(outputWavPath)
+                    args = $"--drive=""{driveLetter}"" --track={trackNum} --encoder=sndfile-wave -d ""{outDir}"" -o ""{outFileName}"""
+                    ' If caller requested progress updates, do not pass --quiet so freaccmd can emit progress
+                    If progressCallback Is Nothing Then
+                        args &= " --quiet"
+                    End If
+                    CDAudioAnalyzer.DiagnosticWrite($"FREACCMD_RUN: exe={exePath} args={args}")
+                Catch
+                End Try
+            End If
+
+            Try
+                CDAudioAnalyzer.DiagnosticWrite($"FREAC_RUN: exe={exePath} args={args}")
+            Catch
+            End Try
+
+            Dim psi As New ProcessStartInfo(exePath, args) With {
+                .CreateNoWindow = True,
+                .UseShellExecute = False,
+                .RedirectStandardOutput = True,
+                .RedirectStandardError = True
+            }
+            ' Définir le répertoire de travail si un dossier de sortie est fourni pour forcer freaccmd à écrire là
+            Try
+                If Not String.IsNullOrEmpty(outputFolder) Then
+                    psi.WorkingDirectory = outputFolder
+                Else
+                    psi.WorkingDirectory = Path.GetDirectoryName(outputWavPath)
+                End If
+            Catch
+            End Try
+
+            Using p As Process = Process.Start(psi)
+                If p Is Nothing Then Return False
+                ' Lire la sortie en tâche de fond pour éviter blocage
+                Dim stdOut As String = String.Empty
+                Dim stdErr As String = String.Empty
+                Dim stdOutBuilder As New System.Text.StringBuilder()
+                Dim stdErrBuilder As New System.Text.StringBuilder()
+                Dim outputSync As New Object()
+                ' Accept various progress formats (e.g. "23%", "23 / 100", or standalone numbers)
+                Dim progressRegex As New Regex("\b(100|[1-9]?\d)\b", RegexOptions.Compiled)
+                Dim lastProgress As Integer = -1
+                Dim sw As System.Diagnostics.Stopwatch = System.Diagnostics.Stopwatch.StartNew()
+
+                Dim reportProgressFromLine As Action(Of String) =
+                    Sub(line As String)
+                        Try
+                            If String.IsNullOrWhiteSpace(line) Then Exit Sub
+                            Dim m = progressRegex.Match(line)
+                            If Not m.Success Then Exit Sub
+                            Dim pct As Integer
+                            If Not Integer.TryParse(m.Groups(1).Value, pct) Then Exit Sub
+                            pct = Math.Max(0, Math.Min(100, pct))
+                            If pct > lastProgress Then
+                                lastProgress = pct
+                                If progressCallback IsNot Nothing Then
+                                    Try
+                                        ' Trace progress callback from stdout
+                                        Try
+                                            Dim tracePath = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                                            System.IO.File.AppendAllText(tracePath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Track={trackNum} source=stdout pct={pct}{Environment.NewLine}")
+                                        Catch
+                                        End Try
+                                        progressCallback(pct)
+                                    Catch
+                                    End Try
+                                End If
+                                Try
+                                    CDAudioAnalyzer.DiagnosticWrite($"FREAC_PROGRESS: Track={trackNum} pct={pct}")
+                                Catch
+                                End Try
+                            End If
+                        Catch
+                        End Try
+                    End Sub
+
+                Try
+                    If progressCallback IsNot Nothing Then
+                        ' Trace initial 0% callback
+                        Try
+                            Dim tracePath = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                            System.IO.File.AppendAllText(tracePath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Track={trackNum} source=init pct=0{Environment.NewLine}")
+                        Catch
+                        End Try
+                        progressCallback(0)
+                        lastProgress = 0
+                    End If
+                Catch
+                End Try
+                Try
+                    AddHandler p.OutputDataReceived,
+                        Sub(sender, e)
+                            Try
+                                If e.Data Is Nothing Then Exit Sub
+                                SyncLock outputSync
+                                    stdOutBuilder.AppendLine(e.Data)
+                                End SyncLock
+                                reportProgressFromLine(e.Data)
+                            Catch
+                            End Try
+                        End Sub
+
+                    AddHandler p.ErrorDataReceived,
+                        Sub(sender, e)
+                            Try
+                                If e.Data Is Nothing Then Exit Sub
+                                SyncLock outputSync
+                                    stdErrBuilder.AppendLine(e.Data)
+                                End SyncLock
+                                reportProgressFromLine(e.Data)
+                            Catch
+                            End Try
+                        End Sub
+
+                    p.BeginOutputReadLine()
+                    p.BeginErrorReadLine()
+
+                    ' If caller provided a progressCallback, additionally poll the output WAV file
+                    ' size to produce smoother progress updates when fre:ac emits few stdout lines.
+                    Dim cts As System.Threading.CancellationTokenSource = Nothing
+                    Dim pollTask As Task = Nothing
+                    If progressCallback IsNot Nothing Then
+                        Try
+                            cts = New System.Threading.CancellationTokenSource()
+                            Dim token = cts.Token
+                            pollTask = Task.Run(Sub()
+                                                    Try
+                                                        ' Expected bytes per second for CD audio: 44100 Hz * 2 channels * 2 bytes = 176400
+                        Dim bytesPerSec As Double = 176400.0
+                        Dim expectedSize As Double = 0.0
+                        ' Robust expected size calculation: prefer track.Duration, fallback to frame range if available
+                        Try
+                            If track IsNot Nothing AndAlso track.Duration.TotalSeconds > 0 Then
+                                expectedSize = track.Duration.TotalSeconds * bytesPerSec
+                            ElseIf track IsNot Nothing AndAlso track.EndFrame > track.StartFrame Then
+                                Dim durSec As Double = (track.EndFrame - track.StartFrame) / CD_FRAMES_PER_SECOND
+                                If durSec > 0 Then expectedSize = durSec * bytesPerSec
+                            End If
+                        Catch
+                        End Try
+
+                                                        While Not token.IsCancellationRequested AndAlso Not p.HasExited
+                                                            Try
+                                                                ' Check external cancellation predicate if provided
+                                                                If cancellationCheck IsNot Nothing Then
+                                                                    Try
+                                                                        If cancellationCheck() Then
+                                                                            Try
+                                                                                Dim tracePath = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                                                                                System.IO.File.AppendAllText(tracePath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Track={trackNum} source=poll CANCEL{Environment.NewLine}")
+                                                                            Catch
+                                                                            End Try
+                                                                            Try
+                                                                                CDAudioAnalyzer.DiagnosticWrite($"FREAC_POLL_CANCEL_REQUEST: Track={trackNum}")
+                                                                            Catch
+                                                                            End Try
+                                                                            Try
+                                                                                If Not p.HasExited Then p.Kill()
+                                                                            Catch
+                                                                            End Try
+                                                                            Exit While
+                                                                        End If
+                                                                    Catch
+                                                                    End Try
+                                                                End If
+                            If Not String.IsNullOrWhiteSpace(outputWavPath) AndAlso File.Exists(outputWavPath) Then
+                                                                    Dim len = New FileInfo(outputWavPath).Length
+                                                                    Try
+                                                                        Dim headerDeclaredData As Long? = TryReadWavDataChunkSize(outputWavPath)
+                                                                        If headerDeclaredData.HasValue AndAlso headerDeclaredData.Value > 0 Then
+                                                                            ' Use declared data chunk size + small header overhead as expected total file size
+                                                                            expectedSize = headerDeclaredData.Value + 128
+                                                                        End If
+                                                                    Catch
+                                                                    End Try
+
+                                                                    If expectedSize > 0 Then
+                                                                        Dim pctD = (len / expectedSize) * 100.0
+                                                                        ' Cap polling progress to avoid sudden jump to 99% before finalization
+                                                                        Dim maxPollPercent As Integer = 95
+                                                                        Dim pctI As Integer = CInt(Math.Max(0, Math.Min(maxPollPercent, Math.Floor(pctD))))
+                                                                        ' Ensure we show minimal progress once file starts growing to avoid staying at 0%
+                                                                        If pctI = 0 AndAlso len > 0 Then
+                                                                            pctI = 1
+                                                                        End If
+                                                                        If pctI > lastProgress Then
+                                                                            lastProgress = pctI
+                                        Try
+                                            ' Trace progress callback from polling
+                                            Try
+                                                Dim tracePath = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                                                System.IO.File.AppendAllText(tracePath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Track={trackNum} source=poll pct={pctI} size={len} expected={CInt(expectedSize)}{Environment.NewLine}")
+                                            Catch
+                                            End Try
+                                            progressCallback(pctI)
+                                        Catch
+                                        End Try
+                                                                            Try
+                                                                                CDAudioAnalyzer.DiagnosticWrite($"FREAC_POLL_PROGRESS: Track={trackNum} pct={pctI} size={len} expected={CInt(expectedSize)}")
+                                                                            Catch
+                                                                            End Try
+                                                                        End If
+                                                                    Else
+                                                                        ' No expected size: provide a gentle estimated progress based on elapsed time to avoid stuck 0%
+                                                                        Try
+                                                                            Dim elapsedPct As Integer = CInt(Math.Min(95.0, (sw.Elapsed.TotalMilliseconds / Math.Max(1, timeoutMs)) * 95.0))
+                                                                            If elapsedPct > lastProgress Then
+                                                                                lastProgress = elapsedPct
+                                                                                progressCallback(elapsedPct)
+                                                                            End If
+                                                                        Catch
+                                                                        End Try
+                                                                    End If
+                                                                End If
+                                                            Catch
+                                                            End Try
+                                                            System.Threading.Thread.Sleep(250)
+                                                        End While
+                                                        ' Cancel polling task if running
+                                                        Try
+                                                            If cts IsNot Nothing Then
+                                                                cts.Cancel()
+                                                                If pollTask IsNot Nothing Then pollTask.Wait(500)
+                                                            End If
+                                                        Catch
+                                                        End Try
+                                                    Catch
+                                                    End Try
+                                                End Sub, token)
+                        Catch
+                        End Try
+                    End If
+
+                    Dim timedOut As Boolean = True
+                    While sw.ElapsedMilliseconds < timeoutMs
+                        ' Regularly check for external cancellation request while waiting for process exit
+                        If cancellationCheck IsNot Nothing Then
+                            Try
+                                If cancellationCheck() Then
+                                    Try
+                                        Dim tracePath = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                                        System.IO.File.AppendAllText(tracePath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Track={trackNum} WAIT_LOOP CANCEL{Environment.NewLine}")
+                                    Catch
+                                    End Try
+                                    Try
+                                        CDAudioAnalyzer.DiagnosticWrite($"FREAC_WAIT_CANCEL_REQUEST: Track={trackNum}")
+                                    Catch
+                                    End Try
+                                    Try
+                                        If Not p.HasExited Then p.Kill()
+                                    Catch
+                                    End Try
+                                    Exit While
+                                End If
+                            Catch
+                            End Try
+                        End If
+                        If p.WaitForExit(250) Then
+                            timedOut = False
+                            Exit While
+                        End If
+
+                        Try
+                            If progressCallback IsNot Nothing Then
+                                Dim estimated As Integer = CInt(Math.Min(95.0, (sw.Elapsed.TotalMilliseconds / Math.Max(1, timeoutMs)) * 95.0))
+                                If estimated > lastProgress Then
+                                    lastProgress = estimated
+                                    progressCallback(estimated)
+                                End If
+                            End If
+                        Catch
+                        End Try
+                    End While
+
+                    If timedOut Then
+                        Try
+                            p.Kill()
+                        Catch
+                        End Try
+                        SyncLock outputSync
+                            stdOut = stdOutBuilder.ToString()
+                            stdErr = stdErrBuilder.ToString()
+                        End SyncLock
+                        CDAudioAnalyzer.DiagnosticWrite($"FREAC_TIMEOUT: Track={trackNum}")
+                        ' Ecrire le log d'exécution même en cas de timeout
+                        Try
+                            Dim logDir As String = If(String.IsNullOrEmpty(outputFolder), Path.GetDirectoryName(outputWavPath), outputFolder)
+                            Dim runLog = Path.Combine(logDir, $"freac_run_{trackNum}.log")
+                            File.WriteAllText(runLog, $"TIMEOUT{Environment.NewLine}stdout:{stdOut}{Environment.NewLine}stderr:{stdErr}")
+                        Catch
+                        End Try
+                        Return False
+                    End If
+
+                    p.WaitForExit(1000)
+                    SyncLock outputSync
+                        stdOut = stdOutBuilder.ToString()
+                        stdErr = stdErrBuilder.ToString()
+                    End SyncLock
+
+                    Try
+                        If progressCallback IsNot Nothing AndAlso lastProgress < 99 Then
+                            progressCallback(99)
+                            lastProgress = 99
+                        End If
+                    Catch
+                    End Try
+
+                    ' Après l'exécution, écrire un log détaillé (commande, cwd, exitcode, stdout, stderr, taille fichier si présent)
+                    Try
+                        Dim exitCode As Integer = -999
+                        Try
+                            exitCode = p.ExitCode
+                        Catch
+                        End Try
+                        Dim logDir As String = If(String.IsNullOrEmpty(outputFolder), Path.GetDirectoryName(outputWavPath), outputFolder)
+                        Dim runLog = Path.Combine(logDir, $"freac_run_{trackNum}.log")
+                        Dim producedSize As String = "(not found)"
+                        Try
+                            If File.Exists(outputWavPath) Then
+                                producedSize = New FileInfo(outputWavPath).Length.ToString()
+                            End If
+                        Catch
+                        End Try
+                        Dim info As String = $"TIMESTAMP:{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}{Environment.NewLine}COMMAND:{exePath} {args}{Environment.NewLine}WORKING_DIR:{psi.WorkingDirectory}{Environment.NewLine}EXITCODE:{exitCode}{Environment.NewLine}producedSize:{producedSize}{Environment.NewLine}stdout:{stdOut}{Environment.NewLine}stderr:{stdErr}{Environment.NewLine}"
+                        Try
+                            If Not Directory.Exists(logDir) Then Directory.CreateDirectory(logDir)
+                            File.WriteAllText(runLog, info)
+                        Catch
+                        End Try
+                    Catch
+                    End Try
+                Catch exWait As Exception
+                    Try
+                        CDAudioAnalyzer.DiagnosticWrite($"FREAC_ERROR_WAIT: {exWait.Message}")
+                    Catch
+                    End Try
+                End Try
+
+                ' Vérifier la création du fichier
+                Try
+                    Dim markerPath = outputWavPath & ".ripper.txt"
+
+                    ' Si le ripper a écrit le WAV dans le répertoire de l'exécutable par erreur,
+                    ' essayer de le déplacer vers outputWavPath (évite double extraction).
+                    If Not File.Exists(outputWavPath) AndAlso Not String.IsNullOrEmpty(outputFolder) Then
+                        Try
+                            Dim exeDir As String = Path.GetDirectoryName(exePath)
+                            Dim fileName As String = Path.GetFileName(outputWavPath)
+                            Dim localCandidates As New List(Of String) From {
+                                Path.Combine(exeDir, fileName),
+                                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName),
+                                Path.Combine(Environment.CurrentDirectory, fileName)
+                            }
+
+                            For Each cand In localCandidates
+                                Try
+                                    If File.Exists(cand) Then
+                                        ' Déplacer vers le dossier d'album (créer le dossier si nécessaire)
+                                        Dim destDir = Path.GetDirectoryName(outputWavPath)
+                                        If Not Directory.Exists(destDir) Then Directory.CreateDirectory(destDir)
+                                        File.Move(cand, outputWavPath)
+                                        CDAudioAnalyzer.DiagnosticWrite($"FREAC_MOVED_OUTPUT: from={cand} to={outputWavPath}")
+                                        Exit For
+                                    End If
+                                Catch exMove As Exception
+                                    Try
+                                        CDAudioAnalyzer.DiagnosticWrite($"FREAC_MOVE_FAILED: src={cand} dst={outputWavPath} err={exMove.Message}")
+                                    Catch
+                                    End Try
+                                End Try
+                            Next
+                        Catch
+                        End Try
+                    End If
+
+                    If File.Exists(outputWavPath) Then
+                        Dim fi = New FileInfo(outputWavPath)
+                        If fi.Length > 1024 Then
+                            Try
+                                File.WriteAllText(markerPath, $"FREAC_OK: exe={exePath} size={fi.Length}")
+                                ' Sauvegarder une copie de l'original produit par freac pour traçabilité
+                                ' Historique original supprimé: ne plus créer de copie .freac.orig pour éviter fichiers en double
+                            Catch
+                            End Try
+                            CDAudioAnalyzer.DiagnosticWrite($"FREAC_OK: Track={trackNum} WAV={outputWavPath} size={fi.Length}")
+                            ' Ecrire log d'exécution détaillé
+                            Try
+                                Dim logDir As String = If(String.IsNullOrEmpty(outputFolder), Path.GetDirectoryName(outputWavPath), outputFolder)
+                                Dim runLog = Path.Combine(logDir, $"freac_run_{trackNum}.log")
+                                File.WriteAllText(runLog, $"EXITCODE:{p.ExitCode}{Environment.NewLine}stdout:{stdOut}{Environment.NewLine}stderr:{stdErr}")
+                            Catch
+                            End Try
+                            Return True
+                        Else
+                            Try
+                                File.WriteAllText(markerPath, $"FREAC_SMALL_OUTPUT: exe={exePath} size={fi.Length}")
+                            Catch
+                            End Try
+                            CDAudioAnalyzer.DiagnosticWrite($"FREAC_SMALL_OUTPUT: Track={trackNum} WAV={outputWavPath} size={fi.Length}")
+                            Try
+                                Dim logDir As String = If(String.IsNullOrEmpty(outputFolder), Path.GetDirectoryName(outputWavPath), outputFolder)
+                                Dim runLog = Path.Combine(logDir, $"freac_run_{trackNum}.log")
+                                File.WriteAllText(runLog, $"EXITCODE:{p.ExitCode}{Environment.NewLine}stdout:{stdOut}{Environment.NewLine}stderr:{stdErr}")
+                            Catch
+                            End Try
+                            Return False
+                        End If
+                    Else
+                        Try
+                            File.WriteAllText(markerPath, $"FREAC_NO_OUTPUT: exe={exePath}")
+                        Catch
+                        End Try
+                        CDAudioAnalyzer.DiagnosticWrite($"FREAC_NO_OUTPUT: Track={trackNum} expected={outputWavPath}")
+                        Try
+                            Dim logDir As String = If(String.IsNullOrEmpty(outputFolder), Path.GetDirectoryName(outputWavPath), outputFolder)
+                            Dim runLog = Path.Combine(logDir, $"freac_run_{trackNum}.log")
+                            File.WriteAllText(runLog, $"EXITCODE:{p.ExitCode}{Environment.NewLine}stdout:{stdOut}{Environment.NewLine}stderr:{stdErr}")
+                        Catch
+                        End Try
+                        Return False
+                    End If
+                Catch exCheck As Exception
+                    Try
+                        File.WriteAllText(outputWavPath & ".ripper.txt", $"FREAC_CHECK_ERROR: {exCheck.Message}")
+                    Catch
+                    End Try
+                    Try
+                        CDAudioAnalyzer.DiagnosticWrite($"FREAC_CHECK_ERROR: {exCheck.Message}")
+                    Catch
+                    End Try
+                    Return False
+                End Try
+            End Using
+        Catch ex As Exception
+            Try
+                CDAudioAnalyzer.DiagnosticWrite($"FREAC_EXCEPTION: {ex.Message}")
+            Catch
+            End Try
+            Return False
+        End Try
+    End Function
+
+    ' Try to read WAV data chunk size (in bytes) from the file header in a robust way.
+    Private Shared Function TryReadWavDataChunkSize(wavPath As String) As Long?
+        Try
+            Using fs As New FileStream(wavPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
+                Using br As New BinaryReader(fs)
+                    ' Validate RIFF/WAVE
+                    fs.Seek(0, SeekOrigin.Begin)
+                    Dim riff = System.Text.Encoding.ASCII.GetString(br.ReadBytes(4))
+                    If riff <> "RIFF" Then Return Nothing
+                    fs.Seek(8, SeekOrigin.Begin)
+                    Dim wave = System.Text.Encoding.ASCII.GetString(br.ReadBytes(4))
+                    If wave <> "WAVE" Then Return Nothing
+
+                    ' Walk chunks until 'data' found or EOF
+                    fs.Seek(12, SeekOrigin.Begin)
+                    While fs.Position + 8 <= fs.Length
+                        Dim chunkId = System.Text.Encoding.ASCII.GetString(br.ReadBytes(4))
+                        Dim chunkSize = br.ReadUInt32()
+                        If chunkId = "data" Then
+                            Return CLng(chunkSize)
+                        Else
+                            ' Skip to next chunk (chunkSize may be odd, account for pad byte)
+                            Dim skip = CLng(chunkSize)
+                            fs.Seek(skip, SeekOrigin.Current)
+                            If (skip And 1) = 1 Then fs.Seek(1, SeekOrigin.Current)
+                        End If
+                    End While
+                End Using
+            End Using
+        Catch
+        End Try
+        Return Nothing
+    End Function
 
     Private Shared Sub LoadReaderModeCache()
         Try
@@ -699,6 +1260,8 @@ Public Class CDAudioManager
         Private _buffer As Byte()
         Private _bufferPosition As Integer
         Private _bufferDataLength As Integer
+        Private _readSummaryCounter As Integer = 0
+        Private _lastNonZeroCount As Integer = -1
 
         Public Sub New(drive As String, trackNumber As Integer, duration As TimeSpan, startFrame As Integer, endFrame As Integer)
             _drive = drive
@@ -799,7 +1362,9 @@ Public Class CDAudioManager
 
                     ' Prepare default raw read (LBA sector index, TrackMode=2)
                     Dim rawRead As New RAW_READ_INFO()
-                    rawRead.DiskOffset = frameALire
+                    ' DiskOffset pour IOCTL_CDROM_RAW_READ doit être exprimé en unités de blocs logiques (2048 bytes)
+                    ' Utiliser frameALire * 2048 pour conserver le comportement antérieur qui fonctionnait
+                    rawRead.DiskOffset = frameALire * 2048L
                     rawRead.SectorCount = CUInt(framesToRead)
                     rawRead.TrackMode = 2 ' CDDA (audio)
 
@@ -879,8 +1444,20 @@ Public Class CDAudioManager
 
                                 CDAudioAnalyzer.DiagnosticWrite($"CDREAD_RAW: Track={_trackNumber} currentFrame={currentFrame} bytesReturned={bytesReturned} nonZeroBytes={nz} hexFirst{dumpLen}={sb.ToString}")
                             Else
-                                ' Minimal logging: juste un résumé pour ce bloc
-                                CDAudioAnalyzer.DiagnosticWrite($"CDREAD_SUMMARY: Track={_trackNumber} currentFrame={currentFrame} bytesReturned={bytesReturned} nonZeroBytes={nz}")
+                                ' Minimal logging: limiter la fréquence pour éviter des logs volumineux
+                                _readSummaryCounter += 1
+                                Dim shouldLog As Boolean = False
+                                ' Log si le nombre d'octets non nuls change (anomalie) ou toutes les N lectures
+                                If nz <> _lastNonZeroCount Then
+                                    shouldLog = True
+                                ElseIf (_readSummaryCounter Mod CDReadSummaryInterval) = 0 Then
+                                    shouldLog = True
+                                End If
+
+                                If shouldLog Then
+                                    CDAudioAnalyzer.DiagnosticWrite($"CDREAD_SUMMARY: Track={_trackNumber} currentFrame={currentFrame} bytesReturned={bytesReturned} nonZeroBytes={nz}")
+                                End If
+                                _lastNonZeroCount = nz
                             End If
 
                             ' If we read only zeros, attempt a fallback with alternate parameters
@@ -915,24 +1492,24 @@ Public Class CDAudioManager
                                                 If i < dumpLenOrig - 1 Then sbOrig.Append(" ")
                                             Next
 
-                                        If VerboseCDReadLogging Then
-                                            CDAudioAnalyzer.DiagnosticWrite($"CDREAD_ORIG_RESULT: Track={_trackNumber} currentFrame={currentFrame} bytesReturned={bytesReturnedOrig} nonZeroBytes={nzOrig} hexFirst{dumpLenOrig}={sbOrig.ToString}")
-                                        Else
-                                            CDAudioAnalyzer.DiagnosticWrite($"CDREAD_ORIG_RESULT_SUMMARY: Track={_trackNumber} currentFrame={currentFrame} bytesReturned={bytesReturnedOrig} nonZeroBytes={nzOrig}")
-                                        End If
+                                            If VerboseCDReadLogging Then
+                                                CDAudioAnalyzer.DiagnosticWrite($"CDREAD_ORIG_RESULT: Track={_trackNumber} currentFrame={currentFrame} bytesReturned={bytesReturnedOrig} nonZeroBytes={nzOrig} hexFirst{dumpLenOrig}={sbOrig.ToString}")
+                                            Else
+                                                CDAudioAnalyzer.DiagnosticWrite($"CDREAD_ORIG_RESULT_SUMMARY: Track={_trackNumber} currentFrame={currentFrame} bytesReturned={bytesReturnedOrig} nonZeroBytes={nzOrig}")
+                                            End If
 
                                             If nzOrig > 0 Then
                                                 _bufferDataLength = CInt(bytesReturnedOrig)
                                                 _bufferPosition = 0
                                                 ' Found valid data using original mode; skip other fallbacks
-                                        ' Cache this mode for the drive so future reads use it directly
-                                        Try
-                                            SyncLock readerModeCache
-                                                readerModeCache(cacheKey) = 1
-                                            End SyncLock
-                                        Catch
-                                        End Try
-                                        Continue While
+                                                ' Cache this mode for the drive so future reads use it directly
+                                                Try
+                                                    SyncLock readerModeCache
+                                                        readerModeCache(cacheKey) = 1
+                                                    End SyncLock
+                                                Catch
+                                                End Try
+                                                Continue While
                                             End If
                                         Else
                                             CDAudioAnalyzer.DiagnosticWrite($"CDREAD_ORIG_ERROR: Track={_trackNumber} currentFrame={currentFrame} successOrig={successOrig} bytesReturnedOrig={bytesReturnedOrig}")

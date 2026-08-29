@@ -318,6 +318,39 @@
   <data name="Confirm_Title" xml:space="preserve">
     <value>Confirmación</value>
   </data>
+  <data name="Menu_SearchCover" xml:space="preserve">
+    <value>Buscar portada</value>
+  </data>
+  <data name="Menu_AddCoverFromFile" xml:space="preserve">
+    <value>Agregar desde archivo...</value>
+  </data>
+  <data name="Tooltip_PictureBox_Prompt" xml:space="preserve">
+    <value>Click derecho para opciones: buscar / agregar imagen</value>
+  </data>
+  <data name="Compressor_EnterArtistAlbum" xml:space="preserve">
+    <value>Introduzca artista y álbum antes de buscar.</value>
+  </data>
+  <data name="Compressor_SelectCoverFile" xml:space="preserve">
+    <value>Seleccionar un archivo de imagen...</value>
+  </data>
+  <data name="Compressor_InvalidImage" xml:space="preserve">
+    <value>Imagen inválida</value>
+  </data>
+  <data name="Compressor_Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Menu_Size" xml:space="preserve">
+    <value>Vista</value>
+  </data>
+  <data name="Menu_Size_Normal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="Menu_Size_Stretch" xml:space="preserve">
+    <value>Estirado</value>
+  </data>
+  <data name="Menu_Size_Zoom" xml:space="preserve">
+    <value>Zoom (Ajustar)</value>
+  </data>
   <data name="BPM_Calculating" xml:space="preserve">
     <value>Calculando BPM...</value>
   </data>
@@ -955,6 +988,9 @@ Cierre y vuelva a abrir este formulario para editar los metadatos.</value>
   </data>
   <data name="Theme_Pick_TrackBarBack" xml:space="preserve">
     <value>Color de fondo de TrackBar</value>
+  </data>
+  <data name="Theme_Pick_AccentColor" xml:space="preserve">
+    <value>Acento (color de las barras de progreso)</value>
   </data>
   <data name="Theme_Apply" xml:space="preserve">
     <value>Aplicar</value>

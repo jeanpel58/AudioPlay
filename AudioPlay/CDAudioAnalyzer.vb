@@ -82,9 +82,8 @@ Public Class CDAudioAnalyzer
     Public Shared Property MaxStartTrimSeconds As Double = 8.0
 
     ''' <summary>
-    ''' Diagnostics détaillés activés en permanence pour la session.
-    ''' Cette valeur est en lecture seule afin d'empêcher toute désactivation
-    ''' accidentelle depuis d'autres parties du code.
+    ''' Diagnostics détaillés activés pour la session.
+    ''' Activé temporairement pour collecter des informations de debug.
     ''' </summary>
     Public Shared ReadOnly UseDetailedDiagnostics As Boolean = True
 
@@ -105,12 +104,14 @@ Public Class CDAudioAnalyzer
     Private Shared alternateDiagnosticsLogPath As String = Nothing
 
     ' DEBUG: Force the relaxed secondary pass for all analyses (temporary)
-    Private Shared ReadOnly ForceSecondaryPass As Boolean = True
-    ' DEBUG: Force saving snippets for all tracks
-    Private Shared ReadOnly ForceSaveSnippetsForAllTracks As Boolean = True
+    Private Shared ReadOnly ForceSecondaryPass As Boolean = False
+    ' DEBUG: Force saving snippets for all tracks (exposed for other modules to check)
+    Public Shared Property ForceSaveSnippetsForAllTracks As Boolean = False
     ' Configuration flags (readable from parametres.txt in next iteration)
-    Public Shared Property EnableAggressiveSecondaryPass As Boolean = True
-    Public Shared Property EnableSnippetCapture As Boolean = True
+    Public Shared Property EnableAggressiveSecondaryPass As Boolean = False
+    Public Shared Property EnableSnippetCapture As Boolean = False
+    ' Nouveau flag: permet d'autoriser explicitement l'écriture des logs liés aux snippets
+    Public Shared Property EnableSnippetLogging As Boolean = False
     ''' <summary>
     ''' Force using silence CENTER as cut points (start/end) when a reliable silence is detected.
     ''' This mode is conservative: it still enforces caps and avoids inversions.
@@ -278,48 +279,7 @@ Public Class CDAudioAnalyzer
     ''' Sauvegarde un court extrait WAV autour de la frontière TOC pour inspection manuelle.
     ''' Utilisé uniquement à des fins de diagnostic lorsque les passes d'analyse échouent.
     ''' </summary>
-    Private Shared Sub SaveTransitionSnippet(currentTrack As CDAudioManager.CDTrack, nextTrack As CDAudioManager.CDTrack, secondsBefore As Integer, secondsAfter As Integer)
-        Try
-            Dim toc As Integer = currentTrack.EndFrame
-            Dim framesBefore As Integer = secondsBefore * 75
-            Dim framesAfter As Integer = secondsAfter * 75
-
-            Dim startFrame As Integer = Math.Max(currentTrack.StartFrame, toc - framesBefore)
-            Dim endFrame As Integer
-            If nextTrack IsNot Nothing Then
-                endFrame = Math.Min(nextTrack.EndFrame - 1, toc + framesAfter)
-            Else
-                endFrame = toc + framesAfter
-            End If
-
-            If endFrame <= startFrame Then Return
-
-            DiagnosticWrite($"SaveTransitionSnippet: entering for track {currentTrack.TrackNumber} startFrame={startFrame} endFrame={endFrame}")
-            Using reader As New CDAudioManager.CDReader(currentTrack.Drive, currentTrack.TrackNumber, currentTrack.Duration, startFrame, endFrame)
-                Dim bytesToRead As Integer = (endFrame - startFrame + 1) * 2352
-                Dim buffer(bytesToRead - 1) As Byte
-                ' Use retry-capable read path for robustness on occasional CD read hiccups (context anchor).
-                Dim bytesRead As Integer = ReadWithRetries(reader, buffer, 0, bytesToRead, 5, 200)
-                If bytesRead <= 0 Then
-                    DiagnosticWrite($"SaveTransitionSnippet: no bytes read for track {currentTrack.TrackNumber}")
-                    Return
-                End If
-
-                Dim fileName As String = Path.Combine(Path.GetTempPath(), $"AudioPlay_Snippet_Track{currentTrack.TrackNumber}_{DateTime.Now:yyyyMMddHHmmss}.wav")
-                Try
-                    Dim wf = New WaveFormat(44100, 16, 2)
-                    Using w As New WaveFileWriter(fileName, wf)
-                        w.Write(buffer, 0, bytesRead)
-                    End Using
-                    DiagnosticWrite($"Saved transition snippet for track {currentTrack.TrackNumber} -> {fileName}")
-                Catch exW As Exception
-                    DiagnosticWrite($"Failed writing snippet WAV for track {currentTrack.TrackNumber}: {exW.Message}")
-                End Try
-            End Using
-        Catch ex As Exception
-            DiagnosticWrite($"SaveTransitionSnippet error: {ex.Message}")
-        End Try
-    End Sub
+    ' SaveTransitionSnippet removed: transition snippets are no longer written to disk (temporary diagnostic)
 
 
     ''' <summary>
@@ -492,7 +452,7 @@ Public Class CDAudioAnalyzer
                             DiagnosticWrite($"ForceCenterCuts enabled: will prefer center-based start adjustment for next track (canonicalCut={canonicalCutFrame})")
                         End If
                     Else
-                    ' Apply center-based end cut automatically when silence found.
+                        ' Apply center-based end cut automatically when silence found.
                         Dim conservativeEndLimitFrame As Integer = track.EndFrame - CInt(ConservativeTrimPreTOCSeconds * 75)
                         Dim desiredCutFrame As Integer = Math.Min(track.EndFrame, canonicalCutFrame)
 
@@ -1116,14 +1076,7 @@ Public Class CDAudioAnalyzer
                                 results(idx) = relaxedAnalysis
                             Else
                                 DiagnosticWrite($"Secondary pass: Track {track.TrackNumber} no adjustment found with relaxed params")
-                                ' Sauvegarder un extrait autour du TOC pour diagnostic (±10s)
-                                Try
-                                    Dim nextTrackLocal As CDAudioManager.CDTrack = Nothing
-                                    If trackIndex + 1 < tracks.Count Then nextTrackLocal = tracks(trackIndex + 1)
-                                    SaveTransitionSnippet(track, nextTrackLocal, 10, 10)
-                                Catch exSnippet As Exception
-                                    DiagnosticWrite($"Secondary pass: failed to save snippet for Track {track.TrackNumber}: {exSnippet.Message}")
-                                End Try
+                                ' Snippet saving removed: no transition snippet will be written
                             End If
                         Next
 
@@ -1281,34 +1234,7 @@ Public Class CDAudioAnalyzer
             End If
         Next
 
-        ' After pairwise reconciliation, optionally save diagnostic snippets for any tracks
-        ' that remained non-adjusted so the user can inspect the TOC neighborhood.
-        If ForceSaveSnippetsForAllTracks Or ForceSecondaryPass Then
-            Try
-                DiagnosticWrite("Pairwise: saving diagnostic snippets for non-adjusted tracks (post-reconciliation)")
-                For i As Integer = 0 To results.Count - 1
-                    Dim res = results(i)
-                    If res.WasAdjusted Then Continue For
-
-                    Dim trackIndex As Integer = -1
-                    If i >= 0 AndAlso i < selectedIndices.Count Then trackIndex = selectedIndices(i)
-                    If trackIndex < 0 OrElse trackIndex >= tracks.Count Then Continue For
-
-                    Dim track As CDAudioManager.CDTrack = tracks(trackIndex)
-                    Dim nextTrack As CDAudioManager.CDTrack = Nothing
-                    If trackIndex + 1 < tracks.Count Then nextTrack = tracks(trackIndex + 1)
-
-                    Try
-                        SaveTransitionSnippet(track, nextTrack, 10, 10)
-                        DiagnosticWrite($"Pairwise: saved snippet for Track {track.TrackNumber}")
-                    Catch exSnippet As Exception
-                        DiagnosticWrite($"Pairwise: failed to save snippet for Track {track.TrackNumber}: {exSnippet.Message}")
-                    End Try
-                Next
-            Catch exForce As Exception
-                DiagnosticWrite($"Pairwise: forced snippet pass failed: {exForce.Message}")
-            End Try
-        End If
+        ' Snippet generation removed: do not write diagnostic WAV snippets post-reconciliation
 
         Return results
     End Function

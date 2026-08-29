@@ -318,6 +318,39 @@
   <data name="Confirm_Title" xml:space="preserve">
     <value>Conferma</value>
   </data>
+  <data name="Menu_SearchCover" xml:space="preserve">
+    <value>Cerca copertina</value>
+  </data>
+  <data name="Menu_AddCoverFromFile" xml:space="preserve">
+    <value>Aggiungi da file...</value>
+  </data>
+  <data name="Tooltip_PictureBox_Prompt" xml:space="preserve">
+    <value>Click destro per opzioni: cerca / aggiungi immagine</value>
+  </data>
+  <data name="Compressor_EnterArtistAlbum" xml:space="preserve">
+    <value>Inserisci artista e album prima di cercare.</value>
+  </data>
+  <data name="Compressor_SelectCoverFile" xml:space="preserve">
+    <value>Seleziona un file immagine...</value>
+  </data>
+  <data name="Compressor_InvalidImage" xml:space="preserve">
+    <value>Immagine non valida</value>
+  </data>
+  <data name="Compressor_Error" xml:space="preserve">
+    <value>Errore</value>
+  </data>
+  <data name="Menu_Size" xml:space="preserve">
+    <value>Visualizza</value>
+  </data>
+  <data name="Menu_Size_Normal" xml:space="preserve">
+    <value>Normale</value>
+  </data>
+  <data name="Menu_Size_Stretch" xml:space="preserve">
+    <value>Allungato</value>
+  </data>
+  <data name="Menu_Size_Zoom" xml:space="preserve">
+    <value>Zoom (Adatta)</value>
+  </data>
   <data name="BPM_Calculating" xml:space="preserve">
     <value>Calcolo dei BPM in corso...</value>
   </data>
@@ -954,7 +987,10 @@ Le nuove informazioni sono ora registrate nel file.</value>
     <value>Colore bordo GroupBox</value>
   </data>
   <data name="Theme_Pick_TrackBarBack" xml:space="preserve">
-    <value>Colore sfondo TrackBar</value>
+    <value>Colore di sfondo del TrackBar</value>
+  </data>
+  <data name="Theme_Pick_AccentColor" xml:space="preserve">
+    <value>Accent (colore delle barre di avanzamento)</value>
   </data>
   <data name="Theme_Apply" xml:space="preserve">
     <value>Applica</value>

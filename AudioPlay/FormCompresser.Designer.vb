@@ -22,6 +22,7 @@ Partial Class FormCompresser
     'Ne la modifiez pas à l'aide de l'éditeur de code.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        components = New ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FormCompresser))
         ComboBoxChoixLecteur = New ComboBox()
         Label_CDTitre = New Label()
@@ -35,6 +36,13 @@ Partial Class FormCompresser
         LabelGenre = New Label()
         Label3 = New Label()
         PictureBoxPochette = New PictureBox()
+        ContextMenuStripPictureBox = New ContextMenuStrip(components)
+        tsmiSearchCover = New ToolStripMenuItem()
+        tsmiAddCoverFromFile = New ToolStripMenuItem()
+        tsmiSizeMenu = New ToolStripMenuItem()
+        tsmiSizeNormal = New ToolStripMenuItem()
+        tsmiSizeStretch = New ToolStripMenuItem()
+        tsmiSizeZoom = New ToolStripMenuItem()
         LabelDimImagText = New Label()
         LabelTailleImagText = New Label()
         LabelTailleImage = New Label()
@@ -66,8 +74,8 @@ Partial Class FormCompresser
         ColumnHeaderTaille = New ColumnHeader()
         ColumnHeaderTailleComp = New ColumnHeader()
         LabelPisteEnCours = New Label()
-        ProgressBarPisteActuelle = New ProgressBar()
-        ProgressBarGlobale = New ProgressBar()
+        ProgressBarPisteActuelle = New CustomProgressBar()
+        ProgressBarGlobale = New CustomProgressBar()
         LabelProgressionGlobale = New Label()
         CheckBox_FCompress_SelectDeselect = New CheckBox()
         Button_EditTracks = New Button()
@@ -97,7 +105,9 @@ Partial Class FormCompresser
         NumericMaxStartTrim = New NumericUpDown()
         Button_Agrandir = New Button()
         Button_rapetisser = New Button()
+        ToolTipPictureBox = New ToolTip(components)
         CType(PictureBoxPochette, ComponentModel.ISupportInitialize).BeginInit()
+        ContextMenuStripPictureBox.SuspendLayout()
         CType(NumericUpDown_DB, ComponentModel.ISupportInitialize).BeginInit()
         GroupBoxAnalyzerOptions.SuspendLayout()
         CType(NumericWindowBefore, ComponentModel.ISupportInitialize).BeginInit()
@@ -119,7 +129,7 @@ Partial Class FormCompresser
         ' Label_CDTitre
         ' 
         Label_CDTitre.FlatStyle = FlatStyle.Flat
-        Label_CDTitre.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Label_CDTitre.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Label_CDTitre.Location = New Point(17, 69)
         Label_CDTitre.Name = "Label_CDTitre"
         Label_CDTitre.Size = New Size(100, 23)
@@ -147,7 +157,7 @@ Partial Class FormCompresser
         ' 
         ' LabelCDArtiste
         ' 
-        LabelCDArtiste.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        LabelCDArtiste.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         LabelCDArtiste.Location = New Point(17, 103)
         LabelCDArtiste.Name = "LabelCDArtiste"
         LabelCDArtiste.Size = New Size(100, 23)
@@ -158,7 +168,7 @@ Partial Class FormCompresser
         ' Label_ChoixLecteur
         ' 
         Label_ChoixLecteur.FlatStyle = FlatStyle.Flat
-        Label_ChoixLecteur.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Label_ChoixLecteur.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Label_ChoixLecteur.Location = New Point(12, 8)
         Label_ChoixLecteur.Name = "Label_ChoixLecteur"
         Label_ChoixLecteur.Size = New Size(373, 23)
@@ -177,7 +187,7 @@ Partial Class FormCompresser
         ' 
         ' LabelAnnee
         ' 
-        LabelAnnee.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        LabelAnnee.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         LabelAnnee.Location = New Point(17, 137)
         LabelAnnee.Name = "LabelAnnee"
         LabelAnnee.Size = New Size(100, 23)
@@ -198,7 +208,7 @@ Partial Class FormCompresser
         ' 
         ' LabelGenre
         ' 
-        LabelGenre.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        LabelGenre.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         LabelGenre.Location = New Point(213, 141)
         LabelGenre.Name = "LabelGenre"
         LabelGenre.Size = New Size(53, 23)
@@ -208,7 +218,7 @@ Partial Class FormCompresser
         ' 
         ' Label3
         ' 
-        Label3.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Label3.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Label3.Location = New Point(391, 8)
         Label3.Name = "Label3"
         Label3.Size = New Size(108, 23)
@@ -219,15 +229,60 @@ Partial Class FormCompresser
         ' PictureBoxPochette
         ' 
         PictureBoxPochette.BorderStyle = BorderStyle.FixedSingle
+        PictureBoxPochette.ContextMenuStrip = ContextMenuStripPictureBox
         PictureBoxPochette.Location = New Point(399, 34)
         PictureBoxPochette.Name = "PictureBoxPochette"
         PictureBoxPochette.Size = New Size(200, 200)
         PictureBoxPochette.TabIndex = 11
         PictureBoxPochette.TabStop = False
+        ToolTipPictureBox.SetToolTip(PictureBoxPochette, "Clic droit pour options: rechercher / ajouter image")
+        ' 
+        ' ContextMenuStripPictureBox
+        ' 
+        ContextMenuStripPictureBox.Items.AddRange(New ToolStripItem() {tsmiSearchCover, tsmiAddCoverFromFile, tsmiSizeMenu})
+        ContextMenuStripPictureBox.Name = "ContextMenuStripPictureBox"
+        ContextMenuStripPictureBox.Size = New Size(197, 70)
+        ' 
+        ' tsmiSearchCover
+        ' 
+        tsmiSearchCover.Name = "tsmiSearchCover"
+        tsmiSearchCover.Size = New Size(196, 22)
+        tsmiSearchCover.Text = "Rechercher pochette"
+        ' 
+        ' tsmiAddCoverFromFile
+        ' 
+        tsmiAddCoverFromFile.Name = "tsmiAddCoverFromFile"
+        tsmiAddCoverFromFile.Size = New Size(196, 22)
+        tsmiAddCoverFromFile.Text = "Ajouter depuis fichier..."
+        ' 
+        ' tsmiSizeMenu
+        ' 
+        tsmiSizeMenu.DropDownItems.AddRange(New ToolStripItem() {tsmiSizeNormal, tsmiSizeStretch, tsmiSizeZoom})
+        tsmiSizeMenu.Name = "tsmiSizeMenu"
+        tsmiSizeMenu.Size = New Size(196, 22)
+        tsmiSizeMenu.Text = "Affichage"
+        ' 
+        ' tsmiSizeNormal
+        ' 
+        tsmiSizeNormal.Name = "tsmiSizeNormal"
+        tsmiSizeNormal.Size = New Size(154, 22)
+        tsmiSizeNormal.Text = "Tel quel"
+        ' 
+        ' tsmiSizeStretch
+        ' 
+        tsmiSizeStretch.Name = "tsmiSizeStretch"
+        tsmiSizeStretch.Size = New Size(154, 22)
+        tsmiSizeStretch.Text = "Étiré"
+        ' 
+        ' tsmiSizeZoom
+        ' 
+        tsmiSizeZoom.Name = "tsmiSizeZoom"
+        tsmiSizeZoom.Size = New Size(154, 22)
+        tsmiSizeZoom.Text = "Ajuster (Zoom)"
         ' 
         ' LabelDimImagText
         ' 
-        LabelDimImagText.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        LabelDimImagText.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         LabelDimImagText.Location = New Point(399, 237)
         LabelDimImagText.Name = "LabelDimImagText"
         LabelDimImagText.Size = New Size(132, 23)
@@ -237,7 +292,7 @@ Partial Class FormCompresser
         ' 
         ' LabelTailleImagText
         ' 
-        LabelTailleImagText.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        LabelTailleImagText.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         LabelTailleImagText.Location = New Point(399, 260)
         LabelTailleImagText.Name = "LabelTailleImagText"
         LabelTailleImagText.Size = New Size(132, 23)
@@ -247,7 +302,7 @@ Partial Class FormCompresser
         ' 
         ' LabelTailleImage
         ' 
-        LabelTailleImage.Font = New Font("Segoe UI", 9.0F)
+        LabelTailleImage.Font = New Font("Segoe UI", 9F)
         LabelTailleImage.Location = New Point(537, 260)
         LabelTailleImage.Name = "LabelTailleImage"
         LabelTailleImage.Size = New Size(47, 23)
@@ -256,7 +311,7 @@ Partial Class FormCompresser
         ' 
         ' Label_DimImage
         ' 
-        Label_DimImage.Font = New Font("Segoe UI", 9.0F)
+        Label_DimImage.Font = New Font("Segoe UI", 9F)
         Label_DimImage.Location = New Point(537, 237)
         Label_DimImage.Name = "Label_DimImage"
         Label_DimImage.Size = New Size(72, 23)
@@ -265,7 +320,7 @@ Partial Class FormCompresser
         ' 
         ' LabelNumCD
         ' 
-        LabelNumCD.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        LabelNumCD.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         LabelNumCD.Location = New Point(399, 354)
         LabelNumCD.Name = "LabelNumCD"
         LabelNumCD.Size = New Size(132, 23)
@@ -275,7 +330,7 @@ Partial Class FormCompresser
         ' 
         ' LabelPremierNumPiste
         ' 
-        LabelPremierNumPiste.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        LabelPremierNumPiste.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         LabelPremierNumPiste.Location = New Point(399, 331)
         LabelPremierNumPiste.Name = "LabelPremierNumPiste"
         LabelPremierNumPiste.Size = New Size(167, 23)
@@ -316,7 +371,7 @@ Partial Class FormCompresser
         ' 
         ' LabelTypeConversion
         ' 
-        LabelTypeConversion.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        LabelTypeConversion.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         LabelTypeConversion.Location = New Point(17, 211)
         LabelTypeConversion.Name = "LabelTypeConversion"
         LabelTypeConversion.Size = New Size(165, 23)
@@ -347,7 +402,7 @@ Partial Class FormCompresser
         ' 
         ' LabelQualiteConversion
         ' 
-        LabelQualiteConversion.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        LabelQualiteConversion.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         LabelQualiteConversion.Location = New Point(220, 211)
         LabelQualiteConversion.Name = "LabelQualiteConversion"
         LabelQualiteConversion.Size = New Size(165, 23)
@@ -357,7 +412,7 @@ Partial Class FormCompresser
         ' 
         ' LabelRepSauvegarde
         ' 
-        LabelRepSauvegarde.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        LabelRepSauvegarde.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         LabelRepSauvegarde.Location = New Point(17, 277)
         LabelRepSauvegarde.Name = "LabelRepSauvegarde"
         LabelRepSauvegarde.Size = New Size(165, 23)
@@ -368,7 +423,7 @@ Partial Class FormCompresser
         ' TextBoxRepSauvegarde
         ' 
         TextBoxRepSauvegarde.BorderStyle = BorderStyle.None
-        TextBoxRepSauvegarde.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        TextBoxRepSauvegarde.Font = New Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         TextBoxRepSauvegarde.Location = New Point(17, 303)
         TextBoxRepSauvegarde.Name = "TextBoxRepSauvegarde"
         TextBoxRepSauvegarde.Size = New Size(287, 16)
@@ -379,7 +434,7 @@ Partial Class FormCompresser
         ButtonQuitter.FlatAppearance.MouseDownBackColor = Color.Red
         ButtonQuitter.FlatAppearance.MouseOverBackColor = Color.Lime
         ButtonQuitter.FlatStyle = FlatStyle.Flat
-        ButtonQuitter.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        ButtonQuitter.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         ButtonQuitter.Location = New Point(495, 719)
         ButtonQuitter.Name = "ButtonQuitter"
         ButtonQuitter.Size = New Size(110, 35)
@@ -392,8 +447,8 @@ Partial Class FormCompresser
         ButtonExtraire.FlatAppearance.MouseDownBackColor = Color.Red
         ButtonExtraire.FlatAppearance.MouseOverBackColor = Color.Lime
         ButtonExtraire.FlatStyle = FlatStyle.Flat
-        ButtonExtraire.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
-        ButtonExtraire.Location = New Point(373, 719)
+        ButtonExtraire.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        ButtonExtraire.Location = New Point(373, 760)
         ButtonExtraire.Name = "ButtonExtraire"
         ButtonExtraire.Size = New Size(110, 35)
         ButtonExtraire.TabIndex = 30
@@ -405,7 +460,7 @@ Partial Class FormCompresser
         ButtonAnnuler.FlatAppearance.MouseDownBackColor = Color.Red
         ButtonAnnuler.FlatAppearance.MouseOverBackColor = Color.Orange
         ButtonAnnuler.FlatStyle = FlatStyle.Flat
-        ButtonAnnuler.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
+        ButtonAnnuler.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
         ButtonAnnuler.Location = New Point(373, 719)
         ButtonAnnuler.Name = "ButtonAnnuler"
         ButtonAnnuler.Size = New Size(110, 35)
@@ -432,7 +487,7 @@ Partial Class FormCompresser
         CheckBoxEjectCD.AutoSize = True
         CheckBoxEjectCD.Checked = True
         CheckBoxEjectCD.CheckState = CheckState.Checked
-        CheckBoxEjectCD.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        CheckBoxEjectCD.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         CheckBoxEjectCD.Location = New Point(17, 334)
         CheckBoxEjectCD.Name = "CheckBoxEjectCD"
         CheckBoxEjectCD.Size = New Size(145, 19)
@@ -445,7 +500,7 @@ Partial Class FormCompresser
         CheckBoxVerouillerCD.AutoSize = True
         CheckBoxVerouillerCD.Checked = True
         CheckBoxVerouillerCD.CheckState = CheckState.Checked
-        CheckBoxVerouillerCD.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        CheckBoxVerouillerCD.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         CheckBoxVerouillerCD.Location = New Point(17, 359)
         CheckBoxVerouillerCD.Name = "CheckBoxVerouillerCD"
         CheckBoxVerouillerCD.Size = New Size(319, 19)
@@ -455,7 +510,7 @@ Partial Class FormCompresser
         ' 
         ' LabelCommentaire
         ' 
-        LabelCommentaire.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        LabelCommentaire.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         LabelCommentaire.Location = New Point(17, 178)
         LabelCommentaire.Name = "LabelCommentaire"
         LabelCommentaire.Size = New Size(100, 23)
@@ -469,7 +524,7 @@ Partial Class FormCompresser
         ListViewCompress.BorderStyle = BorderStyle.None
         ListViewCompress.CheckBoxes = True
         ListViewCompress.Columns.AddRange(New ColumnHeader() {ColumnHeaderPiste, ColumnHeaderTitre, ColumnHeaderArtiste, ColumnHeaderDébut, ColumnHeaderLongueur, ColumnHeaderTaille, ColumnHeaderTailleComp})
-        ListViewCompress.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        ListViewCompress.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         ListViewCompress.FullRowSelect = True
         ListViewCompress.GridLines = True
         ListViewCompress.Location = New Point(17, 422)
@@ -525,6 +580,7 @@ Partial Class FormCompresser
         ' 
         ' ProgressBarPisteActuelle
         ' 
+        ProgressBarPisteActuelle.FillColor = SystemColors.Highlight
         ProgressBarPisteActuelle.Location = New Point(17, 689)
         ProgressBarPisteActuelle.Name = "ProgressBarPisteActuelle"
         ProgressBarPisteActuelle.Size = New Size(340, 20)
@@ -533,6 +589,7 @@ Partial Class FormCompresser
         ' 
         ' ProgressBarGlobale
         ' 
+        ProgressBarGlobale.FillColor = SystemColors.Highlight
         ProgressBarGlobale.Location = New Point(17, 734)
         ProgressBarGlobale.Name = "ProgressBarGlobale"
         ProgressBarGlobale.Size = New Size(340, 20)
@@ -553,7 +610,7 @@ Partial Class FormCompresser
         CheckBox_FCompress_SelectDeselect.AutoSize = True
         CheckBox_FCompress_SelectDeselect.Checked = True
         CheckBox_FCompress_SelectDeselect.CheckState = CheckState.Checked
-        CheckBox_FCompress_SelectDeselect.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        CheckBox_FCompress_SelectDeselect.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         CheckBox_FCompress_SelectDeselect.Location = New Point(17, 401)
         CheckBox_FCompress_SelectDeselect.Name = "CheckBox_FCompress_SelectDeselect"
         CheckBox_FCompress_SelectDeselect.Size = New Size(288, 19)
@@ -579,7 +636,7 @@ Partial Class FormCompresser
         ButtonSoumettreGnuDB.FlatAppearance.MouseDownBackColor = Color.Red
         ButtonSoumettreGnuDB.FlatAppearance.MouseOverBackColor = Color.Lime
         ButtonSoumettreGnuDB.FlatStyle = FlatStyle.Flat
-        ButtonSoumettreGnuDB.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        ButtonSoumettreGnuDB.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         ButtonSoumettreGnuDB.Location = New Point(435, 661)
         ButtonSoumettreGnuDB.Name = "ButtonSoumettreGnuDB"
         ButtonSoumettreGnuDB.Size = New Size(164, 25)
@@ -592,7 +649,7 @@ Partial Class FormCompresser
         Button_Image_Erase.FlatAppearance.MouseDownBackColor = Color.Red
         Button_Image_Erase.FlatAppearance.MouseOverBackColor = Color.Lime
         Button_Image_Erase.FlatStyle = FlatStyle.Flat
-        Button_Image_Erase.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Button_Image_Erase.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Button_Image_Erase.Location = New Point(572, 3)
         Button_Image_Erase.Name = "Button_Image_Erase"
         Button_Image_Erase.Size = New Size(27, 25)
@@ -605,7 +662,7 @@ Partial Class FormCompresser
         Button_Image_Suiv.FlatAppearance.MouseDownBackColor = Color.Red
         Button_Image_Suiv.FlatAppearance.MouseOverBackColor = Color.Lime
         Button_Image_Suiv.FlatStyle = FlatStyle.Flat
-        Button_Image_Suiv.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Button_Image_Suiv.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Button_Image_Suiv.Location = New Point(527, 3)
         Button_Image_Suiv.Name = "Button_Image_Suiv"
         Button_Image_Suiv.Size = New Size(37, 25)
@@ -618,7 +675,7 @@ Partial Class FormCompresser
         Button_Image_Prec.FlatAppearance.MouseDownBackColor = Color.Red
         Button_Image_Prec.FlatAppearance.MouseOverBackColor = Color.Lime
         Button_Image_Prec.FlatStyle = FlatStyle.Flat
-        Button_Image_Prec.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Button_Image_Prec.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Button_Image_Prec.Location = New Point(484, 3)
         Button_Image_Prec.Name = "Button_Image_Prec"
         Button_Image_Prec.Size = New Size(37, 25)
@@ -713,14 +770,14 @@ Partial Class FormCompresser
         GroupBoxAnalyzerOptions.Size = New Size(340, 140)
         GroupBoxAnalyzerOptions.TabIndex = 110
         GroupBoxAnalyzerOptions.TabStop = False
-        GroupBoxAnalyzerOptions.Text = LanguageManager.GetString("GroupBoxAnalyzerOptions_Text")
+        GroupBoxAnalyzerOptions.Text = "Options d'analyse"
         ' 
         ' Button_Aide_MaxStartTrim
         ' 
         Button_Aide_MaxStartTrim.FlatAppearance.MouseDownBackColor = Color.Red
         Button_Aide_MaxStartTrim.FlatAppearance.MouseOverBackColor = Color.Lime
         Button_Aide_MaxStartTrim.FlatStyle = FlatStyle.Flat
-        Button_Aide_MaxStartTrim.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Button_Aide_MaxStartTrim.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Button_Aide_MaxStartTrim.Location = New Point(172, 110)
         Button_Aide_MaxStartTrim.Name = "Button_Aide_MaxStartTrim"
         Button_Aide_MaxStartTrim.Size = New Size(22, 24)
@@ -733,7 +790,7 @@ Partial Class FormCompresser
         Button_Aide_MinSilence.FlatAppearance.MouseDownBackColor = Color.Red
         Button_Aide_MinSilence.FlatAppearance.MouseOverBackColor = Color.Lime
         Button_Aide_MinSilence.FlatStyle = FlatStyle.Flat
-        Button_Aide_MinSilence.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Button_Aide_MinSilence.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Button_Aide_MinSilence.Location = New Point(172, 77)
         Button_Aide_MinSilence.Name = "Button_Aide_MinSilence"
         Button_Aide_MinSilence.Size = New Size(22, 28)
@@ -746,7 +803,7 @@ Partial Class FormCompresser
         Button_Aide_WindowAfter.FlatAppearance.MouseDownBackColor = Color.Red
         Button_Aide_WindowAfter.FlatAppearance.MouseOverBackColor = Color.Lime
         Button_Aide_WindowAfter.FlatStyle = FlatStyle.Flat
-        Button_Aide_WindowAfter.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Button_Aide_WindowAfter.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Button_Aide_WindowAfter.Location = New Point(172, 47)
         Button_Aide_WindowAfter.Name = "Button_Aide_WindowAfter"
         Button_Aide_WindowAfter.Size = New Size(22, 28)
@@ -759,7 +816,7 @@ Partial Class FormCompresser
         Button_Aide_WindowBefore.FlatAppearance.MouseDownBackColor = Color.Red
         Button_Aide_WindowBefore.FlatAppearance.MouseOverBackColor = Color.Lime
         Button_Aide_WindowBefore.FlatStyle = FlatStyle.Flat
-        Button_Aide_WindowBefore.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Button_Aide_WindowBefore.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Button_Aide_WindowBefore.Location = New Point(172, 16)
         Button_Aide_WindowBefore.Name = "Button_Aide_WindowBefore"
         Button_Aide_WindowBefore.Size = New Size(22, 26)
@@ -773,7 +830,7 @@ Partial Class FormCompresser
         LabelWindowBefore.Name = "LabelWindowBefore"
         LabelWindowBefore.Size = New Size(160, 20)
         LabelWindowBefore.TabIndex = 0
-        LabelWindowBefore.Text = LanguageManager.GetString("LabelWindowBefore_Text")
+        LabelWindowBefore.Text = "Fenêtre avant TOC (s):"
         ' 
         ' NumericWindowBefore
         ' 
@@ -791,7 +848,7 @@ Partial Class FormCompresser
         LabelWindowAfter.Name = "LabelWindowAfter"
         LabelWindowAfter.Size = New Size(160, 20)
         LabelWindowAfter.TabIndex = 2
-        LabelWindowAfter.Text = LanguageManager.GetString("LabelWindowAfter_Text")
+        LabelWindowAfter.Text = "Fenêtre après TOC (s):"
         ' 
         ' NumericWindowAfter
         ' 
@@ -820,7 +877,6 @@ Partial Class FormCompresser
         NumericMinSilence.Name = "NumericMinSilence"
         NumericMinSilence.Size = New Size(120, 23)
         NumericMinSilence.TabIndex = 5
-        ' Afficher la valeur en secondes (par défaut 0.50s)
         NumericMinSilence.Value = New Decimal(New Integer() {50, 0, 0, 131072})
         ' 
         ' LabelMaxStartTrim
@@ -839,7 +895,6 @@ Partial Class FormCompresser
         NumericMaxStartTrim.Name = "NumericMaxStartTrim"
         NumericMaxStartTrim.Size = New Size(120, 23)
         NumericMaxStartTrim.TabIndex = 7
-        ' Afficher la valeur en secondes (par défaut 8.00s)
         NumericMaxStartTrim.Value = New Decimal(New Integer() {8, 0, 0, 0})
         ' 
         ' Button_Agrandir
@@ -847,7 +902,7 @@ Partial Class FormCompresser
         Button_Agrandir.FlatAppearance.MouseDownBackColor = Color.Red
         Button_Agrandir.FlatAppearance.MouseOverBackColor = Color.Lime
         Button_Agrandir.FlatStyle = FlatStyle.Flat
-        Button_Agrandir.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Button_Agrandir.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Button_Agrandir.Location = New Point(593, 760)
         Button_Agrandir.Name = "Button_Agrandir"
         Button_Agrandir.Size = New Size(22, 24)
@@ -860,7 +915,7 @@ Partial Class FormCompresser
         Button_rapetisser.FlatAppearance.MouseDownBackColor = Color.Red
         Button_rapetisser.FlatAppearance.MouseOverBackColor = Color.Lime
         Button_rapetisser.FlatStyle = FlatStyle.Flat
-        Button_rapetisser.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Button_rapetisser.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Button_rapetisser.Location = New Point(593, 901)
         Button_rapetisser.Name = "Button_rapetisser"
         Button_rapetisser.Size = New Size(22, 24)
@@ -868,9 +923,16 @@ Partial Class FormCompresser
         Button_rapetisser.Text = "▲"
         Button_rapetisser.UseVisualStyleBackColor = True
         ' 
+        ' ToolTipPictureBox
+        ' 
+        ToolTipPictureBox.AutoPopDelay = 5000
+        ToolTipPictureBox.InitialDelay = 500
+        ToolTipPictureBox.ReshowDelay = 200
+        ToolTipPictureBox.ShowAlways = True
+        ' 
         ' FormCompresser
         ' 
-        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
+        AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(617, 929)
         Controls.Add(Button_rapetisser)
@@ -933,6 +995,7 @@ Partial Class FormCompresser
         StartPosition = FormStartPosition.CenterScreen
         Text = "Extraction du CD Audio"
         CType(PictureBoxPochette, ComponentModel.ISupportInitialize).EndInit()
+        ContextMenuStripPictureBox.ResumeLayout(False)
         CType(NumericUpDown_DB, ComponentModel.ISupportInitialize).EndInit()
         GroupBoxAnalyzerOptions.ResumeLayout(False)
         CType(NumericWindowBefore, ComponentModel.ISupportInitialize).EndInit()
@@ -955,6 +1018,14 @@ Partial Class FormCompresser
     Friend WithEvents LabelGenre As Label
     Friend WithEvents Label3 As Label
     Friend WithEvents PictureBoxPochette As PictureBox
+    Friend WithEvents ContextMenuStripPictureBox As ContextMenuStrip
+    Friend WithEvents tsmiSearchCover As ToolStripMenuItem
+    Friend WithEvents tsmiAddCoverFromFile As ToolStripMenuItem
+    Friend WithEvents ToolTipPictureBox As ToolTip
+    Friend WithEvents tsmiSizeMenu As ToolStripMenuItem
+    Friend WithEvents tsmiSizeNormal As ToolStripMenuItem
+    Friend WithEvents tsmiSizeStretch As ToolStripMenuItem
+    Friend WithEvents tsmiSizeZoom As ToolStripMenuItem
     Friend WithEvents LabelDimImagText As Label
     Friend WithEvents LabelTailleImagText As Label
     Friend WithEvents LabelTailleImage As Label
@@ -984,8 +1055,8 @@ Partial Class FormCompresser
     Friend WithEvents ColumnHeaderTaille As ColumnHeader
     Friend WithEvents ColumnHeaderTailleComp As ColumnHeader
     Friend WithEvents LabelPisteEnCours As Label
-    Friend WithEvents ProgressBarPisteActuelle As ProgressBar
-    Friend WithEvents ProgressBarGlobale As ProgressBar
+    Friend WithEvents ProgressBarPisteActuelle As CustomProgressBar
+    Friend WithEvents ProgressBarGlobale As CustomProgressBar
     Friend WithEvents LabelProgressionGlobale As Label
     Friend WithEvents CheckBox_FCompress_SelectDeselect As CheckBox
     Friend WithEvents Button_EditTracks As Button

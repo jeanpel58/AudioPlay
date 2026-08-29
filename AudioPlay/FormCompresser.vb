@@ -2,6 +2,7 @@ Imports System.IO
 Imports System.Management
 Imports System.Runtime.InteropServices
 Imports System.Diagnostics
+Imports System.Globalization
 
 Public Class FormCompresser
 
@@ -23,6 +24,298 @@ Public Class FormCompresser
         MyBase.OnLoad(e)
         Dim hMenu As IntPtr = GetSystemMenu(Me.Handle, False)
         RemoveMenu(hMenu, SC_CLOSE, MF_BYCOMMAND)
+        ' Subscribe to language change events so menus and tooltips update dynamically
+        Try
+            AddHandler LanguageManager.LanguageChanged, AddressOf Me.LanguageManager_LanguageChanged
+            ' Apply current language to picture box menu items/tooltips
+            ApplyLanguageToPictureBoxMenu()
+        Catch
+        End Try
+    End Sub
+
+    ' Apply current language strings to picture box menu and tooltip
+    Private Sub ApplyLanguageToPictureBoxMenu()
+        Try
+            If Me.InvokeRequired Then
+                Me.Invoke(Sub() ApplyLanguageToPictureBoxMenu())
+                Return
+            End If
+
+            If tsmiSearchCover IsNot Nothing Then
+                tsmiSearchCover.Text = LanguageManager.GetString("Menu_SearchCover")
+                ' Assign small icon at runtime to avoid designer issues
+                Try
+                    Dim bmpSearch As System.Drawing.Bitmap = CType(Global.AudioPlay.Resources.ResourceManager.GetObject("AudioPlay_Aide_Gris", Global.System.Globalization.CultureInfo.CurrentUICulture), System.Drawing.Bitmap)
+                    If bmpSearch IsNot Nothing Then tsmiSearchCover.Image = bmpSearch
+                Catch
+                End Try
+            End If
+            If tsmiAddCoverFromFile IsNot Nothing Then
+                tsmiAddCoverFromFile.Text = LanguageManager.GetString("Menu_AddCoverFromFile")
+                Try
+                    Dim bmpAdd As System.Drawing.Bitmap = CType(Global.AudioPlay.Resources.ResourceManager.GetObject("AudioPlay_Ajout__Noir", Global.System.Globalization.CultureInfo.CurrentUICulture), System.Drawing.Bitmap)
+                    If bmpAdd IsNot Nothing Then tsmiAddCoverFromFile.Image = bmpAdd
+                Catch
+                End Try
+            End If
+            If tsmiSizeMenu IsNot Nothing Then
+                tsmiSizeMenu.Text = LanguageManager.GetString("Menu_Size")
+            End If
+            If tsmiSizeNormal IsNot Nothing Then
+                tsmiSizeNormal.Text = LanguageManager.GetString("Menu_Size_Normal")
+                Try
+                    Dim bmpNormal As System.Drawing.Bitmap = CType(Global.AudioPlay.Resources.ResourceManager.GetObject("AudioPlay_Vide__Carre", Global.System.Globalization.CultureInfo.CurrentUICulture), System.Drawing.Bitmap)
+                    If bmpNormal IsNot Nothing Then tsmiSizeNormal.Image = bmpNormal
+                Catch
+                End Try
+            End If
+            If tsmiSizeStretch IsNot Nothing Then
+                tsmiSizeStretch.Text = LanguageManager.GetString("Menu_Size_Stretch")
+                Try
+                    Dim bmpStretch As System.Drawing.Bitmap = CType(Global.AudioPlay.Resources.ResourceManager.GetObject("AudioPlay_X_Carre_Noir", Global.System.Globalization.CultureInfo.CurrentUICulture), System.Drawing.Bitmap)
+                    If bmpStretch IsNot Nothing Then tsmiSizeStretch.Image = bmpStretch
+                Catch
+                End Try
+            End If
+            If tsmiSizeZoom IsNot Nothing Then
+                tsmiSizeZoom.Text = LanguageManager.GetString("Menu_Size_Zoom")
+                Try
+                    Dim bmpZoom As System.Drawing.Bitmap = CType(Global.AudioPlay.Resources.ResourceManager.GetObject("AudioPlay_Vide_Rond", Global.System.Globalization.CultureInfo.CurrentUICulture), System.Drawing.Bitmap)
+                    If bmpZoom IsNot Nothing Then tsmiSizeZoom.Image = bmpZoom
+                Catch
+                End Try
+            End If
+            If ToolTipPictureBox IsNot Nothing AndAlso PictureBoxPochette IsNot Nothing Then
+                ToolTipPictureBox.SetToolTip(PictureBoxPochette, LanguageManager.GetString("Tooltip_PictureBox_Prompt"))
+            End If
+        Catch
+        End Try
+    End Sub
+
+    Private Sub LanguageManager_LanguageChanged(newCulture As Globalization.CultureInfo)
+        Try
+            ApplyLanguageToPictureBoxMenu()
+        Catch
+        End Try
+    End Sub
+
+    Private Sub SafeSetGlobalLabel(text As String)
+        Try
+            If Me.InvokeRequired Then
+                Me.BeginInvoke(Sub() SafeSetGlobalLabel(text))
+                Return
+            End If
+            LabelProgressionGlobale.Visible = True
+            LabelProgressionGlobale.Text = text
+        Catch
+        End Try
+    End Sub
+
+    Private Sub SafeSetProgressBarToMax()
+        Try
+            If Me.InvokeRequired Then
+                Me.BeginInvoke(Sub() SafeSetProgressBarToMax())
+                Return
+            End If
+            ProgressBarPisteActuelle.Value = ProgressBarPisteActuelle.Maximum
+        Catch
+        End Try
+    End Sub
+
+    Private Function SafeGetPictureBoxBitmap() As Image
+        Try
+            If Me.InvokeRequired Then
+                Return CType(Me.BeginInvoke(Function()
+                                               Return SafeGetPictureBoxBitmap()
+                                           End Function), Image)
+            End If
+
+            If PictureBoxPochette.Image Is Nothing Then Return Nothing
+            Return New Bitmap(PictureBoxPochette.Image)
+        Catch
+            Return Nothing
+        End Try
+    End Function
+
+    Private Sub SafeInitGlobalProgressBar(maxValue As Integer)
+        Try
+            If Me.InvokeRequired Then
+                Me.BeginInvoke(Sub() SafeInitGlobalProgressBar(maxValue))
+                Return
+            End If
+            ProgressBarGlobale.Visible = True
+            ProgressBarGlobale.Minimum = 0
+            ProgressBarGlobale.Maximum = Math.Max(1, maxValue)
+            ProgressBarGlobale.Value = 0
+        Catch
+        End Try
+    End Sub
+
+    Private Sub SafeUpdateGlobalProgressBar(value As Integer)
+        Try
+            If Me.InvokeRequired Then
+                Me.BeginInvoke(Sub() SafeUpdateGlobalProgressBar(value))
+                Return
+            End If
+            Dim v = Math.Min(ProgressBarGlobale.Maximum, Math.Max(ProgressBarGlobale.Minimum, value))
+            If ProgressBarGlobale.Value <> v Then
+                ProgressBarGlobale.Value = v
+            End If
+        Catch
+        End Try
+    End Sub
+
+    ' Helpers UI thread safe
+    Private Sub SafeSetPictureBoxImage(img As Image)
+        Try
+            If Me.InvokeRequired Then
+                Me.BeginInvoke(Sub() SafeSetPictureBoxImage(img))
+                Return
+            End If
+
+            ' Dispose old image safely
+            Try
+                If PictureBoxPochette.Image IsNot Nothing Then
+                    Dim oldImg = PictureBoxPochette.Image
+                    PictureBoxPochette.Image = Nothing
+                    oldImg.Dispose()
+                End If
+            Catch
+            End Try
+
+            ' Conserver l'assignation simple de l'image dans ce helper
+            If img IsNot Nothing Then
+                PictureBoxPochette.Image = New Bitmap(img)
+                PictureBoxPochette.SizeMode = PictureBoxSizeMode.Zoom
+            Else
+                PictureBoxPochette.Image = Nothing
+            End If
+
+            MettreAJourInfosPochette()
+            MettreAJourBoutonsNavigation()
+        Catch
+        End Try
+    End Sub
+
+    ' Overload pour définir explicitement le PictureBoxSizeMode lors de l'affectation
+    Private Sub SafeSetPictureBoxImage(img As Image, mode As System.Windows.Forms.PictureBoxSizeMode)
+        Try
+            If Me.InvokeRequired Then
+                Me.BeginInvoke(Sub() SafeSetPictureBoxImage(img, mode))
+                Return
+            End If
+
+            ' Dispose old image safely
+            Try
+                If PictureBoxPochette.Image IsNot Nothing Then
+                    Dim oldImg = PictureBoxPochette.Image
+                    PictureBoxPochette.Image = Nothing
+                    oldImg.Dispose()
+                End If
+            Catch
+            End Try
+
+            If img IsNot Nothing Then
+                PictureBoxPochette.Image = New Bitmap(img)
+                PictureBoxPochette.SizeMode = mode
+            Else
+                PictureBoxPochette.Image = Nothing
+            End If
+
+            MettreAJourInfosPochette()
+            MettreAJourBoutonsNavigation()
+        Catch
+        End Try
+    End Sub
+
+    Private Sub SafeClearPictureBoxImage()
+        SafeSetPictureBoxImage(Nothing)
+    End Sub
+
+    Private Sub SafeInitProgressBar(maxValue As Integer)
+        Try
+            If Me.InvokeRequired Then
+                Me.BeginInvoke(Sub() SafeInitProgressBar(maxValue))
+                Return
+            End If
+            ProgressBarPisteActuelle.Visible = True
+            ProgressBarPisteActuelle.Minimum = 0
+            ProgressBarPisteActuelle.Maximum = Math.Max(1, maxValue)
+            ProgressBarPisteActuelle.Value = 0
+        Catch
+        End Try
+    End Sub
+
+    Private Sub SafeUpdateProgressBar(value As Integer)
+        Try
+            If Me.InvokeRequired Then
+                Me.BeginInvoke(Sub() SafeUpdateProgressBar(value))
+                Return
+            End If
+            Dim v = Math.Min(ProgressBarPisteActuelle.Maximum, Math.Max(ProgressBarPisteActuelle.Minimum, value))
+            ' Smooth animation: animate the displayed value towards target to avoid large jumps
+            ' Use UI timer-based smoothing for reliable painting on the UI thread
+            ' Trace anchor (no-op): keeps this block stable for future instrumentation patches.
+            Try
+                SyncLock progressAnimationLock
+                    progressAnimationTarget = v
+                    If progressAnimationTimer Is Nothing Then
+                        progressAnimationTimer = New System.Windows.Forms.Timer()
+                        progressAnimationTimer.Interval = 80
+                        AddHandler progressAnimationTimer.Tick, AddressOf ProgressAnimationTimer_Tick
+                    End If
+                    If Not progressAnimationTimer.Enabled Then
+                        ' Trace that SafeUpdateProgressBar received a target value
+                        Try
+                            Dim tracePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                            System.IO.File.AppendAllText(tracePath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] SafeUpdateProgressBar target={v}{Environment.NewLine}")
+                        Catch
+                        End Try
+                        progressAnimationTimer.Start()
+                    End If
+                End SyncLock
+            Catch
+                ' Fallback: direct set
+                If ProgressBarPisteActuelle.Value <> v Then
+                    ProgressBarPisteActuelle.Value = v
+                End If
+            End Try
+        Catch
+        End Try
+    End Sub
+
+    ' Animation helpers for progress smoothing (timer-based)
+    Private progressAnimationTimer As System.Windows.Forms.Timer = Nothing
+    Private progressAnimationLock As New Object()
+    Private progressAnimationTarget As Integer = 0
+
+    Private Sub ProgressAnimationTimer_Tick(sender As Object, e As EventArgs)
+        Try
+            SyncLock progressAnimationLock
+                If progressAnimationTimer Is Nothing Then Return
+                Dim cur As Integer = ProgressBarPisteActuelle.Value
+                Dim tgt As Integer = progressAnimationTarget
+
+                If cur < tgt Then
+                    Dim diff = tgt - cur
+                    Dim stepSize = Math.Min(8, Math.Max(1, CInt(Math.Ceiling(diff * 0.2))))
+                    Dim nextV = Math.Min(ProgressBarPisteActuelle.Maximum, cur + stepSize)
+                    ProgressBarPisteActuelle.Value = nextV
+                    Return
+                ElseIf cur > tgt Then
+                    ' Snap down immediately
+                    ProgressBarPisteActuelle.Value = tgt
+                    ' stop timer if idle
+                    If progressAnimationTimer.Enabled Then progressAnimationTimer.Stop()
+                    Return
+                Else
+                    ' Equal - stop timer
+                    If progressAnimationTimer.Enabled Then progressAnimationTimer.Stop()
+                    Return
+                End If
+            End SyncLock
+        Catch
+        End Try
     End Sub
 
     ' API Windows pour le contrôle du lecteur CD
@@ -68,6 +361,7 @@ Public Class FormCompresser
     Private chargementInitial As Boolean = False
     Private analysesPistes As New Dictionary(Of Integer, CDAudioAnalyzer.TrackAnalysis) ' Analyses des pistes (clé = index piste)
     Private annulationDemandee As Boolean = False ' Flag pour annuler l'extraction en cours
+    Private ctsExtraction As System.Threading.CancellationTokenSource = Nothing
 
     ' Cache temporaire de la pochette (sauvegardé uniquement lors de l'extraction)
     Private pochetteTempUrl As String = Nothing
@@ -376,7 +670,7 @@ Public Class FormCompresser
             TextBoxCommentaire.Text = ""
             ComboBoxGenre.SelectedIndex = -1
             ListViewCompress.Items.Clear()
-            PictureBoxPochette.Image = Nothing
+            SafeClearPictureBoxImage()
             Return
         End If
 
@@ -420,7 +714,7 @@ Public Class FormCompresser
             TextBoxAnnee.Text = ""
             TextBoxCommentaire.Text = LanguageManager.GetString("Compressor_DefaultComment")
             ComboBoxGenre.SelectedIndex = -1
-            PictureBoxPochette.Image = Nothing
+            SafeClearPictureBoxImage()
         End If
 
         ' Remplir le ListView avec les pistes (avec ou sans métadonnées)
@@ -662,6 +956,15 @@ Public Class FormCompresser
 
         ' Appliquer le thème au formulaire (les autres contrôles seront gérés automatiquement)
         ThemeManager.ApplyThemeToForm(Me)
+
+        ' Initialiser la couleur d'accent pour les CustomProgressBar (par défaut: couleur du thème 'Par défaut')
+        Try
+            Dim accent As Color = My.Settings.AccentColor
+            ProgressBarPisteActuelle.FillColor = accent
+            ProgressBarGlobale.FillColor = accent
+        Catch
+            ' Si échoue, laisser les couleurs par défaut du CustomProgressBar
+        End Try
 
         ' Ajouter les gestionnaires pour le ListView
         AddHandler ListViewCompress.DrawColumnHeader, AddressOf ListViewCompress_DrawColumnHeader
@@ -1599,7 +1902,7 @@ Public Class FormCompresser
                 ComboBoxGenre.SelectedIndex = -1  ' Aucune sélection
             End If
             If PictureBoxPochette IsNot Nothing Then
-                PictureBoxPochette.Image = Nothing
+                SafeClearPictureBoxImage()
                 System.Diagnostics.Debug.WriteLine($"[FormCompresser] ⚠️ IMAGE EFFACÉE dans ReinitialiserMetadonneesCD()")
                 System.Diagnostics.Debug.WriteLine($"[FormCompresser]    Stack: {New System.Diagnostics.StackTrace(True).GetFrame(1)?.GetMethod()?.Name}")
             End If
@@ -1682,6 +1985,26 @@ Public Class FormCompresser
             ButtonAnnuler.Enabled = True
             ButtonQuitter.Enabled = False
             annulationDemandee = False ' Réinitialiser le flag
+            ' Initialiser un CancellationTokenSource pour gérer l'annulation coordonnée
+            Try
+                If ctsExtraction IsNot Nothing Then
+                    Try
+                        ctsExtraction.Cancel()
+                        ctsExtraction.Dispose()
+                    Catch
+                    End Try
+                End If
+                ctsExtraction = New System.Threading.CancellationTokenSource()
+            Catch
+            End Try
+
+            ' Reset progress trace file for fresh session
+            Try
+                Dim tracePath = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                ' Overwrite with empty content to reset
+                System.IO.File.WriteAllText(tracePath, String.Empty)
+            Catch
+            End Try
 
             ' Désactiver TopMost pour permettre à l'utilisateur de basculer vers Form1 s'il le souhaite
             ' FormCompresser reste visible mais n'est plus forcé au premier plan
@@ -1741,8 +2064,8 @@ Public Class FormCompresser
             System.Diagnostics.Debug.WriteLine($"[FormCompresser] 🔍 Pré-analyse des pistes sélectionnées (pairwise)")
 
             ' Affichage UI pendant l'analyse en batch
-            LabelProgressionGlobale.Visible = False
-            ProgressBarGlobale.Visible = False
+            ' Ne pas initialiser la progression globale ici : elle doit rester cachée
+            ' jusqu'au début effectif de l'extraction des pistes.
 
             LabelPisteEnCours.Visible = True
             LabelPisteEnCours.Text = LanguageManager.GetString("Compressor_AnalysisInProgress")
@@ -1752,9 +2075,7 @@ Public Class FormCompresser
             ' Le log sera créé/vidé au démarrage de l'application; écrire pendant la session est voulu
             ' UseDetailedDiagnostics est en lecture seule et vrai; ne pas tenter de l'affecter
             ProgressBarPisteActuelle.Visible = True
-            ProgressBarPisteActuelle.Minimum = 0
-            ProgressBarPisteActuelle.Maximum = indicesPistes.Count
-            ProgressBarPisteActuelle.Value = 0
+            SafeInitProgressBar(indicesPistes.Count)
             Application.DoEvents()
 
             ' Analyser piste par piste (off-UI thread) pour pouvoir mettre à jour la barre de progression
@@ -1772,8 +2093,8 @@ Public Class FormCompresser
                     Dim analysis = Await Task.Run(Function() CDAudioAnalyzer.AnalyzeTrack(track, nextTrack, Nothing))
                     tempAnalyses.Add(analysis)
 
-                    ' Mettre à jour la progression visuelle
-                    ProgressBarPisteActuelle.Value = Math.Min(ProgressBarPisteActuelle.Maximum, ProgressBarPisteActuelle.Value + 1)
+                    ' Mettre à jour la progression visuelle (thread-safe)
+                    SafeUpdateProgressBar(tempAnalyses.Count)
                     LabelPisteEnCours.Text = $"Analyse en cours... ({tempAnalyses.Count}/{indicesPistes.Count})"
                     Application.DoEvents()
                 End If
@@ -1906,16 +2227,17 @@ Public Class FormCompresser
             End If
 
             ' Maintenant afficher les barres de progression globale pour l'extraction
-            LabelProgressionGlobale.Visible = True
-            ProgressBarGlobale.Visible = True
-            ProgressBarGlobale.Maximum = indicesPistes.Count
-            ProgressBarGlobale.Value = 0
-            LabelProgressionGlobale.Text = String.Format(LanguageManager.GetString("Compressor_GlobalProgress"), 0, indicesPistes.Count)
+            SafeInitGlobalProgressBar(indicesPistes.Count)
+            ' Afficher la progression globale à 0/N au démarrage (avant la première piste)
+            SafeUpdateGlobalProgressBar(0)
+            SafeSetGlobalLabel(String.Format(LanguageManager.GetString("Compressor_GlobalProgress"), 0, indicesPistes.Count))
 
             ' Afficher aussi la progression individuelle par piste
             LabelPisteEnCours.Visible = True
-            ProgressBarPisteActuelle.Visible = True
-            ProgressBarPisteActuelle.Value = 0
+            ' Initialiser la barre de progression de piste via helper thread-safe
+            ' Utiliser 100 comme échelle par défaut pour la progression par piste (percent)
+            SafeInitProgressBar(100)
+            SafeUpdateProgressBar(0)
 
             Try
                 ' Extraire les pistes sélectionnées
@@ -1923,42 +2245,95 @@ Public Class FormCompresser
                 Dim pistesEchouees As Integer = 0
                 Dim pisteNumero As Integer = 0
 
-                For Each index In indicesPistes
-                    pisteNumero += 1
-
-                    ' ═══ VÉRIFIER SI L'ANNULATION A ÉTÉ DEMANDÉE ═══
-                    If annulationDemandee Then
-                        System.Diagnostics.Debug.WriteLine($"[FormCompresser] ⚠️ Extraction annulée après {pistesReussies} piste(s)")
-                        Exit For
-                    End If
-
+                ' Préparer un snapshot des pistes à extraire (pour éviter accès UI depuis le thread d'arrière-plan)
+                Dim snapshot As New List(Of (Index As Integer, Titre As String, Artiste As String))
+                For Each idx In indicesPistes
                     Try
-                        ' Mettre à jour l'affichage de la piste en cours
-                        Dim item = ListViewCompress.Items(index)
+                        Dim item = ListViewCompress.Items(idx)
                         Dim titre As String = If(item.SubItems.Count > 1, item.SubItems(1).Text, $"Piste {item.Text}")
                         Dim artiste As String = If(item.SubItems.Count > 2, item.SubItems(2).Text, TextBoxCDArtiste.Text)
-
-                        LabelPisteEnCours.Text = $"{artiste} - {titre}"
-                        ProgressBarPisteActuelle.Value = 0
-                        Application.DoEvents()
-
-                        ' Extraire la piste
-                        Await ExtrairePiste(index)
-                        pistesReussies += 1
-
-                        ' Marquer la piste comme complétée
-                        ProgressBarPisteActuelle.Value = ProgressBarPisteActuelle.Maximum
-
-                    Catch ex As Exception
-                        pistesEchouees += 1
-                        System.Diagnostics.Debug.WriteLine($"[FormCompresser] Erreur extraction piste {index + 1}: {ex.Message}")
+                        snapshot.Add((idx, titre, artiste))
+                    Catch
+                        snapshot.Add((idx, $"Piste {idx + 1}", TextBoxCDArtiste.Text))
                     End Try
-
-                    ' Mettre à jour la progression globale
-                    ProgressBarGlobale.Value = pisteNumero
-                    LabelProgressionGlobale.Text = String.Format(LanguageManager.GetString("Compressor_GlobalProgress"), pisteNumero, indicesPistes.Count)
-                    Application.DoEvents()
                 Next
+
+                ' Exécuter la boucle d'extraction dans un Task de fond pour libérer le thread UI
+                ' Instrumentation: log start/iter/exception/finish for background extraction
+                Dim extractionTask As Task = Task.Run(Async Function()
+                                                        Try
+                                                            Dim tracePathStart = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                                                            System.IO.File.AppendAllText(tracePathStart, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] BACKGROUND_EXTRACTION_STARTED{Environment.NewLine}")
+                                                        Catch
+                                                        End Try
+                                                        Try
+                                                        Dim localPistesReussies As Integer = 0
+                                                        Dim localPistesEchouees As Integer = 0
+                                                        Dim localPisteNumero As Integer = 0
+
+                                                        For Each entry In snapshot
+                                                            Try
+                                                                Dim traceIter = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                                                                System.IO.File.AppendAllText(traceIter, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] BACKGROUND_EXTRACT_ITER {entry.Index}{Environment.NewLine}")
+                                                            Catch
+                                                            End Try
+                                                            localPisteNumero += 1
+
+                                                            ' Vérifier annulation
+                                                            If annulationDemandee OrElse (ctsExtraction IsNot Nothing AndAlso ctsExtraction.IsCancellationRequested) Then
+                                                                System.Diagnostics.Debug.WriteLine($"[FormCompresser] ⚠️ Extraction annulée après {localPistesReussies} piste(s) (background loop)")
+                                                                Exit For
+                                                            End If
+
+                                                            Try
+                                                                ' Mettre à jour l'affichage de la piste en cours (thread-safe via BeginInvoke dans helpers ou direct)
+                                                                Try
+                                                                    Me.BeginInvoke(Sub()
+                                                                                       LabelPisteEnCours.Text = $"{entry.Artiste} - {entry.Titre}"
+                                                                                   End Sub)
+                                                                Catch
+                                                                End Try
+
+                                                                ' Réinitialiser la progression de la piste (0..100)
+                                                                SafeInitProgressBar(100)
+                                                                SafeUpdateProgressBar(0)
+
+                                                                ' Appeler l'extraction (ExtrairePiste est asynchrone)
+                                                                Await ExtrairePiste(entry.Index)
+                                                                localPistesReussies += 1
+
+                                                                ' Marquer la piste comme complétée (utiliser helper thread-safe)
+                                                                SafeSetProgressBarToMax()
+                                                            Catch ex As Exception
+                                                                localPistesEchouees += 1
+                                                                System.Diagnostics.Debug.WriteLine($"[FormCompresser] Erreur extraction piste {entry.Index + 1} (background): {ex.Message}")
+                                                                Try
+                                                                    Dim traceEx = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                                                                    System.IO.File.AppendAllText(traceEx, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] BACKGROUND_EXTRACT_EXCEPTION {entry.Index} {ex.Message}{Environment.NewLine}")
+                                                                Catch
+                                                                End Try
+                                                            End Try
+
+                                                            ' Mettre à jour la progression globale
+                                                            SafeUpdateGlobalProgressBar(localPisteNumero)
+                                                            SafeSetGlobalLabel(String.Format(LanguageManager.GetString("Compressor_GlobalProgress"), localPisteNumero, snapshot.Count))
+                                                        Next
+                                                        Try
+                                                            Dim traceFinish = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                                                            System.IO.File.AppendAllText(traceFinish, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] BACKGROUND_EXTRACTION_FINISHED{Environment.NewLine}")
+                                                        Catch
+                                                        End Try
+                                                        Catch exOuter As Exception
+                                                            Try
+                                                                Dim traceOuter = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                                                                System.IO.File.AppendAllText(traceOuter, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] BACKGROUND_EXTRACTION_FATAL {exOuter.Message}{Environment.NewLine}")
+                                                            Catch
+                                                            End Try
+                                                        End Try
+                                                    End Function)
+
+                ' Attendre la fin de la tâche d'extraction (UI reste réactive)
+                Await extractionTask
 
                 ' Masquer les barres de progression
                 LabelPisteEnCours.Visible = False
@@ -2054,6 +2429,12 @@ Public Class FormCompresser
 
             If resultat = DialogResult.Yes Then
                 annulationDemandee = True
+                Try
+                    If ctsExtraction IsNot Nothing Then
+                        ctsExtraction.Cancel()
+                    End If
+                Catch
+                End Try
                 LabelPisteEnCours.Text = LanguageManager.GetString("Compressor_CancelInProgress")
                 ButtonAnnuler.Enabled = False
                 System.Diagnostics.Debug.WriteLine("[FormCompresser] ⚠️ Annulation demandée par l'utilisateur")
@@ -2070,19 +2451,103 @@ Public Class FormCompresser
         End If
 
         Dim piste = pistesCD(pisteIndex)
-        Dim item = ListViewCompress.Items(pisteIndex)
 
-        ' Obtenir le numéro de piste depuis le ListView (qui peut être différent du numéro original)
-        Dim numeroFichier As String = item.Text
+        ' Lire en sécurité les informations affichées dans le ListView (UI thread)
+        Dim numeroFichier As String = ""
+        Dim titre As String = ""
+        Dim artiste As String = TextBoxCDArtiste.Text
+        Dim nextNumeroFichier As String = Nothing
+        Dim nextTitre As String = Nothing
+        Dim nextArtiste As String = Nothing
+        Try
+            If Me.InvokeRequired Then
+                Me.Invoke(Sub()
+                              If ListViewCompress IsNot Nothing AndAlso pisteIndex >= 0 AndAlso pisteIndex < ListViewCompress.Items.Count Then
+                                  Dim itm = ListViewCompress.Items(pisteIndex)
+                                  numeroFichier = itm.Text
+                                  If itm.SubItems.Count > 1 Then titre = itm.SubItems(1).Text Else titre = $"Piste {numeroFichier}"
+                                  If itm.SubItems.Count > 2 Then artiste = itm.SubItems(2).Text Else artiste = TextBoxCDArtiste.Text
+                              Else
+                                  numeroFichier = (piste.TrackNumber).ToString()
+                                  titre = $"Piste {numeroFichier}"
+                                  artiste = TextBoxCDArtiste.Text
+                              End If
 
-        ' Obtenir le titre et l'artiste depuis le ListView
-        Dim titre As String = If(item.SubItems.Count > 1, item.SubItems(1).Text, $"Piste {numeroFichier}")
-        Dim artiste As String = If(item.SubItems.Count > 2, item.SubItems(2).Text, TextBoxCDArtiste.Text)
+                              If ListViewCompress IsNot Nothing AndAlso (pisteIndex + 1) < ListViewCompress.Items.Count Then
+                                  Dim nitm = ListViewCompress.Items(pisteIndex + 1)
+                                  nextNumeroFichier = nitm.Text
+                                  If nitm.SubItems.Count > 1 Then nextTitre = nitm.SubItems(1).Text Else nextTitre = $"Piste {nextNumeroFichier}"
+                                  If nitm.SubItems.Count > 2 Then nextArtiste = nitm.SubItems(2).Text Else nextArtiste = TextBoxCDArtiste.Text
+                              End If
+                          End Sub)
+            Else
+                If ListViewCompress IsNot Nothing AndAlso pisteIndex >= 0 AndAlso pisteIndex < ListViewCompress.Items.Count Then
+                    Dim itm = ListViewCompress.Items(pisteIndex)
+                    numeroFichier = itm.Text
+                    If itm.SubItems.Count > 1 Then titre = itm.SubItems(1).Text Else titre = $"Piste {numeroFichier}"
+                    If itm.SubItems.Count > 2 Then artiste = itm.SubItems(2).Text Else artiste = TextBoxCDArtiste.Text
+                Else
+                    numeroFichier = (piste.TrackNumber).ToString()
+                    titre = $"Piste {numeroFichier}"
+                    artiste = TextBoxCDArtiste.Text
+                End If
 
-        ' Créer le répertoire de l'album: "(Année) Artiste - Album"
-        Dim annee As String = TextBoxAnnee.Text.Trim()
-        Dim artisteAlbum As String = TextBoxCDArtiste.Text.Trim()
-        Dim nomAlbum As String = TextBoxCDTitre.Text.Trim()
+                If ListViewCompress IsNot Nothing AndAlso (pisteIndex + 1) < ListViewCompress.Items.Count Then
+                    Dim nitm = ListViewCompress.Items(pisteIndex + 1)
+                    nextNumeroFichier = nitm.Text
+                    If nitm.SubItems.Count > 1 Then nextTitre = nitm.SubItems(1).Text Else nextTitre = $"Piste {nextNumeroFichier}"
+                    If nitm.SubItems.Count > 2 Then nextArtiste = nitm.SubItems(2).Text Else nextArtiste = TextBoxCDArtiste.Text
+                End If
+            End If
+        Catch
+            ' En cas d'erreur d'accès UI, fallback aux données de piste
+            numeroFichier = (piste.TrackNumber).ToString()
+            titre = $"Piste {numeroFichier}"
+            artiste = TextBoxCDArtiste.Text
+        End Try
+
+        ' Chronométrage pour diagnostic des latences avant extraction
+        Dim swTotal As New Stopwatch()
+        Dim swPreAnalysis As New Stopwatch()
+        Dim swCreateReader As New Stopwatch()
+        Dim swRip As New Stopwatch()
+        swTotal.Start()
+
+        ' Capturer les valeurs UI dépendantes en toute sécurité pour éviter les accès inter-threads
+        Dim formatLocal As String = "MP3"
+        Dim qualiteIndexLocal As Integer = 0
+        Dim repSauvegardeLocal As String = TextBoxRepSauvegarde.Text
+        Dim anneeLocal As String = TextBoxAnnee.Text.Trim()
+        Dim artisteAlbumLocal As String = TextBoxCDArtiste.Text.Trim()
+        Dim nomAlbumLocal As String = TextBoxCDTitre.Text.Trim()
+        Try
+            If Me.InvokeRequired Then
+                Me.Invoke(Sub()
+                              formatLocal = If(ComboBoxTypeConversion.SelectedItem?.ToString(), "MP3").ToUpper()
+                              qualiteIndexLocal = If(ComboBoxQualiteConversion.SelectedIndex < 0, 0, ComboBoxQualiteConversion.SelectedIndex)
+                              repSauvegardeLocal = TextBoxRepSauvegarde.Text
+                              anneeLocal = TextBoxAnnee.Text.Trim()
+                              artisteAlbumLocal = TextBoxCDArtiste.Text.Trim()
+                              nomAlbumLocal = TextBoxCDTitre.Text.Trim()
+                          End Sub)
+            Else
+                formatLocal = If(ComboBoxTypeConversion.SelectedItem?.ToString(), "MP3").ToUpper()
+                qualiteIndexLocal = If(ComboBoxQualiteConversion.SelectedIndex < 0, 0, ComboBoxQualiteConversion.SelectedIndex)
+                repSauvegardeLocal = TextBoxRepSauvegarde.Text
+                anneeLocal = TextBoxAnnee.Text.Trim()
+                artisteAlbumLocal = TextBoxCDArtiste.Text.Trim()
+                nomAlbumLocal = TextBoxCDTitre.Text.Trim()
+            End If
+        Catch
+            ' ignore UI read errors and use defaults
+        End Try
+
+        ' Les variables numeroFichier, titre, artiste ont été lues en toute sécurité depuis le thread UI plus haut
+
+        ' Créer le répertoire de l'album: "(Année) Artiste - Album" en utilisant les valeurs capturées
+        Dim annee As String = If(String.IsNullOrEmpty(anneeLocal), String.Empty, anneeLocal)
+        Dim artisteAlbum As String = If(String.IsNullOrEmpty(artisteAlbumLocal), String.Empty, artisteAlbumLocal)
+        Dim nomAlbum As String = If(String.IsNullOrEmpty(nomAlbumLocal), String.Empty, nomAlbumLocal)
 
         Dim nomRepertoireAlbum As String = ""
         If Not String.IsNullOrEmpty(annee) Then
@@ -2091,7 +2556,7 @@ Public Class FormCompresser
         nomRepertoireAlbum &= $"{artisteAlbum} - {nomAlbum}"
         nomRepertoireAlbum = NettoyerNomFichier(nomRepertoireAlbum)
 
-        Dim cheminRepertoireAlbum As String = Path.Combine(TextBoxRepSauvegarde.Text, nomRepertoireAlbum)
+        Dim cheminRepertoireAlbum As String = Path.Combine(If(String.IsNullOrEmpty(repSauvegardeLocal), TextBoxRepSauvegarde.Text, repSauvegardeLocal), nomRepertoireAlbum)
 
         ' Créer le répertoire s'il n'existe pas
         If Not Directory.Exists(cheminRepertoireAlbum) Then
@@ -2103,16 +2568,18 @@ Public Class FormCompresser
         Dim numeroFormate As String = Integer.Parse(numeroFichier).ToString("D2")
         Dim nomFichier As String = NettoyerNomFichier($"{numeroFormate} - {artiste} - {titre}")
 
-        ' Obtenir le format, l'extension et la qualité choisie
-        Dim format As String = If(ComboBoxTypeConversion.SelectedItem?.ToString(), "MP3").ToUpper()
+        ' Obtenir le format, l'extension et la qualité choisie à partir des valeurs capturées
+        Dim format As String = If(String.IsNullOrEmpty(formatLocal), "MP3", formatLocal).ToUpper()
         Dim extension As String = "." & format.ToLower()
-        Dim qualiteIndex As Integer = ComboBoxQualiteConversion.SelectedIndex
+        Dim qualiteIndex As Integer = qualiteIndexLocal
 
         Dim cheminComplet As String = Path.Combine(cheminRepertoireAlbum, nomFichier & extension)
 
         ' ═══ ANALYSER LA PISTE INDIVIDUELLEMENT JUSTE AVANT EXTRACTION ═══
         Dim pisteAExtraire As CDAudioManager.CDTrack = piste
 
+        ' Démarrer le chrono de la pré-analyse (pour mesurer latence avant rip)
+        swPreAnalysis.Start()
         If ParametresGlobaux.ModeTOCPrecis Then
             ' Mode TOC Précis : utiliser les positions TOC exactes sans modification
             System.Diagnostics.Debug.WriteLine($"[FormCompresser] 📍 Extraction piste {numeroFichier} avec positions TOC EXACTES: {piste.StartFrame}-{piste.EndFrame}")
@@ -2191,10 +2658,216 @@ Public Class FormCompresser
             End If
         End If
 
+        ' Fin de la pré-analyse
+        Try
+            swPreAnalysis.Stop()
+            CDAudioAnalyzer.DiagnosticWrite($"TIMING_PREANALYSIS: Track={piste.TrackNumber} ms={swPreAnalysis.ElapsedMilliseconds}")
+        Catch
+        End Try
+
         ' Créer le WaveStream pour lire le CD
+        swCreateReader.Start()
         Using cdReader = CDAudioManager.CreerLecteurCDAudio(pisteAExtraire)
             If cdReader Is Nothing Then
                 Throw New Exception($"Impossible de créer le lecteur pour la piste {numeroFichier}")
+            End If
+            swCreateReader.Stop()
+            Try
+                CDAudioAnalyzer.DiagnosticWrite($"TIMING_CREATE_READER: Track={piste.TrackNumber} ms={swCreateReader.ElapsedMilliseconds}")
+            Catch
+            End Try
+
+            ' Si on force l'utilisation uniquement du ripper externe, exécuter ici
+            If ParametresGlobaux.ForceOnlyExternalRipper Then
+                Try
+                    CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER: external-only flow for Track={piste.TrackNumber} format={format}")
+                Catch
+                End Try
+
+                ' Traiter les formats principaux: MP3 (WAV-first), WAV, FLAC, WMA
+                Dim nomWavTemp As String = Path.Combine(cheminRepertoireAlbum, $"audioplay_temp_{Guid.NewGuid()}.wav")
+
+                Try
+                    Select Case format
+                        Case "MP3"
+                            ' Demander à freac de produire un WAV temporaire
+                            Dim usedExt As Boolean = False
+                            Try
+                                Dim trackObj = pistesCD(pisteIndex)
+                                ' Initialiser la barre de progression à 0-100 pour le rip externe
+                                SafeInitProgressBar(100)
+                                SafeUpdateProgressBar(0)
+                                If Await Task.Run(Function() CDAudioManager.RipTrackWithFreac(trackObj, nomWavTemp, 5 * 60 * 1000, cheminRepertoireAlbum, cancellationCheck:=Function() annulationDemandee OrElse (ctsExtraction IsNot Nothing AndAlso ctsExtraction.IsCancellationRequested), progressCallback:=AddressOf SafeUpdateProgressBar)) Then
+                                    usedExt = True
+                                End If
+                            Catch
+                            End Try
+
+                            If Not usedExt Then
+                                CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER_FAIL: freac did not produce WAV for Track={piste.TrackNumber}")
+                                File.WriteAllText(Path.Combine(cheminRepertoireAlbum, $"track_{piste.TrackNumber}.external_failed.txt"), $"FREAC_FAIL {DateTime.UtcNow:o}")
+                                Return
+                            End If
+
+                            ' Vérifier et resampler si nécessaire
+                            Try
+                                If File.Exists(nomWavTemp) Then
+                                    ' Sauvegarder le WAV original produit par freac avant toute conversion
+                                    ' Ne plus sauvegarder la copie .freac.orig pour éviter duplication
+                                    ' Respecter l'option de test: SkipEnsureWavQuality
+                                    If Not ParametresGlobaux.SkipEnsureWavQuality Then
+                                        EnsureWavQuality(nomWavTemp, qualiteIndex)
+                                    Else
+                                        Try
+                                            CDAudioAnalyzer.DiagnosticWrite($"SKIP_ENSURE_WAV_QUALITY: Skipped resample for {nomWavTemp}")
+                                        Catch
+                                        End Try
+                                    End If
+                                End If
+                            Catch
+                            End Try
+
+                            ' Convertir en MP3
+                            Dim conversionOk As Boolean = Await ConvertWavToMp3(nomWavTemp, cheminComplet, qualiteIndex, titre, artiste, numeroFichier, TextBoxCDTitre.Text, TextBoxCDArtiste.Text, TextBoxAnnee.Text, If(ComboBoxGenre.SelectedItem?.ToString(), ""), TextBoxCommentaire.Text, SafeGetPictureBoxBitmap())
+                            If conversionOk Then
+                                Try
+                                    If File.Exists(nomWavTemp) Then File.Delete(nomWavTemp)
+                                Catch
+                                End Try
+                                CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER_OK: MP3 created for Track={piste.TrackNumber} -> {cheminComplet}")
+                            Else
+                                CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER_FAIL: MP3 conversion failed for Track={piste.TrackNumber}")
+                                File.WriteAllText(Path.Combine(cheminRepertoireAlbum, $"track_{piste.TrackNumber}.conversion_failed.txt"), $"CONV_FAIL {DateTime.UtcNow:o}")
+                            End If
+
+                        Case "WAV"
+                            Dim usedExtWav As Boolean = False
+                            Try
+                                Dim trackObj = pistesCD(pisteIndex)
+                                ' Initialiser la barre de progression à 0-100 pour le rip externe
+                                SafeInitProgressBar(100)
+                                SafeUpdateProgressBar(0)
+                                If Await Task.Run(Function() CDAudioManager.RipTrackWithFreac(trackObj, cheminComplet, 5 * 60 * 1000, cheminRepertoireAlbum, cancellationCheck:=Function() annulationDemandee OrElse (ctsExtraction IsNot Nothing AndAlso ctsExtraction.IsCancellationRequested), progressCallback:=AddressOf SafeUpdateProgressBar)) Then
+                                    usedExtWav = True
+                                End If
+                            Catch
+                            End Try
+
+                            If usedExtWav Then
+                                Try
+                                    If File.Exists(cheminComplet) Then
+                                        If Not ParametresGlobaux.SkipEnsureWavQuality Then
+                                            EnsureWavQuality(cheminComplet, qualiteIndex)
+                                        Else
+                                            Try
+                                                CDAudioAnalyzer.DiagnosticWrite($"SKIP_ENSURE_WAV_QUALITY: Skipped resample for final file {cheminComplet}")
+                                            Catch
+                                            End Try
+                                        End If
+                                    End If
+                                Catch
+                                End Try
+                                CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER_OK: WAV created for Track={piste.TrackNumber} -> {cheminComplet}")
+                            Else
+                                CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER_FAIL: freac did not produce WAV for Track={piste.TrackNumber}")
+                                File.WriteAllText(Path.Combine(cheminRepertoireAlbum, $"track_{piste.TrackNumber}.external_failed.txt"), $"FREAC_FAIL {DateTime.UtcNow:o}")
+                            End If
+
+                        Case "FLAC", "WMA"
+                            ' Demander un WAV, puis utiliser ffmpeg pour encoder en FLAC/WMA
+                            Dim usedExtFmt As Boolean = False
+                            Try
+                                Dim trackObj = pistesCD(pisteIndex)
+                                ' Initialiser la barre de progression à 0-100 pour le rip externe
+                                SafeInitProgressBar(100)
+                                SafeUpdateProgressBar(0)
+                                If CDAudioManager.RipTrackWithFreac(trackObj, nomWavTemp, 5 * 60 * 1000, cheminRepertoireAlbum, progressCallback:=AddressOf SafeUpdateProgressBar) Then
+                                    usedExtFmt = True
+                                End If
+                            Catch
+                            End Try
+
+                            If Not usedExtFmt Then
+                                CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER_FAIL: freac did not produce WAV for Track={piste.TrackNumber}")
+                                File.WriteAllText(Path.Combine(cheminRepertoireAlbum, $"track_{piste.TrackNumber}.external_failed.txt"), $"FREAC_FAIL {DateTime.UtcNow:o}")
+                                Return
+                            End If
+
+                            ' Convertir via ffmpeg
+                            Dim ffmpegPath As String = Await TrouverFFMpeg()
+                            If String.IsNullOrEmpty(ffmpegPath) Then
+                                CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER_FAIL: ffmpeg unavailable for Track={piste.TrackNumber}")
+                                Return
+                            End If
+
+                            Try
+                                If format = "FLAC" Then
+                                    Dim compressionLevel As Integer = 8
+                                    Select Case qualiteIndex
+                                        Case 0 : compressionLevel = 0
+                                        Case 1 : compressionLevel = 5
+                                        Case 2 : compressionLevel = 8
+                                    End Select
+                                    Dim args = $"-i ""{nomWavTemp}'' -compression_level {compressionLevel} -y ""{cheminComplet}"""
+                                    ' Correct quotes - build safely
+                                    args = $"-i ""{nomWavTemp}"" -compression_level {compressionLevel} -y ""{cheminComplet}"""
+                                    Dim pi As New ProcessStartInfo(ffmpegPath, args) With {
+                                        .CreateNoWindow = True,
+                                        .UseShellExecute = False,
+                                        .RedirectStandardOutput = True,
+                                        .RedirectStandardError = True
+                                    }
+                                    Dim p As Process = Process.Start(pi)
+                                    p.WaitForExit()
+                                    If p.ExitCode = 0 Then
+                                        CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER_OK: FLAC created for Track={piste.TrackNumber}")
+                                    Else
+                                        CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER_FAIL: ffmpeg exit {p.ExitCode} for Track={piste.TrackNumber}")
+                                    End If
+                                ElseIf format = "WMA" Then
+                                    Dim bitrate As Integer = 256
+                                    Select Case qualiteIndex
+                                        Case 0 : bitrate = 128
+                                        Case 1 : bitrate = 192
+                                        Case 2 : bitrate = 256
+                                    End Select
+                                    Dim args = $"-i ""{nomWavTemp}"" -c:a wmav2 -b:a {bitrate}k -y ""{cheminComplet}"""
+                                    Dim pi As New ProcessStartInfo(ffmpegPath, args) With {
+                                        .CreateNoWindow = True,
+                                        .UseShellExecute = False,
+                                        .RedirectStandardOutput = True,
+                                        .RedirectStandardError = True
+                                    }
+                                    Dim p As Process = Process.Start(pi)
+                                    p.WaitForExit()
+                                    If p.ExitCode = 0 Then
+                                        CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER_OK: WMA created for Track={piste.TrackNumber}")
+                                    Else
+                                        CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER_FAIL: ffmpeg exit {p.ExitCode} for Track={piste.TrackNumber}")
+                                    End If
+                                End If
+                            Catch exConv As Exception
+                                CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER_FAIL: conversion error Track={piste.TrackNumber} - {exConv.Message}")
+                            Finally
+                                Try
+                                    If File.Exists(nomWavTemp) Then File.Delete(nomWavTemp)
+                                Catch
+                                End Try
+                            End Try
+
+                        Case Else
+                            CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER_UNSUPPORTED_FORMAT: {format} for Track={piste.TrackNumber}")
+                            File.WriteAllText(Path.Combine(cheminRepertoireAlbum, $"track_{piste.TrackNumber}.external_unsupported.txt"), $"UNSUPPORTED {format} {DateTime.UtcNow:o}")
+                    End Select
+                Catch exForce As Exception
+                    Try
+                        CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER_EXCEPTION: Track={piste.TrackNumber} - {exForce.Message}")
+                    Catch
+                    End Try
+                End Try
+
+                ' Fin du flux externe — retourner pour éviter l'extraction interne
+                Return
             End If
 
             ' Extraire selon le format choisi
@@ -2211,7 +2884,65 @@ Public Class FormCompresser
                         End Try
 
                         ' Extraire en WAV temporaire
-                        Await ExtraireWav(cdReader, cheminWavTemp, titre, artiste, numeroFichier)
+                        ' If freac (freaccmd) is available, prefer it for the raw rip to improve reliability
+                        ' No-op behavior intentionally kept for clarity.
+                        ' No-op behavior intentionally kept for clarity (formatting only).
+                        Dim usedExternalRipper As Boolean = False
+                        Try
+                            Dim trackObj = pistesCD(pisteIndex)
+                            If CDAudioManager.RipTrackWithFreac(trackObj, cheminWavTemp, 5 * 60 * 1000, cheminRepertoireAlbum, progressCallback:=AddressOf SafeUpdateProgressBar) Then
+                                usedExternalRipper = True
+                                ' Comportement conservé volontairement (aucun changement fonctionnel).
+                            End If
+                        Catch
+                        End Try
+
+                        If Not usedExternalRipper Then
+                            If ParametresGlobaux.ForceOnlyExternalRipper Then
+                                ' When forced to use only external ripper, skip internal extraction and log
+                                Try
+                                    CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER: Skipping internal rip for Track={piste.TrackNumber}")
+                                Catch
+                                End Try
+                            Else
+                                swRip.Start()
+                                Await ExtraireWav(cdReader, cheminWavTemp, titre, artiste, numeroFichier, pisteAExtraire.Duration.TotalSeconds)
+                                swRip.Stop()
+                                Try
+                                    CDAudioAnalyzer.DiagnosticWrite($"TIMING_RIP_LOCAL: Track={piste.TrackNumber} ms={swRip.ElapsedMilliseconds}")
+                                Catch
+                                End Try
+                            End If
+
+
+                        Else
+                            ' External rip via freaccmd handled inside RipTrackWithFreac
+                            ' Log an approximate rip time if RipTrackWithFreac wrote a run log
+                            Try
+                                Dim runLog = Path.Combine(cheminRepertoireAlbum, $"freac_run_{piste.TrackNumber}.log")
+                                If File.Exists(runLog) Then
+                                    Dim txt = File.ReadAllText(runLog)
+                                    CDAudioAnalyzer.DiagnosticWrite($"TIMING_RIP_EXTERNAL_LOGGED: Track={piste.TrackNumber} runlog_exists=true")
+                                Else
+                                    CDAudioAnalyzer.DiagnosticWrite($"TIMING_RIP_EXTERNAL_LOGGED: Track={piste.TrackNumber} runlog_exists=false")
+                                End If
+                            Catch
+                            End Try
+                            ' Ensure WAV produced by freac matches selected quality before MP3 conversion
+                            Try
+                                If File.Exists(cheminWavTemp) Then
+                                    If Not ParametresGlobaux.SkipEnsureWavQuality Then
+                                        EnsureWavQuality(cheminWavTemp, qualiteIndex)
+                                    Else
+                                        Try
+                                            CDAudioAnalyzer.DiagnosticWrite($"SKIP_ENSURE_WAV_QUALITY: Skipped resample for temp WAV {cheminWavTemp}")
+                                        Catch
+                                        End Try
+                                    End If
+                                End If
+                            Catch
+                            End Try
+                        End If
 
                         ' Vérifier l'existence du WAV
                         If Not File.Exists(cheminWavTemp) Then
@@ -2220,7 +2951,7 @@ Public Class FormCompresser
                             CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_WAV_CREATED: Track={piste.TrackNumber} WAV={cheminWavTemp}")
 
                             ' Convertir WAV -> MP3 selon la qualité choisie
-                            Dim conversionOk As Boolean = Await ConvertWavToMp3(cheminWavTemp, cheminComplet, qualiteIndex, titre, artiste, numeroFichier, TextBoxCDTitre.Text, TextBoxCDArtiste.Text, TextBoxAnnee.Text, If(ComboBoxGenre.SelectedItem?.ToString(), ""), TextBoxCommentaire.Text, If(PictureBoxPochette.Image IsNot Nothing, New Bitmap(PictureBoxPochette.Image), Nothing))
+                            Dim conversionOk As Boolean = Await ConvertWavToMp3(cheminWavTemp, cheminComplet, qualiteIndex, titre, artiste, numeroFichier, TextBoxCDTitre.Text, TextBoxCDArtiste.Text, TextBoxAnnee.Text, If(ComboBoxGenre.SelectedItem?.ToString(), ""), TextBoxCommentaire.Text, SafeGetPictureBoxBitmap())
 
                             ' Supprimer le WAV temporaire uniquement si la conversion a réussi
                             If conversionOk Then
@@ -2243,23 +2974,133 @@ Public Class FormCompresser
                         CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_MP3_FROM_WAV_ERROR: Track={piste.TrackNumber} - {ex.Message}")
                     End Try
                 Case "WAV"
-                        ' Log the extraction begin info to diagnostics
+                    ' Log the extraction begin info to diagnostics
+                    Try
+                        CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_BEGIN: Track={piste.TrackNumber} File={cheminComplet} StartFrame={pisteAExtraire.StartFrame} EndFrame={pisteAExtraire.EndFrame}")
+                    Catch
+                    End Try
+                    ' Prefer external ripper when available
+                    Dim usedExternalRipperWav As Boolean = False
+                    Try
+                        Dim trackObj = pistesCD(pisteIndex)
+                        If CDAudioManager.RipTrackWithFreac(trackObj, cheminComplet, 5 * 60 * 1000, cheminRepertoireAlbum, progressCallback:=AddressOf SafeUpdateProgressBar) Then
+                            usedExternalRipperWav = True
+                        End If
+                    Catch
+                    End Try
+
+                    If Not usedExternalRipperWav Then
+                        If ParametresGlobaux.ForceOnlyExternalRipper Then
+                            Try
+                                CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER: Skipping internal rip (WAV) for Track={piste.TrackNumber}")
+                            Catch
+                            End Try
+                        Else
+                            Await ExtraireWav(cdReader, cheminComplet, titre, artiste, numeroFichier, pisteAExtraire.Duration.TotalSeconds)
+                        End If
+                    Else
+                        ' If external rip produced the WAV, ensure it matches requested quality
                         Try
-                            CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_BEGIN: Track={piste.TrackNumber} File={cheminComplet} StartFrame={pisteAExtraire.StartFrame} EndFrame={pisteAExtraire.EndFrame}")
+                            If File.Exists(cheminComplet) Then
+                                If Not ParametresGlobaux.SkipEnsureWavQuality Then
+                                    EnsureWavQuality(cheminComplet, qualiteIndex)
+                                Else
+                                    Try
+                                        CDAudioAnalyzer.DiagnosticWrite($"SKIP_ENSURE_WAV_QUALITY: Skipped resample for final file {cheminComplet}")
+                                    Catch
+                                    End Try
+                                End If
+                            End If
                         Catch
                         End Try
-                        Await ExtraireWav(cdReader, cheminComplet, titre, artiste, numeroFichier)
+                    End If
                 Case "FLAC"
                     Await ExtraireFlac(cdReader, cheminComplet, titre, artiste, numeroFichier)
                 Case "WMA"
                     Await ExtraireWma(cdReader, cheminComplet, titre, artiste, numeroFichier)
                 Case Else
                     ' Par défaut, WAV
-                    Await ExtraireWav(cdReader, cheminComplet, titre, artiste, numeroFichier)
+                    Dim usedExternalRipperDef As Boolean = False
+                    Try
+                        Dim trackObj = pistesCD(pisteIndex)
+                        If CDAudioManager.RipTrackWithFreac(trackObj, cheminComplet, 5 * 60 * 1000, cheminRepertoireAlbum, progressCallback:=AddressOf SafeUpdateProgressBar) Then
+                            usedExternalRipperDef = True
+                        End If
+                    Catch
+                    End Try
+
+                    If Not usedExternalRipperDef Then
+                        If ParametresGlobaux.ForceOnlyExternalRipper Then
+                            Try
+                                CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER: Skipping internal rip (default) for Track={piste.TrackNumber}")
+                            Catch
+                            End Try
+                        Else
+                            Await ExtraireWav(cdReader, cheminComplet, titre, artiste, numeroFichier, pisteAExtraire.Duration.TotalSeconds)
+                        End If
+                    Else
+                        ' Ensure quality for external rip in default branch as well
+                        Try
+                            If File.Exists(cheminComplet) Then
+                                EnsureWavQuality(cheminComplet, qualiteIndex)
+                            End If
+                        Catch
+                        End Try
+                    End If
             End Select
         End Using
 
         System.Diagnostics.Debug.WriteLine($"[FormCompresser] Piste {numeroFichier} extraite: {cheminComplet}")
+
+        ' Fin totale de l'extraction - journaliser les timings
+        Try
+            swTotal.Stop()
+            CDAudioAnalyzer.DiagnosticWrite($"TIMING_TOTAL: Track={piste.TrackNumber} ms={swTotal.ElapsedMilliseconds}")
+        Catch
+        End Try
+
+        ' Analyse automatique de frontière si la piste suivante existe et le fichier suivant est déjà présent
+        Try
+            If pisteIndex + 1 < pistesCD.Count AndAlso Not String.IsNullOrEmpty(nextNumeroFichier) Then
+                Try
+                    Dim useNextArtiste As String = If(String.IsNullOrEmpty(nextArtiste), TextBoxCDArtiste.Text, nextArtiste)
+                    Dim useNextTitre As String = If(String.IsNullOrEmpty(nextTitre), $"Piste {nextNumeroFichier}", nextTitre)
+                    Dim nextNumeroFormate As String = Integer.Parse(nextNumeroFichier).ToString("D2")
+                    Dim nextNomFichier As String = NettoyerNomFichier($"{nextNumeroFormate} - {useNextArtiste} - {useNextTitre}")
+                    Dim nextExtension As String = Path.GetExtension(cheminComplet)
+                    Dim nextCheminComplet As String = Path.Combine(Path.GetDirectoryName(cheminComplet), nextNomFichier & nextExtension)
+
+                    If File.Exists(nextCheminComplet) AndAlso File.Exists(cheminComplet) Then
+                        Dim boundaryResult = CompareFilesBoundary(cheminComplet, nextCheminComplet)
+                        CDAudioAnalyzer.DiagnosticWrite($"BOUNDARY_CHECK: Track={piste.TrackNumber} Next={pistesCD(pisteIndex + 1).TrackNumber} SameBoundaryDetected={boundaryResult.Found} MatchBytes={boundaryResult.MatchLength} A_head={boundaryResult.AHeadPath} A_tail={boundaryResult.ATailPath} B_head={boundaryResult.BHeadPath} B_tail={boundaryResult.BTailPath}")
+
+                        ' Option A: si un chevauchement significatif est détecté, tronquer automatiquement la fin du fichier courant
+                        Try
+                            If boundaryResult.Found Then
+                                Dim matchBytes As Integer = boundaryResult.MatchLength
+                                ' Seuil minimal pour action automatique (0.25s)
+                                Dim minOverlapBytes As Integer = CInt(0.25 * 44100 * 2 * 2)
+                                If matchBytes >= minOverlapBytes Then
+                                    Dim ext As String = Path.GetExtension(cheminComplet).ToLowerInvariant()
+                                    If ext = ".wav" Then
+                                        TrimWavEndByBytes(cheminComplet, matchBytes)
+                                        CDAudioAnalyzer.DiagnosticWrite($"BOUNDARY_AUTO_TRIM: Track={piste.TrackNumber} TrimmedBytes={matchBytes} File={cheminComplet}")
+                                    Else
+                                        CDAudioAnalyzer.DiagnosticWrite($"BOUNDARY_DETECTED_BUT_NONWAV: Track={piste.TrackNumber} MatchBytes={matchBytes} FinalFile={cheminComplet}")
+                                    End If
+                                End If
+                            End If
+                        Catch exAutoTrim As Exception
+                            CDAudioAnalyzer.DiagnosticWrite($"BOUNDARY_AUTO_TRIM_ERROR: Track={piste.TrackNumber} - {exAutoTrim.Message}")
+                        End Try
+                    End If
+                Catch exLocal As Exception
+                    CDAudioAnalyzer.DiagnosticWrite($"BOUNDARY_CHECK_LOCAL_ERROR: Track={piste.TrackNumber} - {exLocal.Message}")
+                End Try
+            End If
+        Catch exBoundary As Exception
+            CDAudioAnalyzer.DiagnosticWrite($"BOUNDARY_CHECK_ERROR: Track={piste.TrackNumber} - {exBoundary.Message}")
+        End Try
     End Function
 
     ''' <summary>
@@ -2283,16 +3124,8 @@ Public Class FormCompresser
         Dim totalRead As Long = 0
         Dim lastProgressUpdate As Integer = 0
 
-        ' Initialiser la barre de progression de la piste
-        If Me.InvokeRequired Then
-            Me.Invoke(Sub()
-                          ProgressBarPisteActuelle.Maximum = 100
-                          ProgressBarPisteActuelle.Value = 0
-                      End Sub)
-        Else
-            ProgressBarPisteActuelle.Maximum = 100
-            ProgressBarPisteActuelle.Value = 0
-        End If
+        ' Initialiser la barre de progression de la piste via helper thread-safe
+        SafeInitProgressBar(100)
 
         Dim bytesRead As Integer
         Do
@@ -2308,20 +3141,11 @@ Public Class FormCompresser
             ' Mettre à jour la barre de progression (seulement si le pourcentage a changé)
             If progressPercent <> lastProgressUpdate AndAlso progressPercent <= 100 Then
                 lastProgressUpdate = progressPercent
+                ' Mettre à jour via helper
                 Try
-                    If Me.InvokeRequired Then
-                        Me.Invoke(Sub()
-                                      If ProgressBarPisteActuelle.Value < progressPercent Then
-                                          ProgressBarPisteActuelle.Value = progressPercent
-                                      End If
-                                  End Sub)
-                    Else
-                        If ProgressBarPisteActuelle.Value < progressPercent Then
-                            ProgressBarPisteActuelle.Value = progressPercent
-                        End If
-                    End If
+                    SafeUpdateProgressBar(progressPercent)
                 Catch
-                    ' Ignorer les erreurs d'invocation (formulaire peut être fermé)
+                    ' Ignorer
                 End Try
             End If
         Loop
@@ -2330,15 +3154,19 @@ Public Class FormCompresser
     ''' <summary>
     ''' Crée un WaveStream avec ajustement de volume basé sur NumericUpDown_DB (1-100, défaut 95)
     ''' </summary>
-    Private Function AppliquerAjustementVolume(source As NAudio.Wave.WaveStream) As NAudio.Wave.WaveStream
+    Private Function AppliquerAjustementVolume(source As NAudio.Wave.WaveStream, Optional volumePercentLocal As Nullable(Of Decimal) = Nothing) As NAudio.Wave.WaveStream
         Try
             ' Récupérer la valeur du volume (1-100, défaut 95)
             Dim volumePercent As Decimal = 95D ' Valeur par défaut sécuritaire
 
-            If Me.InvokeRequired Then
-                Me.Invoke(Sub() volumePercent = NumericUpDown_DB.Value)
+            If volumePercentLocal.HasValue Then
+                volumePercent = volumePercentLocal.Value
             Else
-                volumePercent = NumericUpDown_DB.Value
+                If Me.InvokeRequired Then
+                    Me.Invoke(Sub() volumePercent = NumericUpDown_DB.Value)
+                Else
+                    volumePercent = NumericUpDown_DB.Value
+                End If
             End If
 
             ' Si le volume est à 95% ou plus, pas besoin d'ajustement (tolérance pour éviter les problèmes)
@@ -2374,6 +3202,22 @@ Public Class FormCompresser
     ''' </summary>
     Private Async Function ExtraireMp3(source As NAudio.Wave.WaveStream, piste As CDAudioManager.CDTrack, cheminFichier As String,
                                        titre As String, artiste As String, numeroPiste As String) As Task
+        ' Si ForceOnlyExternalRipper est activé, empêcher toute extraction interne
+        Try
+            If ParametresGlobaux.ForceOnlyExternalRipper Then
+                Try
+                    CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER_HARD_SKIP: Internal MP3 rip skipped for {cheminFichier}")
+                Catch
+                End Try
+                Try
+                    File.WriteAllText(cheminFichier & ".internal_skip.txt", $"SKIPPED {DateTime.UtcNow:o} ForceOnlyExternalRipper=true")
+                Catch
+                End Try
+                Return
+            End If
+        Catch
+        End Try
+
         ' Capturer toutes les valeurs UI AVANT Task.Run pour éviter les erreurs inter-threads
         Dim qualiteIndex As Integer = ComboBoxQualiteConversion.SelectedIndex
         Dim album As String = TextBoxCDTitre.Text
@@ -2382,6 +3226,8 @@ Public Class FormCompresser
         Dim genre As String = If(ComboBoxGenre.SelectedItem?.ToString(), "")
         Dim commentaire As String = TextBoxCommentaire.Text
         Dim pochette As Image = If(PictureBoxPochette.Image IsNot Nothing, New Bitmap(PictureBoxPochette.Image), Nothing)
+        ' Capturer la valeur de normalisation (NumericUpDown_DB) pour éviter l'accès inter-thread plus tard
+        Dim volumePercentCaptured As Decimal = NumericUpDown_DB.Value
 
         ' Index 0=128, 1=192, 2=256, 3=320
         Dim bitrate As Integer = 320 ' Par défaut
@@ -2399,8 +3245,8 @@ Public Class FormCompresser
                 bitrate = 320
         End Select
 
-        ' Appliquer l'ajustement de volume
-        Dim sourceAvecVolume = AppliquerAjustementVolume(source)
+        ' Appliquer l'ajustement de volume en utilisant la valeur capturée
+        Dim sourceAvecVolume = AppliquerAjustementVolume(source, volumePercentCaptured)
 
         Try
             Await Task.Run(Sub()
@@ -2428,7 +3274,27 @@ Public Class FormCompresser
     ''' Extrait une piste en WAV avec métadonnées
     ''' </summary>
     Private Async Function ExtraireWav(source As NAudio.Wave.WaveStream, cheminFichier As String,
-                                       titre As String, artiste As String, numeroPiste As String) As Task
+                                       titre As String, artiste As String, numeroPiste As String,
+                                      Optional expectedSeconds As Double = -1.0) As Task
+        ' Si l'option ForceOnlyExternalRipper est activée, empêcher explicitement
+        ' toute extraction interne même si une autre partie du code l'appelle par erreur.
+        Try
+            If ParametresGlobaux.ForceOnlyExternalRipper Then
+                Try
+                    CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER_HARD_SKIP: Internal WAV rip skipped for {cheminFichier}")
+                Catch
+                End Try
+                ' Écrire un marqueur fichier pour diagnostic à côté du chemin cible
+                Try
+                    Dim marker = cheminFichier & ".internal_skip.txt"
+                    File.WriteAllText(marker, $"SKIPPED {DateTime.UtcNow:o} ForceOnlyExternalRipper=true")
+                Catch
+                End Try
+                Return
+            End If
+        Catch
+        End Try
+
         ' Capturer toutes les valeurs UI AVANT Task.Run
         Dim qualiteIndex As Integer = ComboBoxQualiteConversion.SelectedIndex
         Dim album As String = TextBoxCDTitre.Text
@@ -2462,6 +3328,14 @@ Public Class FormCompresser
         Dim sourceAvecVolume = AppliquerAjustementVolume(source)
 
         Try
+            ' Écrire un marqueur indiquant que l'extraction interne commence (diagnostic)
+            Try
+                CDAudioAnalyzer.DiagnosticWrite($"INTERNAL_WAV_RIP_BEGIN: File={cheminFichier}")
+                Dim markerRun = cheminFichier & ".internal_run.txt"
+                File.WriteAllText(markerRun, $"RUN {DateTime.UtcNow:o}")
+            Catch
+            End Try
+
             Await Task.Run(Sub()
                                ' Si le format source est déjà le format cible (CD audio standard), pas de conversion
                                If sourceAvecVolume.WaveFormat.SampleRate = sampleRate AndAlso sourceAvecVolume.WaveFormat.BitsPerSample = bitDepth Then
@@ -2486,15 +3360,9 @@ Public Class FormCompresser
                                            Dim totalRead As Long = 0
                                            Dim lastProgressUpdate As Integer = 0
 
-                                           If Me.InvokeRequired Then
-                                               Me.Invoke(Sub()
-                                                             ProgressBarPisteActuelle.Maximum = 100
-                                                             ProgressBarPisteActuelle.Value = 0
-                                                         End Sub)
-                                           Else
-                                               ProgressBarPisteActuelle.Maximum = 100
-                                               ProgressBarPisteActuelle.Value = 0
-                                           End If
+                                           ' Initialiser la barre de progression de piste via helper thread-safe
+                                           SafeInitProgressBar(100)
+                                           SafeUpdateProgressBar(0)
 
                                            Do
                                                bytesRead = resampler.Read(buffer, 0, bufferSize)
@@ -2510,17 +3378,8 @@ Public Class FormCompresser
                                                If progressPercent <> lastProgressUpdate AndAlso progressPercent <= 100 Then
                                                    lastProgressUpdate = progressPercent
                                                    Try
-                                                       If Me.InvokeRequired Then
-                                                           Me.Invoke(Sub()
-                                                                         If ProgressBarPisteActuelle.Value < progressPercent Then
-                                                                             ProgressBarPisteActuelle.Value = progressPercent
-                                                                         End If
-                                                                     End Sub)
-                                                       Else
-                                                           If ProgressBarPisteActuelle.Value < progressPercent Then
-                                                               ProgressBarPisteActuelle.Value = progressPercent
-                                                           End If
-                                                       End If
+                                                       ' Utiliser le helper thread-safe pour mettre à jour la progression
+                                                       SafeUpdateProgressBar(progressPercent)
                                                    Catch
                                                        ' Ignorer les erreurs d'invocation
                                                    End Try
@@ -2533,11 +3392,30 @@ Public Class FormCompresser
                                ' Écrire les métadonnées avec TagLib (supporté pour WAV via RIFF INFO)
                                ' Avant d'écrire les métadonnées, s'assurer que le WAV a la bonne longueur
                                Try
-                                   ' Ne pas utiliser source.Length (peut être en unités différentes après resampling)
-                                   ' Demander à TruncateWavDataChunk d'utiliser la taille réelle disponible en passant <=0
-                                   TruncateWavDataChunk(cheminFichier, -1)
+                                   Dim waveFormatUsed As NAudio.Wave.WaveFormat = Nothing
+                                   ' Déterminer le format effectivement utilisé dans le fichier WAV
+                                   If sourceAvecVolume.WaveFormat.SampleRate = sampleRate AndAlso sourceAvecVolume.WaveFormat.BitsPerSample = bitDepth Then
+                                       waveFormatUsed = sourceAvecVolume.WaveFormat
+                                   Else
+                                       waveFormatUsed = New NAudio.Wave.WaveFormat(sampleRate, bitDepth, sourceAvecVolume.WaveFormat.Channels)
+                                   End If
+
+                                   If expectedSeconds > 0 AndAlso waveFormatUsed IsNot Nothing Then
+                                       ' Calculer le nombre d'octets de données audio attendu pour la durée analysée
+                                       Dim expectedDataBytes As Long = CLng(Math.Round(expectedSeconds * waveFormatUsed.SampleRate * waveFormatUsed.Channels * (waveFormatUsed.BitsPerSample / 8.0)))
+                                       TruncateWavDataChunk(cheminFichier, expectedDataBytes)
+                                   Else
+                                       ' Fallback: utiliser la taille réelle disponible
+                                       TruncateWavDataChunk(cheminFichier, -1)
+                                   End If
                                Catch exTrunc As Exception
                                    CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_WAV_TRUNCATE_ERROR: {cheminFichier} - {exTrunc.Message}")
+                               End Try
+
+                               ' Sauvegarder des snippets pour diagnostic
+                               Try
+                                   SaveWavSnippetsIfRequested(cheminFichier)
+                               Catch
                                End Try
 
                                EcrireMetadonnees(cheminFichier, titre, artiste, numeroPiste, album, artisteAlbum, annee, genre, commentaire, pochette, TextBoxNumCD.Text)
@@ -2763,28 +3641,13 @@ Public Class FormCompresser
                     fs.SetLength(dataChunkOffset + newDataSize)
                 End If
 
-                ' Extrait un extrait de fin pour diagnostic (dernier 64KB ou moins)
-                Try
-                    Dim snippetSize As Integer = 65536
-                    Dim toRead As Integer = CInt(Math.Min(snippetSize, Math.Max(0, fs.Length - dataChunkOffset)))
-                    If toRead > 0 Then
-                        fs.Seek(Math.Max(dataChunkOffset, fs.Length - toRead), SeekOrigin.Begin)
-                        Dim snippet As Byte() = br.ReadBytes(toRead)
-                        Dim tailPath = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(wavPath) & "_tail.bin")
-                        File.WriteAllBytes(tailPath, snippet)
-                        Try
-                            System.IO.File.AppendAllText(CDAudioAnalyzer.DiagnosticsLogPath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] TruncateWavDataChunk: tailSaved={tailPath}{Environment.NewLine}", System.Text.Encoding.UTF8)
-                        Catch
-                        End Try
-                    End If
-                Catch
-                End Try
+                ' Snippet extraction removed: no temporary tail snippets are written
 
                 bw.Flush()
 
                 ' Logging détaillé pour diagnostic
                 Try
-                    Dim logLine As String = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] TruncateWavDataChunk: file={wavPath}, fileLength={fs.Length}, dataChunkSize={dataChunkSize}, expectedDataBytes={expectedDataBytes}, dataChunkOffset={dataChunkOffset}, channels=?, sampleRate=?, bitsPerSample=?{Environment.NewLine}"
+                    Dim logLine As String = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] TruncateWavDataChunk: file={wavPath}, fileLength={fs.Length}, dataChunkSize={dataChunkSize}, expectedDataBytes={expectedDataBytes}, dataChunkOffset={dataChunkOffset}, channels={channels}, sampleRate={sampleRate}, bitsPerSample={bitsPerSample}{Environment.NewLine}"
                     Try
                         System.IO.File.AppendAllText(CDAudioAnalyzer.DiagnosticsLogPath, logLine, System.Text.Encoding.UTF8)
                     Catch
@@ -2799,11 +3662,189 @@ Public Class FormCompresser
         End Try
     End Sub
 
+    ' Diagnostic helper: save small WAV snippets (start and end) during extraction if enabled
+    Private Sub SaveWavSnippetsIfRequested(wavPath As String)
+        Try
+            If String.IsNullOrWhiteSpace(wavPath) OrElse Not File.Exists(wavPath) Then Return
+            ' Snippet saving disabled: this function is now a no-op to avoid generating temporary files
+            Return
+
+            Using fs As New FileStream(wavPath, FileMode.Open, FileAccess.Read, FileShare.Read)
+                Dim headerSize As Integer = 128
+                Dim startRead As Integer = CInt(Math.Min(headerSize, fs.Length))
+                fs.Seek(0, SeekOrigin.Begin)
+                Dim startBuf(startRead - 1) As Byte
+                fs.Read(startBuf, 0, startRead)
+                Dim startPath = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(wavPath) & "_head128.bin")
+                File.WriteAllBytes(startPath, startBuf)
+
+                Dim tailSize As Integer = 128
+                Dim tailRead As Integer = CInt(Math.Min(tailSize, fs.Length))
+                fs.Seek(Math.Max(0, fs.Length - tailRead), SeekOrigin.Begin)
+                Dim tailBuf(tailRead - 1) As Byte
+                fs.Read(tailBuf, 0, tailRead)
+                ' Only save binary tail snippet when snippet capture/logging is enabled
+                Try
+                    If CDAudioAnalyzer.EnableSnippetLogging OrElse CDAudioAnalyzer.EnableSnippetCapture OrElse CDAudioAnalyzer.ForceSaveSnippetsForAllTracks Then
+                        Dim tailPath = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(wavPath) & "_tail128.bin")
+                        File.WriteAllBytes(tailPath, tailBuf)
+                        Try
+                            System.IO.File.AppendAllText(CDAudioAnalyzer.DiagnosticsLogPath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] SaveWavSnippets: head={startPath} tail={tailPath}{Environment.NewLine}", System.Text.Encoding.UTF8)
+                        Catch
+                        End Try
+                    End If
+                Catch
+                End Try
+            End Using
+        Catch ex As Exception
+            ' Ignore errors
+        End Try
+    End Sub
+
+    Private Function CompareFilesBoundary(pathA As String, pathB As String) As Object
+        Try
+            Dim snippetSeconds As Double = 5.0
+            Dim aHeadPath = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(pathA) & "_head5s.wav")
+            Dim aTailPath = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(pathA) & "_tail5s.wav")
+            Dim bHeadPath = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(pathB) & "_head5s.wav")
+            Dim bTailPath = Path.Combine(Path.GetTempPath(), Path.GetFileNameWithoutExtension(pathB) & "_tail5s.wav")
+
+            ' Extract raw bytes for 5s using simple file copy (assumes WAV PCM header present)
+            Try
+                If CDAudioAnalyzer.EnableSnippetLogging OrElse CDAudioAnalyzer.EnableSnippetCapture OrElse CDAudioAnalyzer.ForceSaveSnippetsForAllTracks Then
+                    Using fsA As New FileStream(pathA, FileMode.Open, FileAccess.Read)
+                        Dim tailLen As Integer = CInt(Math.Min(fsA.Length, 5 * 44100 * 2 * 2)) ' 5s * 44100 * channels(2) * bytesPerSample(2)
+                        fsA.Seek(Math.Max(0, fsA.Length - tailLen), SeekOrigin.Begin)
+                        Dim buf(tailLen - 1) As Byte
+                        fsA.Read(buf, 0, tailLen)
+                        File.WriteAllBytes(aTailPath, buf)
+                    End Using
+                End If
+            Catch
+            End Try
+
+            Try
+                If CDAudioAnalyzer.EnableSnippetLogging OrElse CDAudioAnalyzer.EnableSnippetCapture OrElse CDAudioAnalyzer.ForceSaveSnippetsForAllTracks Then
+                    Using fsB As New FileStream(pathB, FileMode.Open, FileAccess.Read)
+                        Dim headLen As Integer = CInt(Math.Min(fsB.Length, 5 * 44100 * 2 * 2))
+                        fsB.Seek(0, SeekOrigin.Begin)
+                        Dim buf2(headLen - 1) As Byte
+                        fsB.Read(buf2, 0, headLen)
+                        File.WriteAllBytes(bHeadPath, buf2)
+                    End Using
+                End If
+            Catch
+            End Try
+
+            ' Compare bytes prefix/suffix
+            Dim matchLen As Integer = 0
+            Try
+                Dim aBytes = File.ReadAllBytes(aTailPath)
+                Dim bBytes = File.ReadAllBytes(bHeadPath)
+                Dim compareLen = Math.Min(aBytes.Length, bBytes.Length)
+                For i As Integer = 0 To compareLen - 1
+                    If aBytes(i) = bBytes(i) Then
+                        matchLen += 1
+                    Else
+                        Exit For
+                    End If
+                Next
+            Catch
+            End Try
+
+            Return New With {.Found = (matchLen > 0), .MatchLength = matchLen, .AHeadPath = aHeadPath, .ATailPath = aTailPath, .BHeadPath = bHeadPath, .BTailPath = bTailPath}
+        Catch ex As Exception
+            Return New With {.Found = False, .MatchLength = 0, .AHeadPath = "", .ATailPath = "", .BHeadPath = "", .BTailPath = ""}
+        End Try
+    End Function
+
+    ' Tronque la fin d'un fichier WAV de trimBytes octets en ajustant les en-têtes RIFF/WAVE
+    Private Sub TrimWavEndByBytes(wavPath As String, trimBytes As Integer)
+        Try
+            If String.IsNullOrWhiteSpace(wavPath) Then Return
+            If Not File.Exists(wavPath) Then Return
+            If trimBytes <= 0 Then Return
+
+            Using fs As New FileStream(wavPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None)
+                Dim br As New BinaryReader(fs, System.Text.Encoding.ASCII, leaveOpen:=True)
+                Dim bw As New BinaryWriter(fs, System.Text.Encoding.ASCII, leaveOpen:=True)
+
+                fs.Seek(0, SeekOrigin.Begin)
+                Dim riff = br.ReadBytes(4)
+                If System.Text.Encoding.ASCII.GetString(riff) <> "RIFF" Then Return
+                br.ReadUInt32() ' riff size
+                Dim wave = br.ReadBytes(4)
+                If System.Text.Encoding.ASCII.GetString(wave) <> "WAVE" Then Return
+
+                Dim dataChunkOffset As Long = -1
+                Dim dataChunkSize As UInt32 = 0
+
+                While fs.Position < fs.Length - 8
+                    Dim chunkIdBytes = br.ReadBytes(4)
+                    If chunkIdBytes.Length < 4 Then Exit While
+                    Dim chunkId = System.Text.Encoding.ASCII.GetString(chunkIdBytes)
+                    Dim chunkSize As UInt32 = br.ReadUInt32()
+
+                    If chunkId = "data" Then
+                        dataChunkOffset = fs.Position
+                        dataChunkSize = chunkSize
+                        Exit While
+                    End If
+
+                    fs.Seek(CLng(chunkSize), SeekOrigin.Current)
+                    If (chunkSize And 1UI) = 1UI Then
+                        fs.Seek(1, SeekOrigin.Current)
+                    End If
+                End While
+
+                If dataChunkOffset < 0 Then Return
+
+                Dim actualDataAvailable As Long = Math.Max(0, fs.Length - dataChunkOffset)
+                If dataChunkSize > actualDataAvailable Then
+                    dataChunkSize = CUInt(actualDataAvailable)
+                End If
+
+                Dim bytesToTrim As Long = Math.Min(CLng(trimBytes), CLng(dataChunkSize))
+                If bytesToTrim <= 0 Then Return
+
+                Dim newDataSize As UInt32 = CUInt(Math.Max(0, CLng(dataChunkSize) - bytesToTrim))
+
+                fs.Seek(dataChunkOffset - 4, SeekOrigin.Begin)
+                bw.Write(newDataSize)
+
+                Dim newRiffSize As UInt32 = CUInt((dataChunkOffset + CLng(newDataSize)) - 8)
+                fs.Seek(4, SeekOrigin.Begin)
+                bw.Write(newRiffSize)
+
+                fs.SetLength(dataChunkOffset + CLng(newDataSize))
+                bw.Flush()
+            End Using
+        Catch ex As Exception
+            CDAudioAnalyzer.DiagnosticWrite($"TrimWavEndByBytes error: {ex.Message}")
+        End Try
+    End Sub
+
     ''' <summary>
     ''' Extrait une piste en FLAC avec compression sans perte via FFMpeg
     ''' </summary>
     Private Async Function ExtraireFlac(source As NAudio.Wave.WaveStream, cheminFichier As String,
                                         titre As String, artiste As String, numeroPiste As String) As Task
+        ' Si ForceOnlyExternalRipper est activé, empêcher toute extraction interne
+        Try
+            If ParametresGlobaux.ForceOnlyExternalRipper Then
+                Try
+                    CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER_HARD_SKIP: Internal FLAC rip skipped for {cheminFichier}")
+                Catch
+                End Try
+                Try
+                    File.WriteAllText(cheminFichier & ".internal_skip.txt", $"SKIPPED {DateTime.UtcNow:o} ForceOnlyExternalRipper=true")
+                Catch
+                End Try
+                Return
+            End If
+        Catch
+        End Try
+
         ' Capturer toutes les valeurs UI AVANT les opérations asynchrones
         Dim qualiteIndex As Integer = ComboBoxQualiteConversion.SelectedIndex
         Dim album As String = TextBoxCDTitre.Text
@@ -2830,8 +3871,16 @@ Public Class FormCompresser
         ' Créer un fichier WAV temporaire
         Dim cheminWavTemp = Path.Combine(Path.GetTempPath(), $"audioplay_temp_{Guid.NewGuid()}.wav")
 
-        ' Capturer la valeur du volume
-        Dim volumePercent As Decimal = NumericUpDown_DB.Value
+        ' Capturer la valeur du volume de façon thread-safe
+        Dim volumePercent As Decimal = 95D
+        Try
+            If Me.InvokeRequired Then
+                Me.Invoke(Sub() volumePercent = NumericUpDown_DB.Value)
+            Else
+                volumePercent = NumericUpDown_DB.Value
+            End If
+        Catch
+        End Try
         Dim volumeMultiplier As Single = CSng(volumePercent / 100D)
 
         Try
@@ -2927,6 +3976,22 @@ Public Class FormCompresser
     ''' </summary>
     Private Async Function ExtraireWma(source As NAudio.Wave.WaveStream, cheminFichier As String,
                                        titre As String, artiste As String, numeroPiste As String) As Task
+        ' Si ForceOnlyExternalRipper est activé, empêcher toute extraction interne
+        Try
+            If ParametresGlobaux.ForceOnlyExternalRipper Then
+                Try
+                    CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER_HARD_SKIP: Internal WMA rip skipped for {cheminFichier}")
+                Catch
+                End Try
+                Try
+                    File.WriteAllText(cheminFichier & ".internal_skip.txt", $"SKIPPED {DateTime.UtcNow:o} ForceOnlyExternalRipper=true")
+                Catch
+                End Try
+                Return
+            End If
+        Catch
+        End Try
+
         ' Capturer toutes les valeurs UI AVANT Task.Run
         Dim qualiteIndex As Integer = ComboBoxQualiteConversion.SelectedIndex
         Dim album As String = TextBoxCDTitre.Text
@@ -2954,7 +4019,15 @@ Public Class FormCompresser
         Dim cheminWavTemp = Path.Combine(Path.GetTempPath(), $"audioplay_temp_{Guid.NewGuid()}.wav")
 
         ' Capturer la valeur du volume
-        Dim volumePercent As Decimal = NumericUpDown_DB.Value
+        Dim volumePercent As Decimal = 95D
+        Try
+            If Me.InvokeRequired Then
+                Me.Invoke(Sub() volumePercent = NumericUpDown_DB.Value)
+            Else
+                volumePercent = NumericUpDown_DB.Value
+            End If
+        Catch
+        End Try
         Dim volumeMultiplier As Single = CSng(volumePercent / 100D)
 
         Try
@@ -3199,11 +4272,9 @@ Public Class FormCompresser
     Private Async Function ChargerPochetteAlbum() As Task
         System.Diagnostics.Debug.WriteLine($"[FormCompresser] ChargerPochetteAlbum() appelé")
 
-        ' Nettoyer l'image existante
+        ' Nettoyer l'image existante (via helper thread-safe)
         If PictureBoxPochette.Image IsNot Nothing Then
-            Dim oldImage = PictureBoxPochette.Image
-            PictureBoxPochette.Image = Nothing
-            oldImage.Dispose()
+            SafeClearPictureBoxImage()
             Label_DimImage.Text = ""
             LabelTailleImage.Text = ""
             System.Diagnostics.Debug.WriteLine($"[FormCompresser] ⚠️ IMAGE EFFACÉE dans ChargerPochetteAlbum()")
@@ -3251,8 +4322,9 @@ Public Class FormCompresser
 
                         ' Afficher l'image
                         Using ms As New MemoryStream(pochetteTempBytes)
-                            PictureBoxPochette.Image = New Bitmap(Image.FromStream(ms))
-                            PictureBoxPochette.SizeMode = PictureBoxSizeMode.Zoom
+                            Using tmpImg = Image.FromStream(ms)
+                                SafeSetPictureBoxImage(tmpImg)
+                            End Using
                             System.Diagnostics.Debug.WriteLine($"[FormCompresser] ✅ IMAGE AFFICHÉE depuis cache local")
                         End Using
 
@@ -3899,10 +4971,8 @@ Public Class FormCompresser
             ' Créer l'image depuis les bytes
             Using ms As New System.IO.MemoryStream(imageBytes)
                 Using tempImage = Image.FromStream(ms)
-                    ' Créer une copie de l'image dans un nouveau Bitmap
-                    PictureBoxPochette.Image = New Bitmap(tempImage)
-                    PictureBoxPochette.SizeMode = PictureBoxSizeMode.Zoom
-                    MettreAJourInfosPochette()
+                    ' Créer une copie de l'image dans un nouveau Bitmap via thread-safe helper
+                    SafeSetPictureBoxImage(tempImage)
                     System.Diagnostics.Debug.WriteLine($"[FormCompresser] ✅ IMAGE AFFICHÉE dans TelechargerEtAfficherPochette: {url}")
                 End Using
             End Using
@@ -4021,12 +5091,75 @@ Public Class FormCompresser
     End Function
 
     ''' <summary>
+    ''' S'assure qu'un WAV respecte la qualité choisie (sample rate / bit depth)
+    ''' </summary>
+    Private Sub EnsureWavQuality(wavPath As String, qualiteIndex As Integer)
+        Try
+            If String.IsNullOrWhiteSpace(wavPath) OrElse Not File.Exists(wavPath) Then Return
+
+            ' Index 0=16-bit 44.1kHz, 1=24-bit 96kHz, 2=32-bit 192kHz
+            Dim sampleRate As Integer = 96000
+            Dim bitDepth As Integer = 24
+
+            Select Case qualiteIndex
+                Case 0
+                    sampleRate = 44100
+                    bitDepth = 16
+                Case 1
+                    sampleRate = 96000
+                    bitDepth = 24
+                Case 2
+                    sampleRate = 192000
+                    bitDepth = 32
+                Case Else
+                    sampleRate = 96000
+                    bitDepth = 24
+            End Select
+
+            Using checkReader As New NAudio.Wave.WaveFileReader(wavPath)
+                If checkReader.WaveFormat.SampleRate = sampleRate AndAlso checkReader.WaveFormat.BitsPerSample = bitDepth Then
+                    Return
+                End If
+            End Using
+
+            Dim tempPath As String = wavPath & ".resample.tmp"
+            If File.Exists(tempPath) Then
+                File.Delete(tempPath)
+            End If
+
+            Using reader As New NAudio.Wave.WaveFileReader(wavPath)
+                Dim targetFormat As New NAudio.Wave.WaveFormat(sampleRate, bitDepth, reader.WaveFormat.Channels)
+                Using resampler As New NAudio.Wave.MediaFoundationResampler(reader, targetFormat)
+                    resampler.ResamplerQuality = 60
+                    Using writer As New NAudio.Wave.WaveFileWriter(tempPath, targetFormat)
+                        Const bufferSize As Integer = 32768
+                        Dim buffer(bufferSize - 1) As Byte
+                        Dim bytesRead As Integer
+                        Do
+                            bytesRead = resampler.Read(buffer, 0, bufferSize)
+                            If bytesRead <= 0 Then Exit Do
+                            writer.Write(buffer, 0, bytesRead)
+                        Loop
+                    End Using
+                End Using
+            End Using
+
+            File.Delete(wavPath)
+            File.Move(tempPath, wavPath)
+            CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_WAV_RESAMPLED_AFTER_EXTERNAL_RIP: File={wavPath} SR={sampleRate} Bits={bitDepth}")
+        Catch ex As Exception
+            CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_WAV_RESAMPLE_ERROR: File={wavPath} - {ex.Message}")
+        End Try
+    End Sub
+
+    ''' <summary>
     ''' Convertit un WAV en MP3 en utilisant LAME via NAudio.Lame
     ''' </summary>
     Private Async Function ConvertWavToMp3(cheminWav As String, cheminMp3 As String, qualiteIndex As Integer,
                                           titre As String, artiste As String, numeroPiste As String,
                                           album As String, artisteAlbum As String, annee As String,
                                           genre As String, commentaire As String, pochette As Image) As Task(Of Boolean)
+
         Return Await Task.Run(Function() As Boolean
                                   Dim tmpPath As String = cheminMp3 & ".tmp"
                                   Dim result As Boolean = False
@@ -4674,7 +5807,7 @@ Public Class FormCompresser
                         MessageBoxIcon.Information)
 
                     ' Remettre le focus sur la PictureBox pour éviter que le bouton reste "enfoncé"
-                    PictureBoxPochette.Focus()
+                    SafeSetPictureBoxImage(SafeGetPictureBoxBitmap())
 
                     ' Forcer le rafraîchissement des boutons
                     Button_Image_Suiv.Refresh()
@@ -4694,9 +5827,7 @@ Public Class FormCompresser
         Try
             ' Nettoyer l'image
             If PictureBoxPochette.Image IsNot Nothing Then
-                Dim oldImage = PictureBoxPochette.Image
-                PictureBoxPochette.Image = Nothing
-                oldImage.Dispose()
+                SafeClearPictureBoxImage()
                 System.Diagnostics.Debug.WriteLine($"[FormCompresser] ⚠️ IMAGE EFFACÉE par Button_Image_Erase")
             End If
 
@@ -4719,6 +5850,89 @@ Public Class FormCompresser
 
         Catch ex As Exception
             System.Diagnostics.Debug.WriteLine($"[FormCompresser] Erreur Button_Image_Erase: {ex.Message}")
+        End Try
+    End Sub
+
+    ' Handler pour le menu contextuel sur la pochette
+    Private Async Sub tsmiSearchCover_Click(sender As Object, e As EventArgs) Handles tsmiSearchCover.Click
+        Try
+            If String.IsNullOrWhiteSpace(TextBoxCDArtiste.Text) OrElse String.IsNullOrWhiteSpace(TextBoxCDTitre.Text) Then
+                MessageBox.Show(LanguageManager.GetString("Compressor_EnterArtistAlbum"), LanguageManager.GetString("Compressor_SearchTitle"), MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Return
+            End If
+
+            ' Mettre à jour metadonneesCD minimal
+            If metadonneesCD Is Nothing Then metadonneesCD = New CDMetadataProvider.CDInfo()
+            metadonneesCD.Artist = TextBoxCDArtiste.Text
+            metadonneesCD.Album = TextBoxCDTitre.Text
+
+            ' Lancer la recherche via la logique existante
+            Cursor = Cursors.WaitCursor
+            tsmiSearchCover.Enabled = False
+            tsmiAddCoverFromFile.Enabled = False
+            Try
+                Await ChargerPochetteAlbum()
+            Finally
+                Cursor = Cursors.Default
+                tsmiSearchCover.Enabled = True
+                tsmiAddCoverFromFile.Enabled = True
+            End Try
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"[FormCompresser] Erreur tsmiSearchCover_Click: {ex.Message}")
+        End Try
+    End Sub
+
+    Private Sub tsmiAddCoverFromFile_Click(sender As Object, e As EventArgs) Handles tsmiAddCoverFromFile.Click
+        Try
+            Using ofd As New OpenFileDialog()
+                ofd.Title = LanguageManager.GetString("Compressor_SelectCoverFile")
+                ofd.Filter = "Images|*.jpg;*.jpeg;*.png;*.bmp;*.gif|Tous les fichiers|*.*"
+                If ofd.ShowDialog() = DialogResult.OK Then
+                    Dim filePath = ofd.FileName
+                    Try
+                        Dim bytes = System.IO.File.ReadAllBytes(filePath)
+                        Using ms As New MemoryStream(bytes)
+                            Using img = Image.FromStream(ms)
+                                ' Afficher et ajouter à l'historique (par défaut en StretchImage)
+                                SafeSetPictureBoxImage(New Bitmap(img), PictureBoxSizeMode.StretchImage)
+                                pochetteTempBytes = bytes
+                                pochetteTempUrl = "file://" & filePath
+                                ' Ajouter à l'historique
+                                AjouterAHistoriquePochettes(pochetteTempUrl)
+                                sourcesPochettes(pochetteTempUrl) = "Local File"
+                                MettreAJourBoutonsNavigation()
+                            End Using
+                        End Using
+                    Catch exImg As Exception
+                        MessageBox.Show(LanguageManager.GetString("Compressor_InvalidImage"), LanguageManager.GetString("Compressor_Error"), MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        System.Diagnostics.Debug.WriteLine($"[FormCompresser] Erreur lecture image locale: {exImg.Message}")
+                    End Try
+                End If
+            End Using
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"[FormCompresser] Erreur tsmiAddCoverFromFile_Click: {ex.Message}")
+        End Try
+    End Sub
+
+    ' Handlers pour le sous-menu Affichage
+    Private Sub tsmiSizeNormal_Click(sender As Object, e As EventArgs) Handles tsmiSizeNormal.Click
+        Try
+            PictureBoxPochette.SizeMode = PictureBoxSizeMode.Normal
+        Catch ex As Exception
+        End Try
+    End Sub
+
+    Private Sub tsmiSizeStretch_Click(sender As Object, e As EventArgs) Handles tsmiSizeStretch.Click
+        Try
+            PictureBoxPochette.SizeMode = PictureBoxSizeMode.StretchImage
+        Catch ex As Exception
+        End Try
+    End Sub
+
+    Private Sub tsmiSizeZoom_Click(sender As Object, e As EventArgs) Handles tsmiSizeZoom.Click
+        Try
+            PictureBoxPochette.SizeMode = PictureBoxSizeMode.Zoom
+        Catch ex As Exception
         End Try
     End Sub
 
