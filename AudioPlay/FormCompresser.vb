@@ -2349,32 +2349,37 @@ Public Class FormCompresser
 
                 ' Lancer en tâche de fond l'analyse des WAV produits (si l'outil existe) - non bloquant
                 Try
-                    ' Déterminer prudemment le répertoire d'album produit : utiliser repSauvegardeLocal ou TextBoxRepSauvegarde
-                    Dim albumDirForAnalysis As String = Nothing
-                    Try
-                        Dim basePath As String = If(Not String.IsNullOrEmpty(repSauvegardeLocal), repSauvegardeLocal, TextBoxRepSauvegarde.Text)
-                        If Not String.IsNullOrEmpty(basePath) AndAlso Directory.Exists(basePath) Then
-                            Dim best As String = Nothing
-                            Dim bestTime As DateTime = DateTime.MinValue
-                            For Each d In Directory.GetDirectories(basePath)
-                                Try
-                                    Dim t = Directory.GetLastWriteTime(d)
-                                    If t > bestTime Then
-                                        bestTime = t
-                                        best = d
-                                    End If
-                                Catch
-                                End Try
-                            Next
-                            albumDirForAnalysis = best
-                        End If
-                    Catch
-                        albumDirForAnalysis = Nothing
-                    End Try
+                    ' Capturer le chemin saisi par l'utilisateur sans l'énumérer sur le thread UI
+                    Dim uiBasePath As String = TextBoxRepSauvegarde.Text
 
                     Task.Run(Sub()
                                  Try
                                      Dim startDir = AppDomain.CurrentDomain.BaseDirectory
+                                     ' Calculer le répertoire d'album en arrière-plan (sécurisé, limité)
+                                     Dim albumDirForAnalysis As String = Nothing
+                                     Try
+                                         If Not String.IsNullOrEmpty(uiBasePath) AndAlso Directory.Exists(uiBasePath) Then
+                                             Dim limit As Integer = 500
+                                             Dim best As String = Nothing
+                                             Dim bestTime As DateTime = DateTime.MinValue
+                                             Dim counter As Integer = 0
+                                             For Each d In Directory.EnumerateDirectories(uiBasePath)
+                                                 counter += 1
+                                                 If counter > limit Then Exit For
+                                                 Try
+                                                     Dim t = Directory.GetLastWriteTime(d)
+                                                     If t > bestTime Then
+                                                         bestTime = t
+                                                         best = d
+                                                     End If
+                                                 Catch
+                                                 End Try
+                                             Next
+                                             albumDirForAnalysis = best
+                                         End If
+                                     Catch
+                                         albumDirForAnalysis = Nothing
+                                     End Try
                                      Dim foundDll As String = Nothing
                                      For i As Integer = 0 To 6
                                          If String.IsNullOrEmpty(startDir) Then Exit For
