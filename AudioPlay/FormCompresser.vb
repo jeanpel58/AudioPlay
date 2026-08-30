@@ -2347,6 +2347,60 @@ Public Class FormCompresser
                 LabelProgressionGlobale.Visible = False
                 ProgressBarGlobale.Visible = False
 
+                ' Lancer en tâche de fond l'analyse des WAV produits (si l'outil existe) - non bloquant
+                Try
+                    Dim albumDirForAnalysis As String = cheminRepertoireAlbum
+                    Task.Run(Sub()
+                                 Try
+                                     Dim startDir = AppDomain.CurrentDomain.BaseDirectory
+                                     Dim foundDll As String = Nothing
+                                     For i As Integer = 0 To 6
+                                         If String.IsNullOrEmpty(startDir) Then Exit For
+                                         Dim candidate = Path.GetFullPath(Path.Combine(startDir, "Tools", "WavAnalyzer", "bin", "Debug", "net8.0", "WavAnalyzerTool.dll"))
+                                         If File.Exists(candidate) Then
+                                             foundDll = candidate
+                                             Exit For
+                                         End If
+                                         startDir = Path.GetDirectoryName(startDir)
+                                     Next
+
+                                     If Not String.IsNullOrEmpty(foundDll) AndAlso Not String.IsNullOrEmpty(albumDirForAnalysis) AndAlso Directory.Exists(albumDirForAnalysis) Then
+                                         Try
+                                             Dim psi As New ProcessStartInfo("dotnet", $"""{foundDll}"" --threshold -40 --window 150 --hop 15 ""{albumDirForAnalysis}"") With {
+                                                 .CreateNoWindow = True,
+                                                 .UseShellExecute = False,
+                                                 .RedirectStandardOutput = True,
+                                                 .RedirectStandardError = True
+                                             }
+                                             Using p As Process = Process.Start(psi)
+                                                 If p IsNot Nothing Then
+                                                     Dim outStr = p.StandardOutput.ReadToEnd()
+                                                     Dim errStr = p.StandardError.ReadToEnd()
+                                                     p.WaitForExit(120000) ' max 2 minutes
+                                                     Try
+                                                         Dim trace = Path.Combine(Path.GetTempPath(), "AudioPlay_wav_analyzer_trace.txt")
+                                                         File.AppendAllText(trace, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Analyzer exit={p.ExitCode} album={albumDirForAnalysis}{Environment.NewLine}stdout:{outStr}{Environment.NewLine}stderr:{errStr}{Environment.NewLine}")
+                                                     Catch
+                                                     End Try
+                                                 End If
+                                             End Using
+                                         Catch
+                                             ' ne pas propager l'exception au thread UI
+                                         End Try
+                                     Else
+                                         ' outil non trouvé : écrire trace légère
+                                         Try
+                                             Dim trace = Path.Combine(Path.GetTempPath(), "AudioPlay_wav_analyzer_trace.txt")
+                                             File.AppendAllText(trace, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Analyzer not found or album missing: dll={foundDll} album={albumDirForAnalysis}{Environment.NewLine}")
+                                         Catch
+                                         End Try
+                                     End If
+                                 Catch
+                                 End Try
+                             End Sub)
+                Catch
+                End Try
+
                 ' Afficher le résultat
                 Dim message As String
                 Dim titreMessage As String
