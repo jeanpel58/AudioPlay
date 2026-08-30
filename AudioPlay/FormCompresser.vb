@@ -2260,6 +2260,11 @@ Public Class FormCompresser
 
                 ' Exécuter la boucle d'extraction dans un Task de fond pour libérer le thread UI
                 ' Instrumentation: log start/iter/exception/finish for background extraction
+                ' Compteurs locaux déclarés ici pour être accessibles après la Task (fermature)
+                Dim localPistesReussies As Integer = 0
+                Dim localPistesEchouees As Integer = 0
+                Dim localPisteNumero As Integer = 0
+
                 Dim extractionTask As Task = Task.Run(Async Function()
                                                         Try
                                                             Dim tracePathStart = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
@@ -2267,9 +2272,6 @@ Public Class FormCompresser
                                                         Catch
                                                         End Try
                                                         Try
-                                                        Dim localPistesReussies As Integer = 0
-                                                        Dim localPistesEchouees As Integer = 0
-                                                        Dim localPisteNumero As Integer = 0
 
                                                         For Each entry In snapshot
                                                             Try
@@ -2334,6 +2336,10 @@ Public Class FormCompresser
 
                 ' Attendre la fin de la tâche d'extraction (UI reste réactive)
                 Await extractionTask
+
+                ' Récupérer les compteurs de la task
+                pistesReussies = localPistesReussies
+                pistesEchouees = localPistesEchouees
 
                 ' Masquer les barres de progression
                 LabelPisteEnCours.Visible = False
