@@ -2349,7 +2349,29 @@ Public Class FormCompresser
 
                 ' Lancer en tâche de fond l'analyse des WAV produits (si l'outil existe) - non bloquant
                 Try
-                    Dim albumDirForAnalysis As String = cheminRepertoireAlbum
+                    ' Déterminer prudemment le répertoire d'album produit : utiliser repSauvegardeLocal ou TextBoxRepSauvegarde
+                    Dim albumDirForAnalysis As String = Nothing
+                    Try
+                        Dim basePath As String = If(Not String.IsNullOrEmpty(repSauvegardeLocal), repSauvegardeLocal, TextBoxRepSauvegarde.Text)
+                        If Not String.IsNullOrEmpty(basePath) AndAlso Directory.Exists(basePath) Then
+                            Dim best As String = Nothing
+                            Dim bestTime As DateTime = DateTime.MinValue
+                            For Each d In Directory.GetDirectories(basePath)
+                                Try
+                                    Dim t = Directory.GetLastWriteTime(d)
+                                    If t > bestTime Then
+                                        bestTime = t
+                                        best = d
+                                    End If
+                                Catch
+                                End Try
+                            Next
+                            albumDirForAnalysis = best
+                        End If
+                    Catch
+                        albumDirForAnalysis = Nothing
+                    End Try
+
                     Task.Run(Sub()
                                  Try
                                      Dim startDir = AppDomain.CurrentDomain.BaseDirectory
