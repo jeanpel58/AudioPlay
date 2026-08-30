@@ -2366,7 +2366,8 @@ Public Class FormCompresser
 
                                      If Not String.IsNullOrEmpty(foundDll) AndAlso Not String.IsNullOrEmpty(albumDirForAnalysis) AndAlso Directory.Exists(albumDirForAnalysis) Then
                                          Try
-                                             Dim psi As New ProcessStartInfo("dotnet", $"""{foundDll}"" --threshold -40 --window 150 --hop 15 ""{albumDirForAnalysis}"") With {
+                                             Dim args As String = $"""{foundDll}"" --threshold -40 --window 150 --hop 15 ""{albumDirForAnalysis}"""
+                                             Dim psi As New ProcessStartInfo("dotnet", args) With {
                                                  .CreateNoWindow = True,
                                                  .UseShellExecute = False,
                                                  .RedirectStandardOutput = True,
