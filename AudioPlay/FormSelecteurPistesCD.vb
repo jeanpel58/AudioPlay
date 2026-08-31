@@ -399,8 +399,47 @@ Partial Public Class FormSelecteurPistesCD
             ' Ouvrir le formulaire d'extraction/compression
             Dim formCompresser As New FormCompresser()
 
+            ' Lire la préférence agrandi/rapetissé depuis parametres.txt (lecture robuste) mais n'appliquer
+            ' qu'après l'initialisation du formulaire pour éviter qu'une initialisation interne n'écrase l'état.
+            Dim agrVal As String = Nothing
+            Try
+                Dim cfgPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "parametres.txt")
+                If File.Exists(cfgPath) Then
+                    For Each raw In File.ReadAllLines(cfgPath)
+                        Try
+                            Dim line = raw.Trim()
+                            If String.IsNullOrEmpty(line) OrElse line.StartsWith("#") Then Continue For
+                            Dim idx = line.IndexOf("=")
+                            If idx <= 0 Then Continue For
+                            Dim key = line.Substring(0, idx).Trim()
+                            Dim value = line.Substring(idx + 1).Trim()
+                            If String.Equals(key, "FormCompresser_Agrandir", StringComparison.InvariantCultureIgnoreCase) Then
+                                agrVal = value
+                                Exit For
+                            End If
+                        Catch
+                        End Try
+                    Next
+                End If
+            Catch
+            End Try
+
             ' Passer les informations du CD au formulaire
             formCompresser.InitialiserDonneesCD(lecteur, pistesCD, cdMetadata)
+
+            ' Appliquer l'état agrandi/rapetissé après l'initialisation (si trouvé)
+            If agrVal IsNot Nothing Then
+                Try
+                    formCompresser.ApplyAgrandirStateFromString(agrVal)
+                    ' Log pour diagnostic
+                    Try
+                        Dim trace = Path.Combine(Path.GetTempPath(), "AudioPlay_state_debug.txt")
+                        File.AppendAllText(trace, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ButtonExtraction applied agrVal={agrVal}{Environment.NewLine}")
+                    Catch
+                    End Try
+                Catch
+                End Try
+            End If
 
             ' Afficher FormCompresser en mode non-modal SANS owner pour qu'il soit complètement indépendant
             ' Cela permet à l'utilisateur d'utiliser Form1 librement pendant l'affichage et l'extraction du CD

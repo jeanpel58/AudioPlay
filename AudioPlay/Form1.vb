@@ -1742,8 +1742,8 @@ Public Class Form1
             End If
         End If
 
-        ' Fichier trouvé, réinitialiser le compteur
-        tentativesLectureFichier = 0
+        ' Ne pas réinitialiser le compteur ici : ne le remettre à zéro
+        ' QUE si l'ouverture du fichier a réussi (évite boucle infinie si tous les fichiers sont corrompus)
 
         ' --- GESTION BPM MÉTRONOME ---
         If metronomeActif Then
@@ -1783,305 +1783,341 @@ Public Class Form1
             End If
         End If
 
-        Try
-            ' Arrêter la lecture en cours
-            ArreterLecture()
+        ' Use an iterative attempt loop to avoid recursion and ensure termination when all files are invalid
+        Dim opened As Boolean = False
+        Dim attempts As Integer = 0
+        Dim maxAttempts As Integer = Math.Max(1, ListView1.Items.Count)
+        Do While Not opened AndAlso attempts < maxAttempts
+            attempts += 1
+            Try
+                ' Arrêter la lecture en cours
+                ArreterLecture()
 
-            ' Effacer les marqueurs de boucle pour la nouvelle chanson
-            EffacerMarqueursLoop()
+                ' Effacer les marqueurs de boucle pour la nouvelle chanson
+                EffacerMarqueursLoop()
 
-            ' Obtenir le gain de normalisation AVANT d'ouvrir le fichier
-            ' MAIS seulement si le métronome est désactivé pour éviter les conflits COM
-            If metronomeActif Then
-                ' Désactiver temporairement la normalisation avec le métronome
-                gainNormalisationActuel = 1.0F
-            Else
-                gainNormalisationActuel = ObtenirGainNormalisation(item, chemin)
-            End If
-
-            ' Récupérer ou calculer la durée réelle si l'option est activée (pas pour CD audio)
-            dureeReelleActuelle = TimeSpan.Zero
-            If Not estCDAudio AndAlso ParametresGlobaux.SupprimerSilenceFin AndAlso TypeOf item.Tag Is Dictionary(Of String, Object) Then
-                Dim tagDict = DirectCast(item.Tag, Dictionary(Of String, Object))
-                If tagDict.ContainsKey("DureeReelle") Then
-                    ' La durée réelle existe déjà dans le Tag
-                    Dim dureeObj = tagDict("DureeReelle")
-                    If TypeOf dureeObj Is TimeSpan Then
-                        dureeReelleActuelle = DirectCast(dureeObj, TimeSpan)
-                        System.Diagnostics.Debug.WriteLine($"Utilisation durée réelle (cache): {dureeReelleActuelle.TotalSeconds:F2}s")
-                    End If
+                ' Obtenir le gain de normalisation AVANT d'ouvrir le fichier
+                If metronomeActif Then
+                    gainNormalisationActuel = 1.0F
                 Else
-                    ' Calculer la durée réelle à la demande et la mettre en cache
-                    Try
-                        dureeReelleActuelle = SilenceDetector.TrouverDureeReelle(chemin)
-                        If dureeReelleActuelle > TimeSpan.Zero Then
-                            tagDict.Add("DureeReelle", dureeReelleActuelle)
-                            System.Diagnostics.Debug.WriteLine($"Durée réelle calculée à la demande: {dureeReelleActuelle.TotalSeconds:F2}s")
-                        End If
-                    Catch ex As Exception
-                        System.Diagnostics.Debug.WriteLine($"Erreur calcul durée réelle: {ex.Message}")
-                    End Try
+                    gainNormalisationActuel = ObtenirGainNormalisation(item, chemin)
                 End If
-            End If
 
-            ' Créer le nouveau lecteur (différent pour CD audio)
-            If estCDAudio Then
-                ' Créer un lecteur CD audio
-                Dim cdTrack = CDAudioManager.ParseCheminCDAudio(chemin)
-                If cdTrack IsNot Nothing Then
-                    fichierAudio = CDAudioManager.CreerLecteurCDAudio(cdTrack)
-                    If fichierAudio Is Nothing Then
-                        Throw New Exception("Impossible de créer le lecteur CD audio")
-                    End If
-                Else
-                    Throw New Exception("Chemin CD audio invalide")
-                End If
-            Else
-                ' Créer le lecteur pour fichier normal
-                fichierAudio = New AudioFileReader(chemin)
-            End If
-
-            ' Mettre à jour le taux d'échantillonnage
-            If Label_SampleRate IsNot Nothing Then
-                If estCDAudio Then
-                    Label_SampleRate.Text = "44100 Hz" ' CD Audio standard
-                Else
-                    Label_SampleRate.Text = $"{fichierAudio.WaveFormat.SampleRate} Hz"
-                End If
-            End If
-
-            ' Calculer et afficher le bitrate
-            If Label_Bitrate IsNot Nothing Then
-                If estCDAudio Then
-                    Label_Bitrate.Text = "1411 kbps" ' CD Audio standard: 44.1kHz * 16-bit * 2 channels
-                Else
-                    Try
-                        ' Calculer le bitrate approximatif
-                        Dim fileInfo As New FileInfo(chemin)
-                        Dim fileSizeInBytes As Long = fileInfo.Length
-                        Dim durationInSeconds As Double = fichierAudio.TotalTime.TotalSeconds
-
-                        If durationInSeconds > 0 Then
-                            ' Bitrate en kbps = (taille fichier en bits) / (durée en secondes) / 1000
-                            Dim bitrateKbps As Integer = CInt((fileSizeInBytes * 8) / durationInSeconds / 1000)
-                            Label_Bitrate.Text = $"{bitrateKbps} kbps"
-                        Else
-                            Label_Bitrate.Text = "-- kbps"
-                        End If
-                    Catch
-                        Label_Bitrate.Text = "-- kbps"
-                    End Try
-                End If
-            End If
-
-            ' Convertir le fichier audio en SampleProvider
-            Dim audioSampleProvider = fichierAudio.ToSampleProvider()
-
-            ' Supprimer le silence au début si l'option est activée
-            ' (ou si le métronome est actif, pour que la chanson démarre immédiatement après)
-            ' Ne pas appliquer pour les pistes CD (qui peuvent ne pas encore avoir de vraie lecture audio)
-            If Not estCDAudio AndAlso (ParametresGlobaux.SupprimerSilenceDebut OrElse metronomeActif) Then
-                audioSampleProvider = New SkipSilenceSampleProvider(audioSampleProvider)
-            End If
-
-            ' DÉSACTIVÉ TEMPORAIREMENT : La suppression du silence à la fin cause des problèmes
-            ' TODO : Implémenter une meilleure approche (détection anticipée du silence final)
-            'If ParametresGlobaux.SupprimerSilenceFin Then
-            '    audioSampleProvider = New TrimEndSilenceSampleProvider(audioSampleProvider)
-            'End If
-
-            ' Créer le provider de base
-            Dim sampleProviderBase As ISampleProvider
-
-            ' Si le métronome est activé, créer la séquence métronome + audio
-            If metronomeActif Then
-                ' Obtenir le BPM depuis les métadonnées ou le Tag
-                Dim bpmFichier As Double = 120.0 ' BPM par défaut
-                If TypeOf item.Tag Is Dictionary(Of String, Object) Then
+                ' Récupérer ou calculer la durée réelle si l'option est activée (pas pour CD audio)
+                dureeReelleActuelle = TimeSpan.Zero
+                If Not estCDAudio AndAlso ParametresGlobaux.SupprimerSilenceFin AndAlso TypeOf item.Tag Is Dictionary(Of String, Object) Then
                     Dim tagDict = DirectCast(item.Tag, Dictionary(Of String, Object))
-                    If tagDict.ContainsKey("BPM") Then
-                        Dim bpmObj = tagDict("BPM")
-                        If bpmObj IsNot Nothing Then
-                            Double.TryParse(bpmObj.ToString(), bpmFichier)
+                    If tagDict.ContainsKey("DureeReelle") Then
+                        Dim dureeObj = tagDict("DureeReelle")
+                        If TypeOf dureeObj Is TimeSpan Then
+                            dureeReelleActuelle = DirectCast(dureeObj, TimeSpan)
                         End If
+                    Else
+                        Try
+                            dureeReelleActuelle = SilenceDetector.TrouverDureeReelle(chemin)
+                            If dureeReelleActuelle > TimeSpan.Zero Then
+                                tagDict.Add("DureeReelle", dureeReelleActuelle)
+                            End If
+                        Catch
+                        End Try
                     End If
                 End If
 
-                System.Diagnostics.Debug.WriteLine($"Création métronome avec BPM: {bpmFichier}")
+                ' Créer le nouveau lecteur (différent pour CD audio)
+                If estCDAudio Then
+                    Dim cdTrack = CDAudioManager.ParseCheminCDAudio(chemin)
+                    If cdTrack IsNot Nothing Then
+                        fichierAudio = CDAudioManager.CreerLecteurCDAudio(cdTrack)
+                        If fichierAudio Is Nothing Then
+                            Throw New Exception("Impossible de créer le lecteur CD audio")
+                        End If
+                    Else
+                        Throw New Exception("Chemin CD audio invalide")
+                    End If
+                Else
+                    Try
+                        fichierAudio = New AudioFileReader(chemin)
+                    Catch exReader As Exception
+                        ' Log and skip silently to next track
+                        Try
+                            Dim trace = Path.Combine(Path.GetTempPath(), "AudioPlay_playback_error_debug.txt")
+                            File.AppendAllText(trace, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Failed opening audio {chemin}: {exReader.Message}{Environment.NewLine}")
+                        Catch
+                        End Try
+                        ' mark attempt and select next
+                        tentativesLectureFichier = attempts
+                        SelectionnerItemSuivantSansTentative()
+                        ' prepare for next loop iteration with new selection
+                        If attempts >= maxAttempts Then Exit Do
+                        ' update item and chemin for the newly selected item
+                        If ListView1.SelectedItems.Count = 0 Then Exit Do
+                        item = ListView1.SelectedItems(0)
+                        If TypeOf item.Tag Is Dictionary(Of String, Object) Then
+                            Dim tagDict2 = DirectCast(item.Tag, Dictionary(Of String, Object))
+                            If tagDict2.ContainsKey("Chemin") Then chemin = tagDict2("Chemin")?.ToString()
+                            If tagDict2.ContainsKey("TypeSource") AndAlso tagDict2("TypeSource")?.ToString() = "CDAudio" Then estCDAudio = True Else estCDAudio = False
+                        ElseIf TypeOf item.Tag Is String Then
+                            chemin = item.Tag.ToString()
+                            estCDAudio = CDAudioManager.EstCheminCDAudio(chemin)
+                        End If
+                        Continue Do
+                    End Try
+                End If
 
-                ' Sauvegarder les paramètres du métronome pour la LED
-                metronomeBPM = bpmFichier
-                metronomeNombreBeats = nombreBeatsMetronome
+                ' If we reach here, opening succeeded
+                opened = True
+                tentativesLectureFichier = 0
+            Catch ex As Exception
+                ' If unexpected exception occurs, log and stop attempts
+                Try
+                    Dim trace2 = Path.Combine(Path.GetTempPath(), "AudioPlay_playback_error_debug.txt")
+                    File.AppendAllText(trace2, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Unexpected error preparing playback {chemin}: {ex.Message}{Environment.NewLine}")
+                Catch
+                End Try
+                Exit Do
+            End Try
+        Loop
 
-                ' Si le son du métronome est activé, créer le provider audio
-                If metronomeSonActif Then
-                    ' Créer le métronome avec le BPM du fichier
-                    Dim metronome As New MetronomeProvider(
+        If Not opened Then
+            ' All attempts failed: stop without crashing
+            System.Diagnostics.Debug.WriteLine("Lecture abandonnée : aucun fichier valide trouvé dans la liste.")
+            tentativesLectureFichier = 0
+            Return
+        End If
+
+        ' Mettre à jour le taux d'échantillonnage
+        If Label_SampleRate IsNot Nothing Then
+            If estCDAudio Then
+                Label_SampleRate.Text = "44100 Hz" ' CD Audio standard
+            Else
+                Label_SampleRate.Text = $"{fichierAudio.WaveFormat.SampleRate} Hz"
+            End If
+        End If
+
+        ' Calculer et afficher le bitrate
+        If Label_Bitrate IsNot Nothing Then
+            If estCDAudio Then
+                Label_Bitrate.Text = "1411 kbps" ' CD Audio standard: 44.1kHz * 16-bit * 2 channels
+            Else
+                Try
+                    ' Calculer le bitrate approximatif
+                    Dim fileInfo As New FileInfo(chemin)
+                    Dim fileSizeInBytes As Long = fileInfo.Length
+                    Dim durationInSeconds As Double = fichierAudio.TotalTime.TotalSeconds
+
+                    If durationInSeconds > 0 Then
+                        ' Bitrate en kbps = (taille fichier en bits) / (durée en secondes) / 1000
+                        Dim bitrateKbps As Integer = CInt((fileSizeInBytes * 8) / durationInSeconds / 1000)
+                        Label_Bitrate.Text = $"{bitrateKbps} kbps"
+                    Else
+                        Label_Bitrate.Text = "-- kbps"
+                    End If
+                Catch
+                    Label_Bitrate.Text = "-- kbps"
+                End Try
+            End If
+        End If
+
+        ' Convertir le fichier audio en SampleProvider
+        Dim audioSampleProvider = fichierAudio.ToSampleProvider()
+
+        ' Supprimer le silence au début si l'option est activée
+        ' (ou si le métronome est actif, pour que la chanson démarre immédiatement après)
+        ' Ne pas appliquer pour les pistes CD (qui peuvent ne pas encore avoir de vraie lecture audio)
+        If Not estCDAudio AndAlso (ParametresGlobaux.SupprimerSilenceDebut OrElse metronomeActif) Then
+            audioSampleProvider = New SkipSilenceSampleProvider(audioSampleProvider)
+        End If
+
+        ' DÉSACTIVÉ TEMPORAIREMENT : La suppression du silence à la fin cause des problèmes
+        ' TODO : Implémenter une meilleure approche (détection anticipée du silence final)
+        'If ParametresGlobaux.SupprimerSilenceFin Then
+        '    audioSampleProvider = New TrimEndSilenceSampleProvider(audioSampleProvider)
+        'End If
+
+        ' Créer le provider de base
+        Dim sampleProviderBase As ISampleProvider
+
+        ' Si le métronome est activé, créer la séquence métronome + audio
+        If metronomeActif Then
+            ' Obtenir le BPM depuis les métadonnées ou le Tag
+            Dim bpmFichier As Double = 120.0 ' BPM par défaut
+            If TypeOf item.Tag Is Dictionary(Of String, Object) Then
+                Dim tagDict = DirectCast(item.Tag, Dictionary(Of String, Object))
+                If tagDict.ContainsKey("BPM") Then
+                    Dim bpmObj = tagDict("BPM")
+                    If bpmObj IsNot Nothing Then
+                        Double.TryParse(bpmObj.ToString(), bpmFichier)
+                    End If
+                End If
+            End If
+
+            System.Diagnostics.Debug.WriteLine($"Création métronome avec BPM: {bpmFichier}")
+
+            ' Sauvegarder les paramètres du métronome pour la LED
+            metronomeBPM = bpmFichier
+            metronomeNombreBeats = nombreBeatsMetronome
+
+            ' Si le son du métronome est activé, créer le provider audio
+            If metronomeSonActif Then
+                ' Créer le métronome avec le BPM du fichier
+                Dim metronome As New MetronomeProvider(
                         fichierAudio.WaveFormat.SampleRate,
                         bpmFichier,
                         nombreBeatsMetronome
                     )
 
-                    ' Sauvegarder la référence au métronome
-                    metronomeEnCours = metronome
+                ' Sauvegarder la référence au métronome
+                metronomeEnCours = metronome
 
-                    ' Créer le séquenceur qui joue métronome puis audio
-                    Dim sequenceur As New MetronomeAudioSequencer(metronome, audioSampleProvider)
-                    sampleProviderBase = sequenceur
-                Else
-                    ' Pas de son métronome, mais si la lumière est activée, créer un délai silencieux
-                    If metronomeLumiereActive Then
-                        ' Créer un délai silencieux pour la durée du métronome
-                        Dim silentDelay As New SilentDelayProvider(
-                            fichierAudio.WaveFormat.SampleRate,
-                            bpmFichier,
-                            nombreBeatsMetronome
-                        )
-
-                        ' Créer le séquenceur qui joue silence puis audio
-                        Dim sequenceur As New SilentDelayAudioSequencer(silentDelay, audioSampleProvider)
-                        sampleProviderBase = sequenceur
-
-                        ' Créer un métronome invisible pour la LED (juste pour le timing)
-                        metronomeEnCours = New MetronomeProvider(
-                            fichierAudio.WaveFormat.SampleRate,
-                            bpmFichier,
-                            nombreBeatsMetronome
-                        )
-                    Else
-                        ' Ni son ni lumière, utiliser directement le fichier audio
-                        sampleProviderBase = audioSampleProvider
-                    End If
-                End If
-
-                ' Ouvrir la fenêtre LED si la lumière est activée
-                If metronomeLumiereActive Then
-                    If formLight Is Nothing Then
-                        formLight = New FormLight()
-                    End If
-                    formLight.ShowLight()
-                End If
+                ' Créer le séquenceur qui joue métronome puis audio
+                Dim sequenceur As New MetronomeAudioSequencer(metronome, audioSampleProvider)
+                sampleProviderBase = sequenceur
             Else
-                ' Pas de métronome, utiliser directement le fichier audio
-                sampleProviderBase = audioSampleProvider
+                ' Pas de son métronome, mais si la lumière est activée, créer un délai silencieux
+                If metronomeLumiereActive Then
+                    ' Créer un délai silencieux pour la durée du métronome
+                    Dim silentDelay As New SilentDelayProvider(
+                            fichierAudio.WaveFormat.SampleRate,
+                            bpmFichier,
+                            nombreBeatsMetronome
+                        )
+
+                    ' Créer le séquenceur qui joue silence puis audio
+                    Dim sequenceur As New SilentDelayAudioSequencer(silentDelay, audioSampleProvider)
+                    sampleProviderBase = sequenceur
+
+                    ' Créer un métronome invisible pour la LED (juste pour le timing)
+                    metronomeEnCours = New MetronomeProvider(
+                            fichierAudio.WaveFormat.SampleRate,
+                            bpmFichier,
+                            nombreBeatsMetronome
+                        )
+                Else
+                    ' Ni son ni lumière, utiliser directement le fichier audio
+                    sampleProviderBase = audioSampleProvider
+                End If
             End If
 
-            ' Créer la chaîne audio avec égaliseur personnalisé
-            equalizerProvider = New SimpleEqualizerProvider(sampleProviderBase, dernieresBasses, dernieresAigues)
+            ' Ouvrir la fenêtre LED si la lumière est activée
+            If metronomeLumiereActive Then
+                If formLight Is Nothing Then
+                    formLight = New FormLight()
+                End If
+                formLight.ShowLight()
+            End If
+        Else
+            ' Pas de métronome, utiliser directement le fichier audio
+            sampleProviderBase = audioSampleProvider
+        End If
 
-            ' === Appliquer les effets audio dans l'ordre ===
-            Dim currentProvider As ISampleProvider = equalizerProvider
+        ' Créer la chaîne audio avec égaliseur personnalisé
+        equalizerProvider = New SimpleEqualizerProvider(sampleProviderBase, dernieresBasses, dernieresAigues)
 
-            ' Debug: Afficher l'état des effets
-            System.Diagnostics.Debug.WriteLine("=== État des effets audio ===")
-            System.Diagnostics.Debug.WriteLine($"Reverb: Actif={ParametresGlobaux.EffetReverbActif}, Mix={ParametresGlobaux.EffetReverbMix}")
-            System.Diagnostics.Debug.WriteLine($"Echo: Actif={ParametresGlobaux.EffetEchoActif}, Mix={ParametresGlobaux.EffetEchoMix}, Délai={ParametresGlobaux.EffetEchoDelai}ms, Feedback={ParametresGlobaux.EffetEchoFeedback}")
-            System.Diagnostics.Debug.WriteLine($"TimeStretch: Actif={ParametresGlobaux.EffetTimeStretchActif}, Ratio={ParametresGlobaux.EffetTimeStretchRatio}")
-            System.Diagnostics.Debug.WriteLine($"PitchShift: Actif={ParametresGlobaux.EffetPitchShiftActif}, SemiTones={ParametresGlobaux.EffetPitchShiftSemiTones}")
-            System.Diagnostics.Debug.WriteLine($"Phaser: Actif={ParametresGlobaux.EffetPhaserActif}, Rate={ParametresGlobaux.EffetPhaserRate}, Depth={ParametresGlobaux.EffetPhaserDepth}, Feedback={ParametresGlobaux.EffetPhaserFeedback}, Mix={ParametresGlobaux.EffetPhaserMix}, Stages={ParametresGlobaux.EffetPhaserStages}")
+        ' === Appliquer les effets audio dans l'ordre ===
+        Dim currentProvider As ISampleProvider = equalizerProvider
 
-            ' 1. Time Stretch (changement de tempo)
-            timeStretchProvider = New TimeStretchSampleProvider(currentProvider)
-            timeStretchProvider.Enabled = ParametresGlobaux.EffetTimeStretchActif
-            timeStretchProvider.TempoChange = ParametresGlobaux.EffetTimeStretchRatio
-            currentProvider = timeStretchProvider
+        ' Debug: Afficher l'état des effets
+        System.Diagnostics.Debug.WriteLine("=== État des effets audio ===")
+        System.Diagnostics.Debug.WriteLine($"Reverb: Actif={ParametresGlobaux.EffetReverbActif}, Mix={ParametresGlobaux.EffetReverbMix}")
+        System.Diagnostics.Debug.WriteLine($"Echo: Actif={ParametresGlobaux.EffetEchoActif}, Mix={ParametresGlobaux.EffetEchoMix}, Délai={ParametresGlobaux.EffetEchoDelai}ms, Feedback={ParametresGlobaux.EffetEchoFeedback}")
+        System.Diagnostics.Debug.WriteLine($"TimeStretch: Actif={ParametresGlobaux.EffetTimeStretchActif}, Ratio={ParametresGlobaux.EffetTimeStretchRatio}")
+        System.Diagnostics.Debug.WriteLine($"PitchShift: Actif={ParametresGlobaux.EffetPitchShiftActif}, SemiTones={ParametresGlobaux.EffetPitchShiftSemiTones}")
+        System.Diagnostics.Debug.WriteLine($"Phaser: Actif={ParametresGlobaux.EffetPhaserActif}, Rate={ParametresGlobaux.EffetPhaserRate}, Depth={ParametresGlobaux.EffetPhaserDepth}, Feedback={ParametresGlobaux.EffetPhaserFeedback}, Mix={ParametresGlobaux.EffetPhaserMix}, Stages={ParametresGlobaux.EffetPhaserStages}")
 
-            ' 2. Pitch Shift (changement de hauteur)
-            pitchShiftProvider = New PitchShiftSampleProvider(currentProvider)
-            pitchShiftProvider.Enabled = ParametresGlobaux.EffetPitchShiftActif
-            pitchShiftProvider.PitchSemiTones = ParametresGlobaux.EffetPitchShiftSemiTones
-            currentProvider = pitchShiftProvider
+        ' 1. Time Stretch (changement de tempo)
+        timeStretchProvider = New TimeStretchSampleProvider(currentProvider)
+        timeStretchProvider.Enabled = ParametresGlobaux.EffetTimeStretchActif
+        timeStretchProvider.TempoChange = ParametresGlobaux.EffetTimeStretchRatio
+        currentProvider = timeStretchProvider
 
-            ' 3. Phaser (effet de balayage de phase)
-            phaserProvider = New PhaserSampleProvider(currentProvider)
-            phaserProvider.Enabled = ParametresGlobaux.EffetPhaserActif
-            phaserProvider.Rate = ParametresGlobaux.EffetPhaserRate
-            phaserProvider.Depth = ParametresGlobaux.EffetPhaserDepth
-            phaserProvider.Feedback = ParametresGlobaux.EffetPhaserFeedback
-            phaserProvider.Mix = ParametresGlobaux.EffetPhaserMix
-            phaserProvider.Stages = ParametresGlobaux.EffetPhaserStages
-            currentProvider = phaserProvider
+        ' 2. Pitch Shift (changement de hauteur)
+        pitchShiftProvider = New PitchShiftSampleProvider(currentProvider)
+        pitchShiftProvider.Enabled = ParametresGlobaux.EffetPitchShiftActif
+        pitchShiftProvider.PitchSemiTones = ParametresGlobaux.EffetPitchShiftSemiTones
+        currentProvider = pitchShiftProvider
 
-            ' 4. Reverb (réverbération)
-            reverbProvider = New ReverbSampleProvider(currentProvider)
-            reverbProvider.Enabled = ParametresGlobaux.EffetReverbActif
-            reverbProvider.Mix = ParametresGlobaux.EffetReverbMix
-            currentProvider = reverbProvider
+        ' 3. Phaser (effet de balayage de phase)
+        phaserProvider = New PhaserSampleProvider(currentProvider)
+        phaserProvider.Enabled = ParametresGlobaux.EffetPhaserActif
+        phaserProvider.Rate = ParametresGlobaux.EffetPhaserRate
+        phaserProvider.Depth = ParametresGlobaux.EffetPhaserDepth
+        phaserProvider.Feedback = ParametresGlobaux.EffetPhaserFeedback
+        phaserProvider.Mix = ParametresGlobaux.EffetPhaserMix
+        phaserProvider.Stages = ParametresGlobaux.EffetPhaserStages
+        currentProvider = phaserProvider
 
-            ' 5. Echo (écho)
-            echoProvider = New EchoSampleProvider(currentProvider)
-            echoProvider.Enabled = ParametresGlobaux.EffetEchoActif
-            echoProvider.Mix = ParametresGlobaux.EffetEchoMix
-            echoProvider.DelayMilliseconds = ParametresGlobaux.EffetEchoDelai
-            echoProvider.Feedback = ParametresGlobaux.EffetEchoFeedback
-            currentProvider = echoProvider
+        ' 4. Reverb (réverbération)
+        reverbProvider = New ReverbSampleProvider(currentProvider)
+        reverbProvider.Enabled = ParametresGlobaux.EffetReverbActif
+        reverbProvider.Mix = ParametresGlobaux.EffetReverbMix
+        currentProvider = reverbProvider
 
-            System.Diagnostics.Debug.WriteLine("=== Chaîne audio créée avec effets ===")
+        ' 5. Echo (écho)
+        echoProvider = New EchoSampleProvider(currentProvider)
+        echoProvider.Enabled = ParametresGlobaux.EffetEchoActif
+        echoProvider.Mix = ParametresGlobaux.EffetEchoMix
+        echoProvider.DelayMilliseconds = ParametresGlobaux.EffetEchoDelai
+        echoProvider.Feedback = ParametresGlobaux.EffetEchoFeedback
+        currentProvider = echoProvider
 
-            ' Appliquer le volume avec normalisation
-            volumeProvider = New VolumeSampleProvider(currentProvider) With {
+        System.Diagnostics.Debug.WriteLine("=== Chaîne audio créée avec effets ===")
+
+        ' Appliquer le volume avec normalisation
+        volumeProvider = New VolumeSampleProvider(currentProvider) With {
                 .Volume = dernierVolume * gainNormalisationActuel
             }
 
-            ' Initialiser le lecteur
-            lecteur = New WaveOutEvent()
-            AddHandler DirectCast(lecteur, WaveOutEvent).PlaybackStopped, AddressOf OnPlaybackStopped
-            lecteur.Init(volumeProvider)
-            lecteur.Play()
+        ' Initialiser le lecteur
+        lecteur = New WaveOutEvent()
+        AddHandler DirectCast(lecteur, WaveOutEvent).PlaybackStopped, AddressOf OnPlaybackStopped
+        lecteur.Init(volumeProvider)
+        lecteur.Play()
 
-            cheminActuel = chemin
-            lectureEnCours = True
-            enPause = False
+        cheminActuel = chemin
+        lectureEnCours = True
+        enPause = False
 
-            ' Démarrer le timer LED si métronome actif ET lumière activée
-            If metronomeActif AndAlso metronomeEnCours IsNot Nothing AndAlso metronomeLumiereActive Then
-                DemarrerTimerMetronomeLED()
+        ' Démarrer le timer LED si métronome actif ET lumière activée
+        If metronomeActif AndAlso metronomeEnCours IsNot Nothing AndAlso metronomeLumiereActive Then
+            DemarrerTimerMetronomeLED()
+        End If
+
+        ' Mettre le bouton Jouer en vert pendant la lecture
+        If Button_Jouer IsNot Nothing Then
+            Button_Jouer.BackgroundImage = AudioPlay.Resources.AudioPlay_Jouer_Vert
+        End If
+
+        ' Mettre le bouton Pause/Reprise en vert pendant la lecture
+        If Button_PauseReprise IsNot Nothing Then
+            Button_PauseReprise.BackgroundImage = AudioPlay.Resources.AudioPlay_Pause_Vert
+        End If
+
+        ' Mettre le bouton Arrêter en vert pendant la lecture
+        If Button_Arreter IsNot Nothing Then
+            Button_Arreter.BackgroundImage = AudioPlay.Resources.AudioPlay_Arreter_Vert
+        End If
+
+        ' Mettre le bouton Mute en vert (sauf si déjà muté = rouge)
+        If Button_Mute IsNot Nothing Then
+            If isMuted Then
+                Button_Mute.BackgroundImage = AudioPlay.Resources.AudioPlay_Mute_Rouge
+            Else
+                Button_Mute.BackgroundImage = AudioPlay.Resources.AudioPlay_Mute_Vert
             End If
+        End If
 
-            ' Mettre le bouton Jouer en vert pendant la lecture
-            If Button_Jouer IsNot Nothing Then
-                Button_Jouer.BackgroundImage = AudioPlay.Resources.AudioPlay_Jouer_Vert
-            End If
+        Button_Jouer.Text = "" ' Image seulement, pas de texte
+        Button_PauseReprise.Text = "" ' Image seulement, pas de texte
 
-            ' Mettre le bouton Pause/Reprise en vert pendant la lecture
-            If Button_PauseReprise IsNot Nothing Then
-                Button_PauseReprise.BackgroundImage = AudioPlay.Resources.AudioPlay_Pause_Vert
-            End If
+        ' Mettre à jour l'affichage avec le nom du fichier
+        If TextBox_Display IsNot Nothing Then
+            TextBox_Display.Text = item.SubItems(1).Text ' Nom du fichier depuis la colonne "Chansons"
+        End If
 
-            ' Mettre le bouton Arrêter en vert pendant la lecture
-            If Button_Arreter IsNot Nothing Then
-                Button_Arreter.BackgroundImage = AudioPlay.Resources.AudioPlay_Arreter_Vert
-            End If
+        ' === DÉTECTION ET CHARGEMENT DU FICHIER CDG ===
+        DetecterEtChargerCDG(chemin)
 
-            ' Mettre le bouton Mute en vert (sauf si déjà muté = rouge)
-            If Button_Mute IsNot Nothing Then
-                If isMuted Then
-                    Button_Mute.BackgroundImage = AudioPlay.Resources.AudioPlay_Mute_Rouge
-                Else
-                    Button_Mute.BackgroundImage = AudioPlay.Resources.AudioPlay_Mute_Vert
-                End If
-            End If
-
-            Button_Jouer.Text = "" ' Image seulement, pas de texte
-            Button_PauseReprise.Text = "" ' Image seulement, pas de texte
-
-            ' Mettre à jour l'affichage avec le nom du fichier
-            If TextBox_Display IsNot Nothing Then
-                TextBox_Display.Text = item.SubItems(1).Text ' Nom du fichier depuis la colonne "Chansons"
-            End If
-
-            ' === DÉTECTION ET CHARGEMENT DU FICHIER CDG ===
-            DetecterEtChargerCDG(chemin)
-
-        Catch ex As Exception
-            Dim detailsErreur As String = ex.Message
-            If ex.InnerException IsNot Nothing Then
-                detailsErreur &= vbCrLf & "Détails: " & ex.InnerException.Message
-            End If
-            System.Diagnostics.Debug.WriteLine($"[Form1] Erreur lecture: {ex.ToString()}")
-            MessageBox.Show(LanguageManager.GetString("Error_PlaybackError", detailsErreur), LanguageManager.GetString("Error_Title"), MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ArreterLecture()
-        End Try
+        ' Top-level Try/Catch removed: inner loop handles failures and ensures safe termination when no valid files remain.
     End Sub
 
     ' Obtenir le gain de normalisation pour un fichier
@@ -2363,7 +2399,14 @@ Public Class Form1
                 Dim rnd As New Random()
                 nouvelIndex = rnd.Next(0, ListView1.Items.Count)
             Else
-                nouvelIndex = (indexActuel + 1) Mod ListView1.Items.Count
+                ' If we're at the last item, do NOT wrap to the first: signal end by
+                ' setting tentativesLectureFichier so the caller will stop further attempts.
+                If indexActuel >= ListView1.Items.Count - 1 Then
+                    tentativesLectureFichier = ListView1.Items.Count
+                    Return
+                Else
+                    nouvelIndex = indexActuel + 1
+                End If
             End If
 
             ListView1.SelectedItems.Clear()
@@ -4725,7 +4768,45 @@ Public Class Form1
                 $"VolumeExtractionCD={ParametresGlobaux.volumeExtractionCD}",
                 $"ModeTOCPrecis={ParametresGlobaux.ModeTOCPrecis}"
             }
-            File.WriteAllLines(fichierParam, lignes)
+            ' Preserve specific keys that may have been written elsewhere (e.g., FormCompresser_Agrandir)
+            Try
+                Dim existing As New Dictionary(Of String, String)(StringComparer.InvariantCultureIgnoreCase)
+                If File.Exists(fichierParam) Then
+                    For Each l In File.ReadAllLines(fichierParam)
+                        Try
+                            Dim i = l.IndexOf("=")
+                            If i > 0 Then
+                                Dim k = l.Substring(0, i).Trim()
+                                Dim v = l.Substring(i + 1).Trim()
+                                If Not existing.ContainsKey(k) Then existing.Add(k, v)
+                            End If
+                        Catch
+                        End Try
+                    Next
+                End If
+
+                ' If FormCompresser_Agrandir exists in existing file, ensure it's kept
+                If existing.ContainsKey("FormCompresser_Agrandir") Then
+                    ' remove any entry we might have added already
+                    For i = lignes.Count - 1 To 0 Step -1
+                        Try
+                            If lignes(i).StartsWith("FormCompresser_Agrandir=", StringComparison.InvariantCultureIgnoreCase) Then
+                                lignes.RemoveAt(i)
+                            End If
+                        Catch
+                        End Try
+                    Next
+                    lignes.Add($"FormCompresser_Agrandir={existing("FormCompresser_Agrandir")}")
+                End If
+
+                File.WriteAllLines(fichierParam, lignes)
+            Catch exWriteAll As Exception
+                ' fallback: try a best-effort write
+                Try
+                    File.WriteAllLines(fichierParam, lignes)
+                Catch
+                End Try
+            End Try
         Catch ex As Exception
             ' Ignorer les erreurs de sauvegarde
         End Try

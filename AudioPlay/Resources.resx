@@ -141,6 +141,30 @@
   <data name="APropos_OK" xml:space="preserve">
     <value>OK</value>
   </data>
+  <data name="Error_NoAlbumFound" xml:space="preserve">
+    <value>Aucun album trouvé dans le répertoire de sauvegarde.</value>
+  </data>
+  <data name="Error_NoSavePath" xml:space="preserve">
+    <value>Veuillez indiquer un répertoire de sauvegarde valide.</value>
+  </data>
+  <data name="FormCompresser_PostProcessing_AutoLabel" xml:space="preserve">
+    <value>Post-traitement automatique</value>
+  </data>
+  <data name="FormCompresser_PostProcessing_AutoTip" xml:space="preserve">
+    <value>Si coché, applique automatiquement les corrections après extraction (non destructif).</value>
+  </data>
+  <data name="FormCompresser_Button_CorrectAlbum" xml:space="preserve">
+    <value>Corriger l'album</value>
+  </data>
+  <data name="FormCompresser_Button_CorrectTip" xml:space="preserve">
+    <value>Applique les corrections non destructives aux fichiers WAV de l'album courant.</value>
+  </data>
+  <data name="FormCompresser_PostProcessing_DoneMessage" xml:space="preserve">
+    <value>Post-traitement terminé. Vérifiez les fichiers *_fixed.wav dans le dossier d'album.</value>
+  </data>
+  <data name="FormCompresser_PostProcessing_DoneTitle" xml:space="preserve">
+    <value>Post-traitement</value>
+  </data>
   <data name="APropos_Error_BrowserOpen" xml:space="preserve">
     <value>Impossible d'ouvrir le navigateur.</value>
   </data>

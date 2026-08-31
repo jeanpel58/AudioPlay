@@ -149,13 +149,13 @@ End Module
 Public Module ParametresGlobauxHelpers
     Public Sub EcrireCleParametres(cle As String, valeur As String)
         Try
-            Dim fichierParam = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "parametres.txt")
+            Dim dossierApp = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay")
+            Dim fichierParam = Path.Combine(dossierApp, "parametres.txt")
+            If Not Directory.Exists(dossierApp) Then Directory.CreateDirectory(dossierApp)
+
             Dim lignes As New List(Of String)()
             If File.Exists(fichierParam) Then
                 lignes = File.ReadAllLines(fichierParam).ToList()
-            Else
-                Dim dossier = Path.GetDirectoryName(fichierParam)
-                If Not Directory.Exists(dossier) Then Directory.CreateDirectory(dossier)
             End If
 
             Dim found As Boolean = False
@@ -171,9 +171,30 @@ Public Module ParametresGlobauxHelpers
                 lignes.Add(cle & "=" & valeur)
             End If
 
-            File.WriteAllLines(fichierParam, lignes)
-        Catch
-            ' Ignorer les erreurs d'écriture
+            Dim tempFile = fichierParam & ".tmp"
+            File.WriteAllLines(tempFile, lignes)
+            If File.Exists(fichierParam) Then
+                File.Replace(tempFile, fichierParam, Nothing)
+            Else
+                File.Move(tempFile, fichierParam)
+            End If
+
+            Try
+                Dim trace = Path.Combine(Path.GetTempPath(), "AudioPlay_param_write_debug.txt")
+                File.AppendAllText(trace, "[" & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") & "] WROTE " & cle & "=" & valeur & " to " & fichierParam & Environment.NewLine)
+            Catch
+            End Try
+        Catch ex As Exception
+            Try
+                Dim tempFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "parametres.txt.tmp")
+                If File.Exists(tempFile) Then File.Delete(tempFile)
+            Catch
+            End Try
+            Try
+                Dim trace = Path.Combine(Path.GetTempPath(), "AudioPlay_param_write_debug.txt")
+                File.AppendAllText(trace, "[" & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") & "] FAILED WRITE " & cle & "=" & valeur & " - " & ex.Message & Environment.NewLine)
+            Catch
+            End Try
         End Try
     End Sub
 End Module
