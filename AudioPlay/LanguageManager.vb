@@ -44,11 +44,11 @@ Public Class LanguageManager
     Public Shared Function GetString(key As String) As String
         Try
             Dim value = _resourceManager.GetString(key, _currentCulture)
-            If String.IsNullOrEmpty(value) OrElse value = key Then
+            If String.IsNullOrEmpty(value) Then
                 ' Fallback : essayer la ressource française
                 value = _resourceManager.GetString(key, New CultureInfo("fr"))
             End If
-            If String.IsNullOrEmpty(value) OrElse value = key Then
+            If String.IsNullOrEmpty(value) Then
                 System.Diagnostics.Debug.WriteLine($"Ressource non trouvée : {key}")
                 Return "[RESX introuvable] " & key
             End If

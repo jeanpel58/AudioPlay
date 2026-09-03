@@ -77,10 +77,8 @@ Public Class FormTelechargerFFMpeg
                 End If
             Else
                 If Not annulationDemandee Then
-                    MessageBox.Show("Le téléchargement de FFMpeg a échoué." & vbCrLf & vbCrLf &
-                                  "Vous pouvez installer FFMpeg manuellement en suivant les instructions dans le fichier:" & vbCrLf &
-                                  "Tools\README_FFMPEG.txt",
-                                  "Erreur de téléchargement",
+                    MessageBox.Show(LanguageManager.GetString("FFMpeg_DownloadFailed_Message"),
+                                  LanguageManager.GetString("FFMpeg_DownloadFailed_Title"),
                                   MessageBoxButtons.OK,
                                   MessageBoxIcon.Warning)
                     Me.DialogResult = DialogResult.Cancel
@@ -90,8 +88,8 @@ Public Class FormTelechargerFFMpeg
 
         Catch ex As Exception
             If Not annulationDemandee Then
-                MessageBox.Show($"Erreur lors du téléchargement: {ex.Message}",
-                              "Erreur",
+                MessageBox.Show(String.Format(LanguageManager.GetString("FFMpeg_DownloadError_Message"), ex.Message),
+                              LanguageManager.GetString("FFMpeg_DownloadError_Title"),
                               MessageBoxButtons.OK,
                               MessageBoxIcon.Error)
                 Me.DialogResult = DialogResult.Cancel
@@ -121,8 +119,8 @@ Public Class FormTelechargerFFMpeg
 
     Private Sub FormTelechargerFFMpeg_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
         If Not TelechargemEntReussi AndAlso Not annulationDemandee Then
-            If MessageBox.Show("Le téléchargement est en cours. Voulez-vous vraiment annuler ?",
-                             "Confirmer l'annulation",
+            If MessageBox.Show(LanguageManager.GetString("FFMpeg_DownloadCancelConfirm_Message"),
+                             LanguageManager.GetString("FFMpeg_DownloadCancelConfirm_Title"),
                              MessageBoxButtons.YesNo,
                              MessageBoxIcon.Question) = DialogResult.No Then
                 e.Cancel = True

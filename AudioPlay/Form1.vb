@@ -203,7 +203,7 @@ Public Class Form1
                 Try
                     djForm.Show()
                 Catch ex2 As Exception
-                    MessageBox.Show("Impossible d'ouvrir FormDJ: " & ex2.Message, "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    MessageBox.Show(String.Format(LanguageManager.GetString("Form1_OpenFormDJ_Error_Message"), ex2.Message), LanguageManager.GetString("Form1_OpenFormDJ_Error_Title"), MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Return
                 End Try
             End Try
@@ -213,13 +213,13 @@ Public Class Form1
             Catch ex As Exception
                 ' afficher erreur si masquage échoue
                 Try
-                    MessageBox.Show("Erreur masquage Form1: " & ex.Message, "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    MessageBox.Show(String.Format(LanguageManager.GetString("Form1_HideError_Message"), ex.Message), LanguageManager.GetString("Form1_HideError_Title"), MessageBoxButtons.OK, MessageBoxIcon.Error)
                 Catch
                 End Try
             End Try
         Catch ex As Exception
             Try
-                MessageBox.Show("Erreur lors du basculement en mode DJ: " & ex.Message, "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show(String.Format(LanguageManager.GetString("Form1_SwitchToDJ_Error_Message"), ex.Message), LanguageManager.GetString("Form1_SwitchToDJ_Error_Title"), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Catch
             End Try
         End Try
@@ -5527,11 +5527,11 @@ Public Class Form1
             ' Extraire le chemin de l'exécutable cible (tolérant)
             Dim openCmdExe As String = openCmdStr
             Dim idx As Integer
-            If openCmdStr.StartsWith("\"") Then
-                idx = openCmdStr.IndexOf(" \ "", 1) Then
+            If openCmdStr.StartsWith("""") Then
+                idx = openCmdStr.IndexOf(""""c, 1)
                 If idx > 1 Then openCmdExe = openCmdStr.Substring(1, idx - 1)
             Else
-                idx = openCmdStr.IndexOf(" ")
+                idx = openCmdStr.IndexOf(" "c)
                 If idx > 0 Then openCmdExe = openCmdStr.Substring(0, idx)
             End If
             openCmdExe = openCmdExe.Trim(""""c)
@@ -5698,7 +5698,7 @@ Public Class Form1
             Next
 
             ' Positionner maintenant les labels et les ticks correctement
-            MettreAJourEchelleTrackBar()
+            MettreAJourEchelleTrackBar(Nothing, EventArgs.Empty)
 
             ' Retirer les anciens handlers pour éviter les doublons
             Try
@@ -5768,7 +5768,7 @@ Public Class Form1
         End Try
     End Sub
 
-    Private Sub MettreAJourEchelleTrackBar()
+    Private Sub MettreAJourEchelleTrackBar(sender As Object, e As EventArgs)
         Try
             If TrackBar_Avancement Is Nothing OrElse trackBarScaleLabels Is Nothing Then Return
             If TrackBar_Avancement.Width <= 0 Then Return

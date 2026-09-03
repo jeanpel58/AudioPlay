@@ -142,7 +142,7 @@ Partial Class FormParametres
         GroupBox_TypesAudioDefaut.Size = New Size(460, 78)
         GroupBox_TypesAudioDefaut.TabIndex = 0
         GroupBox_TypesAudioDefaut.TabStop = False
-        GroupBox_TypesAudioDefaut.Text = "Types Audio par Défaut"
+        GroupBox_TypesAudioDefaut.Text = LanguageManager.GetString("FormParametres_GroupBox_TypesAudioDefaut_Text")
         ' 
         ' CheckBox_AAC
         ' 
@@ -151,7 +151,7 @@ Partial Class FormParametres
         CheckBox_AAC.Name = "CheckBox_AAC"
         CheckBox_AAC.Size = New Size(52, 19)
         CheckBox_AAC.TabIndex = 5
-        CheckBox_AAC.Text = ".AAC"
+        CheckBox_AAC.Text = LanguageManager.GetString("FormParametres_CheckBox_AAC_Text")
         CheckBox_AAC.UseVisualStyleBackColor = True
         ' 
         ' CheckBox_WAV
@@ -161,7 +161,7 @@ Partial Class FormParametres
         CheckBox_WAV.Name = "CheckBox_WAV"
         CheckBox_WAV.Size = New Size(56, 19)
         CheckBox_WAV.TabIndex = 4
-        CheckBox_WAV.Text = ".WAV"
+        CheckBox_WAV.Text = LanguageManager.GetString("FormParametres_CheckBox_WAV_Text")
         CheckBox_WAV.UseVisualStyleBackColor = True
         ' 
         ' CheckBox_WMA
@@ -171,7 +171,7 @@ Partial Class FormParametres
         CheckBox_WMA.Name = "CheckBox_WMA"
         CheckBox_WMA.Size = New Size(60, 19)
         CheckBox_WMA.TabIndex = 3
-        CheckBox_WMA.Text = ".WMA"
+        CheckBox_WMA.Text = LanguageManager.GetString("FormParametres_CheckBox_WMA_Text")
         CheckBox_WMA.UseVisualStyleBackColor = True
         ' 
         ' CheckBox_FLAC
@@ -181,7 +181,7 @@ Partial Class FormParametres
         CheckBox_FLAC.Name = "CheckBox_FLAC"
         CheckBox_FLAC.Size = New Size(50, 19)
         CheckBox_FLAC.TabIndex = 2
-        CheckBox_FLAC.Text = ".Flac"
+        CheckBox_FLAC.Text = LanguageManager.GetString("FormParametres_CheckBox_FLAC_Text")
         CheckBox_FLAC.UseVisualStyleBackColor = True
         ' 
         ' CheckBox_MP3
@@ -191,7 +191,7 @@ Partial Class FormParametres
         CheckBox_MP3.Name = "CheckBox_MP3"
         CheckBox_MP3.Size = New Size(54, 19)
         CheckBox_MP3.TabIndex = 1
-        CheckBox_MP3.Text = ".MP3"
+        CheckBox_MP3.Text = LanguageManager.GetString("FormParametres_CheckBox_MP3_Text")
         CheckBox_MP3.UseVisualStyleBackColor = True
         ' 
         ' ButtonApplyNow
@@ -203,7 +203,7 @@ Partial Class FormParametres
         ButtonApplyNow.Name = "ButtonApplyNow"
         ButtonApplyNow.Size = New Size(115, 25)
         ButtonApplyNow.TabIndex = 6
-        ButtonApplyNow.Text = "Appliquer"
+        ButtonApplyNow.Text = LanguageManager.GetString("FormParametres_ButtonApplyNow_Text")
         ButtonApplyNow.UseVisualStyleBackColor = True
         ' 
         ' LabelTypesAudioDefaut
@@ -213,7 +213,7 @@ Partial Class FormParametres
         LabelTypesAudioDefaut.Name = "LabelTypesAudioDefaut"
         LabelTypesAudioDefaut.Size = New Size(197, 15)
         LabelTypesAudioDefaut.TabIndex = 0
-        LabelTypesAudioDefaut.Text = "Cocher les types audio par défaut :"
+        LabelTypesAudioDefaut.Text = LanguageManager.GetString("FormParametres_LabelTypesAudioDefaut_Text")
         ' 
         ' GroupBoxLecture
         ' 
@@ -244,7 +244,7 @@ Partial Class FormParametres
         GroupBoxLecture.Size = New Size(460, 509)
         GroupBoxLecture.TabIndex = 1
         GroupBoxLecture.TabStop = False
-        GroupBoxLecture.Text = "Paramètres de lecture"
+        GroupBoxLecture.Text = LanguageManager.GetString("FormParametres_GroupBoxLecture_Text")
         ' 
         ' LabelLibrosaExist
         ' 
@@ -252,7 +252,7 @@ Partial Class FormParametres
         LabelLibrosaExist.Name = "LabelLibrosaExist"
         LabelLibrosaExist.Size = New Size(434, 15)
         LabelLibrosaExist.TabIndex = 22
-        LabelLibrosaExist.Text = "Vérifier si la librairie Librosa est présente sur votre système :"
+        LabelLibrosaExist.Text = LanguageManager.GetString("FormParametres_LabelLibrosaExist_Text")
         LabelLibrosaExist.TextAlign = ContentAlignment.MiddleCenter
         ' 
         ' CheckBoxModeMixeurDJ
@@ -263,7 +263,7 @@ Partial Class FormParametres
         CheckBoxModeMixeurDJ.Name = "CheckBoxModeMixeurDJ"
         CheckBoxModeMixeurDJ.Size = New Size(359, 19)
         CheckBoxModeMixeurDJ.TabIndex = 17
-        CheckBoxModeMixeurDJ.Text = "Mode Mixeur DJ (2 platines avec crossfader et contrôles DJ)"
+        CheckBoxModeMixeurDJ.Text = LanguageManager.GetString("FormParametres_CheckBoxModeMixeurDJ_Text")
         CheckBoxModeMixeurDJ.UseVisualStyleBackColor = True
         ' 
         ' Button_Metronome_Aide
@@ -275,7 +275,7 @@ Partial Class FormParametres
         Button_Metronome_Aide.Name = "Button_Metronome_Aide"
         Button_Metronome_Aide.Size = New Size(75, 23)
         Button_Metronome_Aide.TabIndex = 16
-        Button_Metronome_Aide.Text = "Aide"
+        Button_Metronome_Aide.Text = LanguageManager.GetString("FormParametres_Button_Metronome_Aide_Text")
         Button_Metronome_Aide.UseVisualStyleBackColor = True
         ' 
         ' CheckBox_EffacerChansons
@@ -288,7 +288,7 @@ Partial Class FormParametres
         CheckBox_EffacerChansons.Name = "CheckBox_EffacerChansons"
         CheckBox_EffacerChansons.Size = New Size(394, 19)
         CheckBox_EffacerChansons.TabIndex = 15
-        CheckBox_EffacerChansons.Text = "Message pour confirmer l'enlèvement d'une sélection dans la liste"
+        CheckBox_EffacerChansons.Text = LanguageManager.GetString("FormParametres_CheckBox_EffacerChansons_Text")
         CheckBox_EffacerChansons.UseVisualStyleBackColor = True
         ' 
         ' CheckBoxSupprimerSilenceFin
@@ -301,7 +301,7 @@ Partial Class FormParametres
         CheckBoxSupprimerSilenceFin.Name = "CheckBoxSupprimerSilenceFin"
         CheckBoxSupprimerSilenceFin.Size = New Size(268, 19)
         CheckBoxSupprimerSilenceFin.TabIndex = 14
-        CheckBoxSupprimerSilenceFin.Text = "Supprimert les silences à la fin des chansons"
+        CheckBoxSupprimerSilenceFin.Text = LanguageManager.GetString("FormParametres_CheckBoxSupprimerSilenceFin_Text")
         CheckBoxSupprimerSilenceFin.UseVisualStyleBackColor = True
         ' 
         ' TextBoxNombreBeats
@@ -319,7 +319,7 @@ Partial Class FormParametres
         LabelNombreBeats.Name = "LabelNombreBeats"
         LabelNombreBeats.Size = New Size(109, 15)
         LabelNombreBeats.TabIndex = 12
-        LabelNombreBeats.Text = "Nombre de beats :"
+        LabelNombreBeats.Text = LanguageManager.GetString("FormParametres_LabelNombreBeats_Text")
         ' 
         ' CheckBoxSupprimerSilenceDebut
         ' 
@@ -331,7 +331,7 @@ Partial Class FormParametres
         CheckBoxSupprimerSilenceDebut.Name = "CheckBoxSupprimerSilenceDebut"
         CheckBoxSupprimerSilenceDebut.Size = New Size(276, 19)
         CheckBoxSupprimerSilenceDebut.TabIndex = 11
-        CheckBoxSupprimerSilenceDebut.Text = "Supprimer les silences au début des chansons"
+        CheckBoxSupprimerSilenceDebut.Text = LanguageManager.GetString("FormParametres_CheckBoxSupprimerSilenceDebut_Text")
         CheckBoxSupprimerSilenceDebut.UseVisualStyleBackColor = True
         ' 
         ' CheckBoxMetronome
@@ -342,7 +342,7 @@ Partial Class FormParametres
         CheckBoxMetronome.Name = "CheckBoxMetronome"
         CheckBoxMetronome.Size = New Size(275, 19)
         CheckBoxMetronome.TabIndex = 10
-        CheckBoxMetronome.Text = "Activer le métronome avant chaque chanson"
+        CheckBoxMetronome.Text = LanguageManager.GetString("FormParametres_CheckBoxMetronome_Text")
         CheckBoxMetronome.UseVisualStyleBackColor = True
         ' 
         ' CheckBoxMetronomeSon
@@ -355,7 +355,7 @@ Partial Class FormParametres
         CheckBoxMetronomeSon.Name = "CheckBoxMetronomeSon"
         CheckBoxMetronomeSon.Size = New Size(46, 17)
         CheckBoxMetronomeSon.TabIndex = 14
-        CheckBoxMetronomeSon.Text = "Son"
+        CheckBoxMetronomeSon.Text = LanguageManager.GetString("FormParametres_CheckBoxMetronomeSon_Text")
         CheckBoxMetronomeSon.UseVisualStyleBackColor = True
         ' 
         ' CheckBoxMetronomeLumiere
@@ -368,7 +368,7 @@ Partial Class FormParametres
         CheckBoxMetronomeLumiere.Name = "CheckBoxMetronomeLumiere"
         CheckBoxMetronomeLumiere.Size = New Size(66, 17)
         CheckBoxMetronomeLumiere.TabIndex = 15
-        CheckBoxMetronomeLumiere.Text = "Lumière"
+        CheckBoxMetronomeLumiere.Text = LanguageManager.GetString("FormParametres_CheckBoxMetronomeLumiere_Text")
         CheckBoxMetronomeLumiere.UseVisualStyleBackColor = True
         ' 
         ' ButtonAideNormalisation
@@ -381,7 +381,7 @@ Partial Class FormParametres
         ButtonAideNormalisation.Name = "ButtonAideNormalisation"
         ButtonAideNormalisation.Size = New Size(77, 25)
         ButtonAideNormalisation.TabIndex = 7
-        ButtonAideNormalisation.Text = "Aide"
+        ButtonAideNormalisation.Text = LanguageManager.GetString("FormParametres_ButtonAideNormalisation_Text")
         ButtonAideNormalisation.UseVisualStyleBackColor = True
         ' 
         ' CheckBoxNormalisationVolume
@@ -394,7 +394,7 @@ Partial Class FormParametres
         CheckBoxNormalisationVolume.Name = "CheckBoxNormalisationVolume"
         CheckBoxNormalisationVolume.Size = New Size(165, 19)
         CheckBoxNormalisationVolume.TabIndex = 6
-        CheckBoxNormalisationVolume.Text = "Normalisation du volume"
+        CheckBoxNormalisationVolume.Text = LanguageManager.GetString("FormParametres_CheckBoxNormalisationVolume_Text")
         CheckBoxNormalisationVolume.UseVisualStyleBackColor = True
         ' 
         ' CheckBoxAfficherBPM
@@ -405,7 +405,7 @@ Partial Class FormParametres
         CheckBoxAfficherBPM.Name = "CheckBoxAfficherBPM"
         CheckBoxAfficherBPM.Size = New Size(239, 19)
         CheckBoxAfficherBPM.TabIndex = 4
-        CheckBoxAfficherBPM.Text = "Afficher le BPM dans les métadonnées"
+        CheckBoxAfficherBPM.Text = LanguageManager.GetString("FormParametres_CheckBoxAfficherBPM_Text")
         CheckBoxAfficherBPM.UseVisualStyleBackColor = True
         ' 
         ' CheckBoxLectureAuto
@@ -416,7 +416,7 @@ Partial Class FormParametres
         CheckBoxLectureAuto.Name = "CheckBoxLectureAuto"
         CheckBoxLectureAuto.Size = New Size(255, 19)
         CheckBoxLectureAuto.TabIndex = 3
-        CheckBoxLectureAuto.Text = "Lecture automatique du morceau suivant"
+        CheckBoxLectureAuto.Text = LanguageManager.GetString("FormParametres_CheckBoxLectureAuto_Text")
         CheckBoxLectureAuto.UseVisualStyleBackColor = True
         ' 
         ' LabelMethodeBPM
@@ -426,7 +426,7 @@ Partial Class FormParametres
         LabelMethodeBPM.Name = "LabelMethodeBPM"
         LabelMethodeBPM.Size = New Size(435, 15)
         LabelMethodeBPM.TabIndex = 8
-        LabelMethodeBPM.Text = "Méthode de calcul BPM :"
+        LabelMethodeBPM.Text = LanguageManager.GetString("FormParametres_LabelMethodeBPM_Text")
         LabelMethodeBPM.TextAlign = ContentAlignment.MiddleCenter
         ' 
         ' ComboBoxMethodeBPM
@@ -449,7 +449,7 @@ Partial Class FormParametres
         ButtonCheckLibrosa.Name = "ButtonCheckLibrosa"
         ButtonCheckLibrosa.Size = New Size(199, 25)
         ButtonCheckLibrosa.TabIndex = 21
-        ButtonCheckLibrosa.Text = "Vérifier"
+        ButtonCheckLibrosa.Text = LanguageManager.GetString("FormParametres_ButtonCheckLibrosa_Text")
         ButtonCheckLibrosa.UseVisualStyleBackColor = True
         ' 
         ' LabelPythonPath
@@ -459,7 +459,7 @@ Partial Class FormParametres
         LabelPythonPath.Name = "LabelPythonPath"
         LabelPythonPath.Size = New Size(161, 15)
         LabelPythonPath.TabIndex = 18
-        LabelPythonPath.Text = "Chemin Python (optionnel) :"
+        LabelPythonPath.Text = LanguageManager.GetString("FormParametres_LabelPythonPath_Text")
         ' 
         ' TextBoxPythonPath
         ' 
@@ -477,7 +477,7 @@ Partial Class FormParametres
         ButtonBrowsePython.Name = "ButtonBrowsePython"
         ButtonBrowsePython.Size = New Size(75, 25)
         ButtonBrowsePython.TabIndex = 20
-        ButtonBrowsePython.Text = "Parcourir"
+        ButtonBrowsePython.Text = LanguageManager.GetString("FormParametres_ButtonBrowsePython_Text")
         ButtonBrowsePython.UseVisualStyleBackColor = True
         ' 
         ' ButtonSauvegarder
@@ -490,7 +490,7 @@ Partial Class FormParametres
         ButtonSauvegarder.Name = "ButtonSauvegarder"
         ButtonSauvegarder.Size = New Size(110, 35)
         ButtonSauvegarder.TabIndex = 2
-        ButtonSauvegarder.Text = "Sauvegarder"
+        ButtonSauvegarder.Text = LanguageManager.GetString("FormParametres_ButtonSauvegarder_Text")
         ButtonSauvegarder.UseVisualStyleBackColor = True
         ' 
         ' ButtonAnnuler
@@ -503,7 +503,7 @@ Partial Class FormParametres
         ButtonAnnuler.Name = "ButtonAnnuler"
         ButtonAnnuler.Size = New Size(110, 35)
         ButtonAnnuler.TabIndex = 3
-        ButtonAnnuler.Text = "Annuler"
+        ButtonAnnuler.Text = LanguageManager.GetString("FormParametres_ButtonAnnuler_Text")
         ButtonAnnuler.UseVisualStyleBackColor = True
         ' 
         ' ButtonReinitialiser
@@ -516,7 +516,7 @@ Partial Class FormParametres
         ButtonReinitialiser.Name = "ButtonReinitialiser"
         ButtonReinitialiser.Size = New Size(110, 35)
         ButtonReinitialiser.TabIndex = 4
-        ButtonReinitialiser.Text = "Réinitialiser"
+        ButtonReinitialiser.Text = LanguageManager.GetString("FormParametres_ButtonReinitialiser_Text")
         ButtonReinitialiser.UseVisualStyleBackColor = True
         ' 
         ' GroupBoxLangue
@@ -529,7 +529,7 @@ Partial Class FormParametres
         GroupBoxLangue.Size = New Size(460, 78)
         GroupBoxLangue.TabIndex = 5
         GroupBoxLangue.TabStop = False
-        GroupBoxLangue.Text = "Paramètres de langue"
+        GroupBoxLangue.Text = LanguageManager.GetString("FormParametres_GroupBoxLangue_Text")
         ' 
         ' ComboBoxLangue
         ' 
@@ -549,7 +549,7 @@ Partial Class FormParametres
         LabelLangue.Name = "LabelLangue"
         LabelLangue.Size = New Size(53, 15)
         LabelLangue.TabIndex = 0
-        LabelLangue.Text = "Langue :"
+        LabelLangue.Text = LanguageManager.GetString("FormParametres_LabelLangue_Text")
         ' 
         ' GroupBoxCouleurs
         ' 
@@ -566,7 +566,7 @@ Partial Class FormParametres
         GroupBoxCouleurs.Size = New Size(460, 133)
         GroupBoxCouleurs.TabIndex = 6
         GroupBoxCouleurs.TabStop = False
-        GroupBoxCouleurs.Text = "Couleurs de l'interface"
+        GroupBoxCouleurs.Text = LanguageManager.GetString("FormParametres_GroupBoxCouleurs_Text")
         ' 
         ' Button_ThemeCouleur_Aide
         ' 
@@ -577,7 +577,7 @@ Partial Class FormParametres
         Button_ThemeCouleur_Aide.Name = "Button_ThemeCouleur_Aide"
         Button_ThemeCouleur_Aide.Size = New Size(75, 24)
         Button_ThemeCouleur_Aide.TabIndex = 6
-        Button_ThemeCouleur_Aide.Text = "Aide"
+        Button_ThemeCouleur_Aide.Text = LanguageManager.GetString("FormParametres_Button_ThemeCouleur_Aide_Text")
         Button_ThemeCouleur_Aide.UseVisualStyleBackColor = True
         ' 
         ' LabelTheme
@@ -588,7 +588,7 @@ Partial Class FormParametres
         LabelTheme.Name = "LabelTheme"
         LabelTheme.Size = New Size(141, 15)
         LabelTheme.TabIndex = 5
-        LabelTheme.Text = "Sélectionner un thème :"
+        LabelTheme.Text = LanguageManager.GetString("FormParametres_LabelTheme_Text")
         ' 
         ' ComboBoxThemes
         ' 
@@ -610,7 +610,7 @@ Partial Class FormParametres
         ButtonSaveTheme.Name = "ButtonSaveTheme"
         ButtonSaveTheme.Size = New Size(207, 24)
         ButtonSaveTheme.TabIndex = 1
-        ButtonSaveTheme.Text = "Enregistrer le thème sous..."
+        ButtonSaveTheme.Text = LanguageManager.GetString("FormParametres_ButtonSaveTheme_Text")
         ButtonSaveTheme.UseVisualStyleBackColor = True
         ' 
         ' ButtonDeleteTheme
@@ -623,7 +623,7 @@ Partial Class FormParametres
         ButtonDeleteTheme.Name = "ButtonDeleteTheme"
         ButtonDeleteTheme.Size = New Size(220, 23)
         ButtonDeleteTheme.TabIndex = 4
-        ButtonDeleteTheme.Text = "Supprimer le thème du menu"
+        ButtonDeleteTheme.Text = LanguageManager.GetString("FormParametres_ButtonDeleteTheme_Text")
         ButtonDeleteTheme.UseVisualStyleBackColor = True
         ' 
         ' ButtonResetCouleurs
@@ -636,7 +636,7 @@ Partial Class FormParametres
         ButtonResetCouleurs.Name = "ButtonResetCouleurs"
         ButtonResetCouleurs.Size = New Size(207, 23)
         ButtonResetCouleurs.TabIndex = 3
-        ButtonResetCouleurs.Text = "Couleurs par défaut"
+        ButtonResetCouleurs.Text = LanguageManager.GetString("FormParametres_ButtonResetCouleurs_Text")
         ButtonResetCouleurs.UseVisualStyleBackColor = True
         ' 
         ' ButtonPersonnaliserCouleurs
@@ -649,7 +649,7 @@ Partial Class FormParametres
         ButtonPersonnaliserCouleurs.Name = "ButtonPersonnaliserCouleurs"
         ButtonPersonnaliserCouleurs.Size = New Size(220, 24)
         ButtonPersonnaliserCouleurs.TabIndex = 2
-        ButtonPersonnaliserCouleurs.Text = "Créer un thème de couleurs..."
+        ButtonPersonnaliserCouleurs.Text = LanguageManager.GetString("FormParametres_ButtonPersonnaliserCouleurs_Text")
         ButtonPersonnaliserCouleurs.UseVisualStyleBackColor = True
         ' 
         ' Button_ViewCrashLog
@@ -660,7 +660,7 @@ Partial Class FormParametres
         Button_ViewCrashLog.Name = "Button_ViewCrashLog"
         Button_ViewCrashLog.Size = New Size(160, 35)
         Button_ViewCrashLog.TabIndex = 36
-        Button_ViewCrashLog.Text = "Afficher dernier crash"
+        Button_ViewCrashLog.Text = LanguageManager.GetString("FormParametres_Button_ViewCrashLog_Text")
         Button_ViewCrashLog.UseVisualStyleBackColor = True
         ' 
         ' GroupBoxEffetsAudio
@@ -712,7 +712,7 @@ Partial Class FormParametres
         GroupBoxEffetsAudio.Size = New Size(460, 813)
         GroupBoxEffetsAudio.TabIndex = 7
         GroupBoxEffetsAudio.TabStop = False
-        GroupBoxEffetsAudio.Text = "Effets Audio"
+        GroupBoxEffetsAudio.Text = LanguageManager.GetString("FormParametres_GroupBoxEffetsAudio_Text")
         ' 
         ' ButtonResetEffets
         ' 
@@ -724,7 +724,7 @@ Partial Class FormParametres
         ButtonResetEffets.Name = "ButtonResetEffets"
         ButtonResetEffets.Size = New Size(220, 24)
         ButtonResetEffets.TabIndex = 22
-        ButtonResetEffets.Text = "Réinitialiser les effets"
+        ButtonResetEffets.Text = LanguageManager.GetString("FormParametres_ButtonResetEffets_Text")
         ButtonResetEffets.UseVisualStyleBackColor = True
         ' 
         ' CheckBoxReverbActif
@@ -735,7 +735,7 @@ Partial Class FormParametres
         CheckBoxReverbActif.Name = "CheckBoxReverbActif"
         CheckBoxReverbActif.Size = New Size(159, 19)
         CheckBoxReverbActif.TabIndex = 0
-        CheckBoxReverbActif.Text = "Réverbération (Reverb)"
+        CheckBoxReverbActif.Text = LanguageManager.GetString("FormParametres_CheckBoxReverbActif_Text")
         CheckBoxReverbActif.UseVisualStyleBackColor = True
         ' 
         ' LabelReverbMix
@@ -746,7 +746,7 @@ Partial Class FormParametres
         LabelReverbMix.Name = "LabelReverbMix"
         LabelReverbMix.Size = New Size(32, 15)
         LabelReverbMix.TabIndex = 1
-        LabelReverbMix.Text = "Mix :"
+        LabelReverbMix.Text = LanguageManager.GetString("FormParametres_LabelReverbMix_Text")
         ' 
         ' TrackBarReverbMix
         ' 
@@ -767,7 +767,7 @@ Partial Class FormParametres
         LabelReverbMixValeur.Name = "LabelReverbMixValeur"
         LabelReverbMixValeur.Size = New Size(29, 15)
         LabelReverbMixValeur.TabIndex = 3
-        LabelReverbMixValeur.Text = "30%"
+        LabelReverbMixValeur.Text = LanguageManager.GetString("FormParametres_LabelReverbMixValeur_Text")
         ' 
         ' CheckBoxEchoActif
         ' 
@@ -777,7 +777,7 @@ Partial Class FormParametres
         CheckBoxEchoActif.Name = "CheckBoxEchoActif"
         CheckBoxEchoActif.Size = New Size(52, 19)
         CheckBoxEchoActif.TabIndex = 4
-        CheckBoxEchoActif.Text = "Écho"
+        CheckBoxEchoActif.Text = LanguageManager.GetString("FormParametres_CheckBoxEchoActif_Text")
         CheckBoxEchoActif.UseVisualStyleBackColor = True
         ' 
         ' LabelEchoMix
@@ -788,7 +788,7 @@ Partial Class FormParametres
         LabelEchoMix.Name = "LabelEchoMix"
         LabelEchoMix.Size = New Size(32, 15)
         LabelEchoMix.TabIndex = 5
-        LabelEchoMix.Text = "Mix :"
+        LabelEchoMix.Text = LanguageManager.GetString("FormParametres_LabelEchoMix_Text")
         ' 
         ' TrackBarEchoMix
         ' 
@@ -809,7 +809,7 @@ Partial Class FormParametres
         LabelEchoMixValeur.Name = "LabelEchoMixValeur"
         LabelEchoMixValeur.Size = New Size(29, 15)
         LabelEchoMixValeur.TabIndex = 7
-        LabelEchoMixValeur.Text = "30%"
+        LabelEchoMixValeur.Text = LanguageManager.GetString("FormParametres_LabelEchoMixValeur_Text")
         ' 
         ' LabelEchoDelai
         ' 
@@ -819,7 +819,7 @@ Partial Class FormParametres
         LabelEchoDelai.Name = "LabelEchoDelai"
         LabelEchoDelai.Size = New Size(39, 15)
         LabelEchoDelai.TabIndex = 8
-        LabelEchoDelai.Text = "Délai :"
+        LabelEchoDelai.Text = LanguageManager.GetString("FormParametres_LabelEchoDelai_Text")
         ' 
         ' TrackBarEchoDelai
         ' 
@@ -842,7 +842,7 @@ Partial Class FormParametres
         LabelEchoDelaiValeur.Name = "LabelEchoDelaiValeur"
         LabelEchoDelaiValeur.Size = New Size(44, 15)
         LabelEchoDelaiValeur.TabIndex = 10
-        LabelEchoDelaiValeur.Text = "300 ms"
+        LabelEchoDelaiValeur.Text = LanguageManager.GetString("FormParametres_LabelEchoDelaiValeur_Text")
         ' 
         ' LabelEchoFeedback
         ' 
@@ -852,7 +852,7 @@ Partial Class FormParametres
         LabelEchoFeedback.Name = "LabelEchoFeedback"
         LabelEchoFeedback.Size = New Size(63, 15)
         LabelEchoFeedback.TabIndex = 11
-        LabelEchoFeedback.Text = "Feedback :"
+        LabelEchoFeedback.Text = LanguageManager.GetString("FormParametres_LabelEchoFeedback_Text")
         ' 
         ' TrackBarEchoFeedback
         ' 
@@ -873,7 +873,7 @@ Partial Class FormParametres
         LabelEchoFeedbackValeur.Name = "LabelEchoFeedbackValeur"
         LabelEchoFeedbackValeur.Size = New Size(29, 15)
         LabelEchoFeedbackValeur.TabIndex = 13
-        LabelEchoFeedbackValeur.Text = "50%"
+        LabelEchoFeedbackValeur.Text = LanguageManager.GetString("FormParametres_LabelEchoFeedbackValeur_Text")
         ' 
         ' CheckBoxTimeStretchActif
         ' 
@@ -883,7 +883,7 @@ Partial Class FormParametres
         CheckBoxTimeStretchActif.Name = "CheckBoxTimeStretchActif"
         CheckBoxTimeStretchActif.Size = New Size(195, 19)
         CheckBoxTimeStretchActif.TabIndex = 18
-        CheckBoxTimeStretchActif.Text = "Time Stretch (changer tempo)"
+        CheckBoxTimeStretchActif.Text = LanguageManager.GetString("FormParametres_CheckBoxTimeStretchActif_Text")
         CheckBoxTimeStretchActif.UseVisualStyleBackColor = True
         ' 
         ' LabelTimeStretch
@@ -894,7 +894,7 @@ Partial Class FormParametres
         LabelTimeStretch.Name = "LabelTimeStretch"
         LabelTimeStretch.Size = New Size(50, 15)
         LabelTimeStretch.TabIndex = 19
-        LabelTimeStretch.Text = "Tempo :"
+        LabelTimeStretch.Text = LanguageManager.GetString("FormParametres_LabelTimeStretch_Text")
         ' 
         ' TrackBarTimeStretch
         ' 
@@ -916,7 +916,7 @@ Partial Class FormParametres
         LabelTimeStretchValeur.Name = "LabelTimeStretchValeur"
         LabelTimeStretchValeur.Size = New Size(33, 15)
         LabelTimeStretchValeur.TabIndex = 21
-        LabelTimeStretchValeur.Text = "1.00x"
+        LabelTimeStretchValeur.Text = LanguageManager.GetString("FormParametres_LabelTimeStretchValeur_Text")
         ' 
         ' ButtonResetTimeStretch
         ' 
@@ -930,7 +930,7 @@ Partial Class FormParametres
         ButtonResetTimeStretch.Name = "ButtonResetTimeStretch"
         ButtonResetTimeStretch.Size = New Size(32, 24)
         ButtonResetTimeStretch.TabIndex = 24
-        ButtonResetTimeStretch.Text = "✕"
+        ButtonResetTimeStretch.Text = LanguageManager.GetString("FormParametres_ButtonResetTimeStretch_Text")
         ButtonResetTimeStretch.UseVisualStyleBackColor = False
         ' 
         ' CheckBoxPitchShiftActif
@@ -941,7 +941,7 @@ Partial Class FormParametres
         CheckBoxPitchShiftActif.Name = "CheckBoxPitchShiftActif"
         CheckBoxPitchShiftActif.Size = New Size(186, 19)
         CheckBoxPitchShiftActif.TabIndex = 25
-        CheckBoxPitchShiftActif.Text = "Pitch Shift (changer tonalité)"
+        CheckBoxPitchShiftActif.Text = LanguageManager.GetString("FormParametres_CheckBoxPitchShiftActif_Text")
         CheckBoxPitchShiftActif.UseVisualStyleBackColor = True
         ' 
         ' LabelPitchShift
@@ -952,7 +952,7 @@ Partial Class FormParametres
         LabelPitchShift.Name = "LabelPitchShift"
         LabelPitchShift.Size = New Size(103, 15)
         LabelPitchShift.TabIndex = 26
-        LabelPitchShift.Text = "Pitch (demi-tons):"
+        LabelPitchShift.Text = LanguageManager.GetString("FormParametres_LabelPitchShift_Text")
         ' 
         ' TrackBarPitchShift
         ' 
@@ -973,7 +973,7 @@ Partial Class FormParametres
         LabelPitchShiftValeur.Name = "LabelPitchShiftValeur"
         LabelPitchShiftValeur.Size = New Size(22, 15)
         LabelPitchShiftValeur.TabIndex = 28
-        LabelPitchShiftValeur.Text = "0.0"
+        LabelPitchShiftValeur.Text = LanguageManager.GetString("FormParametres_LabelPitchShiftValeur_Text")
         ' 
         ' ButtonResetPitchShift
         ' 
@@ -987,7 +987,7 @@ Partial Class FormParametres
         ButtonResetPitchShift.Name = "ButtonResetPitchShift"
         ButtonResetPitchShift.Size = New Size(32, 24)
         ButtonResetPitchShift.TabIndex = 29
-        ButtonResetPitchShift.Text = "✕"
+        ButtonResetPitchShift.Text = LanguageManager.GetString("FormParametres_ButtonResetPitchShift_Text")
         ButtonResetPitchShift.UseVisualStyleBackColor = False
         ' 
         ' CheckBoxPhaserActif
@@ -998,7 +998,7 @@ Partial Class FormParametres
         CheckBoxPhaserActif.Name = "CheckBoxPhaserActif"
         CheckBoxPhaserActif.Size = New Size(63, 19)
         CheckBoxPhaserActif.TabIndex = 30
-        CheckBoxPhaserActif.Text = "Phaser"
+        CheckBoxPhaserActif.Text = LanguageManager.GetString("FormParametres_CheckBoxPhaserActif_Text")
         CheckBoxPhaserActif.UseVisualStyleBackColor = True
         ' 
         ' LabelPhaserRate
@@ -1009,7 +1009,7 @@ Partial Class FormParametres
         LabelPhaserRate.Name = "LabelPhaserRate"
         LabelPhaserRate.Size = New Size(71, 15)
         LabelPhaserRate.TabIndex = 31
-        LabelPhaserRate.Text = "Vitesse (Hz):"
+        LabelPhaserRate.Text = LanguageManager.GetString("FormParametres_LabelPhaserRate_Text")
         ' 
         ' TrackBarPhaserRate
         ' 
@@ -1031,7 +1031,7 @@ Partial Class FormParametres
         LabelPhaserRateValeur.Name = "LabelPhaserRateValeur"
         LabelPhaserRateValeur.Size = New Size(22, 15)
         LabelPhaserRateValeur.TabIndex = 33
-        LabelPhaserRateValeur.Text = "0.5"
+        LabelPhaserRateValeur.Text = LanguageManager.GetString("FormParametres_LabelPhaserRateValeur_Text")
         ' 
         ' LabelPhaserDepth
         ' 
@@ -1041,7 +1041,7 @@ Partial Class FormParametres
         LabelPhaserDepth.Name = "LabelPhaserDepth"
         LabelPhaserDepth.Size = New Size(70, 15)
         LabelPhaserDepth.TabIndex = 34
-        LabelPhaserDepth.Text = "Profondeur:"
+        LabelPhaserDepth.Text = LanguageManager.GetString("FormParametres_LabelPhaserDepth_Text")
         ' 
         ' TrackBarPhaserDepth
         ' 
@@ -1062,7 +1062,7 @@ Partial Class FormParametres
         LabelPhaserDepthValeur.Name = "LabelPhaserDepthValeur"
         LabelPhaserDepthValeur.Size = New Size(29, 15)
         LabelPhaserDepthValeur.TabIndex = 36
-        LabelPhaserDepthValeur.Text = "50%"
+        LabelPhaserDepthValeur.Text = LanguageManager.GetString("FormParametres_LabelPhaserDepthValeur_Text")
         ' 
         ' LabelPhaserFeedback
         ' 
@@ -1072,7 +1072,7 @@ Partial Class FormParametres
         LabelPhaserFeedback.Name = "LabelPhaserFeedback"
         LabelPhaserFeedback.Size = New Size(60, 15)
         LabelPhaserFeedback.TabIndex = 37
-        LabelPhaserFeedback.Text = "Feedback:"
+        LabelPhaserFeedback.Text = LanguageManager.GetString("FormParametres_LabelPhaserFeedback_Text")
         ' 
         ' TrackBarPhaserFeedback
         ' 
@@ -1093,7 +1093,7 @@ Partial Class FormParametres
         LabelPhaserFeedbackValeur.Name = "LabelPhaserFeedbackValeur"
         LabelPhaserFeedbackValeur.Size = New Size(29, 15)
         LabelPhaserFeedbackValeur.TabIndex = 39
-        LabelPhaserFeedbackValeur.Text = "30%"
+        LabelPhaserFeedbackValeur.Text = LanguageManager.GetString("FormParametres_LabelPhaserFeedbackValeur_Text")
         ' 
         ' LabelPhaserMix
         ' 
@@ -1103,7 +1103,7 @@ Partial Class FormParametres
         LabelPhaserMix.Name = "LabelPhaserMix"
         LabelPhaserMix.Size = New Size(29, 15)
         LabelPhaserMix.TabIndex = 40
-        LabelPhaserMix.Text = "Mix:"
+        LabelPhaserMix.Text = LanguageManager.GetString("FormParametres_LabelPhaserMix_Text")
         ' 
         ' TrackBarPhaserMix
         ' 
@@ -1124,7 +1124,7 @@ Partial Class FormParametres
         LabelPhaserMixValeur.Name = "LabelPhaserMixValeur"
         LabelPhaserMixValeur.Size = New Size(29, 15)
         LabelPhaserMixValeur.TabIndex = 42
-        LabelPhaserMixValeur.Text = "50%"
+        LabelPhaserMixValeur.Text = LanguageManager.GetString("FormParametres_LabelPhaserMixValeur_Text")
         ' 
         ' LabelPhaserStages
         ' 
@@ -1134,7 +1134,7 @@ Partial Class FormParametres
         LabelPhaserStages.Name = "LabelPhaserStages"
         LabelPhaserStages.Size = New Size(98, 15)
         LabelPhaserStages.TabIndex = 43
-        LabelPhaserStages.Text = "Stages:"
+        LabelPhaserStages.Text = LanguageManager.GetString("FormParametres_LabelPhaserStages_Text")
         LabelPhaserStages.TextAlign = ContentAlignment.MiddleRight
         ' 
         ' ComboBoxPhaserStages
@@ -1159,7 +1159,7 @@ Partial Class FormParametres
         ButtonResetPhaser.Name = "ButtonResetPhaser"
         ButtonResetPhaser.Size = New Size(32, 24)
         ButtonResetPhaser.TabIndex = 45
-        ButtonResetPhaser.Text = "✕"
+        ButtonResetPhaser.Text = LanguageManager.GetString("FormParametres_ButtonResetPhaser_Text")
         ButtonResetPhaser.UseVisualStyleBackColor = False
         ' 
         ' FormParametres
@@ -1182,7 +1182,7 @@ Partial Class FormParametres
         MinimizeBox = False
         Name = "FormParametres"
         StartPosition = FormStartPosition.CenterParent
-        Text = "Paramètres - AudioPlay"
+        Text = LanguageManager.GetString("FormParametres_Form_Text")
         GroupBox_TypesAudioDefaut.ResumeLayout(False)
         GroupBox_TypesAudioDefaut.PerformLayout()
         GroupBoxLecture.ResumeLayout(False)

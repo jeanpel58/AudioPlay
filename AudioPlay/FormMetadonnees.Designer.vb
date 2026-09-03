@@ -66,7 +66,7 @@ Partial Class FormMetadonnees
         ButtonFermer.Name = "ButtonFermer"
         ButtonFermer.Size = New Size(75, 30)
         ButtonFermer.TabIndex = 12
-        ButtonFermer.Text = "Fermer"
+        ButtonFermer.Text = LanguageManager.GetString("FormMetadonnees_ButtonFermer_Text")
         ButtonFermer.UseVisualStyleBackColor = True
         ' 
         ' GroupBoxTags
@@ -95,7 +95,7 @@ Partial Class FormMetadonnees
         GroupBoxTags.Size = New Size(660, 320)
         GroupBoxTags.TabIndex = 1
         GroupBoxTags.TabStop = False
-        GroupBoxTags.Text = "🎵 Tags ID3 / Métadonnées (Éditable)"
+        GroupBoxTags.Text = LanguageManager.GetString("FormMetadonnees_GroupBoxTags_Text")
         ' 
         ' TextBoxBPM
         ' 
@@ -112,7 +112,7 @@ Partial Class FormMetadonnees
         LabelBPM.Name = "LabelBPM"
         LabelBPM.Size = New Size(38, 15)
         LabelBPM.TabIndex = 16
-        LabelBPM.Text = "BPM :"
+        LabelBPM.Text = LanguageManager.GetString("FormMetadonnees_LabelBPM_Text")
         ' 
         ' TextBoxAlbumArtiste
         ' 
@@ -129,7 +129,7 @@ Partial Class FormMetadonnees
         LabelAlbumArtiste.Name = "LabelAlbumArtiste"
         LabelAlbumArtiste.Size = New Size(86, 15)
         LabelAlbumArtiste.TabIndex = 14
-        LabelAlbumArtiste.Text = "Artiste Album :"
+        LabelAlbumArtiste.Text = LanguageManager.GetString("FormMetadonnees_LabelAlbumArtiste_Text")
         ' 
         ' TextBoxPiste
         ' 
@@ -146,7 +146,7 @@ Partial Class FormMetadonnees
         LabelPiste.Name = "LabelPiste"
         LabelPiste.Size = New Size(71, 15)
         LabelPiste.TabIndex = 12
-        LabelPiste.Text = "N° de Piste :"
+        LabelPiste.Text = LanguageManager.GetString("FormMetadonnees_LabelPiste_Text")
         ' 
         ' TextBoxCommentaire
         ' 
@@ -164,7 +164,7 @@ Partial Class FormMetadonnees
         LabelCommentaire.Name = "LabelCommentaire"
         LabelCommentaire.Size = New Size(86, 15)
         LabelCommentaire.TabIndex = 10
-        LabelCommentaire.Text = "Commentaire :"
+        LabelCommentaire.Text = LanguageManager.GetString("FormMetadonnees_LabelCommentaire_Text")
         ' 
         ' TextBoxGenre
         ' 
@@ -181,7 +181,7 @@ Partial Class FormMetadonnees
         LabelGenre.Name = "LabelGenre"
         LabelGenre.Size = New Size(44, 15)
         LabelGenre.TabIndex = 8
-        LabelGenre.Text = "Genre :"
+        LabelGenre.Text = LanguageManager.GetString("FormMetadonnees_LabelGenre_Text")
         ' 
         ' TextBoxAnnee
         ' 
@@ -198,7 +198,7 @@ Partial Class FormMetadonnees
         LabelAnnee.Name = "LabelAnnee"
         LabelAnnee.Size = New Size(47, 15)
         LabelAnnee.TabIndex = 6
-        LabelAnnee.Text = "Année :"
+        LabelAnnee.Text = LanguageManager.GetString("FormMetadonnees_LabelAnnee_Text")
         ' 
         ' TextBoxAlbum
         ' 
@@ -215,7 +215,7 @@ Partial Class FormMetadonnees
         LabelAlbum.Name = "LabelAlbum"
         LabelAlbum.Size = New Size(49, 15)
         LabelAlbum.TabIndex = 4
-        LabelAlbum.Text = "Album :"
+        LabelAlbum.Text = LanguageManager.GetString("FormMetadonnees_LabelAlbum_Text")
         ' 
         ' TextBoxArtiste
         ' 
@@ -232,7 +232,7 @@ Partial Class FormMetadonnees
         LabelArtiste.Name = "LabelArtiste"
         LabelArtiste.Size = New Size(47, 15)
         LabelArtiste.TabIndex = 2
-        LabelArtiste.Text = "Artiste :"
+        LabelArtiste.Text = LanguageManager.GetString("FormMetadonnees_LabelArtiste_Text")
         ' 
         ' TextBoxTitre
         ' 
@@ -250,7 +250,7 @@ Partial Class FormMetadonnees
         LabelTitre.Name = "LabelTitre"
         LabelTitre.Size = New Size(37, 15)
         LabelTitre.TabIndex = 0
-        LabelTitre.Text = "Titre :"
+        LabelTitre.Text = LanguageManager.GetString("FormMetadonnees_LabelTitre_Text")
         ' 
         ' ButtonSauvegarder
         ' 
@@ -259,7 +259,7 @@ Partial Class FormMetadonnees
         ButtonSauvegarder.Name = "ButtonSauvegarder"
         ButtonSauvegarder.Size = New Size(112, 30)
         ButtonSauvegarder.TabIndex = 11
-        ButtonSauvegarder.Text = "💾 Sauvegarder"
+        ButtonSauvegarder.Text = LanguageManager.GetString("FormMetadonnees_ButtonSauvegarder_Text")
         ButtonSauvegarder.UseVisualStyleBackColor = True
         ' 
         ' FormMetadonnees
@@ -277,7 +277,7 @@ Partial Class FormMetadonnees
         MinimizeBox = False
         Name = "FormMetadonnees"
         StartPosition = FormStartPosition.CenterParent
-        Text = "Métadonnées et Tags ID3 du fichier audio"
+        Text = LanguageManager.GetString("FormMetadonnees_Form_Text")
         GroupBoxTags.ResumeLayout(False)
         GroupBoxTags.PerformLayout()
         ResumeLayout(False)

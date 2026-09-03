@@ -2047,7 +2047,8 @@ Public Class FormDJ
             If crossfaderPosition < 0.5F Then
                 volumeA = 1.0F
             Else
-                volumeA = ((1.0F - crossfaderPosition) * 2.0F) ^ 3
+                ' Use Math.Pow to compute cubic and cast explicitly to Single to satisfy Option Strict
+                volumeA = CSng(Math.Pow((1.0F - crossfaderPosition) * 2.0F, 3))
             End If
             volumeProviderDeckA.Volume = (TrackBarVolumeDeckA.Value / 100.0F) * volumeA
 
@@ -2260,7 +2261,7 @@ Public Class FormDJ
             ' Calculer le volume en tenant compte du crossfader
             Dim volumeB As Single
             If crossfaderPosition < 0.5F Then
-                volumeB = (crossfaderPosition * 2.0F) ^ 3
+                volumeB = CSng(Math.Pow((crossfaderPosition * 2.0F), 3))
             Else
                 volumeB = 1.0F
             End If
@@ -2363,11 +2364,11 @@ Public Class FormDJ
         If crossfaderPosition < 0.5F Then
             ' Côté A (0-50) : A plein volume, B diminue
             volumeA = 1.0F
-            volumeB = (crossfaderPosition * 2.0F) ^ 3 ' Courbe cubique pour coupe agressive
+            volumeB = CSng(Math.Pow((crossfaderPosition * 2.0F), 3)) ' Courbe cubique pour coupe agressive
         Else
             ' Côté B (50-100) : B plein volume, A diminue
             volumeB = 1.0F
-            volumeA = ((1.0F - crossfaderPosition) * 2.0F) ^ 3
+            volumeA = CSng(Math.Pow((1.0F - crossfaderPosition) * 2.0F, 3))
         End If
 
         ' Appliquer les volumes
@@ -2394,7 +2395,7 @@ Public Class FormDJ
             If crossfaderPosition < 0.5F Then
                 volumeA = 1.0F
             Else
-                volumeA = ((1.0F - crossfaderPosition) * 2.0F) ^ 3
+                volumeA = CSng(Math.Pow((1.0F - crossfaderPosition) * 2.0F, 3))
             End If
             volumeProviderDeckA.Volume = (TrackBarVolumeDeckA.Value / 100.0F) * volumeA
         End If
@@ -2409,7 +2410,7 @@ Public Class FormDJ
             ' Prendre en compte le crossfader
             Dim volumeB As Single
             If crossfaderPosition < 0.5F Then
-                volumeB = (crossfaderPosition * 2.0F) ^ 3
+                volumeB = CSng(Math.Pow((crossfaderPosition * 2.0F), 3))
             Else
                 volumeB = 1.0F
             End If
@@ -4311,7 +4312,7 @@ Public Class FormDJ
             MettreAJourNumerotationDJ()
             SauvegarderPlaylistDJ()
         Else
-            MessageBox.Show("Aucun item sélectionné.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            MessageBox.Show(LanguageManager.GetString("FormDJ_NoItemSelected_Message"), LanguageManager.GetString("FormDJ_NoItemSelected_Title"), MessageBoxButtons.OK, MessageBoxIcon.Information)
         End If
     End Sub
 

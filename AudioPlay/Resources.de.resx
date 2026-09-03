@@ -306,6 +306,716 @@
   <data name="Menu_CDTracks" xml:space="preserve">
     <value>Titel</value>
   </data>
+  <data name="Detection_Silences_Title" xml:space="preserve">
+    <value>Stille-Erkennung</value>
+  </data>
+  <data name="Compresser_NoCDDrive_Message" xml:space="preserve">
+    <value>Bitte wählen Sie ein CD-Laufwerk mit einer Audio-CD aus.</value>
+  </data>
+  <data name="Compresser_NoCDDrive_Title" xml:space="preserve">
+    <value>Kein Laufwerk ausgewählt</value>
+  </data>
+  <data name="Compresser_NoTrackSelected_Message" xml:space="preserve">
+    <value>Bitte wählen Sie mindestens einen Titel zum Extrahieren aus.</value>
+  </data>
+  <data name="Compresser_NoTrackSelected_Title" xml:space="preserve">
+    <value>Kein Titel ausgewählt</value>
+  </data>
+  <data name="Compresser_InvalidDestination_Message" xml:space="preserve">
+    <value>Bitte wählen Sie einen gültigen Zielordner aus.</value>
+  </data>
+  <data name="Compresser_InvalidDestination_Title" xml:space="preserve">
+    <value>Ungültiger Ordner</value>
+  </data>
+  <data name="FFMpeg_DownloadFailed_Message" xml:space="preserve">
+    <value>Der Download von FFMpeg ist fehlgeschlagen.
+Sie können FFMpeg manuell installieren, indem Sie den Anweisungen in: Tools\README_FFMPEG.txt folgen</value>
+  </data>
+  <data name="FFMpeg_DownloadFailed_Title" xml:space="preserve">
+    <value>Download-Fehler</value>
+  </data>
+  <data name="FFMpeg_DownloadCancelConfirm_Message" xml:space="preserve">
+    <value>Der Download läuft. Möchten Sie wirklich abbrechen?</value>
+  </data>
+  <data name="FFMpeg_DownloadCancelConfirm_Title" xml:space="preserve">
+    <value>Abbruch bestätigen</value>
+  </data>
+  <data name="FFMpeg_DownloadError_Message" xml:space="preserve">
+    <value>Download-Fehler: {0}</value>
+  </data>
+  <data name="FFMpeg_DownloadError_Title" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="UnhandledException_GenericFallback_Message" xml:space="preserve">
+    <value>Ein nicht behandelter Fehler ist aufgetreten. Siehe crash.log in %APPDATA%\AudioPlay.</value>
+  </data>
+  <data name="FormParametres_MainFormNull_Message" xml:space="preserve">
+    <value>mainForm ist Nothing!</value>
+  </data>
+  <data name="FormParametres_MainFormNull_Title" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="FormParametres_AudioEffectsReset_Message" xml:space="preserve">
+    <value>Audio-Effekte wurden zurückgesetzt.</value>
+  </data>
+  <data name="FormParametres_AudioEffectsReset_Title" xml:space="preserve">
+    <value>AudioPlay</value>
+  </data>
+  <data name="FormParametres_GroupBox_TypesAudioDefaut_Text" xml:space="preserve">
+    <value>Standard-Audio-Typen</value>
+  </data>
+  <data name="FormParametres_CheckBox_AAC_Text" xml:space="preserve">
+    <value>.AAC</value>
+  </data>
+  <data name="FormParametres_CheckBox_WAV_Text" xml:space="preserve">
+    <value>.WAV</value>
+  </data>
+  <data name="FormParametres_CheckBox_WMA_Text" xml:space="preserve">
+    <value>.WMA</value>
+  </data>
+  <data name="FormParametres_CheckBox_FLAC_Text" xml:space="preserve">
+    <value>.Flac</value>
+  </data>
+  <data name="FormParametres_CheckBox_MP3_Text" xml:space="preserve">
+    <value>.MP3</value>
+  </data>
+  <data name="FormParametres_ButtonApplyNow_Text" xml:space="preserve">
+    <value>Anwenden</value>
+  </data>
+  <data name="FormParametres_LabelTypesAudioDefaut_Text" xml:space="preserve">
+    <value>Standard-Audio-Typen auswählen:</value>
+  </data>
+  <data name="FormParametres_GroupBoxLecture_Text" xml:space="preserve">
+    <value>Wiedergabeeinstellungen</value>
+  </data>
+  <data name="FormParametres_LabelLibrosaExist_Text" xml:space="preserve">
+    <value>Überprüfen, ob Librosa auf Ihrem System installiert ist:</value>
+  </data>
+  <data name="FormParametres_CheckBoxModeMixeurDJ_Text" xml:space="preserve">
+    <value>DJ-Mixer-Modus (2 Decks mit Crossfader und DJ-Steuerungen)</value>
+  </data>
+  <data name="FormParametres_Button_Metronome_Aide_Text" xml:space="preserve">
+    <value>Hilfe</value>
+  </data>
+  <data name="FormParametres_CheckBox_EffacerChansons_Text" xml:space="preserve">
+    <value>Bestätigungsnachricht beim Entfernen einer Auswahl aus der Liste</value>
+  </data>
+  <data name="FormParametres_CheckBoxSupprimerSilenceFin_Text" xml:space="preserve">
+    <value>Stille am Ende von Titeln entfernen</value>
+  </data>
+  <data name="FormParametres_LabelNombreBeats_Text" xml:space="preserve">
+    <value>Anzahl der Beats:</value>
+  </data>
+  <data name="FormParametres_CheckBoxSupprimerSilenceDebut_Text" xml:space="preserve">
+    <value>Stille am Anfang von Titeln entfernen</value>
+  </data>
+  <data name="FormParametres_CheckBoxMetronome_Text" xml:space="preserve">
+    <value>Metronom vor jedem Titel aktivieren</value>
+  </data>
+  <data name="FormParametres_CheckBoxMetronomeSon_Text" xml:space="preserve">
+    <value>Ton</value>
+  </data>
+  <data name="FormParametres_CheckBoxMetronomeLumiere_Text" xml:space="preserve">
+    <value>Licht</value>
+  </data>
+  <data name="FormParametres_ButtonAideNormalisation_Text" xml:space="preserve">
+    <value>Hilfe</value>
+  </data>
+  <data name="FormParametres_CheckBoxNormalisationVolume_Text" xml:space="preserve">
+    <value>Lautstärke-Normalisierung</value>
+  </data>
+  <data name="FormParametres_CheckBoxAfficherBPM_Text" xml:space="preserve">
+    <value>BPM in Metadaten anzeigen</value>
+  </data>
+  <data name="FormParametres_CheckBoxLectureAuto_Text" xml:space="preserve">
+    <value>Nächsten Titel automatisch abspielen</value>
+  </data>
+  <data name="FormParametres_LabelMethodeBPM_Text" xml:space="preserve">
+    <value>BPM-Berechnungsmethode:</value>
+  </data>
+  <data name="FormParametres_ButtonCheckLibrosa_Text" xml:space="preserve">
+    <value>Überprüfen</value>
+  </data>
+  <!-- Copied translations for FormParametres keys from FR/EN -->
+  <data name="FormParametres_GroupBox_TypesAudioDefaut_Text" xml:space="preserve">
+    <value>Standard-Audio-Typen</value>
+  </data>
+  <data name="FormParametres_CheckBox_AAC_Text" xml:space="preserve">
+    <value>.AAC</value>
+  </data>
+  <data name="FormParametres_CheckBox_WAV_Text" xml:space="preserve">
+    <value>.WAV</value>
+  </data>
+  <data name="FormParametres_CheckBox_WMA_Text" xml:space="preserve">
+    <value>.WMA</value>
+  </data>
+  <data name="FormParametres_CheckBox_FLAC_Text" xml:space="preserve">
+    <value>.Flac</value>
+  </data>
+  <data name="FormParametres_CheckBox_MP3_Text" xml:space="preserve">
+    <value>.MP3</value>
+  </data>
+  <data name="FormParametres_ButtonApplyNow_Text" xml:space="preserve">
+    <value>Anwenden</value>
+  </data>
+  <data name="FormParametres_LabelTypesAudioDefaut_Text" xml:space="preserve">
+    <value>Standard-Audio-Typen auswählen:</value>
+  </data>
+  <data name="FormParametres_LabelPythonPath_Text" xml:space="preserve">
+    <value>Python-Pfad (optional):</value>
+  </data>
+  <data name="FormParametres_ButtonBrowsePython_Text" xml:space="preserve">
+    <value>Durchsuchen</value>
+  </data>
+  <data name="FormParametres_ButtonSauvegarder_Text" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
+  <data name="FormParametres_ButtonAnnuler_Text" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="FormParametres_ButtonReinitialiser_Text" xml:space="preserve">
+    <value>Zurücksetzen</value>
+  </data>
+  <data name="FormParametres_GroupBoxLangue_Text" xml:space="preserve">
+    <value>Spracheinstellungen</value>
+  </data>
+  <data name="FormParametres_LabelLangue_Text" xml:space="preserve">
+    <value>Sprache:</value>
+  </data>
+  <data name="FormParametres_GroupBoxCouleurs_Text" xml:space="preserve">
+    <value>Oberflächenfarben</value>
+  </data>
+  <data name="FormParametres_Button_ThemeCouleur_Aide_Text" xml:space="preserve">
+    <value>Hilfe</value>
+  </data>
+  <data name="FormParametres_LabelTheme_Text" xml:space="preserve">
+    <value>Wählen Sie ein Thema:</value>
+  </data>
+  <data name="FormParametres_ButtonSaveTheme_Text" xml:space="preserve">
+    <value>Thema speichern unter...</value>
+  </data>
+  <data name="FormParametres_ButtonDeleteTheme_Text" xml:space="preserve">
+    <value>Thema aus Menü entfernen</value>
+  </data>
+  <data name="FormParametres_ButtonResetCouleurs_Text" xml:space="preserve">
+    <value>Standardfarben</value>
+  </data>
+  <data name="FormParametres_ButtonPersonnaliserCouleurs_Text" xml:space="preserve">
+    <value>Farbthema erstellen...</value>
+  </data>
+  <data name="FormParametres_Button_ViewCrashLog_Text" xml:space="preserve">
+    <value>Letzten Absturz anzeigen</value>
+  </data>
+  <data name="FormParametres_GroupBoxEffetsAudio_Text" xml:space="preserve">
+    <value>Audio-Effekte</value>
+  </data>
+  <data name="FormParametres_ButtonResetEffets_Text" xml:space="preserve">
+    <value>Zurücksetzen</value>
+  </data>
+  <data name="FormParametres_CheckBoxReverbActif_Text" xml:space="preserve">
+    <value>REVERB</value>
+  </data>
+  <data name="FormParametres_LabelReverbMix_Text" xml:space="preserve">
+    <value>Mischung:</value>
+  </data>
+  <data name="FormParametres_LabelReverbMixValeur_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_CheckBoxEchoActif_Text" xml:space="preserve">
+    <value>ECHO</value>
+  </data>
+  <data name="FormParametres_LabelEchoMix_Text" xml:space="preserve">
+    <value>Mischung:</value>
+  </data>
+  <data name="FormParametres_LabelEchoMixValeur_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_LabelEchoDelai_Text" xml:space="preserve">
+    <value>Verzögerung:</value>
+  </data>
+  <data name="FormParametres_LabelEchoDelaiValeur_Text" xml:space="preserve">
+    <value>ms</value>
+  </data>
+  <data name="FormParametres_LabelEchoFeedback_Text" xml:space="preserve">
+    <value>Rückkopplung:</value>
+  </data>
+  <data name="FormParametres_LabelEchoFeedbackValeur_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_CheckBoxTimeStretchActif_Text" xml:space="preserve">
+    <value>Time Stretch</value>
+  </data>
+  <data name="FormParametres_LabelTimeStretch_Text" xml:space="preserve">
+    <value>Wert:</value>
+  </data>
+  <data name="FormParametres_LabelTimeStretchValeur_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_ButtonResetTimeStretch_Text" xml:space="preserve">
+    <value>Zurücksetzen</value>
+  </data>
+  <data name="FormParametres_CheckBoxPitchShiftActif_Text" xml:space="preserve">
+    <value>Pitch Shift</value>
+  </data>
+  <data name="FormParametres_LabelPitchShift_Text" xml:space="preserve">
+    <value>Wert:</value>
+  </data>
+  <data name="FormParametres_LabelPitchShiftValeur_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_ButtonResetPitchShift_Text" xml:space="preserve">
+    <value>Zurücksetzen</value>
+  </data>
+  <data name="FormParametres_CheckBoxPhaserActif_Text" xml:space="preserve">
+    <value>Phaser</value>
+  </data>
+  <data name="FormParametres_LabelPhaserRate_Text" xml:space="preserve">
+    <value>Rate:</value>
+  </data>
+  <data name="FormParametres_LabelPhaserRateValeur_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_LabelPhaserDepth_Text" xml:space="preserve">
+    <value>Depth:</value>
+  </data>
+  <data name="FormParametres_LabelPhaserDepthValeur_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_LabelPhaserFeedback_Text" xml:space="preserve">
+    <value>Rückkopplung:</value>
+  </data>
+  <data name="FormParametres_LabelPhaserFeedbackValeur_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_LabelPhaserMix_Text" xml:space="preserve">
+    <value>Mischung:</value>
+  </data>
+  <data name="FormParametres_LabelPhaserMixValeur_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_LabelPhaserStages_Text" xml:space="preserve">
+    <value>Stages:</value>
+  </data>
+  <data name="FormParametres_ButtonResetPhaser_Text" xml:space="preserve">
+    <value>Zurücksetzen</value>
+  </data>
+  <data name="FormDJ_NoItemSelected_Message" xml:space="preserve">
+    <value>Kein Element ausgewählt.</value>
+  </data>
+  <data name="FormDJ_NoItemSelected_Title" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="FormCompresser_NoTrackToEdit_Message" xml:space="preserve">
+    <value>Keine Titel zum Bearbeiten.</value>
+  </data>
+  <data name="FormCompresser_NoTrackToEdit_Title" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="Form1_OpenFormDJ_Error_Message" xml:space="preserve">
+    <value>FormDJ kann nicht geöffnet werden: {0}</value>
+  </data>
+  <data name="Form1_OpenFormDJ_Error_Title" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="Form1_HideError_Message" xml:space="preserve">
+    <value>Fehler beim Ausblenden von Form1: {0}</value>
+  </data>
+  <data name="Form1_HideError_Title" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="Form1_SwitchToDJ_Error_Message" xml:space="preserve">
+    <value>Fehler beim Wechsel in den DJ-Modus: {0}</value>
+  </data>
+  <data name="Form1_SwitchToDJ_Error_Title" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="FormSelecteurPistesCD_lblSourceLabel_Text" xml:space="preserve">
+    <value>Quelle:</value>
+  </data>
+  <data name="FormSelecteurPistesCD_btnChargerMetadonnees_Text" xml:space="preserve">
+    <value>Laden</value>
+  </data>
+  <data name="FormSelecteurPistesCD_lblChargement_Text" xml:space="preserve">
+    <value>Metadaten werden geladen...</value>
+  </data>
+  <data name="FormSelecteurPistesCD_btnOK_Text" xml:space="preserve">
+    <value>Hinzufügen...</value>
+  </data>
+  <data name="FormSelecteurPistesCD_btnAnnuler_Text" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="FormSelecteurPistesCD_ButtonExtraction_Text" xml:space="preserve">
+    <value>Gewählte Audiospur(en) extrahieren...</value>
+  </data>
+  <data name="FormSelecteurPistesCD_CheckBox_FSelect_SelectDeselect_Text" xml:space="preserve">
+    <value>Alle Titel auswählen/abwählen...</value>
+  </data>
+  <data name="FormCompresser_Label_CDTitre_Text" xml:space="preserve">
+    <value>CD Titel</value>
+  </data>
+  <data name="FormCompresser_LabelCDArtiste_Text" xml:space="preserve">
+    <value>CD Interpret</value>
+  </data>
+  <data name="FormCompresser_Label_ChoixLecteur_Text" xml:space="preserve">
+    <value>Laufwerksauswahl</value>
+  </data>
+  <data name="FormCompresser_LabelAnnee_Text" xml:space="preserve">
+    <value>Jahr</value>
+  </data>
+  <data name="FormCompresser_LabelGenre_Text" xml:space="preserve">
+    <value>Genre</value>
+  </data>
+  <data name="FormCompresser_Label3_Text" xml:space="preserve">
+    <value>CD-Cover</value>
+  </data>
+  <data name="FormCompresser_tsmiSearchCover_Text" xml:space="preserve">
+    <value>Cover suchen</value>
+  </data>
+  <data name="FormCompresser_tsmiAddCoverFromFile_Text" xml:space="preserve">
+    <value>Aus Datei hinzufügen...</value>
+  </data>
+  <data name="FormCompresser_tsmiSizeMenu_Text" xml:space="preserve">
+    <value>Anzeige</value>
+  </data>
+  <data name="FormCompresser_tsmiSizeNormal_Text" xml:space="preserve">
+    <value>Original</value>
+  </data>
+  <data name="FormCompresser_tsmiSizeStretch_Text" xml:space="preserve">
+    <value>Gestreckt</value>
+  </data>
+  <data name="FormCompresser_tsmiSizeZoom_Text" xml:space="preserve">
+    <value>Anpassen (Zoom)</value>
+  </data>
+  <data name="FormCompresser_LabelDimImagText_Text" xml:space="preserve">
+    <value>Bildabmessungen:</value>
+  </data>
+  <data name="FormCompresser_LabelTailleImagText_Text" xml:space="preserve">
+    <value>Bildgröße:</value>
+  </data>
+  <data name="FormCompresser_LabelNumCD_Text" xml:space="preserve">
+    <value>CD-Nummer:</value>
+  </data>
+  <data name="FormCompresser_LabelPremierNumPiste_Text" xml:space="preserve">
+    <value>Erste Titelnnummer:</value>
+  </data>
+  <data name="FormCompresser_LabelTypeConversion_Text" xml:space="preserve">
+    <value>Konvertierungstyp:</value>
+  </data>
+  <data name="FormCompresser_LabelQualiteConversion_Text" xml:space="preserve">
+    <value>Konvertierungsqualität:</value>
+  </data>
+  <data name="FormCompresser_LabelRepSauvegarde_Text" xml:space="preserve">
+    <value>Zielordner:</value>
+  </data>
+  <data name="FormCompresser_ButtonQuitter_Text" xml:space="preserve">
+    <value>Beenden</value>
+  </data>
+  <data name="FormCompresser_ButtonExtraire_Text" xml:space="preserve">
+    <value>Extrahieren</value>
+  </data>
+  <data name="FormCompresser_ButtonAnnuler_Text" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="FormCompresser_ButtonRepSauvegarde_Text" xml:space="preserve">
+    <value>Durchsuchen</value>
+  </data>
+  <data name="FormCompresser_CheckBoxEjectCD_Text" xml:space="preserve">
+    <value>CD am Ende auswerfen...</value>
+  </data>
+  <data name="FormCompresser_CheckBoxVerouillerCD_Text" xml:space="preserve">
+    <value>Fach während der Extraktion sperren</value>
+  </data>
+  <data name="FormCompresser_LabelCommentaire_Text" xml:space="preserve">
+    <value>Kommentar</value>
+  </data>
+  <data name="FormCompresser_ColumnHeaderPiste_Text" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="FormCompresser_ColumnHeaderTitre_Text" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="FormCompresser_ColumnHeaderArtiste_Text" xml:space="preserve">
+    <value>Interpret</value>
+  </data>
+  <data name="FormCompresser_ColumnHeaderDebut_Text" xml:space="preserve">
+    <value>Beginn</value>
+  </data>
+  <data name="FormCompresser_ColumnHeaderLongueur_Text" xml:space="preserve">
+    <value>Länge</value>
+  </data>
+  <data name="FormCompresser_ColumnHeaderTaille_Text" xml:space="preserve">
+    <value>Dateigröße</value>
+  </data>
+  <data name="FormCompresser_ColumnHeaderTailleComp_Text" xml:space="preserve">
+    <value>Komprimierte Dateigröße</value>
+  </data>
+  <data name="FormCompresser_CheckBox_FCompress_SelectDeselect_Text" xml:space="preserve">
+    <value>Alle Titel auswählen/abwählen...</value>
+  </data>
+  <data name="FormCompresser_Button_EditTracks_Text" xml:space="preserve">
+    <value>Titel bearbeiten...</value>
+  </data>
+  <data name="FormCompresser_ButtonSoumettreGnuDB_Text" xml:space="preserve">
+    <value>An GnuDB senden</value>
+  </data>
+  <data name="FormCompresser_Button_Image_Erase_Text" xml:space="preserve">
+    <value>X</value>
+  </data>
+  <data name="FormCompresser_Button_Image_Suiv_Text" xml:space="preserve">
+    <value>--&gt;</value>
+  </data>
+  <data name="FormCompresser_Button_Image_Prec_Text" xml:space="preserve">
+    <value>&lt;--</value>
+  </data>
+  <data name="FormCompresser_Label1_Text" xml:space="preserve">
+    <value>Bildabmessungen:</value>
+  </data>
+  <data name="FormCompresser_Label2_Text" xml:space="preserve">
+    <value>Bildgröße:</value>
+  </data>
+  <data name="Form1_Button_AudioPlay_Aide_Text" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="Form1_Button_APropos_Text" xml:space="preserve">
+    <value>Über...</value>
+  </data>
+  <data name="Form1_Label_Aigues_Text" xml:space="preserve">
+    <value>Höhen</value>
+  </data>
+  <data name="Form1_Label_Basses_Text" xml:space="preserve">
+    <value>Bässe</value>
+  </data>
+  <data name="Form1_Label_Volume_Text" xml:space="preserve">
+    <value>Lautstärke</value>
+  </data>
+  <data name="Form1_Label_DureeRestante_Title" xml:space="preserve">
+    <value>Verbleibende Zeit </value>
+  </data>
+  <data name="Form1_Label_DureeRestante_Value" xml:space="preserve">
+    <value>00:00</value>
+  </data>
+  <data name="Form1_Label_SampleRateTitre_Text" xml:space="preserve">
+    <value>Abtastrate:</value>
+  </data>
+  <data name="Form1_Label_BitrateTitre_Text" xml:space="preserve">
+    <value>Bitrate:</value>
+  </data>
+  <data name="Form1_Button_Aleatoire_Text" xml:space="preserve">
+    <value>Zufällig</value>
+  </data>
+  <data name="Form1_Button_Power_Text" xml:space="preserve">
+    <value>Power</value>
+  </data>
+  <data name="Form1_Button_Suivant_Text" xml:space="preserve">
+    <value>Nächste</value>
+  </data>
+  <data name="Form1_Button_Precedent_Text" xml:space="preserve">
+    <value>Vorherige</value>
+  </data>
+  <data name="Form1_Button_Arreter_Text" xml:space="preserve">
+    <value>Stopp</value>
+  </data>
+  <data name="Form1_Button_Jouer_Text" xml:space="preserve">
+    <value>Wiedergabe</value>
+  </data>
+  <data name="Form1_Button_PauseReprise_Text" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="Form1_Button_CalculBPM_Text" xml:space="preserve">
+    <value>BPM</value>
+  </data>
+  <data name="Form1_Button_Mute_Text" xml:space="preserve">
+    <value>Stummschalten</value>
+  </data>
+  <data name="Form1_Button_InfoSelect_Text" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="Form1_Button_Ajout_Text" xml:space="preserve">
+    <value>Hinzufügen</value>
+  </data>
+  <data name="Form1_Button_Playlist_Text" xml:space="preserve">
+    <value>Playlist</value>
+  </data>
+  <data name="Form1_Button_ClearRecherche_Text" xml:space="preserve">
+    <value>✕</value>
+  </data>
+  <data name="Form1_Column_Num_Text" xml:space="preserve">
+    <value>#</value>
+  </data>
+  <data name="Form1_Column_Chansons_Text" xml:space="preserve">
+    <value>Lieder</value>
+  </data>
+  <data name="Form1_Column_BPM_Text" xml:space="preserve">
+    <value>BPM</value>
+  </data>
+  <data name="Form1_Column_Duree_Text" xml:space="preserve">
+    <value>Dauer</value>
+  </data>
+  <data name="Form1_ButtonModeDJ_Text" xml:space="preserve">
+    <value>DJ Mixer</value>
+  </data>
+  <data name="Form1_Button_Loop_Aide_Text" xml:space="preserve">
+    <value>Hilfe</value>
+  </data>
+  <data name="Form1_Button_Loop_Text" xml:space="preserve">
+    <value>Loop</value>
+  </data>
+  <data name="Form1_Button_Parametres_Text" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="FormEditTracks_Label_PisteText_Text" xml:space="preserve">
+    <value>Spur #</value>
+  </data>
+  <data name="FormEditTracks_Label_PisteNumber_Text" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="FormEditTracks_Label_TitreText_Text" xml:space="preserve">
+    <value>Titel :</value>
+  </data>
+  <data name="FormEditTracks_Label_ArtisteText_Text" xml:space="preserve">
+    <value>Künstler :</value>
+  </data>
+  <data name="FormEditTracks_Button_PisteSuivante_Text" xml:space="preserve">
+    <value>Nächste...</value>
+  </data>
+  <data name="FormEditTracks_Button_PistePrecedente_Text" xml:space="preserve">
+    <value>Vorherige...</value>
+  </data>
+  <data name="FormEditTracks_ButtonQuitter_Text" xml:space="preserve">
+    <value>Beenden</value>
+  </data>
+  <data name="FormEditTracks_Button_EffaceTitre_Text" xml:space="preserve">
+    <value>X</value>
+  </data>
+  <data name="FormEditTracks_Button_EffaceArtiste_Text" xml:space="preserve">
+    <value>X</value>
+  </data>
+  <data name="FormEditTracks_Form_Text" xml:space="preserve">
+    <value>Spur-Bearbeitung...</value>
+  </data>
+  <data name="FormCompresser_Label3_Text" xml:space="preserve">
+    <value>CD-Cover</value>
+  </data>
+  <data name="FormCompresser_LabelDimImagText_Text" xml:space="preserve">
+    <value>Bildabmessungen:</value>
+  </data>
+  <data name="FormCompresser_LabelTailleImagText_Text" xml:space="preserve">
+    <value>Bildgröße:</value>
+  </data>
+  <data name="FormCompresser_LabelNumCD_Text" xml:space="preserve">
+    <value>CD-Nummer:</value>
+  </data>
+  <data name="FormCompresser_LabelPremierNumPiste_Text" xml:space="preserve">
+    <value>Erste Spur-Nummer:</value>
+  </data>
+  <data name="FormCompresser_TextBoxPremierNumPiste_Text" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="FormCompresser_TextBoxNumCD_Text" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="FormCompresser_LabelTypeConversion_Text" xml:space="preserve">
+    <value>Konvertierungstyp:</value>
+  </data>
+  <data name="FormCompresser_LabelQualiteConversion_Text" xml:space="preserve">
+    <value>Konvertierungsqualität:</value>
+  </data>
+  <data name="FormCompresser_LabelRepSauvegarde_Text" xml:space="preserve">
+    <value>Speicherverzeichnis:</value>
+  </data>
+  <data name="FormCompresser_ButtonQuitter_Text" xml:space="preserve">
+    <value>Beenden</value>
+  </data>
+  <data name="FormCompresser_ButtonExtraire_Text" xml:space="preserve">
+    <value>Extrahieren</value>
+  </data>
+  <data name="FormCompresser_ButtonAnnuler_Text" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="FormCompresser_ButtonRepSauvegarde_Text" xml:space="preserve">
+    <value>Durchsuchen</value>
+  </data>
+  <data name="FormCompresser_CheckBoxEjectCD_Text" xml:space="preserve">
+    <value>CD am Ende auswerfen...</value>
+  </data>
+  <data name="FormCompresser_CheckBoxVerouillerCD_Text" xml:space="preserve">
+    <value>Fach während der Extraktion sperren</value>
+  </data>
+  <data name="FormCompresser_LabelCommentaire_Text" xml:space="preserve">
+    <value>Kommentar</value>
+  </data>
+  <data name="FormCompresser_CheckBox_FCompress_SelectDeselect_Text" xml:space="preserve">
+    <value>Alle Spuren auswählen/abwählen...</value>
+  </data>
+  <data name="FormCompresser_Button_EditTracks_Text" xml:space="preserve">
+    <value>Spuren bearbeiten...</value>
+  </data>
+  <data name="FormCompresser_ButtonSoumettreGnuDB_Text" xml:space="preserve">
+    <value>An GnuDB senden</value>
+  </data>
+  <data name="FormCompresser_Button_Image_Erase_Text" xml:space="preserve">
+    <value>X</value>
+  </data>
+  <data name="FormCompresser_Button_Image_Suiv_Text" xml:space="preserve">
+    <value>--&gt;</value>
+  </data>
+  <data name="FormCompresser_Button_Image_Prec_Text" xml:space="preserve">
+    <value>&lt;--</value>
+  </data>
+  <data name="FormCompresser_Label1_Text" xml:space="preserve">
+    <value>Bildabmessungen:</value>
+  </data>
+  <data name="FormCompresser_Label2_Text" xml:space="preserve">
+    <value>Bildgröße:</value>
+  </data>
+  <data name="FormCompresser_Label_Im_Site_Text" xml:space="preserve">
+    <value>Website:</value>
+  </data>
+  <data name="FormCompresser_Label4_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormCompresser_Label_Normalisation_Text" xml:space="preserve">
+    <value>Normalisierung</value>
+  </data>
+  <data name="FormCompresser_GroupBoxAnalyzerOptions_Text" xml:space="preserve">
+    <value>Analyse-Optionen</value>
+  </data>
+  <data name="FormCompresser_Button_Aide_MaxStartTrim_Text" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="FormCompresser_Button_Aide_MinSilence_Text" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="FormCompresser_Button_Aide_WindowAfter_Text" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="FormCompresser_Button_Aide_WindowBefore_Text" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="FormCompresser_LabelWindowBefore_Text" xml:space="preserve">
+    <value>Fenster vor TOC (s):</value>
+  </data>
+  <data name="FormCompresser_LabelWindowAfter_Text" xml:space="preserve">
+    <value>Fenster nach TOC (s):</value>
+  </data>
+  <data name="FormCompresser_LabelMinSilence_Text" xml:space="preserve">
+    <value>Mindestdauer Stille (s):</value>
+  </data>
+  <data name="FormCompresser_LabelMaxStartTrim_Text" xml:space="preserve">
+    <value>Max Start-Trimm (s):</value>
+  </data>
+  <data name="FormCompresser_Button_Agrandir_Text" xml:space="preserve">
+    <value>▼</value>
+  </data>
+  <data name="FormCompresser_Button_rapetisser_Text" xml:space="preserve">
+    <value>▲</value>
+  </data>
+  <data name="FormCompresser_CheckBoxPostTraitementAuto_Text" xml:space="preserve">
+    <value>Automatische Nachbearbeitung</value>
+  </data>
+  <data name="FormCompresser_Form_Text" xml:space="preserve">
+    <value>CD-Audio Extraktion</value>
+  </data>
   <data name="Menu_OpenList" xml:space="preserve">
     <value>Liste öffnen</value>
   </data>
@@ -2019,6 +2729,24 @@ Der aktuelle Titel wird vor dem Stoppen abgeschlossen.</value>
   </data>
   <data name="Compressor_CancelConfirmTitle" xml:space="preserve">
     <value>Abbruch bestätigen</value>
+  </data>
+  <data name="Compressor_CancelConfirmYes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="Compressor_CancelConfirmNo" xml:space="preserve">
+    <value>Nein</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Nein</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
   </data>
   <data name="Compressor_CancelInProgress" xml:space="preserve">
     <value>Wird abgebrochen... (aktueller Titel wird beendet)</value>

@@ -269,7 +269,7 @@ Partial Public Class FormSelecteurPistesCD
     End Sub
 
     Private Sub BtnChargerMetadonnees_Click(sender As Object, e As EventArgs) Handles btnChargerMetadonnees.Click
-        Dim sourceSelectionnee = comboSourceMetadonnees.SelectedItem.ToString()
+        Dim sourceSelectionnee = comboSourceMetadonnees.SelectedItem?.ToString()
 
         Select Case sourceSelectionnee
             Case LanguageManager.GetString("CDSelector_SourceGnuDB")

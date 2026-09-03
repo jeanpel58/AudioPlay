@@ -42,6 +42,7 @@ Partial Class FormSelecteurPistesCD
         lblTitre.Name = "lblTitre"
         lblTitre.Size = New Size(460, 30)
         lblTitre.TabIndex = 0
+        lblTitre.Text = LanguageManager.GetString("FormSelecteurPistesCD_lblTitre_Text")
         lblTitre.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' lblSourceLabel
@@ -51,7 +52,7 @@ Partial Class FormSelecteurPistesCD
         lblSourceLabel.Name = "lblSourceLabel"
         lblSourceLabel.Size = New Size(60, 25)
         lblSourceLabel.TabIndex = 1
-        lblSourceLabel.Text = "Source:"
+        lblSourceLabel.Text = LanguageManager.GetString("FormSelecteurPistesCD_lblSourceLabel_Text")
         lblSourceLabel.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' comboSourceMetadonnees
@@ -72,7 +73,7 @@ Partial Class FormSelecteurPistesCD
         btnChargerMetadonnees.Name = "btnChargerMetadonnees"
         btnChargerMetadonnees.Size = New Size(90, 26)
         btnChargerMetadonnees.TabIndex = 3
-        btnChargerMetadonnees.Text = "Charger"
+        btnChargerMetadonnees.Text = LanguageManager.GetString("FormSelecteurPistesCD_btnChargerMetadonnees_Text")
         btnChargerMetadonnees.UseVisualStyleBackColor = True
         btnChargerMetadonnees.Visible = False
         ' 
@@ -84,7 +85,7 @@ Partial Class FormSelecteurPistesCD
         lblChargement.Name = "lblChargement"
         lblChargement.Size = New Size(460, 20)
         lblChargement.TabIndex = 6
-        lblChargement.Text = "Chargement des métadonnées..."
+        lblChargement.Text = LanguageManager.GetString("FormSelecteurPistesCD_lblChargement_Text")
         lblChargement.TextAlign = ContentAlignment.MiddleLeft
         lblChargement.Visible = False
         ' 
@@ -106,7 +107,7 @@ Partial Class FormSelecteurPistesCD
         btnOK.Name = "btnOK"
         btnOK.Size = New Size(100, 35)
         btnOK.TabIndex = 10
-        btnOK.Text = "Ajouter..."
+        btnOK.Text = LanguageManager.GetString("FormSelecteurPistesCD_btnOK_Text")
         btnOK.UseVisualStyleBackColor = True
         ' 
         ' btnAnnuler
@@ -117,7 +118,7 @@ Partial Class FormSelecteurPistesCD
         btnAnnuler.Name = "btnAnnuler"
         btnAnnuler.Size = New Size(90, 35)
         btnAnnuler.TabIndex = 11
-        btnAnnuler.Text = "Annuler"
+        btnAnnuler.Text = LanguageManager.GetString("FormSelecteurPistesCD_btnAnnuler_Text")
         btnAnnuler.UseVisualStyleBackColor = True
         ' 
         ' ButtonExtraction
@@ -127,7 +128,7 @@ Partial Class FormSelecteurPistesCD
         ButtonExtraction.Name = "ButtonExtraction"
         ButtonExtraction.Size = New Size(460, 35)
         ButtonExtraction.TabIndex = 12
-        ButtonExtraction.Text = "Extraction de la ou les pistes audio..."
+        ButtonExtraction.Text = LanguageManager.GetString("FormSelecteurPistesCD_ButtonExtraction_Text")
         ButtonExtraction.UseVisualStyleBackColor = True
         ' 
         ' CheckBox_FSelect_SelectDeselect
@@ -140,7 +141,7 @@ Partial Class FormSelecteurPistesCD
         CheckBox_FSelect_SelectDeselect.Name = "CheckBox_FSelect_SelectDeselect"
         CheckBox_FSelect_SelectDeselect.Size = New Size(288, 19)
         CheckBox_FSelect_SelectDeselect.TabIndex = 105
-        CheckBox_FSelect_SelectDeselect.Text = "Sélectionner/Désélectionner toutes les pistes..."
+        CheckBox_FSelect_SelectDeselect.Text = LanguageManager.GetString("FormSelecteurPistesCD_CheckBox_FSelect_SelectDeselect_Text")
         CheckBox_FSelect_SelectDeselect.UseVisualStyleBackColor = True
         ' 
         ' FormSelect
@@ -151,6 +152,7 @@ Partial Class FormSelecteurPistesCD
         CancelButton = btnAnnuler
         ClientSize = New Size(498, 600)
         Controls.Add(CheckBox_FSelect_SelectDeselect)
+        Text = LanguageManager.GetString("FormSelecteurPistesCD_Form_Text")
         Controls.Add(ButtonExtraction)
         Controls.Add(btnAnnuler)
         Controls.Add(btnOK)
@@ -166,7 +168,7 @@ Partial Class FormSelecteurPistesCD
         MinimizeBox = False
         Name = "FormSelect"
         StartPosition = FormStartPosition.CenterParent
-        Text = "Sélection des pistes CD"
+        ' Text already set via LanguageManager above
         ResumeLayout(False)
         PerformLayout()
 

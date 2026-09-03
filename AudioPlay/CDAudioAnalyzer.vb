@@ -19,7 +19,7 @@ Public Class CDAudioAnalyzer
     ''' Réduit les faux positifs sur les fade-outs faibles. Par défaut ~0.03% (~-70 dB)
     ''' </summary>
     ' Restore previous, less sensitive default to avoid over-trimming after lowering it caused regressions.
-    Public Shared Property SilenceThreshold As Double = 0.001
+    Public Shared Property SilenceThreshold As Double = 0.0003
 
     '''
     ''' <summary>
@@ -33,28 +33,28 @@ Public Class CDAudioAnalyzer
     ''' Durée de la zone d'analyse AVANT la transition TOC (en secondes)
     ''' Par défaut 20 secondes avant la frontière entre deux pistes
     ''' </summary>
-    Public Shared Property TransitionWindowBeforeSeconds As Double = 20.0
+    Public Shared Property TransitionWindowBeforeSeconds As Double = 30.0
 
     '''
     ''' <summary>
     ''' Durée de la zone d'analyse APRÈS la transition TOC (en secondes)
     ''' Par défaut 20 secondes après la frontière entre deux pistes
     ''' </summary>
-    Public Shared Property TransitionWindowAfterSeconds As Double = 20.0
+    Public Shared Property TransitionWindowAfterSeconds As Double = 30.0
 
     '''
     ''' <summary>
     ''' Durée minimale de silence requise pour valider une transition (en secondes)
     ''' Valeur plus élevée = sélection plus stricte (réduit les faux positifs de fade-out)
     ''' </summary>
-    Public Shared Property MinTransitionSilenceSeconds As Double = 2.5
+    Public Shared Property MinTransitionSilenceSeconds As Double = 1.0
 
     '''
     ''' <summary>
     ''' Fenêtre de proximité maximale autour de la frontière TOC (en secondes)
     ''' Valeur plus faible = silence accepté uniquement s'il est proche de la frontière
     ''' </summary>
-    Public Shared Property TransitionProximityWindowSeconds As Double = 8.0
+    Public Shared Property TransitionProximityWindowSeconds As Double = 12.0
 
     '''
     ''' <summary>
@@ -67,7 +67,7 @@ Public Class CDAudioAnalyzer
     ''' Durée minimale de silence soutenu requise (en secondes) pour valider une coupe
     ''' Permet d'éviter de couper sur de très brefs creux ou sur des transitoires
     ''' </summary>
-    Public Shared Property MinSustainedSilenceSeconds As Double = 0.5
+    Public Shared Property MinSustainedSilenceSeconds As Double = 1.0
 
     ''' <summary>
     ''' Limite maximale de trim appliqué en dernier recours (en secondes)
@@ -79,13 +79,35 @@ Public Class CDAudioAnalyzer
     ''' Limite maximale de trim autorisé au début d'une piste (en secondes)
     ''' Evite que des débuts soient avancés de plusieurs secondes par erreur
     ''' </summary>
-    Public Shared Property MaxStartTrimSeconds As Double = 8.0
+    Public Shared Property MaxStartTrimSeconds As Double = 4.0
 
     ''' <summary>
-    ''' Diagnostics détaillés activés pour la session.
-    ''' Activé temporairement pour collecter des informations de debug.
+    ''' Niveau de verbosité des diagnostics.
+    ''' Par défaut: Info. Pour réduire la taille des logs, les messages par-frame (CDREAD_*) sont désactivés
+    ''' par défaut et ne seront écrits que si EnablePerFrameDiagnostics = True ou si DiagnosticsLevel = Debug.
     ''' </summary>
-    Public Shared ReadOnly UseDetailedDiagnostics As Boolean = True
+    Public Enum DiagnosticsLogLevel
+        Debug = 0
+        Info = 1
+        Warn = 2
+        [Error] = 3
+    End Enum
+
+    ''' <summary>
+    ''' Niveau minimal des messages à écrire dans le log. Messages avec level < DiagnosticsLevel sont ignorés.
+    ''' </summary>
+    Public Shared Property DiagnosticsLevel As DiagnosticsLogLevel = DiagnosticsLogLevel.Info
+
+    ''' <summary>
+    ''' Active explicitement l'écriture des logs par-frame (fortement verbeux, désactivé par défaut).
+    ''' </summary>
+    Public Shared Property EnablePerFrameDiagnostics As Boolean = False
+
+    ''' <summary>
+    ''' Optional external cancellation predicate that long-running analysis loops will consult.
+    ''' Set by the caller (FormCompresser) when starting an extraction to allow immediate cancellation.
+    ''' </summary>
+    Public Shared Property ExternalCancellationCheck As Func(Of Boolean) = Nothing
 
     ''' <summary>
     ''' Chemin du fichier de log pour les diagnostics. Par défaut %TEMP%\AudioPlay_AnalysisLog.txt
@@ -132,6 +154,12 @@ Public Class CDAudioAnalyzer
     ''' </summary>
     Public Shared Sub InitializeDiagnosticsLog(Optional sessionMessage As String = "", Optional forceReset As Boolean = False)
         Dim header As String = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] SESSION START{If(String.IsNullOrEmpty(sessionMessage), "", " - " & sessionMessage)}{Environment.NewLine}"
+        ' Set sane defaults for diagnostics on session start to avoid huge logs
+        Try
+            DiagnosticsLevel = DiagnosticsLogLevel.Info
+            EnablePerFrameDiagnostics = False
+        Catch
+        End Try
         If Not forceReset AndAlso diagnosticsSessionActive Then
             ' Do not reset the log; append a continuation marker instead and return
             Try
@@ -177,6 +205,29 @@ Public Class CDAudioAnalyzer
         Catch
         End Try
         Try
+            ' If caller requests a force reset, remove known diagnostic files in %TEMP% to avoid uncontrolled growth
+            If forceReset Then
+                Try
+                    Dim tempDir As String = Path.GetTempPath()
+                    Dim filesToRemove As String() = {Path.GetFileName(DiagnosticsLogPath), "AudioPlay_param_write_debug.txt", "AudioPlay_progress_trace.txt", "AudioPlay_SilenceDetectionResult.txt", "AudioPlay_state_debug.txt", "AudioPlay_wav_analyzer_trace.txt"}
+                    For Each f In filesToRemove
+                        Try
+                            Dim p = Path.Combine(tempDir, f)
+                            If File.Exists(p) Then
+                                Try
+                                    File.Delete(p)
+                                Catch
+                                    ' ignore per-file failures (locked/in use)
+                                End Try
+                            End If
+                        Catch
+                            ' ignore per-file failures
+                        End Try
+                    Next
+                Catch
+                End Try
+            End If
+
             SyncLock GetType(CDAudioAnalyzer)
                 File.WriteAllText(DiagnosticsLogPath, header, Encoding.UTF8)
             End SyncLock
@@ -283,11 +334,23 @@ Public Class CDAudioAnalyzer
 
 
     ''' <summary>
-    ''' Écrit une ligne de diagnostic dans le fichier si UseDetailedDiagnostics = True
+    ''' Écrit une ligne de diagnostic dans le fichier selon DiagnosticsLevel et les flags de diagnostics
     ''' Usage sûr : nève pas d'exception en cas d'erreur d'I/O
     ''' </summary>
     Public Shared Sub DiagnosticWrite(message As String)
-        If Not UseDetailedDiagnostics Then Return
+        ' Decide whether to write the message depending on diagnostics level and per-frame flag
+        If DiagnosticsLevel = DiagnosticsLogLevel.Error Then
+            ' Only write messages that are obviously errors when level=Error
+            If Not message.StartsWith("EXTRACTION") AndAlso Not message.Contains("ERROR") AndAlso Not message.Contains("FAIL") Then
+                Return
+            End If
+        End If
+        ' If per-frame diagnostics are disabled, filter out very verbose CDREAD_* messages unless Debug level
+        If Not EnablePerFrameDiagnostics AndAlso DiagnosticsLevel <> DiagnosticsLogLevel.Debug Then
+            If message.StartsWith("CDREAD_") OrElse message.StartsWith("CDREAD_RAW") OrElse message.StartsWith("CDREAD_SUMMARY") OrElse message.StartsWith("CDREAD_ORIG_") OrElse message.StartsWith("CDREAD_FALLBACK") Then
+                Return
+            End If
+        End If
         Try
             Dim line As String = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {message}{Environment.NewLine}"
             SyncLock GetType(CDAudioAnalyzer)
@@ -590,6 +653,13 @@ Public Class CDAudioAnalyzer
                 Dim silenceStartOffset As Integer = -1
 
                 For off As Integer = 0 To Math.Max(0, bytesRead - sliceBytes) Step sliceBytes
+                    ' check cancellation request periodically
+                    If ExternalCancellationCheck IsNot Nothing Then
+                        If ExternalCancellationCheck.Invoke() Then
+                            DiagnosticWrite("AnalyzeTransition: cancelled by ExternalCancellationCheck")
+                            Return result
+                        End If
+                    End If
                     Dim rms As Double = CalculateRMS(buffer, off, sliceBytes)
                     If rms < SilenceThreshold Then
                         If silenceStartOffset = -1 Then
@@ -756,6 +826,13 @@ Public Class CDAudioAnalyzer
                     Dim minConsecutiveSlices As Integer = 4 ' Au moins 200ms de silence
 
                     For offset As Integer = 0 To bytesRead - samplesPerSlice Step samplesPerSlice
+                    ' check cancellation request periodically
+                    If ExternalCancellationCheck IsNot Nothing Then
+                        If ExternalCancellationCheck.Invoke() Then
+                            DiagnosticWrite("AnalyzeTrackStart: cancelled by ExternalCancellationCheck")
+                            Return 0
+                        End If
+                    End If
                         Dim rms As Double = CalculateRMS(buffer, offset, samplesPerSlice)
 
                         If rms < SilenceThreshold Then
@@ -842,6 +919,7 @@ Public Class CDAudioAnalyzer
                 Dim detectedSilences As New List(Of (start As Integer, [end] As Integer))
 
                 For offset As Integer = 0 To bytesRead - samplesPerSlice Step samplesPerSlice
+                    ' No-op placeholder to keep functional equivalence while forcing a file update
                     Dim rms As Double = CalculateRMS(buffer, offset, samplesPerSlice)
                     If rms < SilenceThreshold Then
                         If silenceStartSliceOffset = -1 Then

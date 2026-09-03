@@ -8,6 +8,8 @@
     <MyType>WindowsForms</MyType>
     <AssemblyTitle>AudioPlay</AssemblyTitle>
     <ApplicationIcon>Assets\AudioPlay.ico</ApplicationIcon>
+    <!-- Enforce strict typing to catch implicit conversions early -->
+    <OptionStrict>On</OptionStrict>
   </PropertyGroup>
 
   <ItemGroup>
@@ -124,7 +126,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CSCore" Version="1.2.1.2" />
+    <!-- CSCore removed: package targeted .NET Framework and caused NU1701. No usages found in project files; removed to avoid compatibility warning. If needed, re-add a compatible audio library. -->
     <PackageReference Include="FFMpegCore" Version="5.4.0" />
     <PackageReference Include="NAudio" Version="2.3.0" />
     <PackageReference Include="NAudio.Lame" Version="2.1.0" />

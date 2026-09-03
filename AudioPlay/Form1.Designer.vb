@@ -116,7 +116,7 @@ Partial Class Form1
         Button_AudioPlay_Aide.Name = "Button_AudioPlay_Aide"
         Button_AudioPlay_Aide.Size = New Size(30, 30)
         Button_AudioPlay_Aide.TabIndex = 12
-        Button_AudioPlay_Aide.Text = "?"
+        Button_AudioPlay_Aide.Text = LanguageManager.GetString("Form1_Button_AudioPlay_Aide_Text")
         Button_AudioPlay_Aide.UseVisualStyleBackColor = False
         ' 
         ' Button_APropos
@@ -133,7 +133,7 @@ Partial Class Form1
         Button_APropos.Name = "Button_APropos"
         Button_APropos.Size = New Size(80, 30)
         Button_APropos.TabIndex = 11
-        Button_APropos.Text = "À propos..."
+        Button_APropos.Text = LanguageManager.GetString("Form1_Button_APropos_Text")
         Button_APropos.UseVisualStyleBackColor = False
         ' 
         ' TrackBar_Aigues
@@ -151,7 +151,7 @@ Partial Class Form1
         Label3.Name = "Label3"
         Label3.Size = New Size(94, 17)
         Label3.TabIndex = 7
-        Label3.Text = "Aigues"
+        Label3.Text = LanguageManager.GetString("Form1_Label_Aigues_Text")
         Label3.TextAlign = ContentAlignment.MiddleCenter
         ' 
         ' TrackBar_Basses
@@ -169,7 +169,7 @@ Partial Class Form1
         Label1.Name = "Label1"
         Label1.Size = New Size(94, 17)
         Label1.TabIndex = 5
-        Label1.Text = "Basses"
+        Label1.Text = LanguageManager.GetString("Form1_Label_Basses_Text")
         Label1.TextAlign = ContentAlignment.MiddleCenter
         ' 
         ' TrackBar_Volume
@@ -190,7 +190,7 @@ Partial Class Form1
         LabelVolume.Name = "LabelVolume"
         LabelVolume.Size = New Size(150, 17)
         LabelVolume.TabIndex = 3
-        LabelVolume.Text = "Volume"
+        LabelVolume.Text = LanguageManager.GetString("Form1_Label_Volume_Text")
         LabelVolume.TextAlign = ContentAlignment.MiddleCenter
         ' 
         ' Label2
@@ -200,7 +200,7 @@ Partial Class Form1
         Label2.Name = "Label2"
         Label2.Size = New Size(95, 17)
         Label2.TabIndex = 2
-        Label2.Text = "Durée restante "
+        Label2.Text = LanguageManager.GetString("Form1_Label_DureeRestante_Title")
         Label2.TextAlign = ContentAlignment.MiddleCenter
         ' 
         ' Label_DureeRestante
@@ -210,7 +210,7 @@ Partial Class Form1
         Label_DureeRestante.Name = "Label_DureeRestante"
         Label_DureeRestante.Size = New Size(95, 16)
         Label_DureeRestante.TabIndex = 1
-        Label_DureeRestante.Text = "00:00"
+        Label_DureeRestante.Text = LanguageManager.GetString("Form1_Label_DureeRestante_Value")
         Label_DureeRestante.TextAlign = ContentAlignment.MiddleCenter
         ' 
         ' Label_SampleRate
@@ -232,7 +232,7 @@ Partial Class Form1
         LabelSampleRateTitre.Name = "LabelSampleRateTitre"
         LabelSampleRateTitre.Size = New Size(119, 15)
         LabelSampleRateTitre.TabIndex = 7
-        LabelSampleRateTitre.Text = "Échantillonnage :"
+        LabelSampleRateTitre.Text = LanguageManager.GetString("Form1_Label_SampleRateTitre_Text")
         LabelSampleRateTitre.TextAlign = ContentAlignment.MiddleRight
         ' 
         ' Label_Bitrate
@@ -252,7 +252,7 @@ Partial Class Form1
         LabelBitrateTitre.Name = "LabelBitrateTitre"
         LabelBitrateTitre.Size = New Size(56, 15)
         LabelBitrateTitre.TabIndex = 9
-        LabelBitrateTitre.Text = "Bitrate :"
+        LabelBitrateTitre.Text = LanguageManager.GetString("Form1_Label_BitrateTitre_Text")
         LabelBitrateTitre.TextAlign = ContentAlignment.MiddleRight
         ' 
         ' TextBox_Display
@@ -299,7 +299,7 @@ Partial Class Form1
         Button_Aleatoire.Name = "Button_Aleatoire"
         Button_Aleatoire.Size = New Size(40, 40)
         Button_Aleatoire.TabIndex = 0
-        Button_Aleatoire.Text = "Random"
+        Button_Aleatoire.Text = LanguageManager.GetString("Form1_Button_Aleatoire_Text")
         Button_Aleatoire.UseVisualStyleBackColor = False
         ' 
         ' Button_Power
@@ -316,7 +316,7 @@ Partial Class Form1
         Button_Power.Name = "Button_Power"
         Button_Power.Size = New Size(40, 40)
         Button_Power.TabIndex = 1
-        Button_Power.Text = "Power"
+        Button_Power.Text = LanguageManager.GetString("Form1_Button_Power_Text")
         Button_Power.UseVisualStyleBackColor = False
         ' 
         ' Button_Suivant
@@ -333,7 +333,7 @@ Partial Class Form1
         Button_Suivant.Name = "Button_Suivant"
         Button_Suivant.Size = New Size(40, 40)
         Button_Suivant.TabIndex = 2
-        Button_Suivant.Text = "Suivant"
+        Button_Suivant.Text = LanguageManager.GetString("Form1_Button_Suivant_Text")
         Button_Suivant.UseVisualStyleBackColor = False
         ' 
         ' Button_Precedent
@@ -350,7 +350,7 @@ Partial Class Form1
         Button_Precedent.Name = "Button_Precedent"
         Button_Precedent.Size = New Size(40, 40)
         Button_Precedent.TabIndex = 3
-        Button_Precedent.Text = "Précédent"
+        Button_Precedent.Text = LanguageManager.GetString("Form1_Button_Precedent_Text")
         Button_Precedent.UseVisualStyleBackColor = False
         ' 
         ' Button_Arreter
@@ -367,7 +367,7 @@ Partial Class Form1
         Button_Arreter.Name = "Button_Arreter"
         Button_Arreter.Size = New Size(40, 40)
         Button_Arreter.TabIndex = 4
-        Button_Arreter.Text = "Arrêter"
+        Button_Arreter.Text = LanguageManager.GetString("Form1_Button_Arreter_Text")
         Button_Arreter.UseVisualStyleBackColor = False
         ' 
         ' Button_Jouer
@@ -384,7 +384,7 @@ Partial Class Form1
         Button_Jouer.Name = "Button_Jouer"
         Button_Jouer.Size = New Size(40, 40)
         Button_Jouer.TabIndex = 5
-        Button_Jouer.Text = "Jouer"
+        Button_Jouer.Text = LanguageManager.GetString("Form1_Button_Jouer_Text")
         Button_Jouer.UseVisualStyleBackColor = False
         ' 
         ' Button_PauseReprise
@@ -401,7 +401,7 @@ Partial Class Form1
         Button_PauseReprise.Name = "Button_PauseReprise"
         Button_PauseReprise.Size = New Size(40, 40)
         Button_PauseReprise.TabIndex = 6
-        Button_PauseReprise.Text = "Pause"
+        Button_PauseReprise.Text = LanguageManager.GetString("Form1_Button_PauseReprise_Text")
         Button_PauseReprise.UseVisualStyleBackColor = False
         ' 
         ' Button_CalculBPM
@@ -418,7 +418,7 @@ Partial Class Form1
         Button_CalculBPM.Name = "Button_CalculBPM"
         Button_CalculBPM.Size = New Size(40, 40)
         Button_CalculBPM.TabIndex = 7
-        Button_CalculBPM.Text = "BPM"
+        Button_CalculBPM.Text = LanguageManager.GetString("Form1_Button_CalculBPM_Text")
         Button_CalculBPM.UseVisualStyleBackColor = False
         ' 
         ' Button_Mute
@@ -435,7 +435,7 @@ Partial Class Form1
         Button_Mute.Name = "Button_Mute"
         Button_Mute.Size = New Size(40, 40)
         Button_Mute.TabIndex = 8
-        Button_Mute.Text = "Mute"
+        Button_Mute.Text = LanguageManager.GetString("Form1_Button_Mute_Text")
         Button_Mute.UseVisualStyleBackColor = False
         ' 
         ' Button_InfoSelect
@@ -452,7 +452,7 @@ Partial Class Form1
         Button_InfoSelect.Name = "Button_InfoSelect"
         Button_InfoSelect.Size = New Size(35, 35)
         Button_InfoSelect.TabIndex = 2
-        Button_InfoSelect.Text = "Info"
+        Button_InfoSelect.Text = LanguageManager.GetString("Form1_Button_InfoSelect_Text")
         Button_InfoSelect.UseVisualStyleBackColor = False
         ' 
         ' Button_Ajout
@@ -467,7 +467,7 @@ Partial Class Form1
         Button_Ajout.Name = "Button_Ajout"
         Button_Ajout.Size = New Size(35, 35)
         Button_Ajout.TabIndex = 3
-        Button_Ajout.Text = "Ajout"
+        Button_Ajout.Text = LanguageManager.GetString("Form1_Button_Ajout_Text")
         Button_Ajout.UseVisualStyleBackColor = False
         ' 
         ' Button_Playlist
@@ -484,7 +484,7 @@ Partial Class Form1
         Button_Playlist.Name = "Button_Playlist"
         Button_Playlist.Size = New Size(35, 35)
         Button_Playlist.TabIndex = 1
-        Button_Playlist.Text = "Playlist"
+        Button_Playlist.Text = LanguageManager.GetString("Form1_Button_Playlist_Text")
         Button_Playlist.UseVisualStyleBackColor = False
         ' 
         ' GroupBox3
@@ -515,7 +515,7 @@ Partial Class Form1
         Button_ClearRecherche.Name = "Button_ClearRecherche"
         Button_ClearRecherche.Size = New Size(25, 25)
         Button_ClearRecherche.TabIndex = 4
-        Button_ClearRecherche.Text = "✕"
+        Button_ClearRecherche.Text = LanguageManager.GetString("Form1_Button_ClearRecherche_Text")
         Button_ClearRecherche.UseVisualStyleBackColor = False
         ' 
         ' TextBox_Recherche
@@ -523,7 +523,7 @@ Partial Class Form1
         TextBox_Recherche.Font = New Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0)
         TextBox_Recherche.Location = New Point(149, 18)
         TextBox_Recherche.Name = "TextBox_Recherche"
-        TextBox_Recherche.PlaceholderText = "Rechercher..."
+        TextBox_Recherche.PlaceholderText = LanguageManager.GetString("Form1_TextBox_Recherche_PlaceholderText")
         TextBox_Recherche.Size = New Size(349, 22)
         TextBox_Recherche.TabIndex = 3
         ' 
@@ -555,24 +555,24 @@ Partial Class Form1
         ' 
         ' Num
         ' 
-        Num.Text = "#"
+        Num.Text = LanguageManager.GetString("Form1_Column_Num_Text")
         Num.TextAlign = HorizontalAlignment.Center
         Num.Width = 40
         ' 
         ' Chansons
         ' 
-        Chansons.Text = "Chansons"
+        Chansons.Text = LanguageManager.GetString("Form1_Column_Chansons_Text")
         Chansons.TextAlign = HorizontalAlignment.Center
         Chansons.Width = 320
         ' 
         ' BPM
         ' 
-        BPM.Text = "BPM"
+        BPM.Text = LanguageManager.GetString("Form1_Column_BPM_Text")
         BPM.TextAlign = HorizontalAlignment.Center
         ' 
         ' Durée
         ' 
-        Durée.Text = "Durée"
+        Durée.Text = LanguageManager.GetString("Form1_Column_Duree_Text")
         Durée.TextAlign = HorizontalAlignment.Center
         Durée.Width = 80
         ' 
@@ -606,7 +606,7 @@ Partial Class Form1
         ButtonModeDJ.Name = "ButtonModeDJ"
         ButtonModeDJ.Size = New Size(35, 35)
         ButtonModeDJ.TabIndex = 6
-        ButtonModeDJ.Text = "DJ Mixer"
+        ButtonModeDJ.Text = LanguageManager.GetString("Form1_ButtonModeDJ_Text")
         ButtonModeDJ.UseVisualStyleBackColor = False
         ' 
         ' Button_Loop_Aide
@@ -621,7 +621,7 @@ Partial Class Form1
         Button_Loop_Aide.Name = "Button_Loop_Aide"
         Button_Loop_Aide.Size = New Size(58, 25)
         Button_Loop_Aide.TabIndex = 5
-        Button_Loop_Aide.Text = "Aide"
+        Button_Loop_Aide.Text = LanguageManager.GetString("Form1_Button_Loop_Aide_Text")
         Button_Loop_Aide.UseVisualStyleBackColor = False
         ' 
         ' Button_Loop
@@ -638,7 +638,7 @@ Partial Class Form1
         Button_Loop.Name = "Button_Loop"
         Button_Loop.Size = New Size(35, 35)
         Button_Loop.TabIndex = 4
-        Button_Loop.Text = "Loop"
+        Button_Loop.Text = LanguageManager.GetString("Form1_Button_Loop_Text")
         Button_Loop.UseVisualStyleBackColor = False
         ' 
         ' Button_Parametres
@@ -655,7 +655,7 @@ Partial Class Form1
         Button_Parametres.Name = "Button_Parametres"
         Button_Parametres.Size = New Size(35, 35)
         Button_Parametres.TabIndex = 0
-        Button_Parametres.Text = "Param"
+        Button_Parametres.Text = LanguageManager.GetString("Form1_Button_Parametres_Text")
         Button_Parametres.UseVisualStyleBackColor = False
         ' 
         ' GroupBox_Avancement
@@ -695,7 +695,7 @@ Partial Class Form1
         MaximizeBox = False
         Name = "Form1"
         StartPosition = FormStartPosition.CenterScreen
-        Text = "AudioPlay "
+        Text = LanguageManager.GetString("Form1_Form_Text")
         GroupBox1.ResumeLayout(False)
         GroupBox1.PerformLayout()
         CType(TrackBar_Aigues, ComponentModel.ISupportInitialize).EndInit()

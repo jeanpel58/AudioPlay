@@ -133,8 +133,8 @@ Public Class CDGReader
             Return
         End If
 
-        Dim command As Byte = cdgData(offset) And CDG_MASK
-        Dim instruction As Byte = cdgData(offset + 1) And CDG_MASK
+        Dim command As Byte = CByte(cdgData(offset) And CDG_MASK)
+        Dim instruction As Byte = CByte(cdgData(offset + 1) And CDG_MASK)
 
         ' Seules les commandes CDG_COMMAND (&H9) sont valides
         If command <> CDG_COMMAND Then
@@ -166,8 +166,8 @@ Public Class CDGReader
     ''' Memory Preset : efface l'écran avec une couleur
     ''' </summary>
     Private Sub ProcessMemoryPreset(offset As Integer)
-        Dim color As Byte = cdgData(offset + 4) And &HF
-        Dim repeat As Byte = cdgData(offset + 5) And &HF
+        Dim color As Byte = CByte(cdgData(offset + 4) And &HF)
+        Dim repeat As Byte = CByte(cdgData(offset + 5) And &HF)
 
         ' Remplir tout l'écran
         For y As Integer = 0 To CDG_FULL_HEIGHT - 1
@@ -181,7 +181,7 @@ Public Class CDGReader
     ''' Border Preset : définit la couleur de la bordure
     ''' </summary>
     Private Sub ProcessBorderPreset(offset As Integer)
-        Dim color As Byte = cdgData(offset + 4) And &HF
+        Dim color As Byte = CByte(cdgData(offset + 4) And &HF)
 
         ' Bordures horizontales (haut et bas)
         For y As Integer = 0 To CDG_BORDER_HEIGHT - 1
@@ -204,14 +204,14 @@ Public Class CDGReader
     ''' Tile Block : dessine un bloc 6×12 pixels
     ''' </summary>
     Private Sub ProcessTileBlock(offset As Integer, xorMode As Boolean)
-        Dim color0 As Byte = cdgData(offset + 4) And &HF
-        Dim color1 As Byte = cdgData(offset + 5) And &HF
+        Dim color0 As Byte = CByte(cdgData(offset + 4) And &HF)
+        Dim color1 As Byte = CByte(cdgData(offset + 5) And &HF)
         Dim row As Integer = (cdgData(offset + 6) And &H1F) * 12
         Dim column As Integer = (cdgData(offset + 7) And &H3F) * 6
 
         ' Lire les 12 lignes de pixels (6 bits par ligne)
         For y As Integer = 0 To 11
-            Dim rowByte As Byte = cdgData(offset + 8 + y) And &H3F
+            Dim rowByte As Byte = CByte(cdgData(offset + 8 + y) And &H3F)
 
             For x As Integer = 0 To 5
                 Dim bitSet As Boolean = ((rowByte >> (5 - x)) And 1) = 1
@@ -238,8 +238,8 @@ Public Class CDGReader
     Private Sub ProcessLoadCLUT(offset As Integer, colorOffset As Integer)
         ' Charger 8 couleurs (2 octets par couleur)
         For i As Integer = 0 To 7
-            Dim high As Byte = cdgData(offset + 4 + (i * 2)) And &H3F
-            Dim low As Byte = cdgData(offset + 5 + (i * 2)) And &H3F
+            Dim high As Byte = CByte(cdgData(offset + 4 + (i * 2)) And &H3F)
+            Dim low As Byte = CByte(cdgData(offset + 5 + (i * 2)) And &H3F)
 
             ' Combiner en un mot de 12 bits (4 bits RGB)
             Dim colorValue As Integer = (high << 6) Or low
@@ -287,7 +287,7 @@ Public Class CDGReader
                     Dim sourceY As Integer = y + 6
 
                     If sourceX < CDG_FULL_WIDTH AndAlso sourceY < CDG_FULL_HEIGHT Then
-                        Dim colorIndex As Byte = pixelBuffer(sourceX, sourceY) And &HF
+                        Dim colorIndex As Byte = CByte(pixelBuffer(sourceX, sourceY) And &HF)
                         bmp.SetPixel(x, y, colorTable(colorIndex))
                     End If
                 Next

@@ -75,7 +75,7 @@ Public Class AutoCueDetector
                     For i As Integer = samplesRead - 1 To 0 Step -1
                         If Math.Abs(buffer(i)) > threshold Then
                             ' Signal détecté
-                            Dim samplePosition As Long = (currentPos / reader.WaveFormat.BlockAlign) + i
+                            Dim samplePosition As Long = CLng((currentPos / reader.WaveFormat.BlockAlign) + i)
                             Dim seconds As Double = samplePosition / CDbl(reader.WaveFormat.SampleRate * reader.WaveFormat.Channels)
 
                             ' Ajouter une petite marge

@@ -49,6 +49,14 @@ Public Class CDAudioManager
         Try
             If track Is Nothing Then Return False
             If String.IsNullOrWhiteSpace(outputWavPath) Then Return False
+            Dim freacDisabled As Boolean = True
+            If freacDisabled Then
+                Try
+                    CDAudioAnalyzer.DiagnosticWrite($"FREAC_DISABLED: external ripper disabled. Track={track.TrackNumber}")
+                Catch
+                End Try
+                Return False
+            End If
 
             ' Chercher binaire dans le répertoire de l'application
             Dim appDir As String = AppDomain.CurrentDomain.BaseDirectory
@@ -249,18 +257,18 @@ Public Class CDAudioManager
                             pollTask = Task.Run(Sub()
                                                     Try
                                                         ' Expected bytes per second for CD audio: 44100 Hz * 2 channels * 2 bytes = 176400
-                        Dim bytesPerSec As Double = 176400.0
-                        Dim expectedSize As Double = 0.0
-                        ' Robust expected size calculation: prefer track.Duration, fallback to frame range if available
-                        Try
-                            If track IsNot Nothing AndAlso track.Duration.TotalSeconds > 0 Then
-                                expectedSize = track.Duration.TotalSeconds * bytesPerSec
-                            ElseIf track IsNot Nothing AndAlso track.EndFrame > track.StartFrame Then
-                                Dim durSec As Double = (track.EndFrame - track.StartFrame) / CD_FRAMES_PER_SECOND
-                                If durSec > 0 Then expectedSize = durSec * bytesPerSec
-                            End If
-                        Catch
-                        End Try
+                                                        Dim bytesPerSec As Double = 176400.0
+                                                        Dim expectedSize As Double = 0.0
+                                                        ' Robust expected size calculation: prefer track.Duration, fallback to frame range if available
+                                                        Try
+                                                            If track IsNot Nothing AndAlso track.Duration.TotalSeconds > 0 Then
+                                                                expectedSize = track.Duration.TotalSeconds * bytesPerSec
+                                                            ElseIf track IsNot Nothing AndAlso track.EndFrame > track.StartFrame Then
+                                                                Dim durSec As Double = (track.EndFrame - track.StartFrame) / CD_FRAMES_PER_SECOND
+                                                                If durSec > 0 Then expectedSize = durSec * bytesPerSec
+                                                            End If
+                                                        Catch
+                                                        End Try
 
                                                         While Not token.IsCancellationRequested AndAlso Not p.HasExited
                                                             Try
@@ -286,7 +294,7 @@ Public Class CDAudioManager
                                                                     Catch
                                                                     End Try
                                                                 End If
-                            If Not String.IsNullOrWhiteSpace(outputWavPath) AndAlso File.Exists(outputWavPath) Then
+                                                                If Not String.IsNullOrWhiteSpace(outputWavPath) AndAlso File.Exists(outputWavPath) Then
                                                                     Dim len = New FileInfo(outputWavPath).Length
                                                                     Try
                                                                         Dim headerDeclaredData As Long? = TryReadWavDataChunkSize(outputWavPath)
@@ -308,16 +316,16 @@ Public Class CDAudioManager
                                                                         End If
                                                                         If pctI > lastProgress Then
                                                                             lastProgress = pctI
-                                        Try
-                                            ' Trace progress callback from polling
-                                            Try
-                                                Dim tracePath = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
-                                                System.IO.File.AppendAllText(tracePath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Track={trackNum} source=poll pct={pctI} size={len} expected={CInt(expectedSize)}{Environment.NewLine}")
-                                            Catch
-                                            End Try
-                                            progressCallback(pctI)
-                                        Catch
-                                        End Try
+                                                                            Try
+                                                                                ' Trace progress callback from polling
+                                                                                Try
+                                                                                    Dim tracePath = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                                                                                    System.IO.File.AppendAllText(tracePath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Track={trackNum} source=poll pct={pctI} size={len} expected={CInt(expectedSize)}{Environment.NewLine}")
+                                                                                Catch
+                                                                                End Try
+                                                                                progressCallback(pctI)
+                                                                            Catch
+                                                                            End Try
                                                                             Try
                                                                                 CDAudioAnalyzer.DiagnosticWrite($"FREAC_POLL_PROGRESS: Track={trackNum} pct={pctI} size={len} expected={CInt(expectedSize)}")
                                                                             Catch
@@ -899,8 +907,17 @@ Public Class CDAudioManager
                     End If
 
                     ' Calculer la durée en frames (75 frames = 1 seconde)
-                    Dim startFrame As Integer = MSFToFrames(trackData.Address(1), trackData.Address(2), trackData.Address(3))
-                    Dim endFrame As Integer = MSFToFrames(nextTrackData.Address(1), nextTrackData.Address(2), nextTrackData.Address(3))
+                    ' Use SafeAddressByte to avoid null/address warnings and ensure safe reads
+                    Dim startMinute As Integer = SafeAddressByte(trackData, 1)
+                    Dim startSecond As Integer = SafeAddressByte(trackData, 2)
+                    Dim startFrameByte As Integer = SafeAddressByte(trackData, 3)
+
+                    Dim endMinute As Integer = SafeAddressByte(nextTrackData, 1)
+                    Dim endSecond As Integer = SafeAddressByte(nextTrackData, 2)
+                    Dim endFrameByte As Integer = SafeAddressByte(nextTrackData, 3)
+
+                    Dim startFrame As Integer = MSFToFrames(CByte(startMinute), CByte(startSecond), CByte(startFrameByte))
+                    Dim endFrame As Integer = MSFToFrames(CByte(endMinute), CByte(endSecond), CByte(endFrameByte))
                     ' Protection: si l'adresse de fin n'est pas valide (<= début), estimer une durée par défaut
                     If endFrame <= startFrame Then
                         Dim defaultSeconds As Integer = 180 ' 3 minutes par défaut
@@ -911,7 +928,7 @@ Public Class CDAudioManager
                     Dim durationSeconds As Double = (endFrame - startFrame) / 75.0
 
                     ' Diagnostic détaillé pour toutes les pistes
-                    System.Diagnostics.Debug.WriteLine($"[CDAudioManager] Piste {i}: MSF={trackData.Address(1):D2}:{trackData.Address(2):D2}:{trackData.Address(3):D2} → frames {startFrame} à {endFrame}, durée={durationSeconds:F2}s")
+                    System.Diagnostics.Debug.WriteLine($"[CDAudioManager] Piste {i}: MSF={startMinute:D2}:{startSecond:D2}:{startFrameByte:D2} → frames {startFrame} à {endFrame}, durée={durationSeconds:F2}s")
 
                     ' Vérifier que la durée est raisonnable (éviter les valeurs aberrantes)
                     If durationSeconds > 0 AndAlso durationSeconds < 6000 Then ' Max 100 minutes par piste
@@ -963,6 +980,20 @@ Public Class CDAudioManager
     ' l'adresse absolue telle quelle
     Private Shared Function MSFToFrames(minute As Byte, second As Byte, frame As Byte) As Integer
         Return (minute * 60 + second) * 75 + frame
+    End Function
+
+    ''' <summary>
+    ''' Lit de manière sûre un octet d'adresse MSF depuis TRACK_DATA.Address.
+    ''' Retourne 0 si Address est Nothing ou si l'index est invalide.
+    ''' </summary>
+    Private Shared Function SafeAddressByte(td As TRACK_DATA, idx As Integer) As Byte
+        Try
+            If td.Address Is Nothing Then Return 0
+            If idx < 0 OrElse idx >= td.Address.Length Then Return 0
+            Return td.Address(idx)
+        Catch
+        End Try
+        Return 0
     End Function
 
     ' Vérifie si une TRACK_DATA contient une adresse MSF non nulle

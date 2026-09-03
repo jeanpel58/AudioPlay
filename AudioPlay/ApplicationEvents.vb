@@ -55,7 +55,7 @@ Namespace My
                 MessageBox.Show(AudioPlay.LanguageManager.GetString("UnhandledException_Message", e.Exception.Message, e.Exception.Source, e.Exception.StackTrace),
                                 AudioPlay.LanguageManager.GetString("UnhandledException_Title"), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Catch
-                MessageBox.Show("An unhandled error occurred. See crash.log in %APPDATA%\\AudioPlay.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show(AudioPlay.LanguageManager.GetString("UnhandledException_GenericFallback_Message"), AudioPlay.LanguageManager.GetString("FFMpeg_DownloadError_Title"), MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
         End Sub
         Private Sub OnDomainUnhandledException(sender As Object, e As System.UnhandledExceptionEventArgs)

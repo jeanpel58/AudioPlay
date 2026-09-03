@@ -44,7 +44,7 @@ Partial Class FormEditTracks
         Label_PisteText.Name = "Label_PisteText"
         Label_PisteText.Size = New Size(69, 23)
         Label_PisteText.TabIndex = 2
-        Label_PisteText.Text = "Piste #"
+        Label_PisteText.Text = LanguageManager.GetString("FormEditTracks_Label_PisteText_Text")
         Label_PisteText.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' Label_PisteNumber
@@ -55,7 +55,7 @@ Partial Class FormEditTracks
         Label_PisteNumber.Name = "Label_PisteNumber"
         Label_PisteNumber.Size = New Size(22, 23)
         Label_PisteNumber.TabIndex = 3
-        Label_PisteNumber.Text = "0"
+        Label_PisteNumber.Text = LanguageManager.GetString("FormEditTracks_Label_PisteNumber_Text")
         Label_PisteNumber.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' Label_TitreText
@@ -66,7 +66,7 @@ Partial Class FormEditTracks
         Label_TitreText.Name = "Label_TitreText"
         Label_TitreText.Size = New Size(69, 23)
         Label_TitreText.TabIndex = 4
-        Label_TitreText.Text = "Titre :"
+        Label_TitreText.Text = LanguageManager.GetString("FormEditTracks_Label_TitreText_Text")
         Label_TitreText.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' Label_ArtisteText
@@ -77,7 +77,7 @@ Partial Class FormEditTracks
         Label_ArtisteText.Name = "Label_ArtisteText"
         Label_ArtisteText.Size = New Size(69, 23)
         Label_ArtisteText.TabIndex = 5
-        Label_ArtisteText.Text = "Artiste :"
+        Label_ArtisteText.Text = LanguageManager.GetString("FormEditTracks_Label_ArtisteText_Text")
         Label_ArtisteText.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' TextBoxTitre
@@ -108,7 +108,7 @@ Partial Class FormEditTracks
         Button_PisteSuivante.Name = "Button_PisteSuivante"
         Button_PisteSuivante.Size = New Size(117, 25)
         Button_PisteSuivante.TabIndex = 33
-        Button_PisteSuivante.Text = "Suivante..."
+        Button_PisteSuivante.Text = LanguageManager.GetString("FormEditTracks_Button_PisteSuivante_Text")
         Button_PisteSuivante.UseVisualStyleBackColor = True
         ' 
         ' Button_PistePrecedente
@@ -121,7 +121,7 @@ Partial Class FormEditTracks
         Button_PistePrecedente.Name = "Button_PistePrecedente"
         Button_PistePrecedente.Size = New Size(117, 25)
         Button_PistePrecedente.TabIndex = 34
-        Button_PistePrecedente.Text = "Précédente..."
+        Button_PistePrecedente.Text = LanguageManager.GetString("FormEditTracks_Button_PistePrecedente_Text")
         Button_PistePrecedente.UseVisualStyleBackColor = True
         ' 
         ' ButtonQuitter
@@ -134,7 +134,7 @@ Partial Class FormEditTracks
         ButtonQuitter.Name = "ButtonQuitter"
         ButtonQuitter.Size = New Size(110, 35)
         ButtonQuitter.TabIndex = 35
-        ButtonQuitter.Text = "Quitter"
+        ButtonQuitter.Text = LanguageManager.GetString("FormEditTracks_ButtonQuitter_Text")
         ButtonQuitter.UseVisualStyleBackColor = True
         ' 
         ' Button_EffaceTitre
@@ -147,7 +147,7 @@ Partial Class FormEditTracks
         Button_EffaceTitre.Name = "Button_EffaceTitre"
         Button_EffaceTitre.Size = New Size(33, 25)
         Button_EffaceTitre.TabIndex = 36
-        Button_EffaceTitre.Text = "X"
+        Button_EffaceTitre.Text = LanguageManager.GetString("FormEditTracks_Button_EffaceTitre_Text")
         Button_EffaceTitre.UseVisualStyleBackColor = True
         ' 
         ' Button_EffaceArtiste
@@ -160,7 +160,7 @@ Partial Class FormEditTracks
         Button_EffaceArtiste.Name = "Button_EffaceArtiste"
         Button_EffaceArtiste.Size = New Size(33, 25)
         Button_EffaceArtiste.TabIndex = 37
-        Button_EffaceArtiste.Text = "X"
+        Button_EffaceArtiste.Text = LanguageManager.GetString("FormEditTracks_Button_EffaceArtiste_Text")
         Button_EffaceArtiste.UseVisualStyleBackColor = True
         ' 
         ' FormEditTracks
@@ -182,7 +182,7 @@ Partial Class FormEditTracks
         Icon = CType(resources.GetObject("$this.Icon"), Icon)
         Name = "FormEditTracks"
         StartPosition = FormStartPosition.Manual
-        Text = "Édition des pistes..."
+        Text = LanguageManager.GetString("FormEditTracks_Form_Text")
         ResumeLayout(False)
         PerformLayout()
     End Sub

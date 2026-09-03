@@ -35,7 +35,7 @@ Partial Class FormInputEmail
         LabelPrompt.Name = "LabelPrompt"
         LabelPrompt.Size = New Size(360, 65)
         LabelPrompt.TabIndex = 0
-        LabelPrompt.Text = "Veuillez entrer votre adresse email :"
+        LabelPrompt.Text = LanguageManager.GetString("FormInputEmail_LabelPrompt_Text")
         ' 
         ' TextBoxEmail
         ' 
@@ -50,7 +50,7 @@ Partial Class FormInputEmail
         ButtonOK.Name = "ButtonOK"
         ButtonOK.Size = New Size(80, 30)
         ButtonOK.TabIndex = 2
-        ButtonOK.Text = "OK"
+        ButtonOK.Text = LanguageManager.GetString("FormInputEmail_ButtonOK_Text")
         ButtonOK.UseVisualStyleBackColor = True
         ' 
         ' ButtonCancel
@@ -59,7 +59,7 @@ Partial Class FormInputEmail
         ButtonCancel.Name = "ButtonCancel"
         ButtonCancel.Size = New Size(80, 30)
         ButtonCancel.TabIndex = 3
-        ButtonCancel.Text = "Annuler"
+        ButtonCancel.Text = LanguageManager.GetString("FormInputEmail_ButtonCancel_Text")
         ButtonCancel.UseVisualStyleBackColor = True
         ' 
         ' FormInputEmail
@@ -79,7 +79,7 @@ Partial Class FormInputEmail
         MinimizeBox = False
         Name = "FormInputEmail"
         StartPosition = FormStartPosition.CenterParent
-        Text = "Envoie Courriel à GnuDB"
+        Text = LanguageManager.GetString("FormInputEmail_Form_Text")
         ResumeLayout(False)
         PerformLayout()
 

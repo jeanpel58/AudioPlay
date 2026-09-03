@@ -1091,7 +1091,7 @@ Partial Public Class FormParametres
                         Application.DoEvents() ' Forcer le traitement des événements pour initialiser FormDJ
                         mainForm.Close()
                     Else
-                        MessageBox.Show("mainForm est Nothing!", "Erreur")
+                        MessageBox.Show(LanguageManager.GetString("FormParametres_MainFormNull_Message"), LanguageManager.GetString("FormParametres_MainFormNull_Title"))
                     End If
                 End If
                 Return
@@ -2363,7 +2363,7 @@ Partial Public Class FormParametres
         ' Appliquer immédiatement
         AppliquerEffetsEnTempsReel()
 
-        MessageBox.Show("Les effets audio ont été réinitialisés.", "AudioPlay", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        MessageBox.Show(LanguageManager.GetString("FormParametres_AudioEffectsReset_Message"), LanguageManager.GetString("FormParametres_AudioEffectsReset_Title"), MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 
     Private Sub ButtonResetTimeStretch_Click(sender As Object, e As EventArgs) Handles ButtonResetTimeStretch.Click

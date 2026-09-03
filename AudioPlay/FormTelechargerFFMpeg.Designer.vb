@@ -40,7 +40,7 @@ Partial Class FormTelechargerFFMpeg
         LabelTitre.Name = "LabelTitre"
         LabelTitre.Size = New Size(220, 21)
         LabelTitre.TabIndex = 0
-        LabelTitre.Text = "Téléchargement de FFMpeg"
+        LabelTitre.Text = LanguageManager.GetString("FormTelechargerFFMpeg_LabelTitre_Text")
         ' 
         ' LabelMessage
         ' 
@@ -48,7 +48,7 @@ Partial Class FormTelechargerFFMpeg
         LabelMessage.Name = "LabelMessage"
         LabelMessage.Size = New Size(420, 60)
         LabelMessage.TabIndex = 1
-        LabelMessage.Text = "FFMpeg est nécessaire pour extraire en format FLAC et WMA." & vbCrLf & vbCrLf & "AudioPlay va télécharger FFMpeg automatiquement." & vbCrLf & "Taille: ~120 MB"
+        LabelMessage.Text = LanguageManager.GetString("FormTelechargerFFMpeg_LabelMessage_Text")
         ' 
         ' ProgressBarTelechargemEnt
         ' 
@@ -63,7 +63,7 @@ Partial Class FormTelechargerFFMpeg
         LabelProgression.Name = "LabelProgression"
         LabelProgression.Size = New Size(420, 20)
         LabelProgression.TabIndex = 3
-        LabelProgression.Text = "Préparation du téléchargement..."
+        LabelProgression.Text = LanguageManager.GetString("FormTelechargerFFMpeg_LabelProgression_Text")
         LabelProgression.TextAlign = ContentAlignment.MiddleCenter
         ' 
         ' ButtonAnnuler
@@ -72,7 +72,7 @@ Partial Class FormTelechargerFFMpeg
         ButtonAnnuler.Name = "ButtonAnnuler"
         ButtonAnnuler.Size = New Size(100, 30)
         ButtonAnnuler.TabIndex = 4
-        ButtonAnnuler.Text = "Annuler"
+        ButtonAnnuler.Text = LanguageManager.GetString("FormTelechargerFFMpeg_ButtonAnnuler_Text")
         ButtonAnnuler.UseVisualStyleBackColor = True
         ' 
         ' PictureBoxIcon
@@ -101,7 +101,7 @@ Partial Class FormTelechargerFFMpeg
         MinimizeBox = False
         Name = "FormTelechargerFFMpeg"
         StartPosition = FormStartPosition.CenterParent
-        Text = "Téléchargement FFMpeg pour AudioPlay"
+        Text = LanguageManager.GetString("FormTelechargerFFMpeg_Form_Text")
         CType(PictureBoxIcon, ComponentModel.ISupportInitialize).EndInit()
         ResumeLayout(False)
         PerformLayout()
