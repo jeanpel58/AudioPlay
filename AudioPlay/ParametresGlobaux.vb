@@ -178,21 +178,10 @@ Public Module ParametresGlobauxHelpers
             Else
                 File.Move(tempFile, fichierParam)
             End If
-
-            Try
-                Dim trace = Path.Combine(Path.GetTempPath(), "AudioPlay_param_write_debug.txt")
-                File.AppendAllText(trace, "[" & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") & "] WROTE " & cle & "=" & valeur & " to " & fichierParam & Environment.NewLine)
-            Catch
-            End Try
         Catch ex As Exception
             Try
                 Dim tempFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "parametres.txt.tmp")
                 If File.Exists(tempFile) Then File.Delete(tempFile)
-            Catch
-            End Try
-            Try
-                Dim trace = Path.Combine(Path.GetTempPath(), "AudioPlay_param_write_debug.txt")
-                File.AppendAllText(trace, "[" & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") & "] FAILED WRITE " & cle & "=" & valeur & " - " & ex.Message & Environment.NewLine)
             Catch
             End Try
         End Try

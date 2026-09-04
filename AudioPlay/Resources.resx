@@ -141,6 +141,9 @@
   <data name="APropos_OK" xml:space="preserve">
     <value>OK</value>
   </data>
+  <data name="FormCompresser_ShowSilenceCenters" xml:space="preserve">
+    <value>Afficher le message des centres de silence</value>
+  </data>
   <data name="Compressor_Converting" xml:space="preserve">
     <value>Conversion...</value>
   </data>

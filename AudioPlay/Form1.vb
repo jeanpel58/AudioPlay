@@ -26,6 +26,212 @@ Public Class Form1
         RemoveMenu(hMenu, SC_CLOSE, MF_BYCOMMAND)
     End Sub
 
+    Private Sub ListView1_Paint(sender As Object, e As PaintEventArgs)
+        Try
+            ' Paint handler left intentionally light-weight. Overlay drawing is performed
+            ' via DrawInsertionOverlay to ensure it appears above other rendered content.
+        Catch
+        End Try
+    End Sub
+
+    Private Function GetInsertionY(index As Integer) As Integer
+        Try
+            If index < 0 Then Return -1
+            If ListView1.Items.Count = 0 Then Return 0
+            If index = 0 Then
+                Return ListView1.Items(0).Bounds.Top
+            ElseIf index >= ListView1.Items.Count Then
+                Return ListView1.Items(ListView1.Items.Count - 1).Bounds.Bottom
+            Else
+                Return ListView1.Items(index - 1).Bounds.Bottom
+            End If
+        Catch
+            Return -1
+        End Try
+    End Function
+
+    Private Sub DrawInsertionOverlay(y As Integer)
+        Try
+            If y < 0 Then Return
+            Using g = ListView1.CreateGraphics()
+                Dim theme = ThemeManager.GetCurrentTheme()
+                Dim accent As Color = theme.AccentColor
+                Dim bg As Color = theme.ListViewBackColor
+                Dim lineColor As Color = accent
+                Try
+                    Dim diffR = Math.Abs(accent.R - bg.R)
+                    Dim diffG = Math.Abs(accent.G - bg.G)
+                    Dim diffB = Math.Abs(accent.B - bg.B)
+                    If diffR + diffG + diffB < 60 Then
+                        lineColor = theme.ListViewHeaderForeColor
+                    End If
+                Catch
+                    lineColor = accent
+                End Try
+
+                Dim lineWidth As Integer = 5
+                Using penIns As New Pen(lineColor, lineWidth)
+                    penIns.EndCap = Drawing2D.LineCap.Round
+                    g.DrawLine(penIns, 0, y, ListView1.ClientSize.Width, y)
+                End Using
+                Using shadow As New Pen(Color.FromArgb(80, 0, 0, 0), 1)
+                    g.DrawLine(shadow, 0, y + (lineWidth \ 2) + 1, ListView1.ClientSize.Width, y + (lineWidth \ 2) + 1)
+                End Using
+            End Using
+        Catch
+        End Try
+    End Sub
+
+    Private Sub ListView1_DragLeave(sender As Object, e As EventArgs) Handles ListView1.DragLeave
+        Try
+            dragInsertIndex = -1
+            ListView1.Invalidate()
+            If dragAutoScrollTimer IsNot Nothing Then
+                Try
+                    dragAutoScrollTimer.Stop()
+                Catch
+                End Try
+            End If
+        Catch
+        End Try
+    End Sub
+
+    ''' <summary>
+    ''' Assure l'arrêt de l'auto-scroll et réinitialise l'état lors du relâchement de la souris.
+    ''' Ceci capture les cas où le DragDrop n'a pas été appelé mais la souris a été relâchée.
+    ''' </summary>
+    Private Sub ListView1_MouseUp(sender As Object, e As MouseEventArgs) Handles ListView1.MouseUp
+        Try
+            If dragAutoScrollTimer IsNot Nothing Then
+                Try
+                    dragAutoScrollTimer.Stop()
+                Catch
+                End Try
+            End If
+            dragAutoScrollDirection = 0
+            dragInsertIndex = -1
+            ListView1.Invalidate()
+        Catch
+        End Try
+    End Sub
+
+    Private Sub Form1_MouseUp(sender As Object, e As MouseEventArgs) Handles Me.MouseUp
+        Try
+            If dragAutoScrollTimer IsNot Nothing Then
+                Try
+                    dragAutoScrollTimer.Stop()
+                Catch
+                End Try
+            End If
+            dragAutoScrollDirection = 0
+            dragInsertIndex = -1
+            ListView1.Invalidate()
+        Catch
+        End Try
+    End Sub
+
+    ''' <summary>
+    ''' Fallback: appelé périodiquement pendant une opération de drag pour détecter
+    ''' si l'opération a été annulée ou complétée. Assure l'arrêt immédiat de l'auto-scroll.
+    ''' </summary>
+    Private Sub ListView1_QueryContinueDrag(sender As Object, e As QueryContinueDragEventArgs) Handles ListView1.QueryContinueDrag
+        Try
+            If e.Action <> DragAction.Continue OrElse e.EscapePressed Then
+                If dragAutoScrollTimer IsNot Nothing Then
+                    Try
+                        dragAutoScrollTimer.Stop()
+                    Catch
+                    End Try
+                End If
+                dragAutoScrollDirection = 0
+                dragInsertIndex = -1
+                ListView1.Invalidate()
+            End If
+        Catch
+        End Try
+    End Sub
+
+    Private Sub Form1_QueryContinueDrag(sender As Object, e As QueryContinueDragEventArgs) Handles Me.QueryContinueDrag
+        Try
+            If e.Action <> DragAction.Continue OrElse e.EscapePressed Then
+                If dragAutoScrollTimer IsNot Nothing Then
+                    Try
+                        dragAutoScrollTimer.Stop()
+                    Catch
+                    End Try
+                End If
+                dragAutoScrollDirection = 0
+                dragInsertIndex = -1
+                ListView1.Invalidate()
+            End If
+        Catch
+        End Try
+    End Sub
+
+    Private Sub DragAutoScrollTimer_Tick(sender As Object, e As EventArgs)
+        Try
+            If ListView1.Items.Count = 0 Then Return
+
+            ' Recompute desired insertion index from current mouse position so overlay follows correctly
+            Try
+                Dim clientPoint = ListView1.PointToClient(Cursor.Position)
+                Dim idx = ObtenirIndexInsertionListView(clientPoint)
+                If idx <> dragInsertIndex Then
+                    dragInsertIndex = idx
+                    ListView1.Refresh()
+                    Dim y = GetInsertionY(dragInsertIndex)
+                    DrawInsertionOverlay(y)
+                End If
+                ' Update auto-scroll direction based on mouse pos if outside bounds
+                If clientPoint.Y < 0 Then
+                    dragAutoScrollDirection = -1
+                ElseIf clientPoint.Y > ListView1.ClientSize.Height Then
+                    dragAutoScrollDirection = 1
+                End If
+            Catch
+            End Try
+
+            If dragAutoScrollDirection = 0 Then Return
+            If ListView1.TopItem Is Nothing Then Return
+
+            ' Compute visible count and bounds
+            Dim itemHeight As Integer = 16
+            Try
+                If ListView1.TopItem.Bounds.Height > 0 Then itemHeight = ListView1.TopItem.Bounds.Height
+            Catch
+            End Try
+            Dim visibleCount As Integer = Math.Max(1, ListView1.ClientSize.Height \ Math.Max(1, itemHeight))
+            Dim maxTopIndex As Integer = Math.Max(0, ListView1.Items.Count - visibleCount)
+
+            ' If already at top and user wants to scroll up but insertion is at 0, stop scrolling
+            If dragAutoScrollDirection = -1 AndAlso ListView1.TopItem.Index = 0 AndAlso dragInsertIndex = 0 Then
+                dragAutoScrollDirection = 0
+                Return
+            End If
+            ' If already at bottom and insertion targets end, stop scrolling
+            If dragAutoScrollDirection = 1 AndAlso ListView1.TopItem.Index >= maxTopIndex AndAlso dragInsertIndex >= ListView1.Items.Count Then
+                dragAutoScrollDirection = 0
+                Return
+            End If
+
+            Dim newTop = ListView1.TopItem.Index + dragAutoScrollDirection * dragAutoScrollSpeed
+            newTop = Math.Max(0, Math.Min(maxTopIndex, newTop))
+            If newTop <> ListView1.TopItem.Index Then
+                Try
+                    ListView1.TopItem = ListView1.Items(newTop)
+                Catch
+                End Try
+                ' After scrolling, redraw overlay at updated position
+                Try
+                    Dim y2 = GetInsertionY(dragInsertIndex)
+                    DrawInsertionOverlay(y2)
+                Catch
+                End Try
+            End If
+        Catch
+        End Try
+    End Sub
+
     Private toolTipForm1 As ToolTip = Nothing
 
     Private Version As String = "1.26.08.20"
@@ -817,6 +1023,14 @@ Public Class Form1
     ' ========================================
     ' DESSIN PERSONNALISÉ DU LISTVIEW (pour garder la sélection bleue)
     ' ========================================
+    ' Insertion index during internal drag-and-drop (-1 = none)
+    Private dragInsertIndex As Integer = -1
+    ' Auto-scroll & drag-image support
+    Private dragAutoScrollTimer As System.Windows.Forms.Timer = Nothing
+    Private dragAutoScrollDirection As Integer = 0 ' -1 up, 0 none, 1 down
+    Private dragAutoScrollSpeed As Integer = 1
+    ' Floating drag image removed per user preference; only insertion line is used
+    Private dragCustomBitmap As Bitmap = Nothing
     Private Sub ListView1_OnDrawColumnHeader(sender As Object, e As DrawListViewColumnHeaderEventArgs)
         ' Récupérer le thème actuel
         Dim theme = ThemeManager.GetCurrentTheme()
@@ -884,6 +1098,7 @@ Public Class Form1
             e.Graphics.DrawLine(pen, e.Bounds.Right - 1, e.Bounds.Top, e.Bounds.Right - 1, e.Bounds.Bottom)
             e.Graphics.DrawLine(pen, e.Bounds.Left, e.Bounds.Bottom - 1, e.Bounds.Right, e.Bounds.Bottom - 1)
         End Using
+
     End Sub
 
     ' ========================================
@@ -1571,6 +1786,7 @@ Public Class Form1
         AddHandler ListView1.DrawColumnHeader, AddressOf ListView1_OnDrawColumnHeader
         AddHandler ListView1.DrawItem, AddressOf ListView1_OnDrawItem
         AddHandler ListView1.DrawSubItem, AddressOf ListView1_OnDrawSubItem
+        AddHandler ListView1.Paint, AddressOf ListView1_Paint
 
         ' Activer la gestion du clavier pour le ListView
         AddHandler ListView1.KeyDown, AddressOf ListView1_KeyDown
@@ -4108,6 +4324,24 @@ Public Class Form1
         Next
         indices.Sort()
 
+        dragInsertIndex = -1
+
+        ' No floating drag image per user preference; only draw insertion line
+
+        ' Initialize auto-scroll timer and show drag image form
+        Try
+            If dragAutoScrollTimer Is Nothing Then
+                dragAutoScrollTimer = New System.Windows.Forms.Timer()
+                AddHandler dragAutoScrollTimer.Tick, AddressOf DragAutoScrollTimer_Tick
+                dragAutoScrollTimer.Interval = 50 ' start fast
+            End If
+            dragAutoScrollDirection = 0
+            dragAutoScrollSpeed = 1
+            dragAutoScrollTimer.Start()
+            ' Nothing to show; insertion line will indicate target
+        Catch
+        End Try
+
         ListView1.DoDragDrop(New DataObject(ListViewInternalDragFormat, indices.ToArray()), DragDropEffects.Move)
     End Sub
 
@@ -4125,11 +4359,117 @@ Public Class Form1
         ElseIf e.Data.GetDataPresent(DataFormats.FileDrop) Then
             e.Effect = DragDropEffects.Copy
         End If
+        ' Update visual insertion index for internal moves
+        Try
+            If e.Data.GetDataPresent(ListViewInternalDragFormat) Then
+                Dim clientPoint = ListView1.PointToClient(New Point(e.X, e.Y))
+                Dim idx = ObtenirIndexInsertionListView(clientPoint)
+                If idx <> dragInsertIndex Then
+                    dragInsertIndex = idx
+                    ' Invalidate base drawing then draw overlay line on top
+                    ListView1.Refresh()
+                    Dim y = GetInsertionY(dragInsertIndex)
+                    DrawInsertionOverlay(y)
+                End If
+
+                ' Auto-scroll when cursor near top or bottom (in-list small margin)
+                If clientPoint.Y < 24 Then
+                    dragAutoScrollDirection = -1
+                    dragAutoScrollSpeed = 1 + CInt((24 - clientPoint.Y) / 6)
+                ElseIf clientPoint.Y > ListView1.ClientSize.Height - 24 Then
+                    dragAutoScrollDirection = 1
+                    dragAutoScrollSpeed = 1 + CInt((clientPoint.Y - (ListView1.ClientSize.Height - 24)) / 6)
+                Else
+                    dragAutoScrollDirection = 0
+                End If
+
+                ' If cursor is definitively above/below the control bounds (fast move), fix insertion index
+                If clientPoint.Y < 0 Then
+                    dragInsertIndex = 0
+                    ListView1.Refresh()
+                    Dim yTop = GetInsertionY(dragInsertIndex)
+                    DrawInsertionOverlay(yTop)
+                    ' Do not allow further auto-scroll if already at top
+                    If ListView1.TopItem IsNot Nothing AndAlso ListView1.TopItem.Index = 0 Then
+                        dragAutoScrollDirection = 0
+                    End If
+                ElseIf clientPoint.Y >= ListView1.ClientSize.Height Then
+                    dragInsertIndex = ListView1.Items.Count
+                    ListView1.Refresh()
+                    Dim yBot = GetInsertionY(dragInsertIndex)
+                    DrawInsertionOverlay(yBot)
+                    If ListView1.TopItem IsNot Nothing Then
+                        Dim itemHeight As Integer = 16
+                        Try
+                            If ListView1.TopItem.Bounds.Height > 0 Then itemHeight = ListView1.TopItem.Bounds.Height
+                        Catch
+                        End Try
+                        Dim visibleCount As Integer = Math.Max(1, ListView1.ClientSize.Height \ Math.Max(1, itemHeight))
+                        Dim maxTopIndex As Integer = Math.Max(0, ListView1.Items.Count - visibleCount)
+                        If ListView1.TopItem.Index >= maxTopIndex Then
+                            dragAutoScrollDirection = 0
+                        End If
+                    End If
+                End If
+                ' Prevent scrolling past list bounds so insertion line can stay fixed
+                Try
+                    If ListView1.TopItem IsNot Nothing Then
+                        Dim itemHeight As Integer = 16
+                        Try
+                            If ListView1.TopItem.Bounds.Height > 0 Then itemHeight = ListView1.TopItem.Bounds.Height
+                        Catch
+                        End Try
+                        Dim visibleCount As Integer = Math.Max(1, ListView1.ClientSize.Height \ Math.Max(1, itemHeight))
+                        Dim maxTopIndex As Integer = Math.Max(0, ListView1.Items.Count - visibleCount)
+                        If dragAutoScrollDirection = -1 AndAlso ListView1.TopItem.Index = 0 AndAlso dragInsertIndex = 0 Then
+                            dragAutoScrollDirection = 0
+                        End If
+                        If dragAutoScrollDirection = 1 AndAlso ListView1.TopItem.Index >= maxTopIndex AndAlso dragInsertIndex >= ListView1.Items.Count Then
+                            dragAutoScrollDirection = 0
+                        End If
+                    End If
+                Catch
+                End Try
+                ' Nothing to move visually; insertion line provides feedback
+                If dragAutoScrollDirection = 0 Then
+                    ' no-op
+                Else
+                    ' scroll down: compute approximate number of visible items and advance TopItem
+                    Dim itemHeight As Integer = 16
+                    Try
+                        If ListView1.TopItem IsNot Nothing AndAlso ListView1.TopItem.Bounds.Height > 0 Then
+                            itemHeight = ListView1.TopItem.Bounds.Height
+                        End If
+                    Catch
+                    End Try
+                    Dim visibleCount As Integer = Math.Max(1, ListView1.ClientSize.Height \ Math.Max(1, itemHeight))
+                    Dim lastVisible As Integer = Math.Min(ListView1.Items.Count - 1, ListView1.TopItem.Index + visibleCount)
+                    Dim ni2 = Math.Min(ListView1.Items.Count - 1, ListView1.TopItem.Index + 1)
+                    If ni2 <= lastVisible Then
+                        Try
+                            ListView1.TopItem = ListView1.Items(ni2)
+                        Catch
+                        End Try
+                    End If
+                End If
+            End If
+        Catch
+        End Try
     End Sub
 
     Private Function ObtenirIndexInsertionListView(clientPoint As Point) As Integer
+        ' If point is above the control, insert at start
+        If clientPoint.Y < 0 Then
+            Return 0
+        End If
+        ' If point is below the control, insert at end
+        If clientPoint.Y >= ListView1.ClientSize.Height Then
+            Return ListView1.Items.Count
+        End If
+
         Dim targetItem = ListView1.GetItemAt(clientPoint.X, clientPoint.Y)
         If targetItem Is Nothing Then
+            ' If no item under the point but within bounds, return nearest end
             Return ListView1.Items.Count
         End If
 
@@ -4193,6 +4533,22 @@ Public Class Form1
 
             MettreAJourNumerotation()
             SauvegarderPlaylist()
+            dragInsertIndex = -1
+            ListView1.Invalidate()
+            ' Stop auto-scroll timer and cleanup any temporary bitmaps
+            Try
+                If dragAutoScrollTimer IsNot Nothing Then
+                    dragAutoScrollTimer.Stop()
+                End If
+            Catch
+            End Try
+            Try
+                If dragCustomBitmap IsNot Nothing Then
+                    dragCustomBitmap.Dispose()
+                    dragCustomBitmap = Nothing
+                End If
+            Catch
+            End Try
             Return
         End If
 
@@ -4783,19 +5139,29 @@ Public Class Form1
                     Next
                 End If
 
-                ' If FormCompresser_Agrandir exists in existing file, ensure it's kept
-                If existing.ContainsKey("FormCompresser_Agrandir") Then
-                    ' remove any entry we might have added already
-                    For i = lignes.Count - 1 To 0 Step -1
-                        Try
-                            If lignes(i).StartsWith("FormCompresser_Agrandir=", StringComparison.InvariantCultureIgnoreCase) Then
-                                lignes.RemoveAt(i)
-                            End If
-                        Catch
-                        End Try
-                    Next
-                    lignes.Add($"FormCompresser_Agrandir={existing("FormCompresser_Agrandir")}")
-                End If
+                ' Merge any existing keys not present in our new lines to avoid dropping
+                ' user-specific keys written by other forms (e.g., Analyzer_PreRollSeconds,
+                ' Affiche_CentreSilence, etc.). This preserves per-form preferences.
+                For Each kvp In existing
+                    Try
+                        Dim k = kvp.Key
+                        Dim v = kvp.Value
+                        Dim present As Boolean = False
+                        For Each l In lignes
+                            Try
+                                If l.StartsWith(k & "=", StringComparison.InvariantCultureIgnoreCase) Then
+                                    present = True
+                                    Exit For
+                                End If
+                            Catch
+                            End Try
+                        Next
+                        If Not present Then
+                            lignes.Add($"{k}={v}")
+                        End If
+                    Catch
+                    End Try
+                Next
 
                 File.WriteAllLines(fichierParam, lignes)
             Catch exWriteAll As Exception

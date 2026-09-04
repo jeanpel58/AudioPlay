@@ -49,6 +49,13 @@ Public Class LanguageManager
                 value = _resourceManager.GetString(key, New CultureInfo("fr"))
             End If
             If String.IsNullOrEmpty(value) Then
+                ' Fallbacks codés en dur pour l'aide pré-roll
+                If key = "FormCompresser_PreRoll_Help_Title" Then
+                    Return "Aide : Ajustement Position Début"
+                End If
+                If key = "FormCompresser_PreRoll_Help_Body" Then
+                    Return "Ce réglage permet de reculer le point de départ de la première piste d'un nombre de secondes spécifié (pré-roll) pour éviter que la première note soit coupée trop tôt. Valeurs autorisées : 0.5s à 4.0s."
+                End If
                 System.Diagnostics.Debug.WriteLine($"Ressource non trouvée : {key}")
                 Return "[RESX introuvable] " & key
             End If

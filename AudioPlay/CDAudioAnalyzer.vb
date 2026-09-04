@@ -81,6 +81,8 @@ Public Class CDAudioAnalyzer
     ''' </summary>
     Public Shared Property MaxStartTrimSeconds As Double = 4.0
 
+    ' No first-track specific trim parameters: trimming of track 1 is disabled by design.
+
     ''' <summary>
     ''' Niveau de verbosité des diagnostics.
     ''' Par défaut: Info. Pour réduire la taille des logs, les messages par-frame (CDREAD_*) sont désactivés
@@ -115,9 +117,13 @@ Public Class CDAudioAnalyzer
     Public Shared ReadOnly Property DiagnosticsLogPath As String
         Get
             Try
-                ' Avoid creating persistent temp analysis log file by default; use in-memory diagnostics via DiagnosticWrite
-                ' Keep compatibility: return path only when explicitly requested by other tooling
-                Return System.IO.Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_AnalysisLog.txt")
+                ' Avoid creating persistent temp analysis log file by default; only return a temp path when disk diagnostics are enabled
+                If DiagnosticsToDiskEnabled Then
+                    Return System.IO.Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_AnalysisLog.txt")
+                Else
+                    ' Return an application-local path but do not create or write unless DiagnosticsToDiskEnabled is true
+                    Return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AudioPlay_AnalysisLog.txt")
+                End If
             Catch
                 Return "AudioPlay_AnalysisLog.txt"
             End Try
@@ -136,6 +142,16 @@ Public Class CDAudioAnalyzer
     Public Shared Property EnableSnippetCapture As Boolean = False
     ' Nouveau flag: permet d'autoriser explicitement l'écriture des logs liés aux snippets
     Public Shared Property EnableSnippetLogging As Boolean = False
+    ''' <summary>
+    ''' When true, diagnostics will be written to disk (DiagnosticsLogPath). Default: False to avoid creating temp files.
+    ''' </summary>
+    Public Shared Property DiagnosticsToDiskEnabled As Boolean = False
+
+    ''' <summary>
+    ''' When true, progress trace entries (AudioPlay_progress_trace.txt) will be written to disk by callers.
+    ''' Default: False to avoid creating temp trace files.
+    ''' </summary>
+    Public Shared Property WriteProgressTraceToDisk As Boolean = False
     ''' <summary>
     ''' Force using silence CENTER as cut points (start/end) when a reliable silence is detected.
     ''' This mode is conservative: it still enforces caps and avoids inversions.
@@ -162,6 +178,12 @@ Public Class CDAudioAnalyzer
             EnablePerFrameDiagnostics = False
         Catch
         End Try
+        ' If diagnostics to disk is disabled, avoid creating or touching files in %TEMP%.
+        If Not DiagnosticsToDiskEnabled Then
+            diagnosticsSessionActive = True
+            Return
+        End If
+
         If Not forceReset AndAlso diagnosticsSessionActive Then
             ' Do not reset the log; append a continuation marker instead and return
             Try
@@ -340,6 +362,11 @@ Public Class CDAudioAnalyzer
     ''' Usage sûr : nève pas d'exception en cas d'erreur d'I/O
     ''' </summary>
     Public Shared Sub DiagnosticWrite(message As String)
+        ' If disk diagnostics are disabled, do nothing (no-op) to avoid any file creation
+        If Not DiagnosticsToDiskEnabled Then
+            Return
+        End If
+
         ' Decide whether to write the message depending on diagnostics level and per-frame flag
         If DiagnosticsLevel = DiagnosticsLogLevel.Error Then
             ' Only write messages that are obviously errors when level=Error
@@ -811,8 +838,15 @@ Public Class CDAudioAnalyzer
     ''' </summary>
     Private Shared Function AnalyzeTrackStart(track As CDAudioManager.CDTrack) As Integer
         Try
-            ' Utiliser la fenêtre "avant" pour analyser le début
+            ' For the first track, do not trim the start based on silence detection.
+            ' The start of track 1 should align with the CD start regardless of detected silence.
+            If track.TrackNumber = 1 Then
+                DiagnosticWrite($"AnalyzeTrackStart: track 1 detected - skipping start-trim by design")
+                Return 0
+            End If
+            ' Utiliser la fenêtre "avant" par défaut pour analyser le début (TransitionWindowBeforeSeconds)
             Dim analysisFrames As Integer = CInt(TransitionWindowBeforeSeconds * 75)
+            ' Ne pas lire au-delà de la piste
             Dim framesToRead As Integer = Math.Min(analysisFrames, track.EndFrame - track.StartFrame)
 
             Using tempReader As New CDAudioManager.CDReader(track.Drive, track.TrackNumber, track.Duration, track.StartFrame, track.EndFrame)
@@ -828,13 +862,13 @@ Public Class CDAudioAnalyzer
                     Dim minConsecutiveSlices As Integer = 4 ' Au moins 200ms de silence
 
                     For offset As Integer = 0 To bytesRead - samplesPerSlice Step samplesPerSlice
-                    ' check cancellation request periodically
-                    If ExternalCancellationCheck IsNot Nothing Then
-                        If ExternalCancellationCheck.Invoke() Then
-                            DiagnosticWrite("AnalyzeTrackStart: cancelled by ExternalCancellationCheck")
-                            Return 0
+                        ' check cancellation request periodically
+                        If ExternalCancellationCheck IsNot Nothing Then
+                            If ExternalCancellationCheck.Invoke() Then
+                                DiagnosticWrite("AnalyzeTrackStart: cancelled by ExternalCancellationCheck")
+                                Return 0
+                            End If
                         End If
-                    End If
                         Dim rms As Double = CalculateRMS(buffer, offset, samplesPerSlice)
 
                         If rms < SilenceThreshold Then

@@ -432,9 +432,12 @@ Partial Public Class FormSelecteurPistesCD
                 Try
                     formCompresser.ApplyAgrandirStateFromString(agrVal)
                     ' Log pour diagnostic
+                    ' State debug trace disabled by default
                     Try
-                        Dim trace = Path.Combine(Path.GetTempPath(), "AudioPlay_state_debug.txt")
-                        File.AppendAllText(trace, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ButtonExtraction applied agrVal={agrVal}{Environment.NewLine}")
+                        If CDAudioAnalyzer.DiagnosticsToDiskEnabled Then
+                            Dim trace = Path.Combine(Path.GetTempPath(), "AudioPlay_state_debug.txt")
+                            File.AppendAllText(trace, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ButtonExtraction applied agrVal={agrVal}{Environment.NewLine}")
+                        End If
                     Catch
                     End Try
                 Catch

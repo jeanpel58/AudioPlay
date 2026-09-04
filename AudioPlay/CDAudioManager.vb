@@ -208,10 +208,10 @@ Public Class CDAudioManager
                 Try
                     If progressCallback IsNot Nothing Then
                         ' Trace initial 0% callback
-                            Try
-                                CDAudioAnalyzer.DiagnosticWrite($"PROGRESS_TRACE_INIT: Track={trackNum} source=init pct=0 Time={DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}")
-                            Catch
-                            End Try
+                        Try
+                            CDAudioAnalyzer.DiagnosticWrite($"PROGRESS_TRACE_INIT: Track={trackNum} source=init pct=0 Time={DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}")
+                        Catch
+                        End Try
                         progressCallback(0)
                         lastProgress = 0
                     End If
@@ -275,11 +275,14 @@ Public Class CDAudioManager
                                                                 If cancellationCheck IsNot Nothing Then
                                                                     Try
                                                                         If cancellationCheck() Then
-                                                                            Try
-                                                                                Dim tracePath = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
-                                                                                System.IO.File.AppendAllText(tracePath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Track={trackNum} source=poll CANCEL{Environment.NewLine}")
-                                                                            Catch
-                                                                            End Try
+                                                                            ' Progress trace file writes disabled unless explicitly allowed
+                                                                            If CDAudioAnalyzer.WriteProgressTraceToDisk Then
+                                                                                Try
+                                                                                    Dim tracePath = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                                                                                    System.IO.File.AppendAllText(tracePath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Track={trackNum} source=poll CANCEL{Environment.NewLine}")
+                                                                                Catch
+                                                                                End Try
+                                                                            End If
                                                                             Try
                                                                                 CDAudioAnalyzer.DiagnosticWrite($"FREAC_POLL_CANCEL_REQUEST: Track={trackNum}")
                                                                             Catch
@@ -317,11 +320,13 @@ Public Class CDAudioManager
                                                                             lastProgress = pctI
                                                                             Try
                                                                                 ' Trace progress callback from polling
-                                                                                Try
-                                                                                    Dim tracePath = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
-                                                                                    System.IO.File.AppendAllText(tracePath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Track={trackNum} source=poll pct={pctI} size={len} expected={CInt(expectedSize)}{Environment.NewLine}")
-                                                                                Catch
-                                                                                End Try
+                                                                                If CDAudioAnalyzer.WriteProgressTraceToDisk Then
+                                                                                    Try
+                                                                                        Dim tracePath = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                                                                                        System.IO.File.AppendAllText(tracePath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Track={trackNum} source=poll pct={pctI} size={len} expected={CInt(expectedSize)}{Environment.NewLine}")
+                                                                                    Catch
+                                                                                    End Try
+                                                                                End If
                                                                                 progressCallback(pctI)
                                                                             Catch
                                                                             End Try
@@ -367,11 +372,13 @@ Public Class CDAudioManager
                         If cancellationCheck IsNot Nothing Then
                             Try
                                 If cancellationCheck() Then
-                                    Try
-                                        Dim tracePath = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
-                                        System.IO.File.AppendAllText(tracePath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Track={trackNum} WAIT_LOOP CANCEL{Environment.NewLine}")
-                                    Catch
-                                    End Try
+                                    If CDAudioAnalyzer.WriteProgressTraceToDisk Then
+                                        Try
+                                            Dim tracePath = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                                            System.IO.File.AppendAllText(tracePath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Track={trackNum} WAIT_LOOP CANCEL{Environment.NewLine}")
+                                        Catch
+                                        End Try
+                                    End If
                                     Try
                                         CDAudioAnalyzer.DiagnosticWrite($"FREAC_WAIT_CANCEL_REQUEST: Track={trackNum}")
                                     Catch

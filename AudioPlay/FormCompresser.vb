@@ -30,6 +30,55 @@ Public Class FormCompresser
         End Get
     End Property
 
+    ' Flag utilisé pendant le chargement des paramètres pour éviter d'écrire
+    ' les mêmes valeurs au fichier parametres.txt lors de l'initialisation
+    Private loadingParams As Boolean = False
+
+    ' Numeric control value for pre-roll in seconds (stored as double seconds)
+    Private Function GetPreRollSeconds() As Double
+        Try
+            Dim v As Double = 1.75
+            If NumericWindowPreRoll IsNot Nothing Then
+                If Me IsNot Nothing AndAlso Me.IsHandleCreated AndAlso Me.InvokeRequired Then
+                    Me.Invoke(Sub()
+                                  v = Convert.ToDouble(NumericWindowPreRoll.Value)
+                              End Sub)
+                Else
+                    v = Convert.ToDouble(NumericWindowPreRoll.Value)
+                End If
+                Return Math.Max(0.5, Math.Min(4.0, v))
+            End If
+        Catch
+        End Try
+
+        ' Charger la valeur sauvegardée de PreRoll depuis parametres.txt si présente
+        Try
+            Dim cfgPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "parametres.txt")
+            If File.Exists(cfgPath) AndAlso NumericWindowPreRoll IsNot Nothing Then
+                For Each line In File.ReadAllLines(cfgPath)
+                    If line.StartsWith("Analyzer_PreRollSeconds=") Then
+                        Try
+                            Dim raw = line.Substring("Analyzer_PreRollSeconds=".Length).Trim()
+                            Dim d As Double
+                            If Double.TryParse(raw, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, d) Then
+                                Dim clamped = Math.Max(0.5, Math.Min(4.0, d))
+                                If Me.InvokeRequired Then
+                                    Me.Invoke(Sub() NumericWindowPreRoll.Value = CDec(clamped))
+                                Else
+                                    NumericWindowPreRoll.Value = CDec(clamped)
+                                End If
+                            End If
+                        Catch
+                        End Try
+                        Exit For
+                    End If
+                Next
+            End If
+        Catch
+        End Try
+        Return 1.75
+    End Function
+
     ' API Windows pour enlever le bouton X
     Private Const SC_CLOSE As Integer = &HF060
     Private Const MF_BYCOMMAND As Integer = &H0
@@ -96,10 +145,10 @@ Public Class FormCompresser
             End Using
 
             ' Success marker
-                Try
-                    CDAudioAnalyzer.DiagnosticWrite($"WRITE_WAV_SEGMENT_DONE: dst={destWav} src={sourceWav} start={startSec:F3} end={endSec:F3} Time={DateTime.UtcNow:o}")
-                Catch
-                End Try
+            Try
+                CDAudioAnalyzer.DiagnosticWrite($"WRITE_WAV_SEGMENT_DONE: dst={destWav} src={sourceWav} start={startSec:F3} end={endSec:F3} Time={DateTime.UtcNow:o}")
+            Catch
+            End Try
         Catch ex As Exception
             Try
                 CDAudioAnalyzer.DiagnosticWrite($"WRITE_WAV_SEGMENT_ERROR: src={sourceWav} dst={destWav} Err={ex.Message}")
@@ -338,6 +387,29 @@ Public Class FormCompresser
                     End If
                     If ToolTipPictureBox IsNot Nothing Then ToolTipPictureBox.SetToolTip(CheckBoxPostTraitementAuto, LanguageManager.GetString("FormCompresser_PostProcessing_AutoTip"))
                 End If
+                ' Charger/Synchroniser l'état de CheckBox_Affiche_CentreSilence depuis parametres.txt (par défaut: décoché)
+                Try
+                    If CheckBox_Affiche_CentreSilence IsNot Nothing Then
+                        Dim cfgPathCS = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "parametres.txt")
+                        Dim valCS As String = Nothing
+                        If File.Exists(cfgPathCS) Then
+                            For Each line In File.ReadAllLines(cfgPathCS)
+                                If line.StartsWith("Affiche_CentreSilence=", StringComparison.InvariantCultureIgnoreCase) Then
+                                    valCS = line.Substring("Affiche_CentreSilence=".Length).Trim()
+                                    Exit For
+                                End If
+                            Next
+                        End If
+                        If valCS Is Nothing Then
+                            ' Par défaut décoché
+                            CheckBox_Affiche_CentreSilence.Checked = False
+                            ParametresGlobauxHelpers.EcrireCleParametres("Affiche_CentreSilence", "0")
+                        Else
+                            CheckBox_Affiche_CentreSilence.Checked = (valCS = "1")
+                        End If
+                    End If
+                Catch
+                End Try
                 ' Restaurer l'état agrandi/rapetissé si présent dans les paramètres
                 ' Appliquer l'état agrandi/rapetissé depuis parametres.txt au démarrage de l'application
                 Try
@@ -368,6 +440,69 @@ Public Class FormCompresser
                 End Try
             Catch
             End Try
+        Catch
+        End Try
+        ' Recharger les paramètres spécifiques du formulaire à chaque affichage
+        ' pour garantir l'application des préférences persistées.
+        Try
+            ChargerParametresFormCompresser()
+        Catch
+        End Try
+    End Sub
+
+    Protected Overrides Sub OnShown(e As EventArgs)
+        MyBase.OnShown(e)
+        ' Recharger les paramètres à chaque affichage pour garantir
+        ' que les préférences externes sont appliquées quand la fenêtre redevient visible
+        Try
+            ChargerParametresFormCompresser()
+        Catch
+        End Try
+    End Sub
+
+    ''' <summary>
+    ''' Charge les paramètres persistés propres à FormCompresser depuis parametres.txt
+    ''' et applique les valeurs à l'UI si disponibles.
+    ''' </summary>
+    Private Sub ChargerParametresFormCompresser()
+        Try
+            Dim cfgPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "parametres.txt")
+            If Not File.Exists(cfgPath) Then Return
+
+            loadingParams = True
+            For Each raw In File.ReadAllLines(cfgPath)
+                Try
+                    Dim line = raw.Trim()
+                    If String.IsNullOrEmpty(line) OrElse line.StartsWith("#") Then Continue For
+
+                    If line.StartsWith("Affiche_CentreSilence=", StringComparison.InvariantCultureIgnoreCase) Then
+                        Dim val = line.Substring("Affiche_CentreSilence=".Length).Trim()
+                        If CheckBox_Affiche_CentreSilence IsNot Nothing Then
+                            Dim checkedVal As Boolean = (val = "1")
+                            If Me.InvokeRequired Then
+                                Me.Invoke(Sub() CheckBox_Affiche_CentreSilence.Checked = checkedVal)
+                            Else
+                                CheckBox_Affiche_CentreSilence.Checked = checkedVal
+                            End If
+                        End If
+                    ElseIf line.StartsWith("Analyzer_PreRollSeconds=", StringComparison.InvariantCultureIgnoreCase) Then
+                        Dim rawVal = line.Substring("Analyzer_PreRollSeconds=".Length).Trim()
+                        Dim d As Double
+                        If Double.TryParse(rawVal, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, d) Then
+                            Dim clamped = Math.Max(0.5, Math.Min(4.0, d))
+                            If NumericWindowPreRoll IsNot Nothing Then
+                                If Me.InvokeRequired Then
+                                    Me.Invoke(Sub() NumericWindowPreRoll.Value = CDec(clamped))
+                                Else
+                                    NumericWindowPreRoll.Value = CDec(clamped)
+                                End If
+                            End If
+                        End If
+                    End If
+                Catch
+                End Try
+            Next
+            loadingParams = False
         Catch
         End Try
     End Sub
@@ -510,6 +645,8 @@ Public Class FormCompresser
                 Catch
                 End Try
             End If
+
+
         Catch
         End Try
     End Sub
@@ -1517,6 +1654,17 @@ Public Class FormCompresser
         End Try
     End Sub
 
+    Private Sub CheckBox_Affiche_CentreSilence_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox_Affiche_CentreSilence.CheckedChanged
+        Try
+            If CheckBox_Affiche_CentreSilence.Checked Then
+                ParametresGlobauxHelpers.EcrireCleParametres("Affiche_CentreSilence", "1")
+            Else
+                ParametresGlobauxHelpers.EcrireCleParametres("Affiche_CentreSilence", "0")
+            End If
+        Catch
+        End Try
+    End Sub
+
     Private Sub SafeSetGlobalLabel(text As String)
         Try
             If Me.InvokeRequired Then
@@ -1684,11 +1832,14 @@ Public Class FormCompresser
                     End If
                     If Not progressAnimationTimer.Enabled Then
                         ' Trace that SafeUpdateProgressBar received a target value
-                        Try
-                            Dim tracePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
-                            System.IO.File.AppendAllText(tracePath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] SafeUpdateProgressBar target={v}{Environment.NewLine}")
-                        Catch
-                        End Try
+                        ' Progress trace to temp file disabled by default to avoid creating clutter in %TEMP%
+                        If CDAudioAnalyzer.WriteProgressTraceToDisk Then
+                            Try
+                                Dim tracePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                                System.IO.File.AppendAllText(tracePath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] SafeUpdateProgressBar target={v}{Environment.NewLine}")
+                            Catch
+                            End Try
+                        End If
                         progressAnimationTimer.Start()
                     End If
                 End SyncLock
@@ -1704,6 +1855,8 @@ Public Class FormCompresser
 
     ' Animation helpers for progress smoothing (timer-based)
     Private progressAnimationTimer As System.Windows.Forms.Timer = Nothing
+    ' FileSystemWatcher used to suppress unwanted temp trace files during extraction
+    Private progressTraceWatcher As System.IO.FileSystemWatcher = Nothing
     Private progressAnimationLock As New Object()
     Private progressAnimationTarget As Integer = 0
 
@@ -1732,6 +1885,89 @@ Public Class FormCompresser
                     Return
                 End If
             End SyncLock
+        Catch
+        End Try
+    End Sub
+
+    Private Sub StartSuppressingTempTraceFiles()
+        Try
+            Dim tempDir = System.IO.Path.GetTempPath()
+            Dim p1 = System.IO.Path.Combine(tempDir, "AudioPlay_progress_trace.txt")
+            Dim p2 = System.IO.Path.Combine(tempDir, "AudioPlay_state_debug.txt")
+            ' Delete existing files if present
+            Try
+                If File.Exists(p1) Then File.Delete(p1)
+            Catch
+            End Try
+            Try
+                If File.Exists(p2) Then File.Delete(p2)
+            Catch
+            End Try
+
+            ' Create watcher that removes these files if created during extraction
+            Try
+                If progressTraceWatcher IsNot Nothing Then
+                    Try
+                        progressTraceWatcher.EnableRaisingEvents = False
+                        progressTraceWatcher.Dispose()
+                    Catch
+                    End Try
+                    progressTraceWatcher = Nothing
+                End If
+                progressTraceWatcher = New FileSystemWatcher(tempDir)
+                ' Watch all file names in temp and selectively delete our unwanted traces
+                progressTraceWatcher.Filter = "*"
+                progressTraceWatcher.NotifyFilter = NotifyFilters.FileName Or NotifyFilters.LastWrite
+                AddHandler progressTraceWatcher.Created, Sub(s, e)
+                                                             Try
+                                                                 If String.Equals(e.Name, "AudioPlay_progress_trace.txt", StringComparison.InvariantCultureIgnoreCase) OrElse String.Equals(e.Name, "AudioPlay_state_debug.txt", StringComparison.InvariantCultureIgnoreCase) Then
+                                                                     Try
+                                                                         File.Delete(e.FullPath)
+                                                                     Catch
+                                                                     End Try
+                                                                 End If
+                                                             Catch
+                                                             End Try
+                                                         End Sub
+                AddHandler progressTraceWatcher.Changed, Sub(s, e)
+                                                             Try
+                                                                 If String.Equals(e.Name, "AudioPlay_progress_trace.txt", StringComparison.InvariantCultureIgnoreCase) OrElse String.Equals(e.Name, "AudioPlay_state_debug.txt", StringComparison.InvariantCultureIgnoreCase) Then
+                                                                     Try
+                                                                         File.Delete(e.FullPath)
+                                                                     Catch
+                                                                     End Try
+                                                                 End If
+                                                             Catch
+                                                             End Try
+                                                         End Sub
+                progressTraceWatcher.IncludeSubdirectories = False
+                progressTraceWatcher.EnableRaisingEvents = True
+            Catch
+                ' no-op if watcher cannot be created
+            End Try
+        Catch
+        End Try
+    End Sub
+
+    Private Sub StopSuppressingTempTraceFiles()
+        Try
+            If progressTraceWatcher IsNot Nothing Then
+                Try
+                    progressTraceWatcher.EnableRaisingEvents = False
+                    progressTraceWatcher.Dispose()
+                Catch
+                End Try
+                progressTraceWatcher = Nothing
+            End If
+            ' Attempt to delete any leftover files once more
+            Try
+                Dim tempDir = System.IO.Path.GetTempPath()
+                Dim p1 = System.IO.Path.Combine(tempDir, "AudioPlay_progress_trace.txt")
+                Dim p2 = System.IO.Path.Combine(tempDir, "AudioPlay_state_debug.txt")
+                If File.Exists(p1) Then File.Delete(p1)
+                If File.Exists(p2) Then File.Delete(p2)
+            Catch
+            End Try
         Catch
         End Try
     End Sub
@@ -1785,7 +2021,8 @@ Public Class FormCompresser
     Private lastExtractionQualiteIndex As Integer = 0
     Private lastExtractionAutoEnabled As Boolean = False
     ' Debug: forcer la création de *_fixed.wav même si delta négligeable
-    Private debugForceCreateFixed As Boolean = True
+    ' Disabled by default to avoid creating debug files in album folders
+    Private debugForceCreateFixed As Boolean = False
 
     ' Cache temporaire de la pochette (sauvegardé uniquement lors de l'extraction)
     Private pochetteTempUrl As String = Nothing
@@ -2393,6 +2630,12 @@ Public Class FormCompresser
         CheckBoxEjectCD.Text = LanguageManager.GetString("Compressor_EjectCD")
         CheckBoxVerouillerCD.Text = LanguageManager.GetString("Compressor_LockCD")
         CheckBox_FCompress_SelectDeselect.Text = LanguageManager.GetString("Compressor_SelectDeselectAll")
+        Try
+            If CheckBox_Affiche_CentreSilence IsNot Nothing Then
+                CheckBox_Affiche_CentreSilence.Text = LanguageManager.GetString("FormCompresser_ShowSilenceCenters")
+            End If
+        Catch
+        End Try
 
         ' ListView colonnes
         ColumnHeaderPiste.Text = LanguageManager.GetString("Compressor_ColumnTrack")
@@ -2488,6 +2731,13 @@ Public Class FormCompresser
             AddHandler NumericWindowAfter.ValueChanged, AddressOf AnalyzerControl_ValueChanged
             AddHandler NumericMinSilence.ValueChanged, AddressOf AnalyzerControl_ValueChanged
             AddHandler NumericMaxStartTrim.ValueChanged, AddressOf AnalyzerControl_ValueChanged
+            ' Hook up pre-roll control and help button
+            If NumericWindowPreRoll IsNot Nothing Then
+                AddHandler NumericWindowPreRoll.ValueChanged, AddressOf AnalyzerControl_ValueChanged
+            End If
+            If ButtonHelpPreRoll IsNot Nothing Then
+                AddHandler ButtonHelpPreRoll.Click, AddressOf ButtonHelpPreRoll_Click
+            End If
             ' Handlers to remember previous values and validate on leave
             AddHandler NumericWindowBefore.Enter, AddressOf AnalyzerControl_Enter
             AddHandler NumericWindowAfter.Enter, AddressOf AnalyzerControl_Enter
@@ -2545,7 +2795,7 @@ Public Class FormCompresser
                         CDAudioAnalyzer.TransitionWindowBeforeSeconds = clamped
                         ' Persist user change
                         Try
-                            ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_WindowBeforeSeconds", clamped.ToString())
+                            If Not loadingParams Then ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_WindowBeforeSeconds", clamped.ToString())
                         Catch
                         End Try
 
@@ -2556,7 +2806,18 @@ Public Class FormCompresser
                         CDAudioAnalyzer.TransitionWindowAfterSeconds = clamped2
                         ' Persist user change
                         Try
-                            ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_WindowAfterSeconds", clamped2.ToString())
+                            If Not loadingParams Then ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_WindowAfterSeconds", clamped2.ToString())
+                        Catch
+                        End Try
+
+                    Case "NumericWindowPreRoll"
+                        ' Pre-roll value in seconds (0.50 - 4.00). Persist for future sessions.
+                        Dim raw As Decimal = ctrl.Value
+                        Dim clampedPre As Decimal = Math.Max(CDec(0.5D), Math.Min(CDec(4D), raw))
+                        If clampedPre <> raw Then ctrl.Value = clampedPre
+                        ' Persist user change with invariant culture for decimal separator
+                        Try
+                            If Not loadingParams Then ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_PreRollSeconds", clampedPre.ToString(System.Globalization.CultureInfo.InvariantCulture))
                         Catch
                         End Try
 
@@ -2567,7 +2828,7 @@ Public Class FormCompresser
                         CDAudioAnalyzer.MinSustainedSilenceSeconds = clampedD
                         ' Persist user change (use invariant culture)
                         Try
-                            ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_MinSustainedSilenceSeconds", clampedD.ToString(System.Globalization.CultureInfo.InvariantCulture))
+                            If Not loadingParams Then ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_MinSustainedSilenceSeconds", clampedD.ToString(System.Globalization.CultureInfo.InvariantCulture))
                         Catch
                         End Try
 
@@ -2578,7 +2839,7 @@ Public Class FormCompresser
                         CDAudioAnalyzer.MaxStartTrimSeconds = clampedD2
                         ' Persist user change (use invariant culture)
                         Try
-                            ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_MaxStartTrimSeconds", clampedD2.ToString(System.Globalization.CultureInfo.InvariantCulture))
+                            If Not loadingParams Then ParametresGlobauxHelpers.EcrireCleParametres("Analyzer_MaxStartTrimSeconds", clampedD2.ToString(System.Globalization.CultureInfo.InvariantCulture))
                         Catch
                         End Try
 
@@ -2673,6 +2934,16 @@ Public Class FormCompresser
                 AfficherInfoFFMpegAbsent()
             End If
         End If
+    End Sub
+
+    ' NOTE: FormCompresser_Load already defined earlier; move hookup code into existing load handler.
+
+    Private Sub ButtonHelpPreRoll_Click(sender As Object, e As EventArgs)
+        Try
+            ' Open the HTML help page for PreRoll using the same helper as other help buttons
+            OuvrirAideAnalyser("PreRoll")
+        Catch
+        End Try
     End Sub
 
     ''' <summary>
@@ -2854,12 +3125,14 @@ Public Class FormCompresser
     '''</summary>
     Private Sub NumericUpDown_DB_ValueChanged(sender As Object, e As EventArgs)
         ' Sauvegarder la nouvelle valeur dans les paramètres globaux
-        ParametresGlobaux.volumeExtractionCD = CInt(NumericUpDown_DB.Value)
+        If Not loadingParams Then
+            ParametresGlobaux.volumeExtractionCD = CInt(NumericUpDown_DB.Value)
 
-        ' Sauvegarder immédiatement dans le fichier parametres.txt
-        ParametresGlobauxHelpers.EcrireCleParametres("VolumeExtractionCD", ParametresGlobaux.volumeExtractionCD.ToString())
+            ' Sauvegarder immédiatement dans le fichier parametres.txt
+            ParametresGlobauxHelpers.EcrireCleParametres("VolumeExtractionCD", ParametresGlobaux.volumeExtractionCD.ToString())
 
-        System.Diagnostics.Debug.WriteLine($"[FormCompresser] Volume d'extraction sauvegardé: {ParametresGlobaux.volumeExtractionCD}%")
+            System.Diagnostics.Debug.WriteLine($"[FormCompresser] Volume d'extraction sauvegardé: {ParametresGlobaux.volumeExtractionCD}%")
+        End If
     End Sub
 
     ''' <summary>
@@ -3487,11 +3760,10 @@ Public Class FormCompresser
             Catch
             End Try
 
-            ' Reset progress trace file for fresh session
+            ' Reset progress trace file for fresh session (only when enabled)
             Try
-                Dim tracePath = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
-                ' Overwrite with empty content to reset
-                System.IO.File.WriteAllText(tracePath, String.Empty)
+                ' Start suppressing unwanted temp trace files during extraction
+                StartSuppressingTempTraceFiles()
             Catch
             End Try
 
@@ -3513,6 +3785,12 @@ Public Class FormCompresser
                 End Try
             Catch exInitLog As Exception
                 System.Diagnostics.Debug.WriteLine($"[FormCompresser] InitializeDiagnosticsLog failed: {exInitLog.Message}")
+            End Try
+
+            ' Ensure watcher is active for the duration of the extraction
+            Try
+                StartSuppressingTempTraceFiles()
+            Catch
             End Try
 
             ' ═══ NOUVELLE STRATÉGIE : ANALYSE EN BATCH AVANT EXTRACTION (pairwise) ═══
@@ -3551,6 +3829,7 @@ Public Class FormCompresser
             End Try
             analysesPistes.Clear()
             ' Analyse complète du CD : détecter les silences entre toutes les pistes
+            ' ...
             ' quel que soit le sous-ensemble de pistes choisi pour l'extraction.
             Dim analysisIndices As New List(Of Integer)()
             Try
@@ -3763,20 +4042,26 @@ Public Class FormCompresser
                             Dim countFound As Integer = If(detectedSilenceCenters IsNot Nothing AndAlso detectedSilenceCenters.Count > 0, detectedSilenceCenters.Count, centers.Count)
                             Dim header As String = "Silences entre les pistes trouvés." & Environment.NewLine & Environment.NewLine & $"Nombre: {countFound}" & Environment.NewLine & Environment.NewLine
                             Dim fullMsg As String = header & positionsText
-                            ' Use the larger resizable form so long lists are visible
-                            ' Show the results dialog; when closed (OK) continue with the full extraction
-                            Using dlg As New FormSilenceResults(fullMsg, LanguageManager.GetString("Detection_Silences_Title"))
-                                dlg.ShowDialog(Me)
-                            End Using
-                            ' Ensure we proceed with extraction after the user acknowledged
+                            ' Show the results dialog only if user requested it via CheckBox_Affiche_CentreSilence
                             Try
-                                CDAudioAnalyzer.DiagnosticWrite("DETECT_ONLY_SILENCE: User acknowledged silence list - continuing with extraction")
-                            Catch
-                            End Try
-                            ' Also write a short trace marker to the progress trace file to help debugging
-                            Try
-                                Dim tracePathAck = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
-                                System.IO.File.AppendAllText(tracePathAck, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] USER_ACK_SILENCES{Environment.NewLine}")
+                                If CheckBox_Affiche_CentreSilence IsNot Nothing AndAlso CheckBox_Affiche_CentreSilence.Checked Then
+                                    ' Use the larger resizable form so long lists are visible
+                                    ' Show the results dialog; when closed (OK) continue with the full extraction
+                                    Using dlg As New FormSilenceResults(fullMsg, LanguageManager.GetString("Detection_Silences_Title"))
+                                        dlg.ShowDialog(Me)
+                                    End Using
+                                    ' Ensure we proceed with extraction after the user acknowledged
+                                    Try
+                                        CDAudioAnalyzer.DiagnosticWrite("DETECT_ONLY_SILENCE: User acknowledged silence list - continuing with extraction")
+                                    Catch
+                                    End Try
+                                Else
+                                    ' User opted out of UI for silence centres; log that we skipped showing the dialog
+                                    Try
+                                        CDAudioAnalyzer.DiagnosticWrite("DETECT_ONLY_SILENCE: UI suppressed by CheckBox_Affiche_CentreSilence; continuing with extraction")
+                                    Catch
+                                    End Try
+                                End If
                             Catch
                             End Try
                             ' Disable the detect-only flag so we don't interrupt again during this run
@@ -3909,11 +4194,13 @@ Public Class FormCompresser
                                    Try
 
                                        For Each entry In snapshot
-                                           Try
-                                               Dim traceIter = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
-                                               System.IO.File.AppendAllText(traceIter, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] BACKGROUND_EXTRACT_ITER {entry.Index}{Environment.NewLine}")
-                                           Catch
-                                           End Try
+                                           If CDAudioAnalyzer.WriteProgressTraceToDisk Then
+                                               Try
+                                                   Dim traceIter = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                                                   System.IO.File.AppendAllText(traceIter, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] BACKGROUND_EXTRACT_ITER {entry.Index}{Environment.NewLine}")
+                                               Catch
+                                               End Try
+                                           End If
                                            localPisteNumero += 1
 
                                            ' Vérifier annulation
@@ -3943,28 +4230,34 @@ Public Class FormCompresser
                                            Catch ex As Exception
                                                localPistesEchouees += 1
                                                System.Diagnostics.Debug.WriteLine($"[FormCompresser] Erreur extraction piste {entry.Index + 1} (background): {ex.Message}")
-                                               Try
-                                                   Dim traceEx = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
-                                                   System.IO.File.AppendAllText(traceEx, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] BACKGROUND_EXTRACT_EXCEPTION {entry.Index} {ex.Message}{Environment.NewLine}")
-                                               Catch
-                                               End Try
+                                               If CDAudioAnalyzer.WriteProgressTraceToDisk Then
+                                                   Try
+                                                       Dim traceEx = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                                                       System.IO.File.AppendAllText(traceEx, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] BACKGROUND_EXTRACT_EXCEPTION {entry.Index} {ex.Message}{Environment.NewLine}")
+                                                   Catch
+                                                   End Try
+                                               End If
                                            End Try
 
                                            ' Mettre à jour la progression globale
                                            SafeUpdateGlobalProgressBar(localPisteNumero)
                                            SafeSetGlobalLabel(String.Format(LanguageManager.GetString("Compressor_GlobalProgress"), localPisteNumero, snapshot.Count))
                                        Next
-                                       Try
-                                           Dim traceFinish = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
-                                           System.IO.File.AppendAllText(traceFinish, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] BACKGROUND_EXTRACTION_FINISHED{Environment.NewLine}")
-                                       Catch
-                                       End Try
+                                       If CDAudioAnalyzer.WriteProgressTraceToDisk Then
+                                           Try
+                                               Dim traceFinish = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                                               System.IO.File.AppendAllText(traceFinish, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] BACKGROUND_EXTRACTION_FINISHED{Environment.NewLine}")
+                                           Catch
+                                           End Try
+                                       End If
                                    Catch exOuter As Exception
-                                       Try
-                                           Dim traceOuter = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
-                                           System.IO.File.AppendAllText(traceOuter, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] BACKGROUND_EXTRACTION_FATAL {exOuter.Message}{Environment.NewLine}")
-                                       Catch
-                                       End Try
+                                       If CDAudioAnalyzer.WriteProgressTraceToDisk Then
+                                           Try
+                                               Dim traceOuter = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
+                                               System.IO.File.AppendAllText(traceOuter, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] BACKGROUND_EXTRACTION_FATAL {exOuter.Message}{Environment.NewLine}")
+                                           Catch
+                                           End Try
+                                       End If
                                    End Try
                                End Function)
 
@@ -4010,16 +4303,16 @@ Public Class FormCompresser
 
                     Task.Run(Async Function() As Task
                                  Try
-                                     If Not doAutoPost Then Exit Function
+                                     If Not doAutoPost Then Return
                                      ' If last extraction format was WAV-only, skip automatic post-processing conversions
                                      If String.Equals(post_LastExtractionFormat, "WAV", StringComparison.InvariantCultureIgnoreCase) Then
                                          Try
                                              If post_Pochette IsNot Nothing Then post_Pochette.Dispose()
                                          Catch
                                          End Try
-                                         Exit Function
+                                         Return
                                      End If
-                                     If String.IsNullOrEmpty(uiBasePath) OrElse Not Directory.Exists(uiBasePath) Then Exit Function
+                                     If String.IsNullOrEmpty(uiBasePath) OrElse Not Directory.Exists(uiBasePath) Then Return
 
                                      ' Trouver le sous-répertoire d'album le plus récent
                                      Dim albumDirForAnalysis As String = Nothing
@@ -4035,8 +4328,8 @@ Public Class FormCompresser
                                          End Try
                                      Next
 
-                                     If String.IsNullOrEmpty(albumDirForAnalysis) OrElse Not Directory.Exists(albumDirForAnalysis) Then Exit Function
-                                     If Directory.GetFiles(albumDirForAnalysis, "*.wav").Length = 0 Then Exit Function
+                                     If String.IsNullOrEmpty(albumDirForAnalysis) OrElse Not Directory.Exists(albumDirForAnalysis) Then Return
+                                     If Directory.GetFiles(albumDirForAnalysis, "*.wav").Length = 0 Then Return
 
                                      ' Rechercher l'outil WavAnalyzer dans l'arborescence Tools
                                      Try
@@ -4054,7 +4347,8 @@ Public Class FormCompresser
 
                                          If Not String.IsNullOrEmpty(foundDll) Then
                                              Try
-                                                 Dim outReport = Path.Combine(albumDirForAnalysis, "silence_report.txt")
+                                                 ' Write analyzer output to a temp file to avoid creating files in album unless diagnostics enabled
+                                                 Dim outReport = Path.Combine(Path.GetTempPath(), $"silence_report_{Guid.NewGuid()}.txt")
                                                  Dim psi As New ProcessStartInfo("dotnet") With {
                                                      .CreateNoWindow = True,
                                                      .UseShellExecute = False,
@@ -4087,10 +4381,13 @@ Public Class FormCompresser
                                                              End Try
 
                                                              Try
-                                                                 Dim trace = Path.Combine(Path.GetTempPath(), "AudioPlay_wav_analyzer_trace.txt")
-                                                                 File.AppendAllText(trace, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] WavAnalyzer exit={p.ExitCode} outReport={outReport}{Environment.NewLine}")
-                                                                 If Not String.IsNullOrEmpty(stdout) Then File.AppendAllText(trace, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] STDOUT: {stdout.Replace(vbCrLf, " ")}{Environment.NewLine}")
-                                                                 If Not String.IsNullOrEmpty(stderr) Then File.AppendAllText(trace, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] STDERR: {stderr.Replace(vbCrLf, " ")}{Environment.NewLine}")
+                                                                 ' Analyzer trace to temp is disabled by default; write only when diagnostics enabled
+                                                                 If CDAudioAnalyzer.DiagnosticsToDiskEnabled Then
+                                                                     Dim trace = Path.Combine(Path.GetTempPath(), "AudioPlay_wav_analyzer_trace.txt")
+                                                                     File.AppendAllText(trace, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] WavAnalyzer exit={p.ExitCode} outReport={outReport}{Environment.NewLine}")
+                                                                     If Not String.IsNullOrEmpty(stdout) Then File.AppendAllText(trace, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] STDOUT: {stdout.Replace(vbCrLf, " ")}{Environment.NewLine}")
+                                                                     If Not String.IsNullOrEmpty(stderr) Then File.AppendAllText(trace, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] STDERR: {stderr.Replace(vbCrLf, " ")}{Environment.NewLine}")
+                                                                 End If
                                                              Catch
                                                              End Try
                                                          Finally
@@ -4105,8 +4402,12 @@ Public Class FormCompresser
                                                  End Using
                                              Catch exRun As Exception
                                                  Try
-                                                     Dim trace = Path.Combine(Path.GetTempPath(), "AudioPlay_wav_analyzer_trace.txt")
-                                                     File.AppendAllText(trace, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Failed running WavAnalyzer: {exRun.Message}{Environment.NewLine}")
+                                                     If CDAudioAnalyzer.DiagnosticsToDiskEnabled Then
+                                                         Dim trace = Path.Combine(Path.GetTempPath(), "AudioPlay_wav_analyzer_trace.txt")
+                                                         If Not String.IsNullOrWhiteSpace(trace) Then
+                                                             File.AppendAllText(trace, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Failed running WavAnalyzer: {exRun.Message}{Environment.NewLine}")
+                                                         End If
+                                                     End If
                                                  Catch
                                                  End Try
                                              End Try
@@ -4136,7 +4437,7 @@ Public Class FormCompresser
                                              End Try
                                          Next
 
-                                         If Not String.IsNullOrEmpty(bestReport) Then
+                                         If Not String.IsNullOrEmpty(bestReport) AndAlso CDAudioAnalyzer.DiagnosticsToDiskEnabled Then
                                              Try
                                                  Dim dest = Path.Combine(albumDirForAnalysis, "silence_report.txt")
                                                  If Not String.Equals(Path.GetFullPath(bestReport), Path.GetFullPath(dest), StringComparison.InvariantCultureIgnoreCase) Then
@@ -4158,20 +4459,55 @@ Public Class FormCompresser
 
                                      ' Appliquer le post-traitement interne (synchronisé pour garantir fichiers corrigés avant encodage)
                                      Try
-                                         File.AppendAllText(Path.Combine(albumDirForAnalysis, "AudioPlay_wav_analyzer_trace.txt"), $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ApplyPostProcessingCorrections START for {albumDirForAnalysis}{Environment.NewLine}")
+                                         Dim canWriteDiagStart As Boolean = CDAudioAnalyzer.DiagnosticsToDiskEnabled
+                                         If canWriteDiagStart Then
+                                             File.AppendAllText(Path.Combine(albumDirForAnalysis, "AudioPlay_wav_analyzer_trace.txt"), $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ApplyPostProcessingCorrections START for {albumDirForAnalysis}{Environment.NewLine}")
+                                         End If
                                      Catch
                                      End Try
                                      Try
                                          ApplyPostProcessingCorrections(albumDirForAnalysis)
                                      Catch exCorr As Exception
                                          Try
-                                             Dim trace2 = Path.Combine(Path.GetTempPath(), "AudioPlay_wav_analyzer_trace.txt")
-                                             File.AppendAllText(trace2, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Post-processing failed for album={albumDirForAnalysis} - {exCorr.Message}{Environment.NewLine}")
+                                             If CDAudioAnalyzer.DiagnosticsToDiskEnabled Then
+                                                 Dim trace2 = Path.Combine(Path.GetTempPath(), "AudioPlay_wav_analyzer_trace.txt")
+                                                 If CDAudioAnalyzer.DiagnosticsToDiskEnabled Then
+                                                     File.AppendAllText(trace2, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Post-processing failed for album={albumDirForAnalysis} - {exCorr.Message}{Environment.NewLine}")
+                                                 End If
+                                             End If
                                          Catch
                                          End Try
                                      End Try
                                      Try
-                                         File.AppendAllText(Path.Combine(albumDirForAnalysis, "AudioPlay_wav_analyzer_trace.txt"), $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ApplyPostProcessingCorrections END for {albumDirForAnalysis}{Environment.NewLine}")
+                                         If CDAudioAnalyzer.DiagnosticsToDiskEnabled Then
+                                             File.AppendAllText(Path.Combine(albumDirForAnalysis, "AudioPlay_wav_analyzer_trace.txt"), $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ApplyPostProcessingCorrections END for {albumDirForAnalysis}{Environment.NewLine}")
+                                         End If
+                                     Catch
+                                     End Try
+
+                                     ' If diagnostics to disk are disabled, remove any analyzer/report/debug files created in the album
+                                     Try
+                                         If Not CDAudioAnalyzer.DiagnosticsToDiskEnabled Then
+                                             Try
+                                                 ' Remove any silence_report*.txt first
+                                                 For Each f In Directory.GetFiles(albumDirForAnalysis, "silence_report*.txt")
+                                                     Try
+                                                         File.Delete(f)
+                                                     Catch
+                                                     End Try
+                                                 Next
+
+                                                 ' Remove known artifact files
+                                                 Dim toDelete As String() = {Path.Combine(albumDirForAnalysis, "AudioPlay_wav_analyzer_trace.txt"), Path.Combine(albumDirForAnalysis, "postproc_debug_tracks.txt"), Path.Combine(albumDirForAnalysis, "silence_report.txt")}
+                                                 For Each f In toDelete
+                                                     Try
+                                                         If File.Exists(f) Then File.Delete(f)
+                                                     Catch
+                                                     End Try
+                                                 Next
+                                             Catch
+                                             End Try
+                                         End If
                                      Catch
                                      End Try
 
@@ -4234,8 +4570,10 @@ Public Class FormCompresser
                                      End Try
                                  Catch exOuter As Exception
                                      Try
-                                         Dim trace = Path.Combine(Path.GetTempPath(), "AudioPlay_wav_analyzer_trace.txt")
-                                         File.AppendAllText(trace, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Background analysis error: {exOuter.Message}{Environment.NewLine}")
+                                         If CDAudioAnalyzer.DiagnosticsToDiskEnabled Then
+                                             Dim trace = Path.Combine(Path.GetTempPath(), "AudioPlay_wav_analyzer_trace.txt")
+                                             File.AppendAllText(trace, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Background analysis error: {exOuter.Message}{Environment.NewLine}")
+                                         End If
                                      Catch
                                      End Try
                                  End Try
@@ -4533,11 +4871,57 @@ Public Class FormCompresser
         ' ═══ ANALYSER LA PISTE INDIVIDUELLEMENT JUSTE AVANT EXTRACTION ═══
         Dim pisteAExtraire As CDAudioManager.CDTrack = piste
 
+        ' Appliquer immédiatement un pré-roll défensif pour la première piste
+        Try
+            If piste.TrackNumber = 1 Then
+                Dim firstTrackPreRollSeconds As Double = GetPreRollSeconds()
+                Dim preRollFrames As Integer = CInt(Math.Round(firstTrackPreRollSeconds * 75.0))
+                Dim forcedStart As Integer = Math.Max(0, piste.StartFrame - preRollFrames)
+                If pisteAExtraire.StartFrame <> forcedStart Then
+                    Try
+                        CDAudioAnalyzer.DiagnosticWrite($"PRE_ROLL_INIT: Track=1 originalTOC={piste.StartFrame} oldStart={pisteAExtraire.StartFrame} forcedStart={forcedStart} preRoll={firstTrackPreRollSeconds}s")
+                    Catch
+                    End Try
+                    pisteAExtraire = New CDAudioManager.CDTrack With {
+                        .Drive = piste.Drive,
+                        .TrackNumber = piste.TrackNumber,
+                        .Title = piste.Title,
+                        .Artist = piste.Artist,
+                        .StartFrame = forcedStart,
+                        .EndFrame = piste.EndFrame,
+                        .Duration = TimeSpan.FromSeconds((piste.EndFrame - forcedStart) / 75.0)
+                    }
+                Else
+                    Try
+                        CDAudioAnalyzer.DiagnosticWrite($"PRE_ROLL_INIT_NOOP: Track=1 start already {pisteAExtraire.StartFrame}")
+                    Catch
+                    End Try
+                End If
+            End If
+        Catch
+        End Try
+
         ' Démarrer le chrono de la pré-analyse (pour mesurer latence avant rip)
         swPreAnalysis.Start()
         If ParametresGlobaux.ModeTOCPrecis Then
             ' Mode TOC Précis : utiliser les positions TOC exactes sans modification
             System.Diagnostics.Debug.WriteLine($"[FormCompresser] 📍 Extraction piste {numeroFichier} avec positions TOC EXACTES: {piste.StartFrame}-{piste.EndFrame}")
+            ' Toutefois, pour la première piste, appliquer un petit pré-roll en reculant le début
+            If piste.TrackNumber = 1 Then
+                Dim firstTrackPreRollSeconds As Double = GetPreRollSeconds() ' 1.5-2s recommandé
+                Dim preRollFrames As Integer = CInt(Math.Round(firstTrackPreRollSeconds * 75.0))
+                Dim forcedStart As Integer = Math.Max(0, piste.StartFrame - preRollFrames)
+                System.Diagnostics.Debug.WriteLine($"[FormCompresser] MODE_TOC_PRECIS: applying pre-roll for track 1, forcedStart={forcedStart} preRoll={firstTrackPreRollSeconds}s")
+                pisteAExtraire = New CDAudioManager.CDTrack With {
+                    .Drive = piste.Drive,
+                    .TrackNumber = piste.TrackNumber,
+                    .Title = piste.Title,
+                    .Artist = piste.Artist,
+                    .StartFrame = forcedStart,
+                    .EndFrame = piste.EndFrame,
+                    .Duration = TimeSpan.FromSeconds((piste.EndFrame - forcedStart) / 75.0)
+                }
+            End If
         Else
             ' Mode Normal : effectuer une ré-analyse finale pour chaque piste juste avant l''extraction
             Dim preAnalyse As CDAudioAnalyzer.TrackAnalysis = Nothing
@@ -4601,6 +4985,28 @@ Public Class FormCompresser
                     .EndFrame = appliedAnalyse.AdjustedEndFrame,
                     .Duration = TimeSpan.FromSeconds((appliedAnalyse.AdjustedEndFrame - appliedAnalyse.AdjustedStartFrame) / 75.0)
                 }
+                ' Safety override: never trim the start of the first track here (defensive, in case analysis produced a start trim)
+                Try
+                    If piste.TrackNumber = 1 Then
+                        ' Déplacer le début de la première piste vers l'arrière d'une petite marge (pré-roll)
+                        Dim firstTrackPreRollSeconds As Double = GetPreRollSeconds() ' valeur par défaut : 1.75s (~1.5-2s demandé)
+                        Dim preRollFrames As Integer = CInt(Math.Round(firstTrackPreRollSeconds * 75.0))
+                        Dim forcedStart As Integer = Math.Max(0, piste.StartFrame - preRollFrames)
+                        System.Diagnostics.Debug.WriteLine($"[FormCompresser] OVERRIDE: forcing start of track 1 to TOC minus preRoll ({forcedStart}) - preRoll={firstTrackPreRollSeconds}s")
+                        Try
+                            appliedAnalyse.AdjustedStartFrame = forcedStart
+                            ' Indiquer qu'aucune coupure de début n'est appliquée (on recule avant TOC)
+                            appliedAnalyse.TrimmedStartFrames = 0
+                            appliedAnalyse.WasAdjusted = appliedAnalyse.WasAdjusted AndAlso appliedAnalyse.TrimmedEndFrames > 0
+                        Catch
+                        End Try
+                        ' Recreate pisteAExtraire with forced start
+                        pisteAExtraire.StartFrame = appliedAnalyse.AdjustedStartFrame
+                        pisteAExtraire.EndFrame = appliedAnalyse.AdjustedEndFrame
+                        pisteAExtraire.Duration = TimeSpan.FromSeconds((appliedAnalyse.AdjustedEndFrame - appliedAnalyse.AdjustedStartFrame) / 75.0)
+                    End If
+                Catch
+                End Try
                 System.Diagnostics.Debug.WriteLine($"[FormCompresser] ✅ Extraction avec positions AJUSTÉES (appliquées): {appliedAnalyse.AdjustedStartFrame}-{appliedAnalyse.AdjustedEndFrame}")
                 System.Diagnostics.Debug.WriteLine($"[FormCompresser]    └─ Début: +{appliedAnalyse.TrimmedStartFrames / 75.0:F2}s ({appliedAnalyse.TrimmedStartFrames} frames)")
                 System.Diagnostics.Debug.WriteLine($"[FormCompresser]    └─ Fin: -{appliedAnalyse.TrimmedEndFrames / 75.0:F2}s ({appliedAnalyse.TrimmedEndFrames} frames)")
@@ -4674,6 +5080,44 @@ Public Class FormCompresser
         ' Essayer d'abord avec les frames issues des silences, autrement retomber sur le TOC
         Dim cdReaderRef As NAudio.Wave.WaveStream = Nothing
         Try
+            ' TEMP DEBUG + appliquer un pré-roll pour la première piste avant création du lecteur
+            Try
+                Dim firstTrackPreRollSeconds As Double = GetPreRollSeconds()
+                Dim preRollFrames As Integer = CInt(Math.Round(firstTrackPreRollSeconds * 75.0))
+                Dim forcedStartDisplay As Integer = pisteAExtraire.StartFrame
+                If piste.TrackNumber = 1 Then
+                    Dim forcedStart As Integer = Math.Max(0, piste.StartFrame - preRollFrames)
+                    forcedStartDisplay = forcedStart
+                    If pisteAExtraire.StartFrame <> forcedStart Then
+                        Try
+                            CDAudioAnalyzer.DiagnosticWrite($"APPLY_PRE_ROLL: Track=1 originalTOC={piste.StartFrame} oldAppliedStart={pisteAExtraire.StartFrame} forcedStart={forcedStart} preRoll={firstTrackPreRollSeconds}s")
+                        Catch
+                        End Try
+                        pisteAExtraire = New CDAudioManager.CDTrack With {
+                            .Drive = piste.Drive,
+                            .TrackNumber = piste.TrackNumber,
+                            .Title = piste.Title,
+                            .Artist = piste.Artist,
+                            .StartFrame = forcedStart,
+                            .EndFrame = pisteAExtraire.EndFrame,
+                            .Duration = TimeSpan.FromSeconds((pisteAExtraire.EndFrame - forcedStart) / 75.0)
+                        }
+                    Else
+                        Try
+                            CDAudioAnalyzer.DiagnosticWrite($"APPLY_PRE_ROLL_NOOP: Track=1 start already {pisteAExtraire.StartFrame}")
+                        Catch
+                        End Try
+                    End If
+                End If
+
+                Dim dbgMsg As String = $"DEBUG_PRE_CREATE_READER: Track={piste.TrackNumber} TOCStart={piste.StartFrame} ({piste.StartFrame / 75.0:F3}s) AppliedStart={pisteAExtraire.StartFrame} ({pisteAExtraire.StartFrame / 75.0:F3}s) ForcedStart={forcedStartDisplay} ({forcedStartDisplay / 75.0:F3}s) AppliedEnd={pisteAExtraire.EndFrame} ({pisteAExtraire.EndFrame / 75.0:F3}s) ModeTOCPrecis={ParametresGlobaux.ModeTOCPrecis}"
+                Try
+                    CDAudioAnalyzer.DiagnosticWrite(dbgMsg)
+                Catch
+                End Try
+            Catch
+            End Try
+
             cdReaderRef = CDAudioManager.CreerLecteurCDAudio(pisteAExtraire)
         Catch exCreate1 As Exception
             Try
@@ -4732,7 +5176,13 @@ Public Class FormCompresser
                 End Try
 
                 ' Traiter les formats principaux: MP3 (WAV-first), WAV, FLAC, WMA
-                Dim nomWavTemp As String = Path.Combine(cheminRepertoireAlbum, $"audioplay_temp_{Guid.NewGuid()}.wav")
+                Dim nomWavTemp As String
+                Dim desiredWav As String = Path.Combine(cheminRepertoireAlbum, nomFichier & ".wav")
+                If Not String.IsNullOrEmpty(cheminRepertoireAlbum) AndAlso Not File.Exists(desiredWav) Then
+                    nomWavTemp = desiredWav
+                Else
+                    nomWavTemp = Path.Combine(cheminRepertoireAlbum, $"audioplay_temp_{Guid.NewGuid()}.wav")
+                End If
 
                 Try
                     Select Case format
@@ -4829,25 +5279,30 @@ Public Class FormCompresser
                             Catch
                             End Try
 
-                                ' Déférer la conversion: conserver le WAV pour un post-traitement complet
-                                Try
-                                    CDAudioAnalyzer.DiagnosticWrite($"PENDING_CONVERSION_MARKER: Track={piste.TrackNumber} WAV={sourceForEncoding} Time={DateTime.UtcNow:o}")
-                                Catch
-                                End Try
+                            ' Déférer la conversion: conserver le WAV pour un post-traitement complet
+                            Try
+                                CDAudioAnalyzer.DiagnosticWrite($"PENDING_CONVERSION_MARKER: Track={piste.TrackNumber} WAV={sourceForEncoding} Time={DateTime.UtcNow:o}")
+                            Catch
+                            End Try
                             Try
                                 CDAudioAnalyzer.DiagnosticWrite($"DEFERRED_CONVERSION: Track={piste.TrackNumber} WAV={sourceForEncoding} Final={cheminComplet}")
                             Catch
                             End Try
 
                             ' Instrumentation additionnelle pour conversion MP3: marqueurs et logs dans le dossier d'album
-                                Try
-                                    CDAudioAnalyzer.DiagnosticWrite($"CONV_ARGS_MARKER: Track={piste.TrackNumber} Format=MP3 Final={cheminComplet} Source={sourceForEncoding} BitrateIndex={qualiteIndex} Time={DateTime.UtcNow:o}")
-                                Catch
-                                End Try
+                            Try
+                                CDAudioAnalyzer.DiagnosticWrite($"CONV_ARGS_MARKER: Track={piste.TrackNumber} Format=MP3 Final={cheminComplet} Source={sourceForEncoding} BitrateIndex={qualiteIndex} Time={DateTime.UtcNow:o}")
+                            Catch
+                            End Try
 
                         Case "WAV"
                             ' WAV output: follow WAV-first semantics but apply center->center trimming
                             Dim nomWavTempLocal As String = Path.Combine(cheminRepertoireAlbum, $"audioplay_temp_{Guid.NewGuid()}.wav")
+                            ' For WAV final output path, prefer using final filename early so WAV is kept with useful name if conversion fails
+                            Dim desiredFinalWav = Path.Combine(cheminRepertoireAlbum, nomFichier & ".wav")
+                            If Not File.Exists(desiredFinalWav) Then
+                                nomWavTempLocal = desiredFinalWav
+                            End If
                             Try
                                 ' Create temporary WAV from CDReader
                                 Try
@@ -4954,7 +5409,17 @@ Public Class FormCompresser
                                         .RedirectStandardError = True
                                     }
                                     Dim p As Process = Process.Start(pi)
-                                    p.WaitForExit()
+                                    ' Wait for exit but abort early if cancellation requested
+                                    Do While Not p.HasExited
+                                        If annulationDemandee OrElse (ctsExtraction IsNot Nothing AndAlso ctsExtraction.IsCancellationRequested) Then
+                                            Try
+                                                p.Kill(True)
+                                            Catch
+                                            End Try
+                                            Exit Do
+                                        End If
+                                        Threading.Thread.Sleep(100)
+                                    Loop
                                     Dim exitC As Integer = p.ExitCode
                                     Dim stderr As String = String.Empty
                                     Try
@@ -4984,7 +5449,17 @@ Public Class FormCompresser
                                         .RedirectStandardError = True
                                     }
                                     Dim p As Process = Process.Start(pi)
-                                    p.WaitForExit()
+                                    ' Wait for exit but abort early if cancellation requested
+                                    Do While Not p.HasExited
+                                        If annulationDemandee OrElse (ctsExtraction IsNot Nothing AndAlso ctsExtraction.IsCancellationRequested) Then
+                                            Try
+                                                p.Kill(True)
+                                            Catch
+                                            End Try
+                                            Exit Do
+                                        End If
+                                        Threading.Thread.Sleep(100)
+                                    Loop
                                     Dim exitC2 As Integer = p.ExitCode
                                     Dim stderr2 As String = String.Empty
                                     Try
@@ -5037,6 +5512,11 @@ Public Class FormCompresser
                     ' Pipeline WAV-first: extraire d'abord en WAV, puis convertir en MP3
                     ' Create WAV temporary file in album directory for easier inspection and to avoid Temp folder AV interference
                     Dim nomWavTemp As String = $"audioplay_temp_{Guid.NewGuid()}.wav"
+                    ' Prefer meaningful WAV filename for intermediate WAV used for MP3 conversion
+                    Dim desiredMp3Wav = Path.Combine(cheminRepertoireAlbum, nomFichier & ".wav")
+                    If Not File.Exists(desiredMp3Wav) Then
+                        nomWavTemp = nomFichier & ".wav"
+                    End If
                     Try
                         If Not String.IsNullOrEmpty(cheminRepertoireAlbum) Then
                             Directory.CreateDirectory(cheminRepertoireAlbum)
@@ -5397,6 +5877,11 @@ Public Class FormCompresser
             bytesRead = source.Read(buffer, 0, bufferSize)
             If bytesRead = 0 Then Exit Do
 
+            ' Si annulation demandée, arrêter proprement la copie
+            If annulationDemandee OrElse (ctsExtraction IsNot Nothing AndAlso ctsExtraction.IsCancellationRequested) Then
+                Exit Do
+            End If
+
             destination.Write(buffer, 0, bytesRead)
             totalRead += bytesRead
 
@@ -5474,8 +5959,8 @@ Public Class FormCompresser
                     CDAudioAnalyzer.DiagnosticWrite($"FORCE_ONLY_EXTERNAL_RIPPER_HARD_SKIP: Internal MP3 rip skipped for {cheminFichier}")
                 Catch
                 End Try
-                    ' Marker skipped: do not write marker file to album folder to avoid clutter; keep diagnostic log
-                    CDAudioAnalyzer.DiagnosticWrite($"INTERNAL_SKIP_MARKER: SKIPPED {DateTime.UtcNow:o} ForceOnlyExternalRipper=true File={cheminFichier}")
+                ' Marker skipped: do not write marker file to album folder to avoid clutter; keep diagnostic log
+                CDAudioAnalyzer.DiagnosticWrite($"INTERNAL_SKIP_MARKER: SKIPPED {DateTime.UtcNow:o} ForceOnlyExternalRipper=true File={cheminFichier}")
                 Return
             End If
         Catch
@@ -5536,6 +6021,9 @@ Public Class FormCompresser
         ' Appliquer l'ajustement de volume en utilisant la valeur capturée
         Dim sourceAvecVolume = AppliquerAjustementVolume(source, volumePercentCaptured)
 
+        ' Base filename to use for temporary WAV when we prefer meaningful name
+        Dim nomFichierBase As String = Path.GetFileNameWithoutExtension(cheminFichier)
+
         Try
             ' WAV-first MP3 conversion: write a WAV in the album folder, then convert via existing ConvertWavToMp3
             Await Task.Run(Async Function()
@@ -5545,7 +6033,13 @@ Public Class FormCompresser
                                        Directory.CreateDirectory(albumFolder)
                                    End If
 
-                                   Dim tmpWav As String = Path.Combine(If(String.IsNullOrEmpty(albumFolder), Path.GetTempPath(), albumFolder), $"audioplay_temp_{Guid.NewGuid()}.wav")
+                                   Dim tmpWavName As String = $"audioplay_temp_{Guid.NewGuid()}.wav"
+                                   ' Prefer final filename for temporary WAV so it's meaningful if left after failed conversion
+                                   Dim finalWavCandidate As String = Path.Combine(albumFolder, nomFichierBase & ".wav")
+                                   If Not String.IsNullOrEmpty(albumFolder) AndAlso Not File.Exists(finalWavCandidate) Then
+                                       tmpWavName = nomFichierBase & ".wav"
+                                   End If
+                                   Dim tmpWav As String = Path.Combine(If(String.IsNullOrEmpty(albumFolder), Path.GetTempPath(), albumFolder), tmpWavName)
 
                                    ' Write WAV to disk from sourceAvecVolume
                                    Try
@@ -5563,13 +6057,13 @@ Public Class FormCompresser
                                        CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_WAV_CREATED_FOR_MP3: Track={piste.TrackNumber} WAV={tmpWav}")
                                    Catch exW As Exception
                                        CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_MP3_WAV_WRITE_FAIL: Track={piste.TrackNumber} Err={exW.Message}")
-                                       Return
+                                       Exit Function
                                    End Try
 
                                    ' Ensure WAV is fully written and stable before conversion
                                    If Not WaitForFileReady(tmpWav, 15000) Then
                                        CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_MP3_WAV_NOT_READY: Track={piste.TrackNumber} WAV={tmpWav}")
-                                       Return
+                                       Exit Function
                                    End If
 
                                    ' UI: indicate conversion started
@@ -5589,9 +6083,9 @@ Public Class FormCompresser
                                        convOk = False
                                    End Try
 
-                                    ' UI: restore labels/progress after conversion
-                                    SafeSetProgressBarMarquee(False)
-                                    SafeSetLabelPisteEnCours("", False)
+                                   ' UI: restore labels/progress after conversion
+                                   SafeSetProgressBarMarquee(False)
+                                   SafeSetLabelPisteEnCours("", False)
 
                                    If convOk Then
                                        Try
@@ -6326,7 +6820,33 @@ Public Class FormCompresser
             albumDir = Path.GetDirectoryName(cheminFichier)
             If String.IsNullOrEmpty(albumDir) Then albumDir = Path.GetTempPath()
         End If
-        Dim cheminWavTemp = Path.Combine(albumDir, $"audioplay_temp_{Guid.NewGuid()}.wav")
+        ' Prefer a meaningful WAV filename for FLAC intermediate instead of a random temp name
+        Dim cheminWavTemp As String = Nothing
+        Try
+            Dim desiredBaseName As String = Nothing
+            Try
+                Dim tn As Integer = -1
+                If Integer.TryParse(numeroPiste, tn) Then
+                    desiredBaseName = $"{tn:D2} - {MakeSafeFileName(artiste)} - {MakeSafeFileName(titre)}"
+                Else
+                    desiredBaseName = $"{MakeSafeFileName(numeroPiste)} - {MakeSafeFileName(artiste)} - {MakeSafeFileName(titre)}"
+                End If
+            Catch
+                desiredBaseName = $"audioplay_temp_{Guid.NewGuid().ToString("N")}"
+            End Try
+
+            Dim desiredWavPath = Path.Combine(albumDir, desiredBaseName & ".wav")
+            cheminWavTemp = desiredWavPath
+            Try
+                If File.Exists(cheminWavTemp) Then
+                    cheminWavTemp = Path.Combine(albumDir, Path.GetFileNameWithoutExtension(desiredBaseName) & "_" & Guid.NewGuid().ToString("N") & ".wav")
+                End If
+            Catch
+                cheminWavTemp = Path.Combine(albumDir, $"audioplay_temp_{Guid.NewGuid()}.wav")
+            End Try
+        Catch
+            cheminWavTemp = Path.Combine(albumDir, $"audioplay_temp_{Guid.NewGuid()}.wav")
+        End Try
 
         ' Capturer la valeur du volume de façon thread-safe
         Dim volumePercent As Decimal = 95D
@@ -6350,6 +6870,22 @@ Public Class FormCompresser
                                End Using
                            End Sub)
 
+            ' Si une annulation a été demandée pendant la génération du WAV, supprimer le fichier WAV temporaire
+            If annulationDemandee OrElse (ctsExtraction IsNot Nothing AndAlso ctsExtraction.IsCancellationRequested) Then
+                Try
+                    If File.Exists(cheminWavTemp) Then
+                        File.Delete(cheminWavTemp)
+                        CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_WAV_DELETED_AFTER_CANCEL: Track={numeroPiste} WAV={cheminWavTemp}")
+                    End If
+                Catch exDel As Exception
+                    Try
+                        CDAudioAnalyzer.DiagnosticWrite($"EXTRACTION_WAV_DELETE_ERROR_AFTER_CANCEL: {cheminWavTemp} - {exDel.Message}")
+                    Catch
+                    End Try
+                End Try
+                Return
+            End If
+
             ' Étape 2: Encoder WAV -> FLAC avec FFMpeg et ajustement de volume
             Dim ffmpegPath As String = Await TrouverFFMpeg()
             If Not String.IsNullOrEmpty(ffmpegPath) Then
@@ -6367,7 +6903,17 @@ Public Class FormCompresser
                                    }
 
                                    Dim process As Process = Process.Start(processInfo)
-                                   process.WaitForExit()
+                                   ' Wait for ffmpeg exit but abort early if cancellation requested
+                                   Do While Not process.HasExited
+                                       If annulationDemandee OrElse (ctsExtraction IsNot Nothing AndAlso ctsExtraction.IsCancellationRequested) Then
+                                           Try
+                                               process.Kill(True)
+                                           Catch
+                                           End Try
+                                           Exit Do
+                                       End If
+                                       Threading.Thread.Sleep(100)
+                                   Loop
                                    Try
                                        stderrLocal = process.StandardError.ReadToEnd()
                                    Catch
@@ -6534,7 +7080,34 @@ Public Class FormCompresser
         ' Créer un fichier WAV temporaire
         Dim albumDir As String = Path.GetDirectoryName(cheminFichier)
         If String.IsNullOrEmpty(albumDir) Then albumDir = Path.GetTempPath()
-        Dim cheminWavTemp = Path.Combine(albumDir, $"audioplay_temp_{Guid.NewGuid()}.wav")
+
+        ' Prefer a meaningful WAV filename for WMA intermediate instead of a random temp name
+        Dim cheminWavTemp As String = Nothing
+        Try
+            Dim desiredBaseName As String = Nothing
+            Try
+                Dim tn As Integer = -1
+                If Integer.TryParse(numeroPiste, tn) Then
+                    desiredBaseName = $"{tn:D2} - {MakeSafeFileName(artiste)} - {MakeSafeFileName(titre)}"
+                Else
+                    desiredBaseName = $"{MakeSafeFileName(numeroPiste)} - {MakeSafeFileName(artiste)} - {MakeSafeFileName(titre)}"
+                End If
+            Catch
+                desiredBaseName = $"audioplay_temp_{Guid.NewGuid().ToString("N")}"
+            End Try
+
+            Dim desiredWavPath = Path.Combine(albumDir, desiredBaseName & ".wav")
+            cheminWavTemp = desiredWavPath
+            Try
+                If File.Exists(cheminWavTemp) Then
+                    cheminWavTemp = Path.Combine(albumDir, Path.GetFileNameWithoutExtension(desiredBaseName) & "_" & Guid.NewGuid().ToString("N") & ".wav")
+                End If
+            Catch
+                cheminWavTemp = Path.Combine(albumDir, $"audioplay_temp_{Guid.NewGuid()}.wav")
+            End Try
+        Catch
+            cheminWavTemp = Path.Combine(albumDir, $"audioplay_temp_{Guid.NewGuid()}.wav")
+        End Try
         Dim convOkLocalWma As Boolean = False
         Dim stderrLocalWma As String = String.Empty
 
@@ -6575,7 +7148,17 @@ Public Class FormCompresser
                                    }
 
                                    Dim process As Process = Process.Start(processInfo)
-                                   process.WaitForExit()
+                                   ' Wait for ffmpeg exit but abort early if cancellation requested
+                                   Do While Not process.HasExited
+                                       If annulationDemandee OrElse (ctsExtraction IsNot Nothing AndAlso ctsExtraction.IsCancellationRequested) Then
+                                           Try
+                                               process.Kill(True)
+                                           Catch
+                                           End Try
+                                           Exit Do
+                                       End If
+                                       Threading.Thread.Sleep(100)
+                                   Loop
                                    Try
                                        stderrLocalWma = process.StandardError.ReadToEnd()
                                    Catch

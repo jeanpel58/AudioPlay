@@ -106,7 +106,11 @@ Partial Class FormCompresser
         Button_Agrandir = New Button()
         Button_rapetisser = New Button()
         CheckBoxPostTraitementAuto = New CheckBox()
+        LabelPreRoll = New Label()
+        NumericWindowPreRoll = New NumericUpDown()
+        ButtonHelpPreRoll = New Button()
         ToolTipPictureBox = New ToolTip(components)
+        CheckBox_Affiche_CentreSilence = New CheckBox()
         CType(PictureBoxPochette, ComponentModel.ISupportInitialize).BeginInit()
         ContextMenuStripPictureBox.SuspendLayout()
         CType(NumericUpDown_DB, ComponentModel.ISupportInitialize).BeginInit()
@@ -115,6 +119,7 @@ Partial Class FormCompresser
         CType(NumericWindowAfter, ComponentModel.ISupportInitialize).BeginInit()
         CType(NumericMinSilence, ComponentModel.ISupportInitialize).BeginInit()
         CType(NumericMaxStartTrim, ComponentModel.ISupportInitialize).BeginInit()
+        CType(NumericWindowPreRoll, ComponentModel.ISupportInitialize).BeginInit()
         SuspendLayout()
         ' 
         ' ComboBoxChoixLecteur
@@ -135,7 +140,7 @@ Partial Class FormCompresser
         Label_CDTitre.Name = "Label_CDTitre"
         Label_CDTitre.Size = New Size(100, 23)
         Label_CDTitre.TabIndex = 1
-        Label_CDTitre.Text = LanguageManager.GetString("FormCompresser_Label_CDTitre_Text")
+        Label_CDTitre.Text = "CD Titre"
         Label_CDTitre.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' TextBoxCDTitre
@@ -163,7 +168,7 @@ Partial Class FormCompresser
         LabelCDArtiste.Name = "LabelCDArtiste"
         LabelCDArtiste.Size = New Size(100, 23)
         LabelCDArtiste.TabIndex = 3
-        LabelCDArtiste.Text = LanguageManager.GetString("FormCompresser_LabelCDArtiste_Text")
+        LabelCDArtiste.Text = "CD Artiste"
         LabelCDArtiste.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' Label_ChoixLecteur
@@ -174,7 +179,7 @@ Partial Class FormCompresser
         Label_ChoixLecteur.Name = "Label_ChoixLecteur"
         Label_ChoixLecteur.Size = New Size(373, 23)
         Label_ChoixLecteur.TabIndex = 5
-        Label_ChoixLecteur.Text = LanguageManager.GetString("FormCompresser_Label_ChoixLecteur_Text")
+        Label_ChoixLecteur.Text = "Choix de lecteur"
         Label_ChoixLecteur.TextAlign = ContentAlignment.MiddleCenter
         ' 
         ' TextBoxAnnee
@@ -193,7 +198,7 @@ Partial Class FormCompresser
         LabelAnnee.Name = "LabelAnnee"
         LabelAnnee.Size = New Size(100, 23)
         LabelAnnee.TabIndex = 6
-        LabelAnnee.Text = LanguageManager.GetString("FormCompresser_LabelAnnee_Text")
+        LabelAnnee.Text = "Année"
         LabelAnnee.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' ComboBoxGenre
@@ -214,7 +219,7 @@ Partial Class FormCompresser
         LabelGenre.Name = "LabelGenre"
         LabelGenre.Size = New Size(53, 23)
         LabelGenre.TabIndex = 9
-        LabelGenre.Text = LanguageManager.GetString("FormCompresser_LabelGenre_Text")
+        LabelGenre.Text = "Genre"
         LabelGenre.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' Label3
@@ -224,7 +229,7 @@ Partial Class FormCompresser
         Label3.Name = "Label3"
         Label3.Size = New Size(108, 23)
         Label3.TabIndex = 10
-        Label3.Text = LanguageManager.GetString("FormCompresser_Label3_Text")
+        Label3.Text = "CD Pochette"
         Label3.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' PictureBoxPochette
@@ -248,38 +253,38 @@ Partial Class FormCompresser
         ' 
         tsmiSearchCover.Name = "tsmiSearchCover"
         tsmiSearchCover.Size = New Size(196, 22)
-        tsmiSearchCover.Text = LanguageManager.GetString("FormCompresser_tsmiSearchCover_Text")
+        tsmiSearchCover.Text = "Rechercher pochette"
         ' 
         ' tsmiAddCoverFromFile
         ' 
         tsmiAddCoverFromFile.Name = "tsmiAddCoverFromFile"
         tsmiAddCoverFromFile.Size = New Size(196, 22)
-        tsmiAddCoverFromFile.Text = LanguageManager.GetString("FormCompresser_tsmiAddCoverFromFile_Text")
+        tsmiAddCoverFromFile.Text = "Ajouter depuis fichier..."
         ' 
         ' tsmiSizeMenu
         ' 
         tsmiSizeMenu.DropDownItems.AddRange(New ToolStripItem() {tsmiSizeNormal, tsmiSizeStretch, tsmiSizeZoom})
         tsmiSizeMenu.Name = "tsmiSizeMenu"
         tsmiSizeMenu.Size = New Size(196, 22)
-        tsmiSizeMenu.Text = LanguageManager.GetString("FormCompresser_tsmiSizeMenu_Text")
+        tsmiSizeMenu.Text = "Affichage"
         ' 
         ' tsmiSizeNormal
         ' 
         tsmiSizeNormal.Name = "tsmiSizeNormal"
         tsmiSizeNormal.Size = New Size(154, 22)
-        tsmiSizeNormal.Text = LanguageManager.GetString("FormCompresser_tsmiSizeNormal_Text")
+        tsmiSizeNormal.Text = "Tel quel"
         ' 
         ' tsmiSizeStretch
         ' 
         tsmiSizeStretch.Name = "tsmiSizeStretch"
         tsmiSizeStretch.Size = New Size(154, 22)
-        tsmiSizeStretch.Text = LanguageManager.GetString("FormCompresser_tsmiSizeStretch_Text")
+        tsmiSizeStretch.Text = "Étiré"
         ' 
         ' tsmiSizeZoom
         ' 
         tsmiSizeZoom.Name = "tsmiSizeZoom"
         tsmiSizeZoom.Size = New Size(154, 22)
-        tsmiSizeZoom.Text = LanguageManager.GetString("FormCompresser_tsmiSizeZoom_Text")
+        tsmiSizeZoom.Text = "Ajuster (Zoom)"
         ' 
         ' LabelDimImagText
         ' 
@@ -288,7 +293,7 @@ Partial Class FormCompresser
         LabelDimImagText.Name = "LabelDimImagText"
         LabelDimImagText.Size = New Size(132, 23)
         LabelDimImagText.TabIndex = 12
-        LabelDimImagText.Text = LanguageManager.GetString("FormCompresser_LabelDimImagText_Text")
+        LabelDimImagText.Text = "Dimensions image:"
         LabelDimImagText.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' LabelTailleImagText
@@ -298,7 +303,7 @@ Partial Class FormCompresser
         LabelTailleImagText.Name = "LabelTailleImagText"
         LabelTailleImagText.Size = New Size(132, 23)
         LabelTailleImagText.TabIndex = 13
-        LabelTailleImagText.Text = LanguageManager.GetString("FormCompresser_LabelTailleImagText_Text")
+        LabelTailleImagText.Text = "Taille image:"
         LabelTailleImagText.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' LabelTailleImage
@@ -326,7 +331,7 @@ Partial Class FormCompresser
         LabelNumCD.Name = "LabelNumCD"
         LabelNumCD.Size = New Size(132, 23)
         LabelNumCD.TabIndex = 17
-        LabelNumCD.Text = LanguageManager.GetString("FormCompresser_LabelNumCD_Text")
+        LabelNumCD.Text = "Numéro de CD:"
         LabelNumCD.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' LabelPremierNumPiste
@@ -336,7 +341,7 @@ Partial Class FormCompresser
         LabelPremierNumPiste.Name = "LabelPremierNumPiste"
         LabelPremierNumPiste.Size = New Size(167, 23)
         LabelPremierNumPiste.TabIndex = 16
-        LabelPremierNumPiste.Text = LanguageManager.GetString("FormCompresser_LabelPremierNumPiste_Text")
+        LabelPremierNumPiste.Text = "Premier numéro de piste:"
         LabelPremierNumPiste.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' TextBoxPremierNumPiste
@@ -347,7 +352,7 @@ Partial Class FormCompresser
         TextBoxPremierNumPiste.Name = "TextBoxPremierNumPiste"
         TextBoxPremierNumPiste.Size = New Size(27, 18)
         TextBoxPremierNumPiste.TabIndex = 18
-        TextBoxPremierNumPiste.Text = LanguageManager.GetString("FormCompresser_TextBoxPremierNumPiste_Text")
+        TextBoxPremierNumPiste.Text = "1"
         TextBoxPremierNumPiste.TextAlign = HorizontalAlignment.Right
         ' 
         ' TextBoxNumCD
@@ -358,7 +363,7 @@ Partial Class FormCompresser
         TextBoxNumCD.Name = "TextBoxNumCD"
         TextBoxNumCD.Size = New Size(27, 18)
         TextBoxNumCD.TabIndex = 19
-        TextBoxNumCD.Text = LanguageManager.GetString("FormCompresser_TextBoxNumCD_Text")
+        TextBoxNumCD.Text = "1"
         TextBoxNumCD.TextAlign = HorizontalAlignment.Right
         ' 
         ' TextBoxCommentaire
@@ -377,7 +382,7 @@ Partial Class FormCompresser
         LabelTypeConversion.Name = "LabelTypeConversion"
         LabelTypeConversion.Size = New Size(165, 23)
         LabelTypeConversion.TabIndex = 20
-        LabelTypeConversion.Text = LanguageManager.GetString("FormCompresser_LabelTypeConversion_Text")
+        LabelTypeConversion.Text = "Type de conversion:"
         LabelTypeConversion.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' ComboBoxTypeConversion
@@ -408,7 +413,7 @@ Partial Class FormCompresser
         LabelQualiteConversion.Name = "LabelQualiteConversion"
         LabelQualiteConversion.Size = New Size(165, 23)
         LabelQualiteConversion.TabIndex = 26
-        LabelQualiteConversion.Text = LanguageManager.GetString("FormCompresser_LabelQualiteConversion_Text")
+        LabelQualiteConversion.Text = "Qualité de conversion:"
         LabelQualiteConversion.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' LabelRepSauvegarde
@@ -418,7 +423,7 @@ Partial Class FormCompresser
         LabelRepSauvegarde.Name = "LabelRepSauvegarde"
         LabelRepSauvegarde.Size = New Size(165, 23)
         LabelRepSauvegarde.TabIndex = 28
-        LabelRepSauvegarde.Text = LanguageManager.GetString("FormCompresser_LabelRepSauvegarde_Text")
+        LabelRepSauvegarde.Text = "Répertoire de sauvegarde:"
         LabelRepSauvegarde.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' TextBoxRepSauvegarde
@@ -440,7 +445,7 @@ Partial Class FormCompresser
         ButtonQuitter.Name = "ButtonQuitter"
         ButtonQuitter.Size = New Size(110, 35)
         ButtonQuitter.TabIndex = 31
-        ButtonQuitter.Text = LanguageManager.GetString("FormCompresser_ButtonQuitter_Text")
+        ButtonQuitter.Text = "Quitter"
         ButtonQuitter.UseVisualStyleBackColor = True
         ' 
         ' ButtonExtraire
@@ -453,7 +458,7 @@ Partial Class FormCompresser
         ButtonExtraire.Name = "ButtonExtraire"
         ButtonExtraire.Size = New Size(110, 35)
         ButtonExtraire.TabIndex = 30
-        ButtonExtraire.Text = LanguageManager.GetString("FormCompresser_ButtonExtraire_Text")
+        ButtonExtraire.Text = "Extraire"
         ButtonExtraire.UseVisualStyleBackColor = True
         ' 
         ' ButtonAnnuler
@@ -466,7 +471,7 @@ Partial Class FormCompresser
         ButtonAnnuler.Name = "ButtonAnnuler"
         ButtonAnnuler.Size = New Size(110, 35)
         ButtonAnnuler.TabIndex = 32
-        ButtonAnnuler.Text = LanguageManager.GetString("FormCompresser_ButtonAnnuler_Text")
+        ButtonAnnuler.Text = "Annuler"
         ButtonAnnuler.UseVisualStyleBackColor = True
         ButtonAnnuler.Visible = False
         ' 
@@ -480,7 +485,7 @@ Partial Class FormCompresser
         ButtonRepSauvegarde.Name = "ButtonRepSauvegarde"
         ButtonRepSauvegarde.Size = New Size(75, 22)
         ButtonRepSauvegarde.TabIndex = 32
-        ButtonRepSauvegarde.Text = LanguageManager.GetString("FormCompresser_ButtonRepSauvegarde_Text")
+        ButtonRepSauvegarde.Text = "Parcourir"
         ButtonRepSauvegarde.UseVisualStyleBackColor = True
         ' 
         ' CheckBoxEjectCD
@@ -493,7 +498,7 @@ Partial Class FormCompresser
         CheckBoxEjectCD.Name = "CheckBoxEjectCD"
         CheckBoxEjectCD.Size = New Size(145, 19)
         CheckBoxEjectCD.TabIndex = 33
-        CheckBoxEjectCD.Text = LanguageManager.GetString("FormCompresser_CheckBoxEjectCD_Text")
+        CheckBoxEjectCD.Text = "Éjecter le CD à la fin..."
         CheckBoxEjectCD.UseVisualStyleBackColor = True
         ' 
         ' CheckBoxVerouillerCD
@@ -502,11 +507,11 @@ Partial Class FormCompresser
         CheckBoxVerouillerCD.Checked = True
         CheckBoxVerouillerCD.CheckState = CheckState.Checked
         CheckBoxVerouillerCD.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        CheckBoxVerouillerCD.Location = New Point(17, 359)
+        CheckBoxVerouillerCD.Location = New Point(17, 354)
         CheckBoxVerouillerCD.Name = "CheckBoxVerouillerCD"
         CheckBoxVerouillerCD.Size = New Size(319, 19)
         CheckBoxVerouillerCD.TabIndex = 34
-        CheckBoxVerouillerCD.Text = LanguageManager.GetString("FormCompresser_CheckBoxVerouillerCD_Text")
+        CheckBoxVerouillerCD.Text = "Verrouiller le plateau du lecteur pendant l'extraction"
         CheckBoxVerouillerCD.UseVisualStyleBackColor = True
         ' 
         ' LabelCommentaire
@@ -516,7 +521,7 @@ Partial Class FormCompresser
         LabelCommentaire.Name = "LabelCommentaire"
         LabelCommentaire.Size = New Size(100, 23)
         LabelCommentaire.TabIndex = 35
-        LabelCommentaire.Text = LanguageManager.GetString("FormCompresser_LabelCommentaire_Text")
+        LabelCommentaire.Text = "Commentaire"
         LabelCommentaire.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' ListViewCompress
@@ -538,36 +543,36 @@ Partial Class FormCompresser
         ' 
         ' ColumnHeaderPiste
         ' 
-        ColumnHeaderPiste.Text = LanguageManager.GetString("FormCompresser_ColumnHeaderPiste_Text")
+        ColumnHeaderPiste.Text = "Piste"
         ' 
         ' ColumnHeaderTitre
         ' 
-        ColumnHeaderTitre.Text = LanguageManager.GetString("FormCompresser_ColumnHeaderTitre_Text")
+        ColumnHeaderTitre.Text = "Titre"
         ColumnHeaderTitre.Width = 300
         ' 
         ' ColumnHeaderArtiste
         ' 
-        ColumnHeaderArtiste.Text = LanguageManager.GetString("FormCompresser_ColumnHeaderArtiste_Text")
+        ColumnHeaderArtiste.Text = "Artiste"
         ColumnHeaderArtiste.Width = 200
         ' 
         ' ColumnHeaderDébut
         ' 
-        ColumnHeaderDébut.Text = LanguageManager.GetString("FormCompresser_ColumnHeaderDebut_Text")
+        ColumnHeaderDébut.Text = "Début"
         ColumnHeaderDébut.Width = 100
         ' 
         ' ColumnHeaderLongueur
         ' 
-        ColumnHeaderLongueur.Text = LanguageManager.GetString("FormCompresser_ColumnHeaderLongueur_Text")
+        ColumnHeaderLongueur.Text = "Longueur"
         ColumnHeaderLongueur.Width = 100
         ' 
         ' ColumnHeaderTaille
         ' 
-        ColumnHeaderTaille.Text = LanguageManager.GetString("FormCompresser_ColumnHeaderTaille_Text")
+        ColumnHeaderTaille.Text = "Taille du fichier"
         ColumnHeaderTaille.Width = 100
         ' 
         ' ColumnHeaderTailleComp
         ' 
-        ColumnHeaderTailleComp.Text = LanguageManager.GetString("FormCompresser_ColumnHeaderTailleComp_Text")
+        ColumnHeaderTailleComp.Text = "Taille du fichier compressé"
         ColumnHeaderTailleComp.Width = 100
         ' 
         ' LabelPisteEnCours
@@ -616,7 +621,7 @@ Partial Class FormCompresser
         CheckBox_FCompress_SelectDeselect.Name = "CheckBox_FCompress_SelectDeselect"
         CheckBox_FCompress_SelectDeselect.Size = New Size(288, 19)
         CheckBox_FCompress_SelectDeselect.TabIndex = 104
-        CheckBox_FCompress_SelectDeselect.Text = LanguageManager.GetString("FormCompresser_CheckBox_FCompress_SelectDeselect_Text")
+        CheckBox_FCompress_SelectDeselect.Text = "Sélectionner/Désélectionner toutes les pistes..."
         CheckBox_FCompress_SelectDeselect.UseVisualStyleBackColor = True
         ' 
         ' Button_EditTracks
@@ -629,7 +634,7 @@ Partial Class FormCompresser
         Button_EditTracks.Name = "Button_EditTracks"
         Button_EditTracks.Size = New Size(143, 23)
         Button_EditTracks.TabIndex = 105
-        Button_EditTracks.Text = LanguageManager.GetString("FormCompresser_Button_EditTracks_Text")
+        Button_EditTracks.Text = "Éditer les pistes..."
         Button_EditTracks.UseVisualStyleBackColor = True
         ' 
         ' ButtonSoumettreGnuDB
@@ -642,7 +647,7 @@ Partial Class FormCompresser
         ButtonSoumettreGnuDB.Name = "ButtonSoumettreGnuDB"
         ButtonSoumettreGnuDB.Size = New Size(164, 25)
         ButtonSoumettreGnuDB.TabIndex = 106
-        ButtonSoumettreGnuDB.Text = LanguageManager.GetString("FormCompresser_ButtonSoumettreGnuDB_Text")
+        ButtonSoumettreGnuDB.Text = "Soumettre à GnuDB"
         ButtonSoumettreGnuDB.UseVisualStyleBackColor = True
         ' 
         ' Button_Image_Erase
@@ -655,7 +660,7 @@ Partial Class FormCompresser
         Button_Image_Erase.Name = "Button_Image_Erase"
         Button_Image_Erase.Size = New Size(27, 25)
         Button_Image_Erase.TabIndex = 107
-        Button_Image_Erase.Text = LanguageManager.GetString("FormCompresser_Button_Image_Erase_Text")
+        Button_Image_Erase.Text = "X"
         Button_Image_Erase.UseVisualStyleBackColor = True
         ' 
         ' Button_Image_Suiv
@@ -668,7 +673,7 @@ Partial Class FormCompresser
         Button_Image_Suiv.Name = "Button_Image_Suiv"
         Button_Image_Suiv.Size = New Size(37, 25)
         Button_Image_Suiv.TabIndex = 108
-        Button_Image_Suiv.Text = LanguageManager.GetString("FormCompresser_Button_Image_Suiv_Text")
+        Button_Image_Suiv.Text = "-->"
         Button_Image_Suiv.UseVisualStyleBackColor = True
         ' 
         ' Button_Image_Prec
@@ -681,7 +686,7 @@ Partial Class FormCompresser
         Button_Image_Prec.Name = "Button_Image_Prec"
         Button_Image_Prec.Size = New Size(37, 25)
         Button_Image_Prec.TabIndex = 109
-        Button_Image_Prec.Text = LanguageManager.GetString("FormCompresser_Button_Image_Prec_Text")
+        Button_Image_Prec.Text = "<--"
         Button_Image_Prec.UseVisualStyleBackColor = True
         ' 
         ' Label1
@@ -691,7 +696,7 @@ Partial Class FormCompresser
         Label1.Name = "Label1"
         Label1.Size = New Size(132, 22)
         Label1.TabIndex = 12
-        Label1.Text = LanguageManager.GetString("FormCompresser_Label1_Text")
+        Label1.Text = "Dimensions image:"
         Label1.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' Label2
@@ -701,7 +706,7 @@ Partial Class FormCompresser
         Label2.Name = "Label2"
         Label2.Size = New Size(132, 22)
         Label2.TabIndex = 13
-        Label2.Text = LanguageManager.GetString("FormCompresser_Label2_Text")
+        Label2.Text = "Taille image:"
         Label2.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' Label_Im_Site
@@ -711,7 +716,7 @@ Partial Class FormCompresser
         Label_Im_Site.Name = "Label_Im_Site"
         Label_Im_Site.Size = New Size(51, 22)
         Label_Im_Site.TabIndex = 110
-        Label_Im_Site.Text = LanguageManager.GetString("FormCompresser_Label_Im_Site_Text")
+        Label_Im_Site.Text = "Site:"
         Label_Im_Site.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' Label_Image_Site
@@ -739,7 +744,7 @@ Partial Class FormCompresser
         Label4.Name = "Label4"
         Label4.Size = New Size(51, 22)
         Label4.TabIndex = 113
-        Label4.Text = LanguageManager.GetString("FormCompresser_Label4_Text")
+        Label4.Text = "%"
         Label4.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' Label_Normalisation
@@ -749,7 +754,7 @@ Partial Class FormCompresser
         Label_Normalisation.Name = "Label_Normalisation"
         Label_Normalisation.Size = New Size(97, 14)
         Label_Normalisation.TabIndex = 114
-        Label_Normalisation.Text = LanguageManager.GetString("FormCompresser_Label_Normalisation_Text")
+        Label_Normalisation.Text = "Normalisation"
         Label_Normalisation.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' GroupBoxAnalyzerOptions
@@ -768,10 +773,10 @@ Partial Class FormCompresser
         GroupBoxAnalyzerOptions.Controls.Add(NumericMaxStartTrim)
         GroupBoxAnalyzerOptions.Location = New Point(17, 785)
         GroupBoxAnalyzerOptions.Name = "GroupBoxAnalyzerOptions"
-        GroupBoxAnalyzerOptions.Size = New Size(340, 140)
+        GroupBoxAnalyzerOptions.Size = New Size(268, 140)
         GroupBoxAnalyzerOptions.TabIndex = 110
         GroupBoxAnalyzerOptions.TabStop = False
-        GroupBoxAnalyzerOptions.Text = LanguageManager.GetString("FormCompresser_GroupBoxAnalyzerOptions_Text")
+        GroupBoxAnalyzerOptions.Text = "Options d'analyse"
         ' 
         ' Button_Aide_MaxStartTrim
         ' 
@@ -783,7 +788,7 @@ Partial Class FormCompresser
         Button_Aide_MaxStartTrim.Name = "Button_Aide_MaxStartTrim"
         Button_Aide_MaxStartTrim.Size = New Size(22, 24)
         Button_Aide_MaxStartTrim.TabIndex = 117
-        Button_Aide_MaxStartTrim.Text = LanguageManager.GetString("FormCompresser_Button_Aide_MaxStartTrim_Text")
+        Button_Aide_MaxStartTrim.Text = "?"
         Button_Aide_MaxStartTrim.UseVisualStyleBackColor = True
         ' 
         ' Button_Aide_MinSilence
@@ -796,7 +801,7 @@ Partial Class FormCompresser
         Button_Aide_MinSilence.Name = "Button_Aide_MinSilence"
         Button_Aide_MinSilence.Size = New Size(22, 28)
         Button_Aide_MinSilence.TabIndex = 117
-        Button_Aide_MinSilence.Text = LanguageManager.GetString("FormCompresser_Button_Aide_MinSilence_Text")
+        Button_Aide_MinSilence.Text = "?"
         Button_Aide_MinSilence.UseVisualStyleBackColor = True
         ' 
         ' Button_Aide_WindowAfter
@@ -809,7 +814,7 @@ Partial Class FormCompresser
         Button_Aide_WindowAfter.Name = "Button_Aide_WindowAfter"
         Button_Aide_WindowAfter.Size = New Size(22, 28)
         Button_Aide_WindowAfter.TabIndex = 117
-        Button_Aide_WindowAfter.Text = LanguageManager.GetString("FormCompresser_Button_Aide_WindowAfter_Text")
+        Button_Aide_WindowAfter.Text = "?"
         Button_Aide_WindowAfter.UseVisualStyleBackColor = True
         ' 
         ' Button_Aide_WindowBefore
@@ -822,7 +827,7 @@ Partial Class FormCompresser
         Button_Aide_WindowBefore.Name = "Button_Aide_WindowBefore"
         Button_Aide_WindowBefore.Size = New Size(22, 26)
         Button_Aide_WindowBefore.TabIndex = 117
-        Button_Aide_WindowBefore.Text = LanguageManager.GetString("FormCompresser_Button_Aide_WindowBefore_Text")
+        Button_Aide_WindowBefore.Text = "?"
         Button_Aide_WindowBefore.UseVisualStyleBackColor = True
         ' 
         ' LabelWindowBefore
@@ -831,7 +836,7 @@ Partial Class FormCompresser
         LabelWindowBefore.Name = "LabelWindowBefore"
         LabelWindowBefore.Size = New Size(160, 20)
         LabelWindowBefore.TabIndex = 0
-        LabelWindowBefore.Text = LanguageManager.GetString("FormCompresser_LabelWindowBefore_Text")
+        LabelWindowBefore.Text = "Fenêtre avant TOC (s):"
         ' 
         ' NumericWindowBefore
         ' 
@@ -839,7 +844,7 @@ Partial Class FormCompresser
         NumericWindowBefore.Maximum = New Decimal(New Integer() {120, 0, 0, 0})
         NumericWindowBefore.Minimum = New Decimal(New Integer() {5, 0, 0, 0})
         NumericWindowBefore.Name = "NumericWindowBefore"
-        NumericWindowBefore.Size = New Size(120, 23)
+        NumericWindowBefore.Size = New Size(49, 23)
         NumericWindowBefore.TabIndex = 1
         NumericWindowBefore.Value = New Decimal(New Integer() {30, 0, 0, 0})
         ' 
@@ -849,7 +854,7 @@ Partial Class FormCompresser
         LabelWindowAfter.Name = "LabelWindowAfter"
         LabelWindowAfter.Size = New Size(160, 20)
         LabelWindowAfter.TabIndex = 2
-        LabelWindowAfter.Text = LanguageManager.GetString("FormCompresser_LabelWindowAfter_Text")
+        LabelWindowAfter.Text = "Fenêtre après TOC (s):"
         ' 
         ' NumericWindowAfter
         ' 
@@ -857,7 +862,7 @@ Partial Class FormCompresser
         NumericWindowAfter.Maximum = New Decimal(New Integer() {120, 0, 0, 0})
         NumericWindowAfter.Minimum = New Decimal(New Integer() {5, 0, 0, 0})
         NumericWindowAfter.Name = "NumericWindowAfter"
-        NumericWindowAfter.Size = New Size(120, 23)
+        NumericWindowAfter.Size = New Size(49, 23)
         NumericWindowAfter.TabIndex = 3
         NumericWindowAfter.Value = New Decimal(New Integer() {30, 0, 0, 0})
         ' 
@@ -867,7 +872,7 @@ Partial Class FormCompresser
         LabelMinSilence.Name = "LabelMinSilence"
         LabelMinSilence.Size = New Size(160, 20)
         LabelMinSilence.TabIndex = 4
-        LabelMinSilence.Text = LanguageManager.GetString("FormCompresser_LabelMinSilence_Text")
+        LabelMinSilence.Text = "Silence minimal soutenu (s):"
         ' 
         ' NumericMinSilence
         ' 
@@ -876,7 +881,7 @@ Partial Class FormCompresser
         NumericMinSilence.Location = New Point(200, 82)
         NumericMinSilence.Minimum = New Decimal(New Integer() {1, 0, 0, 131072})
         NumericMinSilence.Name = "NumericMinSilence"
-        NumericMinSilence.Size = New Size(120, 23)
+        NumericMinSilence.Size = New Size(49, 23)
         NumericMinSilence.TabIndex = 5
         NumericMinSilence.Value = New Decimal(New Integer() {1, 0, 0, 0})
         ' 
@@ -886,7 +891,7 @@ Partial Class FormCompresser
         LabelMaxStartTrim.Name = "LabelMaxStartTrim"
         LabelMaxStartTrim.Size = New Size(160, 20)
         LabelMaxStartTrim.TabIndex = 6
-        LabelMaxStartTrim.Text = LanguageManager.GetString("FormCompresser_LabelMaxStartTrim_Text")
+        LabelMaxStartTrim.Text = "Trim début max (s):"
         ' 
         ' NumericMaxStartTrim
         ' 
@@ -894,7 +899,7 @@ Partial Class FormCompresser
         NumericMaxStartTrim.Increment = New Decimal(New Integer() {1, 0, 0, 131072})
         NumericMaxStartTrim.Location = New Point(200, 112)
         NumericMaxStartTrim.Name = "NumericMaxStartTrim"
-        NumericMaxStartTrim.Size = New Size(120, 23)
+        NumericMaxStartTrim.Size = New Size(49, 23)
         NumericMaxStartTrim.TabIndex = 7
         NumericMaxStartTrim.Value = New Decimal(New Integer() {4, 0, 0, 0})
         ' 
@@ -908,7 +913,7 @@ Partial Class FormCompresser
         Button_Agrandir.Name = "Button_Agrandir"
         Button_Agrandir.Size = New Size(22, 24)
         Button_Agrandir.TabIndex = 115
-        Button_Agrandir.Text = LanguageManager.GetString("FormCompresser_Button_Agrandir_Text")
+        Button_Agrandir.Text = "▼"
         Button_Agrandir.UseVisualStyleBackColor = True
         ' 
         ' Button_rapetisser
@@ -921,7 +926,7 @@ Partial Class FormCompresser
         Button_rapetisser.Name = "Button_rapetisser"
         Button_rapetisser.Size = New Size(22, 24)
         Button_rapetisser.TabIndex = 116
-        Button_rapetisser.Text = LanguageManager.GetString("FormCompresser_Button_rapetisser_Text")
+        Button_rapetisser.Text = "▲"
         Button_rapetisser.UseVisualStyleBackColor = True
         ' 
         ' CheckBoxPostTraitementAuto
@@ -929,11 +934,45 @@ Partial Class FormCompresser
         CheckBoxPostTraitementAuto.Checked = True
         CheckBoxPostTraitementAuto.CheckState = CheckState.Checked
         CheckBoxPostTraitementAuto.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        CheckBoxPostTraitementAuto.Location = New Point(373, 801)
+        CheckBoxPostTraitementAuto.Location = New Point(303, 792)
         CheckBoxPostTraitementAuto.Name = "CheckBoxPostTraitementAuto"
         CheckBoxPostTraitementAuto.Size = New Size(232, 24)
         CheckBoxPostTraitementAuto.TabIndex = 1
-        CheckBoxPostTraitementAuto.Text = LanguageManager.GetString("FormCompresser_CheckBoxPostTraitementAuto_Text")
+        CheckBoxPostTraitementAuto.Text = "Post-traitement automatique"
+        ' 
+        ' LabelPreRoll
+        ' 
+        LabelPreRoll.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelPreRoll.Location = New Point(303, 823)
+        LabelPreRoll.Name = "LabelPreRoll"
+        LabelPreRoll.Size = New Size(158, 20)
+        LabelPreRoll.TabIndex = 2
+        LabelPreRoll.Text = "Ajustement Position Début:"
+        ' 
+        ' NumericWindowPreRoll
+        ' 
+        NumericWindowPreRoll.DecimalPlaces = 2
+        NumericWindowPreRoll.Increment = New Decimal(New Integer() {25, 0, 0, 131072})
+        NumericWindowPreRoll.Location = New Point(498, 819)
+        NumericWindowPreRoll.Maximum = New Decimal(New Integer() {400, 0, 0, 131072})
+        NumericWindowPreRoll.Minimum = New Decimal(New Integer() {50, 0, 0, 131072})
+        NumericWindowPreRoll.Name = "NumericWindowPreRoll"
+        NumericWindowPreRoll.Size = New Size(49, 23)
+        NumericWindowPreRoll.TabIndex = 3
+        NumericWindowPreRoll.Value = New Decimal(New Integer() {175, 0, 0, 131072})
+        ' 
+        ' ButtonHelpPreRoll
+        ' 
+        ButtonHelpPreRoll.FlatAppearance.MouseDownBackColor = Color.Red
+        ButtonHelpPreRoll.FlatAppearance.MouseOverBackColor = Color.Lime
+        ButtonHelpPreRoll.FlatStyle = FlatStyle.Flat
+        ButtonHelpPreRoll.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        ButtonHelpPreRoll.Location = New Point(470, 819)
+        ButtonHelpPreRoll.Name = "ButtonHelpPreRoll"
+        ButtonHelpPreRoll.Size = New Size(22, 24)
+        ButtonHelpPreRoll.TabIndex = 4
+        ButtonHelpPreRoll.Text = "?"
+        ButtonHelpPreRoll.UseVisualStyleBackColor = True
         ' 
         ' ToolTipPictureBox
         ' 
@@ -942,12 +981,27 @@ Partial Class FormCompresser
         ToolTipPictureBox.ReshowDelay = 200
         ToolTipPictureBox.ShowAlways = True
         ' 
+        ' CheckBox_Affiche_CentreSilence
+        ' 
+        CheckBox_Affiche_CentreSilence.AutoSize = True
+        CheckBox_Affiche_CentreSilence.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        CheckBox_Affiche_CentreSilence.Location = New Point(17, 376)
+        CheckBox_Affiche_CentreSilence.Name = "CheckBox_Affiche_CentreSilence"
+        CheckBox_Affiche_CentreSilence.Size = New Size(241, 19)
+        CheckBox_Affiche_CentreSilence.TabIndex = 117
+        CheckBox_Affiche_CentreSilence.Text = "Afficher Message Centre des silences..."
+        CheckBox_Affiche_CentreSilence.UseVisualStyleBackColor = True
+        ' 
         ' FormCompresser
         ' 
         AutoScaleDimensions = New SizeF(7.0F, 15.0F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(617, 929)
+        Controls.Add(CheckBox_Affiche_CentreSilence)
         Controls.Add(CheckBoxPostTraitementAuto)
+        Controls.Add(LabelPreRoll)
+        Controls.Add(NumericWindowPreRoll)
+        Controls.Add(ButtonHelpPreRoll)
         Controls.Add(Button_rapetisser)
         Controls.Add(Button_Agrandir)
         Controls.Add(GroupBoxAnalyzerOptions)
@@ -1006,7 +1060,7 @@ Partial Class FormCompresser
         Icon = CType(resources.GetObject("$this.Icon"), Icon)
         Name = "FormCompresser"
         StartPosition = FormStartPosition.CenterScreen
-        Text = LanguageManager.GetString("FormCompresser_Form_Text")
+        Text = "Extraction du CD Audio"
         CType(PictureBoxPochette, ComponentModel.ISupportInitialize).EndInit()
         ContextMenuStripPictureBox.ResumeLayout(False)
         CType(NumericUpDown_DB, ComponentModel.ISupportInitialize).EndInit()
@@ -1015,6 +1069,7 @@ Partial Class FormCompresser
         CType(NumericWindowAfter, ComponentModel.ISupportInitialize).EndInit()
         CType(NumericMinSilence, ComponentModel.ISupportInitialize).EndInit()
         CType(NumericMaxStartTrim, ComponentModel.ISupportInitialize).EndInit()
+        CType(NumericWindowPreRoll, ComponentModel.ISupportInitialize).EndInit()
         ResumeLayout(False)
         PerformLayout()
     End Sub
@@ -1102,5 +1157,9 @@ Partial Class FormCompresser
     Friend WithEvents Button_Aide_WindowAfter As Button
     Friend WithEvents Button_Aide_WindowBefore As Button
     Friend WithEvents CheckBoxPostTraitementAuto As CheckBox
+    Friend WithEvents LabelPreRoll As Label
+    Friend WithEvents NumericWindowPreRoll As NumericUpDown
+    Friend WithEvents ButtonHelpPreRoll As Button
+    Friend WithEvents CheckBox_Affiche_CentreSilence As CheckBox
     ' ButtonCorrigerAlbum removed: no longer declared
 End Class
