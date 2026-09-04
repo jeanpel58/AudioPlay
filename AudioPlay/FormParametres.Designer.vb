@@ -29,8 +29,10 @@ Partial Class FormParametres
         CheckBox_WMA = New CheckBox()
         CheckBox_FLAC = New CheckBox()
         CheckBox_MP3 = New CheckBox()
+        ButtonApplyNow = New Button()
         LabelTypesAudioDefaut = New Label()
         GroupBoxLecture = New GroupBox()
+        LabelLibrosaExist = New Label()
         CheckBoxModeMixeurDJ = New CheckBox()
         Button_Metronome_Aide = New Button()
         CheckBox_EffacerChansons = New CheckBox()
@@ -47,6 +49,10 @@ Partial Class FormParametres
         CheckBoxLectureAuto = New CheckBox()
         LabelMethodeBPM = New Label()
         ComboBoxMethodeBPM = New ComboBox()
+        ButtonCheckLibrosa = New Button()
+        LabelPythonPath = New Label()
+        TextBoxPythonPath = New TextBox()
+        ButtonBrowsePython = New Button()
         ButtonSauvegarder = New Button()
         ButtonAnnuler = New Button()
         ButtonReinitialiser = New Button()
@@ -61,6 +67,7 @@ Partial Class FormParametres
         ButtonDeleteTheme = New Button()
         ButtonResetCouleurs = New Button()
         ButtonPersonnaliserCouleurs = New Button()
+        Button_ViewCrashLog = New Button()
         GroupBoxEffetsAudio = New GroupBox()
         ButtonResetEffets = New Button()
         CheckBoxReverbActif = New CheckBox()
@@ -127,64 +134,77 @@ Partial Class FormParametres
         GroupBox_TypesAudioDefaut.Controls.Add(CheckBox_WMA)
         GroupBox_TypesAudioDefaut.Controls.Add(CheckBox_FLAC)
         GroupBox_TypesAudioDefaut.Controls.Add(CheckBox_MP3)
+        GroupBox_TypesAudioDefaut.Controls.Add(ButtonApplyNow)
         GroupBox_TypesAudioDefaut.Controls.Add(LabelTypesAudioDefaut)
-        GroupBox_TypesAudioDefaut.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        GroupBox_TypesAudioDefaut.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         GroupBox_TypesAudioDefaut.Location = New Point(12, 96)
         GroupBox_TypesAudioDefaut.Name = "GroupBox_TypesAudioDefaut"
         GroupBox_TypesAudioDefaut.Size = New Size(460, 78)
         GroupBox_TypesAudioDefaut.TabIndex = 0
         GroupBox_TypesAudioDefaut.TabStop = False
-        GroupBox_TypesAudioDefaut.Text = "Types Audio par Défaut"
+        GroupBox_TypesAudioDefaut.Text = LanguageManager.GetString("FormParametres_GroupBox_TypesAudioDefaut_Text")
         ' 
         ' CheckBox_AAC
         ' 
         CheckBox_AAC.AutoSize = True
-        CheckBox_AAC.Location = New Point(329, 47)
+        CheckBox_AAC.Location = New Point(275, 43)
         CheckBox_AAC.Name = "CheckBox_AAC"
         CheckBox_AAC.Size = New Size(52, 19)
         CheckBox_AAC.TabIndex = 5
-        CheckBox_AAC.Text = ".AAC"
+        CheckBox_AAC.Text = LanguageManager.GetString("FormParametres_CheckBox_AAC_Text")
         CheckBox_AAC.UseVisualStyleBackColor = True
         ' 
         ' CheckBox_WAV
         ' 
         CheckBox_WAV.AutoSize = True
-        CheckBox_WAV.Location = New Point(268, 47)
+        CheckBox_WAV.Location = New Point(214, 43)
         CheckBox_WAV.Name = "CheckBox_WAV"
         CheckBox_WAV.Size = New Size(56, 19)
         CheckBox_WAV.TabIndex = 4
-        CheckBox_WAV.Text = ".WAV"
+        CheckBox_WAV.Text = LanguageManager.GetString("FormParametres_CheckBox_WAV_Text")
         CheckBox_WAV.UseVisualStyleBackColor = True
         ' 
         ' CheckBox_WMA
         ' 
         CheckBox_WMA.AutoSize = True
-        CheckBox_WMA.Location = New Point(191, 47)
+        CheckBox_WMA.Location = New Point(137, 43)
         CheckBox_WMA.Name = "CheckBox_WMA"
         CheckBox_WMA.Size = New Size(60, 19)
         CheckBox_WMA.TabIndex = 3
-        CheckBox_WMA.Text = ".WMA"
+        CheckBox_WMA.Text = LanguageManager.GetString("FormParametres_CheckBox_WMA_Text")
         CheckBox_WMA.UseVisualStyleBackColor = True
         ' 
         ' CheckBox_FLAC
         ' 
         CheckBox_FLAC.AutoSize = True
-        CheckBox_FLAC.Location = New Point(128, 47)
+        CheckBox_FLAC.Location = New Point(74, 43)
         CheckBox_FLAC.Name = "CheckBox_FLAC"
         CheckBox_FLAC.Size = New Size(50, 19)
         CheckBox_FLAC.TabIndex = 2
-        CheckBox_FLAC.Text = ".Flac"
+        CheckBox_FLAC.Text = LanguageManager.GetString("FormParametres_CheckBox_FLAC_Text")
         CheckBox_FLAC.UseVisualStyleBackColor = True
         ' 
         ' CheckBox_MP3
         ' 
         CheckBox_MP3.AutoSize = True
-        CheckBox_MP3.Location = New Point(60, 47)
+        CheckBox_MP3.Location = New Point(6, 43)
         CheckBox_MP3.Name = "CheckBox_MP3"
         CheckBox_MP3.Size = New Size(54, 19)
         CheckBox_MP3.TabIndex = 1
-        CheckBox_MP3.Text = ".MP3"
+        CheckBox_MP3.Text = LanguageManager.GetString("FormParametres_CheckBox_MP3_Text")
         CheckBox_MP3.UseVisualStyleBackColor = True
+        ' 
+        ' ButtonApplyNow
+        ' 
+        ButtonApplyNow.FlatAppearance.MouseDownBackColor = Color.Red
+        ButtonApplyNow.FlatAppearance.MouseOverBackColor = Color.Lime
+        ButtonApplyNow.FlatStyle = FlatStyle.Flat
+        ButtonApplyNow.Location = New Point(333, 37)
+        ButtonApplyNow.Name = "ButtonApplyNow"
+        ButtonApplyNow.Size = New Size(115, 25)
+        ButtonApplyNow.TabIndex = 6
+        ButtonApplyNow.Text = LanguageManager.GetString("FormParametres_ButtonApplyNow_Text")
+        ButtonApplyNow.UseVisualStyleBackColor = True
         ' 
         ' LabelTypesAudioDefaut
         ' 
@@ -193,10 +213,11 @@ Partial Class FormParametres
         LabelTypesAudioDefaut.Name = "LabelTypesAudioDefaut"
         LabelTypesAudioDefaut.Size = New Size(197, 15)
         LabelTypesAudioDefaut.TabIndex = 0
-        LabelTypesAudioDefaut.Text = "Cocher les types audio par défaut :"
+        LabelTypesAudioDefaut.Text = LanguageManager.GetString("FormParametres_LabelTypesAudioDefaut_Text")
         ' 
         ' GroupBoxLecture
         ' 
+        GroupBoxLecture.Controls.Add(LabelLibrosaExist)
         GroupBoxLecture.Controls.Add(CheckBoxModeMixeurDJ)
         GroupBoxLecture.Controls.Add(Button_Metronome_Aide)
         GroupBoxLecture.Controls.Add(CheckBox_EffacerChansons)
@@ -213,24 +234,48 @@ Partial Class FormParametres
         GroupBoxLecture.Controls.Add(CheckBoxLectureAuto)
         GroupBoxLecture.Controls.Add(LabelMethodeBPM)
         GroupBoxLecture.Controls.Add(ComboBoxMethodeBPM)
-        GroupBoxLecture.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        GroupBoxLecture.Controls.Add(ButtonCheckLibrosa)
+        GroupBoxLecture.Controls.Add(LabelPythonPath)
+        GroupBoxLecture.Controls.Add(TextBoxPythonPath)
+        GroupBoxLecture.Controls.Add(ButtonBrowsePython)
+        GroupBoxLecture.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         GroupBoxLecture.Location = New Point(12, 180)
         GroupBoxLecture.Name = "GroupBoxLecture"
-        GroupBoxLecture.Size = New Size(460, 366)
+        GroupBoxLecture.Size = New Size(460, 509)
         GroupBoxLecture.TabIndex = 1
         GroupBoxLecture.TabStop = False
-        GroupBoxLecture.Text = "Paramètres de lecture"
+        GroupBoxLecture.Text = LanguageManager.GetString("FormParametres_GroupBoxLecture_Text")
+        ' 
+        ' LabelLibrosaExist
+        ' 
+        LabelLibrosaExist.Location = New Point(13, 356)
+        LabelLibrosaExist.Name = "LabelLibrosaExist"
+        LabelLibrosaExist.Size = New Size(434, 15)
+        LabelLibrosaExist.TabIndex = 22
+        LabelLibrosaExist.Text = LanguageManager.GetString("FormParametres_LabelLibrosaExist_Text")
+        LabelLibrosaExist.TextAlign = ContentAlignment.MiddleCenter
+        ' 
+        ' CheckBoxModeMixeurDJ
+        ' 
+        CheckBoxModeMixeurDJ.AutoSize = True
+        CheckBoxModeMixeurDJ.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
+        CheckBoxModeMixeurDJ.Location = New Point(14, 474)
+        CheckBoxModeMixeurDJ.Name = "CheckBoxModeMixeurDJ"
+        CheckBoxModeMixeurDJ.Size = New Size(359, 19)
+        CheckBoxModeMixeurDJ.TabIndex = 17
+        CheckBoxModeMixeurDJ.Text = LanguageManager.GetString("FormParametres_CheckBoxModeMixeurDJ_Text")
+        CheckBoxModeMixeurDJ.UseVisualStyleBackColor = True
         ' 
         ' Button_Metronome_Aide
         ' 
         Button_Metronome_Aide.FlatAppearance.MouseDownBackColor = Color.Red
         Button_Metronome_Aide.FlatAppearance.MouseOverBackColor = Color.Lime
         Button_Metronome_Aide.FlatStyle = FlatStyle.Flat
-        Button_Metronome_Aide.Location = New Point(375, 197)
+        Button_Metronome_Aide.Location = New Point(374, 230)
         Button_Metronome_Aide.Name = "Button_Metronome_Aide"
         Button_Metronome_Aide.Size = New Size(75, 23)
         Button_Metronome_Aide.TabIndex = 16
-        Button_Metronome_Aide.Text = "Aide"
+        Button_Metronome_Aide.Text = LanguageManager.GetString("FormParametres_Button_Metronome_Aide_Text")
         Button_Metronome_Aide.UseVisualStyleBackColor = True
         ' 
         ' CheckBox_EffacerChansons
@@ -238,30 +283,30 @@ Partial Class FormParametres
         CheckBox_EffacerChansons.AutoSize = True
         CheckBox_EffacerChansons.Checked = True
         CheckBox_EffacerChansons.CheckState = CheckState.Checked
-        CheckBox_EffacerChansons.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        CheckBox_EffacerChansons.Location = New Point(14, 287)
+        CheckBox_EffacerChansons.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
+        CheckBox_EffacerChansons.Location = New Point(13, 320)
         CheckBox_EffacerChansons.Name = "CheckBox_EffacerChansons"
         CheckBox_EffacerChansons.Size = New Size(394, 19)
         CheckBox_EffacerChansons.TabIndex = 15
-        CheckBox_EffacerChansons.Text = "Message pour confirmer l'enlèvement d'une sélection dans la liste"
+        CheckBox_EffacerChansons.Text = LanguageManager.GetString("FormParametres_CheckBox_EffacerChansons_Text")
         CheckBox_EffacerChansons.UseVisualStyleBackColor = True
         ' 
         ' CheckBoxSupprimerSilenceFin
         ' 
         CheckBoxSupprimerSilenceFin.AutoSize = True
-        CheckBoxSupprimerSilenceFin.Checked = True
-        CheckBoxSupprimerSilenceFin.CheckState = CheckState.Checked
-        CheckBoxSupprimerSilenceFin.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        CheckBoxSupprimerSilenceFin.Location = New Point(14, 262)
+        CheckBoxSupprimerSilenceFin.Checked = False
+        CheckBoxSupprimerSilenceFin.CheckState = CheckState.Unchecked
+        CheckBoxSupprimerSilenceFin.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
+        CheckBoxSupprimerSilenceFin.Location = New Point(13, 295)
         CheckBoxSupprimerSilenceFin.Name = "CheckBoxSupprimerSilenceFin"
         CheckBoxSupprimerSilenceFin.Size = New Size(268, 19)
         CheckBoxSupprimerSilenceFin.TabIndex = 14
-        CheckBoxSupprimerSilenceFin.Text = "Supprimert les silences à la fin des chansons"
+        CheckBoxSupprimerSilenceFin.Text = LanguageManager.GetString("FormParametres_CheckBoxSupprimerSilenceFin_Text")
         CheckBoxSupprimerSilenceFin.UseVisualStyleBackColor = True
         ' 
         ' TextBoxNombreBeats
         ' 
-        TextBoxNombreBeats.Location = New Point(150, 198)
+        TextBoxNombreBeats.Location = New Point(149, 231)
         TextBoxNombreBeats.Name = "TextBoxNombreBeats"
         TextBoxNombreBeats.Size = New Size(61, 23)
         TextBoxNombreBeats.TabIndex = 13
@@ -269,35 +314,35 @@ Partial Class FormParametres
         ' LabelNombreBeats
         ' 
         LabelNombreBeats.AutoSize = True
-        LabelNombreBeats.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        LabelNombreBeats.Location = New Point(15, 201)
+        LabelNombreBeats.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
+        LabelNombreBeats.Location = New Point(14, 234)
         LabelNombreBeats.Name = "LabelNombreBeats"
         LabelNombreBeats.Size = New Size(109, 15)
         LabelNombreBeats.TabIndex = 12
-        LabelNombreBeats.Text = "Nombre de beats :"
+        LabelNombreBeats.Text = LanguageManager.GetString("FormParametres_LabelNombreBeats_Text")
         ' 
         ' CheckBoxSupprimerSilenceDebut
         ' 
         CheckBoxSupprimerSilenceDebut.AutoSize = True
-        CheckBoxSupprimerSilenceDebut.Checked = True
-        CheckBoxSupprimerSilenceDebut.CheckState = CheckState.Checked
-        CheckBoxSupprimerSilenceDebut.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        CheckBoxSupprimerSilenceDebut.Location = New Point(14, 237)
+        CheckBoxSupprimerSilenceDebut.Checked = False
+        CheckBoxSupprimerSilenceDebut.CheckState = CheckState.Unchecked
+        CheckBoxSupprimerSilenceDebut.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
+        CheckBoxSupprimerSilenceDebut.Location = New Point(13, 270)
         CheckBoxSupprimerSilenceDebut.Name = "CheckBoxSupprimerSilenceDebut"
         CheckBoxSupprimerSilenceDebut.Size = New Size(276, 19)
         CheckBoxSupprimerSilenceDebut.TabIndex = 11
-        CheckBoxSupprimerSilenceDebut.Text = "Supprimer les silences au début des chansons"
+        CheckBoxSupprimerSilenceDebut.Text = LanguageManager.GetString("FormParametres_CheckBoxSupprimerSilenceDebut_Text")
         CheckBoxSupprimerSilenceDebut.UseVisualStyleBackColor = True
         ' 
         ' CheckBoxMetronome
         ' 
         CheckBoxMetronome.AutoSize = True
-        CheckBoxMetronome.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        CheckBoxMetronome.Location = New Point(15, 176)
+        CheckBoxMetronome.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
+        CheckBoxMetronome.Location = New Point(14, 209)
         CheckBoxMetronome.Name = "CheckBoxMetronome"
         CheckBoxMetronome.Size = New Size(275, 19)
         CheckBoxMetronome.TabIndex = 10
-        CheckBoxMetronome.Text = "Activer le métronome avant chaque chanson"
+        CheckBoxMetronome.Text = LanguageManager.GetString("FormParametres_CheckBoxMetronome_Text")
         CheckBoxMetronome.UseVisualStyleBackColor = True
         ' 
         ' CheckBoxMetronomeSon
@@ -305,12 +350,12 @@ Partial Class FormParametres
         CheckBoxMetronomeSon.AutoSize = True
         CheckBoxMetronomeSon.Checked = True
         CheckBoxMetronomeSon.CheckState = CheckState.Checked
-        CheckBoxMetronomeSon.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        CheckBoxMetronomeSon.Location = New Point(228, 201)
+        CheckBoxMetronomeSon.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        CheckBoxMetronomeSon.Location = New Point(227, 234)
         CheckBoxMetronomeSon.Name = "CheckBoxMetronomeSon"
         CheckBoxMetronomeSon.Size = New Size(46, 17)
         CheckBoxMetronomeSon.TabIndex = 14
-        CheckBoxMetronomeSon.Text = "Son"
+        CheckBoxMetronomeSon.Text = LanguageManager.GetString("FormParametres_CheckBoxMetronomeSon_Text")
         CheckBoxMetronomeSon.UseVisualStyleBackColor = True
         ' 
         ' CheckBoxMetronomeLumiere
@@ -318,12 +363,12 @@ Partial Class FormParametres
         CheckBoxMetronomeLumiere.AutoSize = True
         CheckBoxMetronomeLumiere.Checked = True
         CheckBoxMetronomeLumiere.CheckState = CheckState.Checked
-        CheckBoxMetronomeLumiere.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        CheckBoxMetronomeLumiere.Location = New Point(296, 201)
+        CheckBoxMetronomeLumiere.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        CheckBoxMetronomeLumiere.Location = New Point(295, 234)
         CheckBoxMetronomeLumiere.Name = "CheckBoxMetronomeLumiere"
         CheckBoxMetronomeLumiere.Size = New Size(66, 17)
         CheckBoxMetronomeLumiere.TabIndex = 15
-        CheckBoxMetronomeLumiere.Text = "Lumière"
+        CheckBoxMetronomeLumiere.Text = LanguageManager.GetString("FormParametres_CheckBoxMetronomeLumiere_Text")
         CheckBoxMetronomeLumiere.UseVisualStyleBackColor = True
         ' 
         ' ButtonAideNormalisation
@@ -331,12 +376,12 @@ Partial Class FormParametres
         ButtonAideNormalisation.FlatAppearance.MouseDownBackColor = Color.Red
         ButtonAideNormalisation.FlatAppearance.MouseOverBackColor = Color.Lime
         ButtonAideNormalisation.FlatStyle = FlatStyle.Flat
-        ButtonAideNormalisation.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        ButtonAideNormalisation.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         ButtonAideNormalisation.Location = New Point(193, 96)
         ButtonAideNormalisation.Name = "ButtonAideNormalisation"
         ButtonAideNormalisation.Size = New Size(77, 25)
         ButtonAideNormalisation.TabIndex = 7
-        ButtonAideNormalisation.Text = "Aide"
+        ButtonAideNormalisation.Text = LanguageManager.GetString("FormParametres_ButtonAideNormalisation_Text")
         ButtonAideNormalisation.UseVisualStyleBackColor = True
         ' 
         ' CheckBoxNormalisationVolume
@@ -344,56 +389,45 @@ Partial Class FormParametres
         CheckBoxNormalisationVolume.AutoSize = True
         CheckBoxNormalisationVolume.Checked = True
         CheckBoxNormalisationVolume.CheckState = CheckState.Checked
-        CheckBoxNormalisationVolume.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        CheckBoxNormalisationVolume.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         CheckBoxNormalisationVolume.Location = New Point(15, 100)
         CheckBoxNormalisationVolume.Name = "CheckBoxNormalisationVolume"
         CheckBoxNormalisationVolume.Size = New Size(165, 19)
         CheckBoxNormalisationVolume.TabIndex = 6
-        CheckBoxNormalisationVolume.Text = "Normalisation du volume"
+        CheckBoxNormalisationVolume.Text = LanguageManager.GetString("FormParametres_CheckBoxNormalisationVolume_Text")
         CheckBoxNormalisationVolume.UseVisualStyleBackColor = True
         ' 
         ' CheckBoxAfficherBPM
         ' 
         CheckBoxAfficherBPM.AutoSize = True
-        CheckBoxAfficherBPM.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        CheckBoxAfficherBPM.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         CheckBoxAfficherBPM.Location = New Point(15, 65)
         CheckBoxAfficherBPM.Name = "CheckBoxAfficherBPM"
         CheckBoxAfficherBPM.Size = New Size(239, 19)
         CheckBoxAfficherBPM.TabIndex = 4
-        CheckBoxAfficherBPM.Text = "Afficher le BPM dans les métadonnées"
+        CheckBoxAfficherBPM.Text = LanguageManager.GetString("FormParametres_CheckBoxAfficherBPM_Text")
         CheckBoxAfficherBPM.UseVisualStyleBackColor = True
         ' 
         ' CheckBoxLectureAuto
         ' 
         CheckBoxLectureAuto.AutoSize = True
-        CheckBoxLectureAuto.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        CheckBoxLectureAuto.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         CheckBoxLectureAuto.Location = New Point(15, 40)
         CheckBoxLectureAuto.Name = "CheckBoxLectureAuto"
         CheckBoxLectureAuto.Size = New Size(255, 19)
         CheckBoxLectureAuto.TabIndex = 3
-        CheckBoxLectureAuto.Text = "Lecture automatique du morceau suivant"
+        CheckBoxLectureAuto.Text = LanguageManager.GetString("FormParametres_CheckBoxLectureAuto_Text")
         CheckBoxLectureAuto.UseVisualStyleBackColor = True
-        ' 
-        ' CheckBoxModeMixeurDJ
-        ' 
-        CheckBoxModeMixeurDJ.AutoSize = True
-        CheckBoxModeMixeurDJ.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        CheckBoxModeMixeurDJ.Location = New Point(15, 312)
-        CheckBoxModeMixeurDJ.Name = "CheckBoxModeMixeurDJ"
-        CheckBoxModeMixeurDJ.Size = New Size(363, 19)
-        CheckBoxModeMixeurDJ.TabIndex = 17
-        CheckBoxModeMixeurDJ.Text = "Mode Mixeur DJ (2 platines avec crossfader et contrôles DJ)"
-        CheckBoxModeMixeurDJ.UseVisualStyleBackColor = True
         ' 
         ' LabelMethodeBPM
         ' 
-        LabelMethodeBPM.AutoSize = True
-        LabelMethodeBPM.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        LabelMethodeBPM.Location = New Point(15, 135)
+        LabelMethodeBPM.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
+        LabelMethodeBPM.Location = New Point(15, 141)
         LabelMethodeBPM.Name = "LabelMethodeBPM"
-        LabelMethodeBPM.Size = New Size(144, 15)
+        LabelMethodeBPM.Size = New Size(435, 15)
         LabelMethodeBPM.TabIndex = 8
-        LabelMethodeBPM.Text = "Méthode de calcul BPM :"
+        LabelMethodeBPM.Text = LanguageManager.GetString("FormParametres_LabelMethodeBPM_Text")
+        LabelMethodeBPM.TextAlign = ContentAlignment.MiddleCenter
         ' 
         ' ComboBoxMethodeBPM
         ' 
@@ -401,10 +435,50 @@ Partial Class FormParametres
         ComboBoxMethodeBPM.FlatStyle = FlatStyle.Flat
         ComboBoxMethodeBPM.FormattingEnabled = True
         ComboBoxMethodeBPM.Items.AddRange(New Object() {"Auto (Librosa si disponible, sinon SoundTouch)", "Librosa uniquement (plus précis)", "SoundTouch uniquement (moins précis)"})
-        ComboBoxMethodeBPM.Location = New Point(170, 132)
+        ComboBoxMethodeBPM.Location = New Point(52, 162)
         ComboBoxMethodeBPM.Name = "ComboBoxMethodeBPM"
-        ComboBoxMethodeBPM.Size = New Size(280, 23)
+        ComboBoxMethodeBPM.Size = New Size(374, 23)
         ComboBoxMethodeBPM.TabIndex = 9
+        ' 
+        ' ButtonCheckLibrosa
+        ' 
+        ButtonCheckLibrosa.FlatAppearance.MouseDownBackColor = Color.Red
+        ButtonCheckLibrosa.FlatAppearance.MouseOverBackColor = Color.Lime
+        ButtonCheckLibrosa.FlatStyle = FlatStyle.Flat
+        ButtonCheckLibrosa.Location = New Point(127, 383)
+        ButtonCheckLibrosa.Name = "ButtonCheckLibrosa"
+        ButtonCheckLibrosa.Size = New Size(199, 25)
+        ButtonCheckLibrosa.TabIndex = 21
+        ButtonCheckLibrosa.Text = LanguageManager.GetString("FormParametres_ButtonCheckLibrosa_Text")
+        ButtonCheckLibrosa.UseVisualStyleBackColor = True
+        ' 
+        ' LabelPythonPath
+        ' 
+        LabelPythonPath.AutoSize = True
+        LabelPythonPath.Location = New Point(13, 433)
+        LabelPythonPath.Name = "LabelPythonPath"
+        LabelPythonPath.Size = New Size(161, 15)
+        LabelPythonPath.TabIndex = 18
+        LabelPythonPath.Text = LanguageManager.GetString("FormParametres_LabelPythonPath_Text")
+        ' 
+        ' TextBoxPythonPath
+        ' 
+        TextBoxPythonPath.Location = New Point(180, 431)
+        TextBoxPythonPath.Name = "TextBoxPythonPath"
+        TextBoxPythonPath.Size = New Size(188, 23)
+        TextBoxPythonPath.TabIndex = 19
+        ' 
+        ' ButtonBrowsePython
+        ' 
+        ButtonBrowsePython.FlatAppearance.MouseDownBackColor = Color.Red
+        ButtonBrowsePython.FlatAppearance.MouseOverBackColor = Color.Lime
+        ButtonBrowsePython.FlatStyle = FlatStyle.Flat
+        ButtonBrowsePython.Location = New Point(373, 429)
+        ButtonBrowsePython.Name = "ButtonBrowsePython"
+        ButtonBrowsePython.Size = New Size(75, 25)
+        ButtonBrowsePython.TabIndex = 20
+        ButtonBrowsePython.Text = LanguageManager.GetString("FormParametres_ButtonBrowsePython_Text")
+        ButtonBrowsePython.UseVisualStyleBackColor = True
         ' 
         ' ButtonSauvegarder
         ' 
@@ -416,7 +490,7 @@ Partial Class FormParametres
         ButtonSauvegarder.Name = "ButtonSauvegarder"
         ButtonSauvegarder.Size = New Size(110, 35)
         ButtonSauvegarder.TabIndex = 2
-        ButtonSauvegarder.Text = "Sauvegarder"
+        ButtonSauvegarder.Text = LanguageManager.GetString("FormParametres_ButtonSauvegarder_Text")
         ButtonSauvegarder.UseVisualStyleBackColor = True
         ' 
         ' ButtonAnnuler
@@ -424,12 +498,12 @@ Partial Class FormParametres
         ButtonAnnuler.FlatAppearance.MouseDownBackColor = Color.Red
         ButtonAnnuler.FlatAppearance.MouseOverBackColor = Color.Lime
         ButtonAnnuler.FlatStyle = FlatStyle.Flat
-        ButtonAnnuler.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        ButtonAnnuler.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         ButtonAnnuler.Location = New Point(828, 840)
         ButtonAnnuler.Name = "ButtonAnnuler"
         ButtonAnnuler.Size = New Size(110, 35)
         ButtonAnnuler.TabIndex = 3
-        ButtonAnnuler.Text = "Annuler"
+        ButtonAnnuler.Text = LanguageManager.GetString("FormParametres_ButtonAnnuler_Text")
         ButtonAnnuler.UseVisualStyleBackColor = True
         ' 
         ' ButtonReinitialiser
@@ -437,25 +511,25 @@ Partial Class FormParametres
         ButtonReinitialiser.FlatAppearance.MouseDownBackColor = Color.Red
         ButtonReinitialiser.FlatAppearance.MouseOverBackColor = Color.Lime
         ButtonReinitialiser.FlatStyle = FlatStyle.Flat
-        ButtonReinitialiser.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        ButtonReinitialiser.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         ButtonReinitialiser.Location = New Point(14, 840)
         ButtonReinitialiser.Name = "ButtonReinitialiser"
         ButtonReinitialiser.Size = New Size(110, 35)
         ButtonReinitialiser.TabIndex = 4
-        ButtonReinitialiser.Text = "Réinitialiser"
+        ButtonReinitialiser.Text = LanguageManager.GetString("FormParametres_ButtonReinitialiser_Text")
         ButtonReinitialiser.UseVisualStyleBackColor = True
         ' 
         ' GroupBoxLangue
         ' 
         GroupBoxLangue.Controls.Add(ComboBoxLangue)
         GroupBoxLangue.Controls.Add(LabelLangue)
-        GroupBoxLangue.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        GroupBoxLangue.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         GroupBoxLangue.Location = New Point(12, 12)
         GroupBoxLangue.Name = "GroupBoxLangue"
         GroupBoxLangue.Size = New Size(460, 78)
         GroupBoxLangue.TabIndex = 5
         GroupBoxLangue.TabStop = False
-        GroupBoxLangue.Text = "Paramètres de langue"
+        GroupBoxLangue.Text = LanguageManager.GetString("FormParametres_GroupBoxLangue_Text")
         ' 
         ' ComboBoxLangue
         ' 
@@ -470,12 +544,12 @@ Partial Class FormParametres
         ' LabelLangue
         ' 
         LabelLangue.AutoSize = True
-        LabelLangue.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        LabelLangue.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         LabelLangue.Location = New Point(18, 35)
         LabelLangue.Name = "LabelLangue"
         LabelLangue.Size = New Size(53, 15)
         LabelLangue.TabIndex = 0
-        LabelLangue.Text = "Langue :"
+        LabelLangue.Text = LanguageManager.GetString("FormParametres_LabelLangue_Text")
         ' 
         ' GroupBoxCouleurs
         ' 
@@ -486,13 +560,13 @@ Partial Class FormParametres
         GroupBoxCouleurs.Controls.Add(ButtonDeleteTheme)
         GroupBoxCouleurs.Controls.Add(ButtonResetCouleurs)
         GroupBoxCouleurs.Controls.Add(ButtonPersonnaliserCouleurs)
-        GroupBoxCouleurs.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        GroupBoxCouleurs.Location = New Point(12, 552)
+        GroupBoxCouleurs.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
+        GroupBoxCouleurs.Location = New Point(12, 692)
         GroupBoxCouleurs.Name = "GroupBoxCouleurs"
         GroupBoxCouleurs.Size = New Size(460, 133)
         GroupBoxCouleurs.TabIndex = 6
         GroupBoxCouleurs.TabStop = False
-        GroupBoxCouleurs.Text = "Couleurs de l'interface"
+        GroupBoxCouleurs.Text = LanguageManager.GetString("FormParametres_GroupBoxCouleurs_Text")
         ' 
         ' Button_ThemeCouleur_Aide
         ' 
@@ -503,23 +577,23 @@ Partial Class FormParametres
         Button_ThemeCouleur_Aide.Name = "Button_ThemeCouleur_Aide"
         Button_ThemeCouleur_Aide.Size = New Size(75, 24)
         Button_ThemeCouleur_Aide.TabIndex = 6
-        Button_ThemeCouleur_Aide.Text = "Aide"
+        Button_ThemeCouleur_Aide.Text = LanguageManager.GetString("FormParametres_Button_ThemeCouleur_Aide_Text")
         Button_ThemeCouleur_Aide.UseVisualStyleBackColor = True
         ' 
         ' LabelTheme
         ' 
         LabelTheme.AutoSize = True
-        LabelTheme.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        LabelTheme.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         LabelTheme.Location = New Point(15, 22)
         LabelTheme.Name = "LabelTheme"
         LabelTheme.Size = New Size(141, 15)
         LabelTheme.TabIndex = 5
-        LabelTheme.Text = "Sélectionner un thème :"
+        LabelTheme.Text = LanguageManager.GetString("FormParametres_LabelTheme_Text")
         ' 
         ' ComboBoxThemes
         ' 
         ComboBoxThemes.DropDownStyle = ComboBoxStyle.DropDownList
-        ComboBoxThemes.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        ComboBoxThemes.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         ComboBoxThemes.FormattingEnabled = True
         ComboBoxThemes.Location = New Point(175, 19)
         ComboBoxThemes.Name = "ComboBoxThemes"
@@ -531,12 +605,12 @@ Partial Class FormParametres
         ButtonSaveTheme.FlatAppearance.MouseDownBackColor = Color.Red
         ButtonSaveTheme.FlatAppearance.MouseOverBackColor = Color.Lime
         ButtonSaveTheme.FlatStyle = FlatStyle.Flat
-        ButtonSaveTheme.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        ButtonSaveTheme.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         ButtonSaveTheme.Location = New Point(15, 52)
         ButtonSaveTheme.Name = "ButtonSaveTheme"
         ButtonSaveTheme.Size = New Size(207, 24)
         ButtonSaveTheme.TabIndex = 1
-        ButtonSaveTheme.Text = "Enregistrer le thème sous..."
+        ButtonSaveTheme.Text = LanguageManager.GetString("FormParametres_ButtonSaveTheme_Text")
         ButtonSaveTheme.UseVisualStyleBackColor = True
         ' 
         ' ButtonDeleteTheme
@@ -544,12 +618,12 @@ Partial Class FormParametres
         ButtonDeleteTheme.FlatAppearance.MouseDownBackColor = Color.Red
         ButtonDeleteTheme.FlatAppearance.MouseOverBackColor = Color.Lime
         ButtonDeleteTheme.FlatStyle = FlatStyle.Flat
-        ButtonDeleteTheme.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        ButtonDeleteTheme.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         ButtonDeleteTheme.Location = New Point(228, 95)
         ButtonDeleteTheme.Name = "ButtonDeleteTheme"
         ButtonDeleteTheme.Size = New Size(220, 23)
         ButtonDeleteTheme.TabIndex = 4
-        ButtonDeleteTheme.Text = "Supprimer le thème du menu"
+        ButtonDeleteTheme.Text = LanguageManager.GetString("FormParametres_ButtonDeleteTheme_Text")
         ButtonDeleteTheme.UseVisualStyleBackColor = True
         ' 
         ' ButtonResetCouleurs
@@ -557,12 +631,12 @@ Partial Class FormParametres
         ButtonResetCouleurs.FlatAppearance.MouseDownBackColor = Color.Red
         ButtonResetCouleurs.FlatAppearance.MouseOverBackColor = Color.Lime
         ButtonResetCouleurs.FlatStyle = FlatStyle.Flat
-        ButtonResetCouleurs.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        ButtonResetCouleurs.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         ButtonResetCouleurs.Location = New Point(15, 95)
         ButtonResetCouleurs.Name = "ButtonResetCouleurs"
         ButtonResetCouleurs.Size = New Size(207, 23)
         ButtonResetCouleurs.TabIndex = 3
-        ButtonResetCouleurs.Text = "Couleurs par défaut"
+        ButtonResetCouleurs.Text = LanguageManager.GetString("FormParametres_ButtonResetCouleurs_Text")
         ButtonResetCouleurs.UseVisualStyleBackColor = True
         ' 
         ' ButtonPersonnaliserCouleurs
@@ -570,13 +644,24 @@ Partial Class FormParametres
         ButtonPersonnaliserCouleurs.FlatAppearance.MouseDownBackColor = Color.Red
         ButtonPersonnaliserCouleurs.FlatAppearance.MouseOverBackColor = Color.Lime
         ButtonPersonnaliserCouleurs.FlatStyle = FlatStyle.Flat
-        ButtonPersonnaliserCouleurs.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        ButtonPersonnaliserCouleurs.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         ButtonPersonnaliserCouleurs.Location = New Point(228, 52)
         ButtonPersonnaliserCouleurs.Name = "ButtonPersonnaliserCouleurs"
         ButtonPersonnaliserCouleurs.Size = New Size(220, 24)
         ButtonPersonnaliserCouleurs.TabIndex = 2
-        ButtonPersonnaliserCouleurs.Text = "Créer un thème de couleurs..."
+        ButtonPersonnaliserCouleurs.Text = LanguageManager.GetString("FormParametres_ButtonPersonnaliserCouleurs_Text")
         ButtonPersonnaliserCouleurs.UseVisualStyleBackColor = True
+        ' 
+        ' Button_ViewCrashLog
+        ' 
+        Button_ViewCrashLog.FlatStyle = FlatStyle.Flat
+        Button_ViewCrashLog.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
+        Button_ViewCrashLog.Location = New Point(312, 840)
+        Button_ViewCrashLog.Name = "Button_ViewCrashLog"
+        Button_ViewCrashLog.Size = New Size(160, 35)
+        Button_ViewCrashLog.TabIndex = 36
+        Button_ViewCrashLog.Text = LanguageManager.GetString("FormParametres_Button_ViewCrashLog_Text")
+        Button_ViewCrashLog.UseVisualStyleBackColor = True
         ' 
         ' GroupBoxEffetsAudio
         ' 
@@ -621,47 +706,47 @@ Partial Class FormParametres
         GroupBoxEffetsAudio.Controls.Add(LabelPhaserStages)
         GroupBoxEffetsAudio.Controls.Add(ComboBoxPhaserStages)
         GroupBoxEffetsAudio.Controls.Add(ButtonResetPhaser)
-        GroupBoxEffetsAudio.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        GroupBoxEffetsAudio.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         GroupBoxEffetsAudio.Location = New Point(478, 12)
         GroupBoxEffetsAudio.Name = "GroupBoxEffetsAudio"
         GroupBoxEffetsAudio.Size = New Size(460, 813)
         GroupBoxEffetsAudio.TabIndex = 7
         GroupBoxEffetsAudio.TabStop = False
-        GroupBoxEffetsAudio.Text = "Effets Audio"
+        GroupBoxEffetsAudio.Text = LanguageManager.GetString("FormParametres_GroupBoxEffetsAudio_Text")
         ' 
         ' ButtonResetEffets
         ' 
         ButtonResetEffets.FlatAppearance.MouseDownBackColor = Color.Red
         ButtonResetEffets.FlatAppearance.MouseOverBackColor = Color.Lime
         ButtonResetEffets.FlatStyle = FlatStyle.Flat
-        ButtonResetEffets.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        ButtonResetEffets.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         ButtonResetEffets.Location = New Point(228, 779)
         ButtonResetEffets.Name = "ButtonResetEffets"
         ButtonResetEffets.Size = New Size(220, 24)
         ButtonResetEffets.TabIndex = 22
-        ButtonResetEffets.Text = "Réinitialiser les effets"
+        ButtonResetEffets.Text = LanguageManager.GetString("FormParametres_ButtonResetEffets_Text")
         ButtonResetEffets.UseVisualStyleBackColor = True
         ' 
         ' CheckBoxReverbActif
         ' 
         CheckBoxReverbActif.AutoSize = True
-        CheckBoxReverbActif.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        CheckBoxReverbActif.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         CheckBoxReverbActif.Location = New Point(6, 22)
         CheckBoxReverbActif.Name = "CheckBoxReverbActif"
         CheckBoxReverbActif.Size = New Size(159, 19)
         CheckBoxReverbActif.TabIndex = 0
-        CheckBoxReverbActif.Text = "Réverbération (Reverb)"
+        CheckBoxReverbActif.Text = LanguageManager.GetString("FormParametres_CheckBoxReverbActif_Text")
         CheckBoxReverbActif.UseVisualStyleBackColor = True
         ' 
         ' LabelReverbMix
         ' 
         LabelReverbMix.AutoSize = True
-        LabelReverbMix.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelReverbMix.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelReverbMix.Location = New Point(6, 41)
         LabelReverbMix.Name = "LabelReverbMix"
         LabelReverbMix.Size = New Size(32, 15)
         LabelReverbMix.TabIndex = 1
-        LabelReverbMix.Text = "Mix :"
+        LabelReverbMix.Text = LanguageManager.GetString("FormParametres_LabelReverbMix_Text")
         ' 
         ' TrackBarReverbMix
         ' 
@@ -677,33 +762,33 @@ Partial Class FormParametres
         ' LabelReverbMixValeur
         ' 
         LabelReverbMixValeur.AutoSize = True
-        LabelReverbMixValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelReverbMixValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelReverbMixValeur.Location = New Point(402, 61)
         LabelReverbMixValeur.Name = "LabelReverbMixValeur"
         LabelReverbMixValeur.Size = New Size(29, 15)
         LabelReverbMixValeur.TabIndex = 3
-        LabelReverbMixValeur.Text = "30%"
+        LabelReverbMixValeur.Text = LanguageManager.GetString("FormParametres_LabelReverbMixValeur_Text")
         ' 
         ' CheckBoxEchoActif
         ' 
         CheckBoxEchoActif.AutoSize = True
-        CheckBoxEchoActif.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        CheckBoxEchoActif.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         CheckBoxEchoActif.Location = New Point(6, 104)
         CheckBoxEchoActif.Name = "CheckBoxEchoActif"
         CheckBoxEchoActif.Size = New Size(52, 19)
         CheckBoxEchoActif.TabIndex = 4
-        CheckBoxEchoActif.Text = "Écho"
+        CheckBoxEchoActif.Text = LanguageManager.GetString("FormParametres_CheckBoxEchoActif_Text")
         CheckBoxEchoActif.UseVisualStyleBackColor = True
         ' 
         ' LabelEchoMix
         ' 
         LabelEchoMix.AutoSize = True
-        LabelEchoMix.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelEchoMix.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelEchoMix.Location = New Point(6, 127)
         LabelEchoMix.Name = "LabelEchoMix"
         LabelEchoMix.Size = New Size(32, 15)
         LabelEchoMix.TabIndex = 5
-        LabelEchoMix.Text = "Mix :"
+        LabelEchoMix.Text = LanguageManager.GetString("FormParametres_LabelEchoMix_Text")
         ' 
         ' TrackBarEchoMix
         ' 
@@ -719,22 +804,22 @@ Partial Class FormParametres
         ' LabelEchoMixValeur
         ' 
         LabelEchoMixValeur.AutoSize = True
-        LabelEchoMixValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelEchoMixValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelEchoMixValeur.Location = New Point(402, 148)
         LabelEchoMixValeur.Name = "LabelEchoMixValeur"
         LabelEchoMixValeur.Size = New Size(29, 15)
         LabelEchoMixValeur.TabIndex = 7
-        LabelEchoMixValeur.Text = "30%"
+        LabelEchoMixValeur.Text = LanguageManager.GetString("FormParametres_LabelEchoMixValeur_Text")
         ' 
         ' LabelEchoDelai
         ' 
         LabelEchoDelai.AutoSize = True
-        LabelEchoDelai.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelEchoDelai.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelEchoDelai.Location = New Point(6, 180)
         LabelEchoDelai.Name = "LabelEchoDelai"
         LabelEchoDelai.Size = New Size(39, 15)
         LabelEchoDelai.TabIndex = 8
-        LabelEchoDelai.Text = "Délai :"
+        LabelEchoDelai.Text = LanguageManager.GetString("FormParametres_LabelEchoDelai_Text")
         ' 
         ' TrackBarEchoDelai
         ' 
@@ -752,22 +837,22 @@ Partial Class FormParametres
         ' LabelEchoDelaiValeur
         ' 
         LabelEchoDelaiValeur.AutoSize = True
-        LabelEchoDelaiValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelEchoDelaiValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelEchoDelaiValeur.Location = New Point(402, 202)
         LabelEchoDelaiValeur.Name = "LabelEchoDelaiValeur"
         LabelEchoDelaiValeur.Size = New Size(44, 15)
         LabelEchoDelaiValeur.TabIndex = 10
-        LabelEchoDelaiValeur.Text = "300 ms"
+        LabelEchoDelaiValeur.Text = LanguageManager.GetString("FormParametres_LabelEchoDelaiValeur_Text")
         ' 
         ' LabelEchoFeedback
         ' 
         LabelEchoFeedback.AutoSize = True
-        LabelEchoFeedback.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelEchoFeedback.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelEchoFeedback.Location = New Point(6, 236)
         LabelEchoFeedback.Name = "LabelEchoFeedback"
         LabelEchoFeedback.Size = New Size(63, 15)
         LabelEchoFeedback.TabIndex = 11
-        LabelEchoFeedback.Text = "Feedback :"
+        LabelEchoFeedback.Text = LanguageManager.GetString("FormParametres_LabelEchoFeedback_Text")
         ' 
         ' TrackBarEchoFeedback
         ' 
@@ -783,33 +868,33 @@ Partial Class FormParametres
         ' LabelEchoFeedbackValeur
         ' 
         LabelEchoFeedbackValeur.AutoSize = True
-        LabelEchoFeedbackValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelEchoFeedbackValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelEchoFeedbackValeur.Location = New Point(402, 254)
         LabelEchoFeedbackValeur.Name = "LabelEchoFeedbackValeur"
         LabelEchoFeedbackValeur.Size = New Size(29, 15)
         LabelEchoFeedbackValeur.TabIndex = 13
-        LabelEchoFeedbackValeur.Text = "50%"
+        LabelEchoFeedbackValeur.Text = LanguageManager.GetString("FormParametres_LabelEchoFeedbackValeur_Text")
         ' 
         ' CheckBoxTimeStretchActif
         ' 
         CheckBoxTimeStretchActif.AutoSize = True
-        CheckBoxTimeStretchActif.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        CheckBoxTimeStretchActif.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         CheckBoxTimeStretchActif.Location = New Point(6, 305)
         CheckBoxTimeStretchActif.Name = "CheckBoxTimeStretchActif"
         CheckBoxTimeStretchActif.Size = New Size(195, 19)
         CheckBoxTimeStretchActif.TabIndex = 18
-        CheckBoxTimeStretchActif.Text = "Time Stretch (changer tempo)"
+        CheckBoxTimeStretchActif.Text = LanguageManager.GetString("FormParametres_CheckBoxTimeStretchActif_Text")
         CheckBoxTimeStretchActif.UseVisualStyleBackColor = True
         ' 
         ' LabelTimeStretch
         ' 
         LabelTimeStretch.AutoSize = True
-        LabelTimeStretch.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelTimeStretch.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelTimeStretch.Location = New Point(6, 327)
         LabelTimeStretch.Name = "LabelTimeStretch"
         LabelTimeStretch.Size = New Size(50, 15)
         LabelTimeStretch.TabIndex = 19
-        LabelTimeStretch.Text = "Tempo :"
+        LabelTimeStretch.Text = LanguageManager.GetString("FormParametres_LabelTimeStretch_Text")
         ' 
         ' TrackBarTimeStretch
         ' 
@@ -826,12 +911,12 @@ Partial Class FormParametres
         ' LabelTimeStretchValeur
         ' 
         LabelTimeStretchValeur.AutoSize = True
-        LabelTimeStretchValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelTimeStretchValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelTimeStretchValeur.Location = New Point(404, 338)
         LabelTimeStretchValeur.Name = "LabelTimeStretchValeur"
         LabelTimeStretchValeur.Size = New Size(33, 15)
         LabelTimeStretchValeur.TabIndex = 21
-        LabelTimeStretchValeur.Text = "1.00x"
+        LabelTimeStretchValeur.Text = LanguageManager.GetString("FormParametres_LabelTimeStretchValeur_Text")
         ' 
         ' ButtonResetTimeStretch
         ' 
@@ -840,34 +925,34 @@ Partial Class FormParametres
         ButtonResetTimeStretch.FlatAppearance.MouseDownBackColor = Color.Red
         ButtonResetTimeStretch.FlatAppearance.MouseOverBackColor = Color.Lime
         ButtonResetTimeStretch.FlatStyle = FlatStyle.Flat
-        ButtonResetTimeStretch.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        ButtonResetTimeStretch.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         ButtonResetTimeStretch.Location = New Point(402, 359)
         ButtonResetTimeStretch.Name = "ButtonResetTimeStretch"
         ButtonResetTimeStretch.Size = New Size(32, 24)
         ButtonResetTimeStretch.TabIndex = 24
-        ButtonResetTimeStretch.Text = "✕"
+        ButtonResetTimeStretch.Text = LanguageManager.GetString("FormParametres_ButtonResetTimeStretch_Text")
         ButtonResetTimeStretch.UseVisualStyleBackColor = False
         ' 
         ' CheckBoxPitchShiftActif
         ' 
         CheckBoxPitchShiftActif.AutoSize = True
-        CheckBoxPitchShiftActif.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        CheckBoxPitchShiftActif.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         CheckBoxPitchShiftActif.Location = New Point(6, 401)
         CheckBoxPitchShiftActif.Name = "CheckBoxPitchShiftActif"
         CheckBoxPitchShiftActif.Size = New Size(186, 19)
         CheckBoxPitchShiftActif.TabIndex = 25
-        CheckBoxPitchShiftActif.Text = "Pitch Shift (changer tonalité)"
+        CheckBoxPitchShiftActif.Text = LanguageManager.GetString("FormParametres_CheckBoxPitchShiftActif_Text")
         CheckBoxPitchShiftActif.UseVisualStyleBackColor = True
         ' 
         ' LabelPitchShift
         ' 
         LabelPitchShift.AutoSize = True
-        LabelPitchShift.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelPitchShift.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelPitchShift.Location = New Point(6, 423)
         LabelPitchShift.Name = "LabelPitchShift"
         LabelPitchShift.Size = New Size(103, 15)
         LabelPitchShift.TabIndex = 26
-        LabelPitchShift.Text = "Pitch (demi-tons):"
+        LabelPitchShift.Text = LanguageManager.GetString("FormParametres_LabelPitchShift_Text")
         ' 
         ' TrackBarPitchShift
         ' 
@@ -883,12 +968,12 @@ Partial Class FormParametres
         ' LabelPitchShiftValeur
         ' 
         LabelPitchShiftValeur.AutoSize = True
-        LabelPitchShiftValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelPitchShiftValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelPitchShiftValeur.Location = New Point(404, 434)
         LabelPitchShiftValeur.Name = "LabelPitchShiftValeur"
         LabelPitchShiftValeur.Size = New Size(22, 15)
         LabelPitchShiftValeur.TabIndex = 28
-        LabelPitchShiftValeur.Text = "0.0"
+        LabelPitchShiftValeur.Text = LanguageManager.GetString("FormParametres_LabelPitchShiftValeur_Text")
         ' 
         ' ButtonResetPitchShift
         ' 
@@ -897,34 +982,34 @@ Partial Class FormParametres
         ButtonResetPitchShift.FlatAppearance.MouseDownBackColor = Color.Red
         ButtonResetPitchShift.FlatAppearance.MouseOverBackColor = Color.Lime
         ButtonResetPitchShift.FlatStyle = FlatStyle.Flat
-        ButtonResetPitchShift.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        ButtonResetPitchShift.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         ButtonResetPitchShift.Location = New Point(402, 455)
         ButtonResetPitchShift.Name = "ButtonResetPitchShift"
         ButtonResetPitchShift.Size = New Size(32, 24)
         ButtonResetPitchShift.TabIndex = 29
-        ButtonResetPitchShift.Text = "✕"
+        ButtonResetPitchShift.Text = LanguageManager.GetString("FormParametres_ButtonResetPitchShift_Text")
         ButtonResetPitchShift.UseVisualStyleBackColor = False
         ' 
         ' CheckBoxPhaserActif
         ' 
         CheckBoxPhaserActif.AutoSize = True
-        CheckBoxPhaserActif.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        CheckBoxPhaserActif.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         CheckBoxPhaserActif.Location = New Point(6, 490)
         CheckBoxPhaserActif.Name = "CheckBoxPhaserActif"
         CheckBoxPhaserActif.Size = New Size(63, 19)
         CheckBoxPhaserActif.TabIndex = 30
-        CheckBoxPhaserActif.Text = "Phaser"
+        CheckBoxPhaserActif.Text = LanguageManager.GetString("FormParametres_CheckBoxPhaserActif_Text")
         CheckBoxPhaserActif.UseVisualStyleBackColor = True
         ' 
         ' LabelPhaserRate
         ' 
         LabelPhaserRate.AutoSize = True
-        LabelPhaserRate.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelPhaserRate.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelPhaserRate.Location = New Point(6, 512)
         LabelPhaserRate.Name = "LabelPhaserRate"
         LabelPhaserRate.Size = New Size(71, 15)
         LabelPhaserRate.TabIndex = 31
-        LabelPhaserRate.Text = "Vitesse (Hz):"
+        LabelPhaserRate.Text = LanguageManager.GetString("FormParametres_LabelPhaserRate_Text")
         ' 
         ' TrackBarPhaserRate
         ' 
@@ -941,22 +1026,22 @@ Partial Class FormParametres
         ' LabelPhaserRateValeur
         ' 
         LabelPhaserRateValeur.AutoSize = True
-        LabelPhaserRateValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelPhaserRateValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelPhaserRateValeur.Location = New Point(404, 523)
         LabelPhaserRateValeur.Name = "LabelPhaserRateValeur"
         LabelPhaserRateValeur.Size = New Size(22, 15)
         LabelPhaserRateValeur.TabIndex = 33
-        LabelPhaserRateValeur.Text = "0.5"
+        LabelPhaserRateValeur.Text = LanguageManager.GetString("FormParametres_LabelPhaserRateValeur_Text")
         ' 
         ' LabelPhaserDepth
         ' 
         LabelPhaserDepth.AutoSize = True
-        LabelPhaserDepth.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelPhaserDepth.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelPhaserDepth.Location = New Point(6, 568)
         LabelPhaserDepth.Name = "LabelPhaserDepth"
         LabelPhaserDepth.Size = New Size(70, 15)
         LabelPhaserDepth.TabIndex = 34
-        LabelPhaserDepth.Text = "Profondeur:"
+        LabelPhaserDepth.Text = LanguageManager.GetString("FormParametres_LabelPhaserDepth_Text")
         ' 
         ' TrackBarPhaserDepth
         ' 
@@ -972,22 +1057,22 @@ Partial Class FormParametres
         ' LabelPhaserDepthValeur
         ' 
         LabelPhaserDepthValeur.AutoSize = True
-        LabelPhaserDepthValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelPhaserDepthValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelPhaserDepthValeur.Location = New Point(404, 579)
         LabelPhaserDepthValeur.Name = "LabelPhaserDepthValeur"
         LabelPhaserDepthValeur.Size = New Size(29, 15)
         LabelPhaserDepthValeur.TabIndex = 36
-        LabelPhaserDepthValeur.Text = "50%"
+        LabelPhaserDepthValeur.Text = LanguageManager.GetString("FormParametres_LabelPhaserDepthValeur_Text")
         ' 
         ' LabelPhaserFeedback
         ' 
         LabelPhaserFeedback.AutoSize = True
-        LabelPhaserFeedback.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelPhaserFeedback.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelPhaserFeedback.Location = New Point(6, 624)
         LabelPhaserFeedback.Name = "LabelPhaserFeedback"
         LabelPhaserFeedback.Size = New Size(60, 15)
         LabelPhaserFeedback.TabIndex = 37
-        LabelPhaserFeedback.Text = "Feedback:"
+        LabelPhaserFeedback.Text = LanguageManager.GetString("FormParametres_LabelPhaserFeedback_Text")
         ' 
         ' TrackBarPhaserFeedback
         ' 
@@ -1003,22 +1088,22 @@ Partial Class FormParametres
         ' LabelPhaserFeedbackValeur
         ' 
         LabelPhaserFeedbackValeur.AutoSize = True
-        LabelPhaserFeedbackValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelPhaserFeedbackValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelPhaserFeedbackValeur.Location = New Point(404, 635)
         LabelPhaserFeedbackValeur.Name = "LabelPhaserFeedbackValeur"
         LabelPhaserFeedbackValeur.Size = New Size(29, 15)
         LabelPhaserFeedbackValeur.TabIndex = 39
-        LabelPhaserFeedbackValeur.Text = "30%"
+        LabelPhaserFeedbackValeur.Text = LanguageManager.GetString("FormParametres_LabelPhaserFeedbackValeur_Text")
         ' 
         ' LabelPhaserMix
         ' 
         LabelPhaserMix.AutoSize = True
-        LabelPhaserMix.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelPhaserMix.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelPhaserMix.Location = New Point(6, 680)
         LabelPhaserMix.Name = "LabelPhaserMix"
         LabelPhaserMix.Size = New Size(29, 15)
         LabelPhaserMix.TabIndex = 40
-        LabelPhaserMix.Text = "Mix:"
+        LabelPhaserMix.Text = LanguageManager.GetString("FormParametres_LabelPhaserMix_Text")
         ' 
         ' TrackBarPhaserMix
         ' 
@@ -1034,22 +1119,22 @@ Partial Class FormParametres
         ' LabelPhaserMixValeur
         ' 
         LabelPhaserMixValeur.AutoSize = True
-        LabelPhaserMixValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        LabelPhaserMixValeur.Font = New Font("Segoe UI", 9.0F, FontStyle.Regular, GraphicsUnit.Point, 0)
         LabelPhaserMixValeur.Location = New Point(404, 691)
         LabelPhaserMixValeur.Name = "LabelPhaserMixValeur"
         LabelPhaserMixValeur.Size = New Size(29, 15)
         LabelPhaserMixValeur.TabIndex = 42
-        LabelPhaserMixValeur.Text = "50%"
+        LabelPhaserMixValeur.Text = LanguageManager.GetString("FormParametres_LabelPhaserMixValeur_Text")
         ' 
         ' LabelPhaserStages
         ' 
         LabelPhaserStages.FlatStyle = FlatStyle.Flat
-        LabelPhaserStages.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        LabelPhaserStages.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         LabelPhaserStages.Location = New Point(6, 751)
         LabelPhaserStages.Name = "LabelPhaserStages"
         LabelPhaserStages.Size = New Size(98, 15)
         LabelPhaserStages.TabIndex = 43
-        LabelPhaserStages.Text = "Stages:"
+        LabelPhaserStages.Text = LanguageManager.GetString("FormParametres_LabelPhaserStages_Text")
         LabelPhaserStages.TextAlign = ContentAlignment.MiddleRight
         ' 
         ' ComboBoxPhaserStages
@@ -1069,12 +1154,12 @@ Partial Class FormParametres
         ButtonResetPhaser.FlatAppearance.MouseDownBackColor = Color.Red
         ButtonResetPhaser.FlatAppearance.MouseOverBackColor = Color.Lime
         ButtonResetPhaser.FlatStyle = FlatStyle.Flat
-        ButtonResetPhaser.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        ButtonResetPhaser.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         ButtonResetPhaser.Location = New Point(404, 742)
         ButtonResetPhaser.Name = "ButtonResetPhaser"
         ButtonResetPhaser.Size = New Size(32, 24)
         ButtonResetPhaser.TabIndex = 45
-        ButtonResetPhaser.Text = "✕"
+        ButtonResetPhaser.Text = LanguageManager.GetString("FormParametres_ButtonResetPhaser_Text")
         ButtonResetPhaser.UseVisualStyleBackColor = False
         ' 
         ' FormParametres
@@ -1085,6 +1170,7 @@ Partial Class FormParametres
         Controls.Add(GroupBoxEffetsAudio)
         Controls.Add(GroupBoxCouleurs)
         Controls.Add(GroupBoxLangue)
+        Controls.Add(Button_ViewCrashLog)
         Controls.Add(ButtonReinitialiser)
         Controls.Add(ButtonAnnuler)
         Controls.Add(ButtonSauvegarder)
@@ -1096,7 +1182,7 @@ Partial Class FormParametres
         MinimizeBox = False
         Name = "FormParametres"
         StartPosition = FormStartPosition.CenterParent
-        Text = "Paramètres - AudioPlay"
+        Text = LanguageManager.GetString("FormParametres_Form_Text")
         GroupBox_TypesAudioDefaut.ResumeLayout(False)
         GroupBox_TypesAudioDefaut.PerformLayout()
         GroupBoxLecture.ResumeLayout(False)
@@ -1138,6 +1224,10 @@ Partial Class FormParametres
     Friend WithEvents CheckBoxSupprimerSilenceFin As CheckBox
     Friend WithEvents TextBoxNombreBeats As TextBox
     Friend WithEvents LabelNombreBeats As Label
+    Friend WithEvents LabelPythonPath As Label
+    Friend WithEvents TextBoxPythonPath As TextBox
+    Friend WithEvents ButtonBrowsePython As Button
+    Friend WithEvents ButtonCheckLibrosa As Button
     Friend WithEvents CheckBoxSupprimerSilenceDebut As CheckBox
     Friend WithEvents CheckBoxMetronome As CheckBox
     Friend WithEvents CheckBoxMetronomeSon As CheckBox
@@ -1157,9 +1247,11 @@ Partial Class FormParametres
     Friend WithEvents CheckBox_WMA As CheckBox
     Friend WithEvents CheckBox_FLAC As CheckBox
     Friend WithEvents CheckBox_MP3 As CheckBox
+    Friend WithEvents ButtonApplyNow As Button
     Friend WithEvents CheckBox_EffacerChansons As CheckBox
     Friend WithEvents Button_ThemeCouleur_Aide As Button
     Friend WithEvents Button_Metronome_Aide As Button
+    Friend WithEvents Button_ViewCrashLog As Button
 
     ' === Effets Audio ===
     Friend WithEvents GroupBoxEffetsAudio As GroupBox
@@ -1209,4 +1301,5 @@ Partial Class FormParametres
 
     Friend WithEvents ButtonResetEffets As Button
     Friend WithEvents CheckBoxModeMixeurDJ As CheckBox
+    Friend WithEvents LabelLibrosaExist As Label
 End Class

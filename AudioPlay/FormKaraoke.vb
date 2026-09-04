@@ -156,6 +156,10 @@ Public Class FormKaraoke
         MyBase.OnClosing(e)
     End Sub
 
+    Private Sub InitializeComponent()
+
+    End Sub
+
     ''' <summary>
     ''' Rafraîchit les textes selon la langue actuelle
     ''' </summary>

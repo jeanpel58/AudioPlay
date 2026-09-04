@@ -8,6 +8,8 @@
     <MyType>WindowsForms</MyType>
     <AssemblyTitle>AudioPlay</AssemblyTitle>
     <ApplicationIcon>Assets\AudioPlay.ico</ApplicationIcon>
+    <!-- Enforce strict typing to catch implicit conversions early -->
+    <OptionStrict>On</OptionStrict>
   </PropertyGroup>
 
   <ItemGroup>
@@ -41,10 +43,53 @@
     <None Update="LOOP_GUIDE_USER.*.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="WindowBefore.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="WindowBefore_GUIDE_USER.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="WindowAfter.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="WindowAfter_GUIDE_USER.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="MinSilence.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="MinSilence_GUIDE_USER.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="MaxStartTrim.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="MaxStartTrim_GUIDE_USER.*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="help\FormCompresser\*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="help\FormCompresser\*.html">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="help\**\*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="AUDIOPLAY_GUIDE_COMPLET.*.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Themes\*.theme">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Tools\README_FFMPEG.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Tools\INSTALLATION_FFMPEG.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Tools\EXTRACTION_FLAC_WMA.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -81,10 +126,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- CSCore removed: package targeted .NET Framework and caused NU1701. No usages found in project files; removed to avoid compatibility warning. If needed, re-add a compatible audio library. -->
+    <PackageReference Include="FFMpegCore" Version="5.4.0" />
     <PackageReference Include="NAudio" Version="2.3.0" />
     <PackageReference Include="NAudio.Lame" Version="2.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SoundTouchSharp" Version="2.3.2" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
     <PackageReference Include="TagLibSharp" Version="2.3.0" />
   </ItemGroup>
 
@@ -107,6 +155,18 @@
     <Message Text="Copie de SoundTouch.dll depuis $(SoundTouchSourcePath)" Importance="high" />
     <Copy SourceFiles="$(SoundTouchSourcePath)" DestinationFiles="$(SoundTouchDestPath)" Condition="Exists('$(SoundTouchSourcePath)')" SkipUnchangedFiles="true" />
     <Warning Text="SoundTouch.dll introuvable dans $(SoundTouchSourcePath) - Time Stretch fonctionnera en mode bypass" Condition="!Exists('$(SoundTouchSourcePath)')" />
+  </Target>
+
+  <!-- Correction automatique du bug du designer Visual Studio -->
+  <Import Project="AudioPlay.targets" Condition="Exists('AudioPlay.targets')" />
+
+  <!-- Copier explicitement les fichiers d'aide de help\FormCompresser vers le dossier de sortie racine -->
+  <Target Name="CopyFormCompresserHelp" AfterTargets="Build">
+    <ItemGroup>
+      <FormCompresserHelp Include="help\FormCompresser\*.html" />
+    </ItemGroup>
+    <Message Text="Copying FormCompresser help files to $(OutputPath)" Importance="high" />
+    <Copy SourceFiles="@(FormCompresserHelp)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
   </Target>
 
 </Project>

@@ -141,6 +141,33 @@
   <data name="APropos_OK" xml:space="preserve">
     <value>OK</value>
   </data>
+  <data name="Compressor_Converting" xml:space="preserve">
+    <value>Conversion...</value>
+  </data>
+  <data name="Error_NoAlbumFound" xml:space="preserve">
+    <value>Aucun album trouvé dans le répertoire de sauvegarde.</value>
+  </data>
+  <data name="Error_NoSavePath" xml:space="preserve">
+    <value>Veuillez indiquer un répertoire de sauvegarde valide.</value>
+  </data>
+  <data name="FormCompresser_PostProcessing_AutoLabel" xml:space="preserve">
+    <value>Post-traitement automatique</value>
+  </data>
+  <data name="FormCompresser_PostProcessing_AutoTip" xml:space="preserve">
+    <value>Si coché, applique automatiquement les corrections après extraction (non destructif).</value>
+  </data>
+  <data name="FormCompresser_Button_CorrectAlbum" xml:space="preserve">
+    <value>Corriger l'album</value>
+  </data>
+  <data name="FormCompresser_Button_CorrectTip" xml:space="preserve">
+    <value>Applique les corrections non destructives aux fichiers WAV de l'album courant.</value>
+  </data>
+  <data name="FormCompresser_PostProcessing_DoneMessage" xml:space="preserve">
+    <value>Post-traitement terminé. Vérifiez les fichiers *_fixed.wav dans le dossier d'album.</value>
+  </data>
+  <data name="FormCompresser_PostProcessing_DoneTitle" xml:space="preserve">
+    <value>Post-traitement</value>
+  </data>
   <data name="APropos_Error_BrowserOpen" xml:space="preserve">
     <value>Impossible d'ouvrir le navigateur.</value>
   </data>
@@ -150,6 +177,21 @@
   <data name="Button_Parametres" xml:space="preserve">
     <value>Paramètres</value>
   </data>
+  <data name="DisplayMode_VirtualDJ" xml:space="preserve">
+    <value>VirtualDJ</value>
+  </data>
+  <data name="DisplayMode_Audacity" xml:space="preserve">
+    <value>Audacity</value>
+  </data>
+  <data name="DisplayMode_Spectrogram" xml:space="preserve">
+    <value>Spectrogramme</value>
+  </data>
+  <data name="DisplayMode_Line" xml:space="preserve">
+    <value>Ligne</value>
+  </data>
+  <data name="DisplayMode_Serato" xml:space="preserve">
+    <value>Serato</value>
+  </data>
   <data name="Button_InfoSelect" xml:space="preserve">
     <value>Infos chanson</value>
   </data>
@@ -157,7 +199,7 @@
     <value>Calcul BPM</value>
   </data>
   <data name="Label_Treble" xml:space="preserve">
-    <value>Aigues</value>
+    <value>Aigus</value>
   </data>
   <data name="Label_Bass" xml:space="preserve">
     <value>Basses</value>
@@ -237,6 +279,1290 @@
   <data name="Menu_AddDirectory" xml:space="preserve">
     <value>Ajout d'un répertoire...</value>
   </data>
+  <data name="Menu_AddCDAudio" xml:space="preserve">
+    <value>Ajout d'un CD audio</value>
+  </data>
+  <data name="CDTrack_Prefix" xml:space="preserve">
+    <value>Piste</value>
+  </data>
+  <data name="Menu_NoCDDrive" xml:space="preserve">
+    <value>Aucun lecteur CD/DVD détecté</value>
+  </data>
+  <data name="Menu_CDEmpty" xml:space="preserve">
+    <value>vide</value>
+  </data>
+  <data name="Menu_CDTracks" xml:space="preserve">
+    <value>pistes</value>
+  </data>
+  <data name="Detection_Silences_Title" xml:space="preserve">
+    <value>Détection silences</value>
+  </data>
+  <data name="Compresser_NoCDDrive_Message" xml:space="preserve">
+    <value>Veuillez sélectionner un lecteur CD contenant un disque audio.</value>
+  </data>
+  <data name="Compresser_NoCDDrive_Title" xml:space="preserve">
+    <value>Aucun lecteur sélectionné</value>
+  </data>
+  <data name="Compresser_NoTrackSelected_Message" xml:space="preserve">
+    <value>Veuillez sélectionner au moins une piste à extraire.</value>
+  </data>
+  <data name="Compresser_NoTrackSelected_Title" xml:space="preserve">
+    <value>Aucune piste sélectionnée</value>
+  </data>
+  <data name="Compresser_InvalidDestination_Message" xml:space="preserve">
+    <value>Veuillez sélectionner un répertoire de destination valide.</value>
+  </data>
+  <data name="Compresser_InvalidDestination_Title" xml:space="preserve">
+    <value>Répertoire invalide</value>
+  </data>
+  <data name="FFMpeg_DownloadFailed_Message" xml:space="preserve">
+    <value>Le téléchargement de FFMpeg a échoué.
+Vous pouvez installer FFMpeg manuellement en suivant les instructions dans le fichier: Tools\README_FFMPEG.txt</value>
+  </data>
+  <data name="FFMpeg_DownloadFailed_Title" xml:space="preserve">
+    <value>Erreur de téléchargement</value>
+  </data>
+  <data name="FFMpeg_DownloadCancelConfirm_Message" xml:space="preserve">
+    <value>Le téléchargement est en cours. Voulez-vous vraiment annuler ?</value>
+  </data>
+  <data name="FFMpeg_DownloadCancelConfirm_Title" xml:space="preserve">
+    <value>Confirmer l'annulation</value>
+  </data>
+  <data name="FFMpeg_DownloadError_Message" xml:space="preserve">
+    <value>Erreur lors du téléchargement: {0}</value>
+  </data>
+  <data name="FFMpeg_DownloadError_Title" xml:space="preserve">
+    <value>Erreur</value>
+  </data>
+  <data name="UnhandledException_GenericFallback_Message" xml:space="preserve">
+    <value>An unhandled error occurred. See crash.log in %APPDATA%\AudioPlay.</value>
+  </data>
+  <data name="FormParametres_MainFormNull_Message" xml:space="preserve">
+    <value>mainForm est Nothing!</value>
+  </data>
+  <data name="FormParametres_MainFormNull_Title" xml:space="preserve">
+    <value>Erreur</value>
+  </data>
+  <data name="FormParametres_AudioEffectsReset_Message" xml:space="preserve">
+    <value>Les effets audio ont été réinitialisés.</value>
+  </data>
+  <data name="FormParametres_AudioEffectsReset_Title" xml:space="preserve">
+    <value>AudioPlay</value>
+  </data>
+  <data name="FormParametres_GroupBox_TypesAudioDefaut_Text" xml:space="preserve">
+    <value>Types Audio par Défaut</value>
+  </data>
+  <data name="FormParametres_CheckBox_AAC_Text" xml:space="preserve">
+    <value>.AAC</value>
+  </data>
+  <data name="FormParametres_CheckBox_WAV_Text" xml:space="preserve">
+    <value>.WAV</value>
+  </data>
+  <data name="FormParametres_CheckBox_WMA_Text" xml:space="preserve">
+    <value>.WMA</value>
+  </data>
+  <data name="FormParametres_CheckBox_FLAC_Text" xml:space="preserve">
+    <value>.Flac</value>
+  </data>
+  <data name="FormParametres_CheckBox_MP3_Text" xml:space="preserve">
+    <value>.MP3</value>
+  </data>
+  <data name="FormParametres_ButtonApplyNow_Text" xml:space="preserve">
+    <value>Appliquer</value>
+  </data>
+  <data name="FormParametres_LabelTypesAudioDefaut_Text" xml:space="preserve">
+    <value>Cocher les types audio par défaut :</value>
+  </data>
+  <data name="FormParametres_GroupBoxLecture_Text" xml:space="preserve">
+    <value>Paramètres de lecture</value>
+  </data>
+  <data name="FormParametres_LabelLibrosaExist_Text" xml:space="preserve">
+    <value>Vérifier si la librairie Librosa est présente sur votre système :</value>
+  </data>
+  <data name="FormParametres_CheckBoxModeMixeurDJ_Text" xml:space="preserve">
+    <value>Mode Mixeur DJ (2 platines avec crossfader et contrôles DJ)</value>
+  </data>
+  <data name="FormParametres_Button_Metronome_Aide_Text" xml:space="preserve">
+    <value>Aide</value>
+  </data>
+  <data name="FormParametres_CheckBox_EffacerChansons_Text" xml:space="preserve">
+    <value>Message pour confirmer l'enlèvement d'une sélection dans la liste</value>
+  </data>
+  <data name="FormParametres_CheckBoxSupprimerSilenceFin_Text" xml:space="preserve">
+    <value>Supprimer les silences à la fin des chansons</value>
+  </data>
+  <data name="FormParametres_LabelNombreBeats_Text" xml:space="preserve">
+    <value>Nombre de beats :</value>
+  </data>
+  <data name="FormParametres_CheckBoxSupprimerSilenceDebut_Text" xml:space="preserve">
+    <value>Supprimer les silences au début des chansons</value>
+  </data>
+  <data name="FormParametres_CheckBoxMetronome_Text" xml:space="preserve">
+    <value>Activer le métronome avant chaque chanson</value>
+  </data>
+  <data name="FormParametres_CheckBoxMetronomeSon_Text" xml:space="preserve">
+    <value>Son</value>
+  </data>
+  <data name="FormParametres_CheckBoxMetronomeLumiere_Text" xml:space="preserve">
+    <value>Lumière</value>
+  </data>
+  <data name="FormParametres_ButtonAideNormalisation_Text" xml:space="preserve">
+    <value>Aide</value>
+  </data>
+  <data name="FormParametres_CheckBoxNormalisationVolume_Text" xml:space="preserve">
+    <value>Normalisation du volume</value>
+  </data>
+  <data name="FormParametres_CheckBoxAfficherBPM_Text" xml:space="preserve">
+    <value>Afficher le BPM dans les métadonnées</value>
+  </data>
+  <data name="FormParametres_CheckBoxLectureAuto_Text" xml:space="preserve">
+    <value>Lecture automatique du morceau suivant</value>
+  </data>
+  <data name="FormParametres_LabelMethodeBPM_Text" xml:space="preserve">
+    <value>Méthode de calcul BPM :</value>
+  </data>
+  <data name="FormParametres_ButtonCheckLibrosa_Text" xml:space="preserve">
+    <value>Vérifier</value>
+  </data>
+  <data name="FormParametres_LabelPythonPath_Text" xml:space="preserve">
+    <value>Chemin Python (optionnel) :</value>
+  </data>
+  <data name="FormParametres_ButtonBrowsePython_Text" xml:space="preserve">
+    <value>Parcourir</value>
+  </data>
+  <data name="FormParametres_ButtonSauvegarder_Text" xml:space="preserve">
+    <value>Sauvegarder</value>
+  </data>
+  <data name="FormParametres_ButtonAnnuler_Text" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="FormParametres_ButtonReinitialiser_Text" xml:space="preserve">
+    <value>Réinitialiser</value>
+  </data>
+  <data name="FormParametres_GroupBoxLangue_Text" xml:space="preserve">
+    <value>Paramètres de langue</value>
+  </data>
+  <data name="FormParametres_LabelLangue_Text" xml:space="preserve">
+    <value>Langue :</value>
+  </data>
+  <data name="FormParametres_GroupBoxCouleurs_Text" xml:space="preserve">
+    <value>Couleurs de l'interface</value>
+  </data>
+  <data name="FormParametres_Button_ThemeCouleur_Aide_Text" xml:space="preserve">
+    <value>Aide</value>
+  </data>
+  <data name="FormParametres_LabelTheme_Text" xml:space="preserve">
+    <value>Sélectionner un thème :</value>
+  </data>
+  <data name="FormParametres_ButtonSaveTheme_Text" xml:space="preserve">
+    <value>Enregistrer le thème sous...</value>
+  </data>
+  <data name="FormParametres_ButtonDeleteTheme_Text" xml:space="preserve">
+    <value>Supprimer le thème du menu</value>
+  </data>
+  <data name="FormParametres_ButtonResetCouleurs_Text" xml:space="preserve">
+    <value>Couleurs par défaut</value>
+  </data>
+  <data name="FormParametres_ButtonPersonnaliserCouleurs_Text" xml:space="preserve">
+    <value>Créer un thème de couleurs...</value>
+  </data>
+  <data name="FormParametres_Button_ViewCrashLog_Text" xml:space="preserve">
+    <value>Afficher dernier crash</value>
+  </data>
+  <data name="FormParametres_GroupBoxEffetsAudio_Text" xml:space="preserve">
+    <value>Effets Audio</value>
+  </data>
+  <data name="FormParametres_ButtonResetEffets_Text" xml:space="preserve">
+    <value>Réinitialiser</value>
+  </data>
+  <data name="FormParametres_CheckBoxReverbActif_Text" xml:space="preserve">
+    <value>REVERB</value>
+  </data>
+  <data name="FormParametres_LabelReverbMix_Text" xml:space="preserve">
+    <value>Mix :</value>
+  </data>
+  <data name="FormParametres_LabelReverbMixValeur_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_CheckBoxEchoActif_Text" xml:space="preserve">
+    <value>ECHO</value>
+  </data>
+  <data name="FormParametres_LabelEchoMix_Text" xml:space="preserve">
+    <value>Mix :</value>
+  </data>
+  <data name="FormParametres_LabelEchoMixValeur_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_LabelEchoDelai_Text" xml:space="preserve">
+    <value>Délai :</value>
+  </data>
+  <data name="FormParametres_LabelEchoDelaiValeur_Text" xml:space="preserve">
+    <value>ms</value>
+  </data>
+  <data name="FormParametres_LabelEchoFeedback_Text" xml:space="preserve">
+    <value>Feedback :</value>
+  </data>
+  <data name="FormParametres_LabelEchoFeedbackValeur_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_CheckBoxTimeStretchActif_Text" xml:space="preserve">
+    <value>Time Stretch</value>
+  </data>
+  <data name="FormParametres_LabelTimeStretch_Text" xml:space="preserve">
+    <value>Valeur :</value>
+  </data>
+  <data name="FormParametres_LabelTimeStretchValeur_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_ButtonResetTimeStretch_Text" xml:space="preserve">
+    <value>Réinitialiser</value>
+  </data>
+  <data name="FormParametres_CheckBoxPitchShiftActif_Text" xml:space="preserve">
+    <value>Pitch Shift</value>
+  </data>
+  <data name="FormParametres_LabelPitchShift_Text" xml:space="preserve">
+    <value>Valeur :</value>
+  </data>
+  <data name="FormParametres_LabelPitchShiftValeur_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_ButtonResetPitchShift_Text" xml:space="preserve">
+    <value>Réinitialiser</value>
+  </data>
+  <data name="FormParametres_CheckBoxPhaserActif_Text" xml:space="preserve">
+    <value>Phaser</value>
+  </data>
+  <data name="FormParametres_LabelPhaserRate_Text" xml:space="preserve">
+    <value>Rate :</value>
+  </data>
+  <data name="FormParametres_LabelPhaserRateValeur_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_LabelPhaserDepth_Text" xml:space="preserve">
+    <value>Depth :</value>
+  </data>
+  <data name="FormParametres_LabelPhaserDepthValeur_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_LabelPhaserFeedback_Text" xml:space="preserve">
+    <value>Feedback :</value>
+  </data>
+  <data name="FormParametres_LabelPhaserFeedbackValeur_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_LabelPhaserMix_Text" xml:space="preserve">
+    <value>Mix :</value>
+  </data>
+  <data name="FormParametres_LabelPhaserMixValeur_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_LabelPhaserStages_Text" xml:space="preserve">
+    <value>Stages :</value>
+  </data>
+  <data name="FormParametres_LabelPhaserStagesValeur_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_LabelTimeStretchUnite_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_LabelPitchShiftUnite_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormParametres_ButtonResetPhaser_Text" xml:space="preserve">
+    <value>Réinitialiser</value>
+  </data>
+  <data name="FormDJ_NoItemSelected_Message" xml:space="preserve">
+    <value>Aucun item sélectionné.</value>
+  </data>
+  <data name="FormDJ_NoItemSelected_Title" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="FormCompresser_NoTrackToEdit_Message" xml:space="preserve">
+    <value>Aucune piste à éditer.</value>
+  </data>
+  <data name="FormCompresser_NoTrackToEdit_Title" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="Form1_OpenFormDJ_Error_Message" xml:space="preserve">
+    <value>Impossible d'ouvrir FormDJ: {0}</value>
+  </data>
+  <data name="Form1_OpenFormDJ_Error_Title" xml:space="preserve">
+    <value>Erreur</value>
+  </data>
+  <data name="Form1_HideError_Message" xml:space="preserve">
+    <value>Erreur masquage Form1: {0}</value>
+  </data>
+  <data name="Form1_HideError_Title" xml:space="preserve">
+    <value>Erreur</value>
+  </data>
+  <data name="Form1_SwitchToDJ_Error_Message" xml:space="preserve">
+    <value>Erreur lors du basculement en mode DJ: {0}</value>
+  </data>
+  <data name="Form1_SwitchToDJ_Error_Title" xml:space="preserve">
+    <value>Erreur</value>
+  </data>
+  <data name="FormSelecteurPistesCD_lblSourceLabel_Text" xml:space="preserve">
+    <value>Source:</value>
+  </data>
+  <data name="FormSelecteurPistesCD_btnChargerMetadonnees_Text" xml:space="preserve">
+    <value>Charger</value>
+  </data>
+  <data name="FormSelecteurPistesCD_lblChargement_Text" xml:space="preserve">
+    <value>Chargement des métadonnées...</value>
+  </data>
+  <data name="FormSelecteurPistesCD_btnOK_Text" xml:space="preserve">
+    <value>Ajouter...</value>
+  </data>
+  <data name="FormSelecteurPistesCD_btnAnnuler_Text" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="FormSelecteurPistesCD_lblTitre_Text" xml:space="preserve">
+    <value>Sélection des pistes CD</value>
+  </data>
+  <data name="FormSelecteurPistesCD_ButtonExtraction_Text" xml:space="preserve">
+    <value>Extraction de la ou les pistes audio...</value>
+  </data>
+  <data name="FormSelecteurPistesCD_CheckBox_FSelect_SelectDeselect_Text" xml:space="preserve">
+    <value>Sélectionner/Désélectionner toutes les pistes...</value>
+  </data>
+  <data name="FormCompresser_Label_CDTitre_Text" xml:space="preserve">
+    <value>CD Titre</value>
+  </data>
+  <data name="FormCompresser_LabelCDArtiste_Text" xml:space="preserve">
+    <value>CD Artiste</value>
+  </data>
+  <data name="FormCompresser_Label_ChoixLecteur_Text" xml:space="preserve">
+    <value>Choix de lecteur</value>
+  </data>
+  <data name="FormCompresser_LabelAnnee_Text" xml:space="preserve">
+    <value>Année</value>
+  </data>
+  <data name="FormCompresser_LabelGenre_Text" xml:space="preserve">
+    <value>Genre</value>
+  </data>
+  <data name="FormCompresser_Label3_Text" xml:space="preserve">
+    <value>CD Pochette</value>
+  </data>
+  <data name="FormDJ_GroupBoxDeckA_Text" xml:space="preserve">
+    <value>DECK A</value>
+  </data>
+  <data name="FormDJ_Button1_Text" xml:space="preserve">
+    <value>●</value>
+  </data>
+  <data name="FormDJ_Button_DeckA_BackTo0_Text" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="FormDJ_LabelDureeDeckA_Text" xml:space="preserve">
+    <value>00:00 / 00:00</value>
+  </data>
+  <data name="FormDJ_LabelVolumeDeckA_Text" xml:space="preserve">
+    <value>Vol A: 75%</value>
+  </data>
+  <data name="FormDJ_LabelPitchDeckA_Text" xml:space="preserve">
+    <value>Pitch: 0.0%</value>
+  </data>
+  <data name="FormDJ_LabelBPMDeckA_Text" xml:space="preserve">
+    <value>BPM: --</value>
+  </data>
+  <data name="FormDJ_CheckBoxPhaserDeckA_Text" xml:space="preserve">
+    <value>🌀 PHASER</value>
+  </data>
+  <data name="FormDJ_CheckBoxReverbDeckA_Text" xml:space="preserve">
+    <value>🎵 REVERB</value>
+  </data>
+  <data name="FormDJ_CheckBoxEchoDeckA_Text" xml:space="preserve">
+    <value>📢 ECHO</value>
+  </data>
+  <data name="FormDJ_ButtonSyncDeckA_Text" xml:space="preserve">
+    <value>🔄 SYNC → B</value>
+  </data>
+  <data name="FormDJ_Label_Avertissement_Text" xml:space="preserve">
+    <value>En développement....</value>
+  </data>
+  <data name="FormDJ_Button_DeckB_BackTo0_Text" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="FormDJ_LabelTrackDeckB_Text" xml:space="preserve">
+    <value>Glissez une piste ici ⬇</value>
+  </data>
+  <data name="FormDJ_ButtonPlayDeckB_Text" xml:space="preserve">
+    <value>▶</value>
+  </data>
+  <data name="FormDJ_ButtonCueDeckB_Text" xml:space="preserve">
+    <value>CUE</value>
+  </data>
+  <data name="FormDJ_ButtonStopDeckB_Text" xml:space="preserve">
+    <value>⏹</value>
+  </data>
+  <data name="FormDJ_LabelDureeDeckB_Text" xml:space="preserve">
+    <value>00:00 / 00:00</value>
+  </data>
+  <data name="FormDJ_LabelVolumeDeckB_Text" xml:space="preserve">
+    <value>Vol B: 75%</value>
+  </data>
+  <data name="FormDJ_LabelPitchDeckB_Text" xml:space="preserve">
+    <value>Pitch: 0.0%</value>
+  </data>
+  <data name="FormDJ_LabelBPMDeckB_Text" xml:space="preserve">
+    <value>BPM: --</value>
+  </data>
+  <data name="FormDJ_CheckBoxPhaserDeckB_Text" xml:space="preserve">
+    <value>🌀 PHASER</value>
+  </data>
+  <data name="FormDJ_CheckBoxReverbDeckB_Text" xml:space="preserve">
+    <value>🎵 REVERB</value>
+  </data>
+  <data name="FormDJ_CheckBoxEchoDeckB_Text" xml:space="preserve">
+    <value>📢 ECHO</value>
+  </data>
+  <data name="FormDJ_ButtonSyncDeckB_Text" xml:space="preserve">
+    <value>🔄 SYNC → A</value>
+  </data>
+  <data name="FormDJ_LabelEnregistrement_Text" xml:space="preserve">
+    <value>Format:</value>
+  </data>
+  <data name="FormDJ_ButtonEnregistrement_Text" xml:space="preserve">
+    <value>⬤ REC</value>
+  </data>
+  <data name="FormDJ_LabelCrossfader_Text" xml:space="preserve">
+    <value>Crossfader: 50%</value>
+  </data>
+  <data name="FormDJ_ButtonRetourModeSimple_Text" xml:space="preserve">
+    <value>◀ Mode Simple</value>
+  </data>
+  <data name="FormDJ_ButtonParametres_Text" xml:space="preserve">
+    <value>⚙️ Paramètres</value>
+  </data>
+  <data name="FormDJ_ButtonQuitter_Text" xml:space="preserve">
+    <value>✖ Quitter</value>
+  </data>
+  <data name="FormDJ_GroupBoxPlaylist_Text" xml:space="preserve">
+    <value>📋 PLAYLIST DJ</value>
+  </data>
+  <data name="FormDJ_ButtonAjouterPiste_Text" xml:space="preserve">
+    <value>➕ Ajouter</value>
+  </data>
+  <data name="FormDJ_ButtonGererPlaylist_Text" xml:space="preserve">
+    <value>📋 Gérer</value>
+  </data>
+  <data name="FormCompresser_LabelTypeConversion_Text" xml:space="preserve">
+    <value>Type de conversion:</value>
+  </data>
+  <data name="FormCompresser_LabelQualiteConversion_Text" xml:space="preserve">
+    <value>Qualité de conversion:</value>
+  </data>
+  <data name="FormCompresser_LabelRepSauvegarde_Text" xml:space="preserve">
+    <value>Répertoire de sauvegarde:</value>
+  </data>
+  <data name="FormCompresser_ButtonQuitter_Text" xml:space="preserve">
+    <value>Quitter</value>
+  </data>
+  <data name="FormCompresser_ButtonExtraire_Text" xml:space="preserve">
+    <value>Extraire</value>
+  </data>
+  <data name="FormCompresser_ButtonAnnuler_Text" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="FormCompresser_ButtonRepSauvegarde_Text" xml:space="preserve">
+    <value>Parcourir</value>
+  </data>
+  <data name="FormCompresser_CheckBoxEjectCD_Text" xml:space="preserve">
+    <value>Éjecter le CD à la fin...</value>
+  </data>
+  <data name="FormCompresser_CheckBoxVerouillerCD_Text" xml:space="preserve">
+    <value>Verrouiller le plateau du lecteur pendant l'extraction</value>
+  </data>
+  <data name="FormCompresser_LabelCommentaire_Text" xml:space="preserve">
+    <value>Commentaire</value>
+  </data>
+  <data name="FormCompresser_CheckBox_FCompress_SelectDeselect_Text" xml:space="preserve">
+    <value>Sélectionner/Désélectionner toutes les pistes...</value>
+  </data>
+  <data name="FormCompresser_Button_EditTracks_Text" xml:space="preserve">
+    <value>Éditer les pistes...</value>
+  </data>
+  <data name="FormCompresser_ButtonSoumettreGnuDB_Text" xml:space="preserve">
+    <value>Soumettre à GnuDB</value>
+  </data>
+  <data name="FormCompresser_Button_Image_Erase_Text" xml:space="preserve">
+    <value>X</value>
+  </data>
+  <data name="FormCompresser_Button_Image_Suiv_Text" xml:space="preserve">
+    <value>--&gt;</value>
+  </data>
+  <data name="FormCompresser_Button_Image_Prec_Text" xml:space="preserve">
+    <value>&lt;--</value>
+  </data>
+  <data name="FormCompresser_Label1_Text" xml:space="preserve">
+    <value>Dimensions image:</value>
+  </data>
+  <data name="FormCompresser_Label2_Text" xml:space="preserve">
+    <value>Taille image:</value>
+  </data>
+  <data name="FormCompresser_Label_Im_Site_Text" xml:space="preserve">
+    <value>Site:</value>
+  </data>
+  <data name="FormCompresser_Label4_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormCompresser_Label_Normalisation_Text" xml:space="preserve">
+    <value>Normalisation</value>
+  </data>
+  <data name="FormCompresser_GroupBoxAnalyzerOptions_Text" xml:space="preserve">
+    <value>Options d'analyse</value>
+  </data>
+  <data name="FormCompresser_Button_Aide_MaxStartTrim_Text" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="FormCompresser_Button_Aide_MinSilence_Text" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="FormCompresser_Button_Aide_WindowAfter_Text" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="FormCompresser_Button_Aide_WindowBefore_Text" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="FormCompresser_LabelWindowBefore_Text" xml:space="preserve">
+    <value>Fenêtre avant TOC (s):</value>
+  </data>
+  <data name="FormCompresser_LabelWindowAfter_Text" xml:space="preserve">
+    <value>Fenêtre après TOC (s):</value>
+  </data>
+  <data name="FormCompresser_LabelMinSilence_Text" xml:space="preserve">
+    <value>Silence minimal soutenu (s):</value>
+  </data>
+  <data name="FormCompresser_LabelMaxStartTrim_Text" xml:space="preserve">
+    <value>Trim début max (s):</value>
+  </data>
+  <data name="FormCompresser_Button_Agrandir_Text" xml:space="preserve">
+    <value>▼</value>
+  </data>
+  <data name="FormCompresser_Button_rapetisser_Text" xml:space="preserve">
+    <value>▲</value>
+  </data>
+  <data name="FormCompresser_CheckBoxPostTraitementAuto_Text" xml:space="preserve">
+    <value>Post-traitement automatique</value>
+  </data>
+  <data name="FormMetadonnees_LabelGenre_Text" xml:space="preserve">
+    <value>Genre :</value>
+  </data>
+  <data name="FormMetadonnees_LabelAnnee_Text" xml:space="preserve">
+    <value>Année :</value>
+  </data>
+  <data name="FormMetadonnees_LabelAlbum_Text" xml:space="preserve">
+    <value>Album :</value>
+  </data>
+  <data name="FormMetadonnees_LabelArtiste_Text" xml:space="preserve">
+    <value>Artiste :</value>
+  </data>
+  <data name="FormMetadonnees_LabelTitre_Text" xml:space="preserve">
+    <value>Titre :</value>
+  </data>
+  <data name="FormMetadonnees_ButtonSauvegarder_Text" xml:space="preserve">
+    <value>💾 Sauvegarder</value>
+  </data>
+  <data name="FormCompresser_tsmiSearchCover_Text" xml:space="preserve">
+    <value>Rechercher pochette</value>
+  </data>
+  <data name="FormCompresser_tsmiAddCoverFromFile_Text" xml:space="preserve">
+    <value>Ajouter depuis fichier...</value>
+  </data>
+  <data name="FormCompresser_tsmiSizeMenu_Text" xml:space="preserve">
+    <value>Affichage</value>
+  </data>
+  <data name="FormCompresser_tsmiSizeNormal_Text" xml:space="preserve">
+    <value>Tel quel</value>
+  </data>
+  <data name="FormCompresser_tsmiSizeStretch_Text" xml:space="preserve">
+    <value>Étiré</value>
+  </data>
+  <data name="FormCompresser_tsmiSizeZoom_Text" xml:space="preserve">
+    <value>Ajuster (Zoom)</value>
+  </data>
+  <data name="FormCompresser_LabelDimImagText_Text" xml:space="preserve">
+    <value>Dimensions image:</value>
+  </data>
+  <data name="FormCompresser_LabelTailleImagText_Text" xml:space="preserve">
+    <value>Taille image:</value>
+  </data>
+  <data name="FormCompresser_LabelNumCD_Text" xml:space="preserve">
+    <value>Numéro de CD:</value>
+  </data>
+  <data name="FormCompresser_LabelPremierNumPiste_Text" xml:space="preserve">
+    <value>Premier numéro de piste:</value>
+  </data>
+  <data name="FormCompresser_LabelTypeConversion_Text" xml:space="preserve">
+    <value>Type de conversion:</value>
+  </data>
+  <data name="FormCompresser_LabelQualiteConversion_Text" xml:space="preserve">
+    <value>Qualité de conversion:</value>
+  </data>
+  <data name="FormCompresser_LabelRepSauvegarde_Text" xml:space="preserve">
+    <value>Répertoire de sauvegarde:</value>
+  </data>
+  <data name="FormCompresser_ButtonQuitter_Text" xml:space="preserve">
+    <value>Quitter</value>
+  </data>
+  <data name="FormCompresser_ButtonExtraire_Text" xml:space="preserve">
+    <value>Extraire</value>
+  </data>
+  <data name="FormCompresser_ButtonAnnuler_Text" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="FormCompresser_ButtonRepSauvegarde_Text" xml:space="preserve">
+    <value>Parcourir</value>
+  </data>
+  <data name="FormCompresser_CheckBoxEjectCD_Text" xml:space="preserve">
+    <value>Éjecter le CD à la fin...</value>
+  </data>
+  <data name="FormCompresser_CheckBoxVerouillerCD_Text" xml:space="preserve">
+    <value>Verrouiller le plateau du lecteur pendant l'extraction</value>
+  </data>
+  <data name="FormCompresser_LabelCommentaire_Text" xml:space="preserve">
+    <value>Commentaire</value>
+  </data>
+  <data name="FormCompresser_ColumnHeaderPiste_Text" xml:space="preserve">
+    <value>Piste</value>
+  </data>
+  <data name="FormCompresser_ColumnHeaderTitre_Text" xml:space="preserve">
+    <value>Titre</value>
+  </data>
+  <data name="FormCompresser_ColumnHeaderArtiste_Text" xml:space="preserve">
+    <value>Artiste</value>
+  </data>
+  <data name="FormCompresser_ColumnHeaderDebut_Text" xml:space="preserve">
+    <value>Début</value>
+  </data>
+  <data name="FormCompresser_ColumnHeaderLongueur_Text" xml:space="preserve">
+    <value>Longueur</value>
+  </data>
+  <data name="FormCompresser_ColumnHeaderTaille_Text" xml:space="preserve">
+    <value>Taille du fichier</value>
+  </data>
+  <data name="FormCompresser_ColumnHeaderTailleComp_Text" xml:space="preserve">
+    <value>Taille du fichier compressé</value>
+  </data>
+  <data name="FormCompresser_CheckBox_FCompress_SelectDeselect_Text" xml:space="preserve">
+    <value>Sélectionner/Désélectionner toutes les pistes...</value>
+  </data>
+  <data name="FormCompresser_Button_EditTracks_Text" xml:space="preserve">
+    <value>Éditer les pistes...</value>
+  </data>
+  <data name="FormCompresser_ButtonSoumettreGnuDB_Text" xml:space="preserve">
+    <value>Soumettre à GnuDB</value>
+  </data>
+  <data name="FormCompresser_Button_Image_Erase_Text" xml:space="preserve">
+    <value>X</value>
+  </data>
+  <data name="FormCompresser_Button_Image_Suiv_Text" xml:space="preserve">
+    <value>--&gt;</value>
+  </data>
+  <data name="FormCompresser_Button_Image_Prec_Text" xml:space="preserve">
+    <value>&lt;--</value>
+  </data>
+  <data name="FormCompresser_Label1_Text" xml:space="preserve">
+    <value>Dimensions image:</value>
+  </data>
+  <data name="FormCompresser_Label2_Text" xml:space="preserve">
+    <value>Taille image:</value>
+  </data>
+  <data name="Form1_Button_AudioPlay_Aide_Text" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="Form1_Button_APropos_Text" xml:space="preserve">
+    <value>À propos...</value>
+  </data>
+  <data name="Form1_Label_Aigues_Text" xml:space="preserve">
+    <value>Aigues</value>
+  </data>
+  <data name="Form1_Label_Basses_Text" xml:space="preserve">
+    <value>Basses</value>
+  </data>
+  <data name="Form1_Label_Volume_Text" xml:space="preserve">
+    <value>Volume</value>
+  </data>
+  <data name="Form1_Label_DureeRestante_Title" xml:space="preserve">
+    <value>Durée restante </value>
+  </data>
+  <data name="Form1_Label_DureeRestante_Value" xml:space="preserve">
+    <value>00:00</value>
+  </data>
+  <data name="Form1_Label_SampleRateTitre_Text" xml:space="preserve">
+    <value>Échantillonnage :</value>
+  </data>
+  <data name="Form1_Label_BitrateTitre_Text" xml:space="preserve">
+    <value>Bitrate :</value>
+  </data>
+  <data name="Form1_Button_Aleatoire_Text" xml:space="preserve">
+    <value>Random</value>
+  </data>
+  <data name="Form1_Button_Power_Text" xml:space="preserve">
+    <value>Power</value>
+  </data>
+  <data name="Form1_Button_Suivant_Text" xml:space="preserve">
+    <value>Suivant</value>
+  </data>
+  <data name="Form1_Button_Precedent_Text" xml:space="preserve">
+    <value>Précédent</value>
+  </data>
+  <data name="Form1_Button_Arreter_Text" xml:space="preserve">
+    <value>Arrêter</value>
+  </data>
+  <data name="Form1_Button_Jouer_Text" xml:space="preserve">
+    <value>Jouer</value>
+  </data>
+  <data name="Form1_Button_PauseReprise_Text" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="Form1_Button_CalculBPM_Text" xml:space="preserve">
+    <value>BPM</value>
+  </data>
+  <data name="Form1_Button_Mute_Text" xml:space="preserve">
+    <value>Mute</value>
+  </data>
+  <data name="Form1_Button_InfoSelect_Text" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="Form1_Button_Ajout_Text" xml:space="preserve">
+    <value>Ajout</value>
+  </data>
+  <data name="Form1_Button_Playlist_Text" xml:space="preserve">
+    <value>Playlist</value>
+  </data>
+  <data name="Form1_Button_ClearRecherche_Text" xml:space="preserve">
+    <value>✕</value>
+  </data>
+  <data name="Form1_Column_Num_Text" xml:space="preserve">
+    <value>#</value>
+  </data>
+  <data name="Form1_Column_Chansons_Text" xml:space="preserve">
+    <value>Chansons</value>
+  </data>
+  <data name="Form1_Column_BPM_Text" xml:space="preserve">
+    <value>BPM</value>
+  </data>
+  <data name="Form1_Column_Duree_Text" xml:space="preserve">
+    <value>Durée</value>
+  </data>
+  <data name="Form1_ButtonModeDJ_Text" xml:space="preserve">
+    <value>DJ Mixer</value>
+  </data>
+  <data name="Form1_Button_Loop_Aide_Text" xml:space="preserve">
+    <value>Aide</value>
+  </data>
+  <data name="Form1_Button_Loop_Text" xml:space="preserve">
+    <value>Loop</value>
+  </data>
+  <data name="Form1_Button_Parametres_Text" xml:space="preserve">
+    <value>Param</value>
+  </data>
+  <data name="Form1_Form_Text" xml:space="preserve">
+    <value>AudioPlay</value>
+  </data>
+  <data name="FormParametres_LabelPitchShiftValeur_Text" xml:space="preserve">
+    <value>0.0</value>
+  </data>
+  <data name="FormParametres_ButtonResetPitchShift_Text" xml:space="preserve">
+    <value>✕</value>
+  </data>
+  <data name="FormParametres_CheckBoxPhaserActif_Text" xml:space="preserve">
+    <value>Phaser</value>
+  </data>
+  <data name="FormParametres_LabelPhaserRate_Text" xml:space="preserve">
+    <value>Vitesse (Hz):</value>
+  </data>
+  <data name="FormParametres_LabelPhaserRateValeur_Text" xml:space="preserve">
+    <value>0.5</value>
+  </data>
+  <data name="FormParametres_LabelPhaserDepth_Text" xml:space="preserve">
+    <value>Profondeur:</value>
+  </data>
+  <data name="FormParametres_LabelPhaserDepthValeur_Text" xml:space="preserve">
+    <value>50%</value>
+  </data>
+  <data name="FormParametres_LabelPhaserFeedback_Text" xml:space="preserve">
+    <value>Feedback:</value>
+  </data>
+  <data name="FormParametres_LabelPhaserFeedbackValeur_Text" xml:space="preserve">
+    <value>30%</value>
+  </data>
+  <data name="FormParametres_LabelPhaserMix_Text" xml:space="preserve">
+    <value>Mix:</value>
+  </data>
+  <data name="FormParametres_LabelPhaserMixValeur_Text" xml:space="preserve">
+    <value>50%</value>
+  </data>
+  <data name="FormParametres_LabelPhaserStages_Text" xml:space="preserve">
+    <value>Stages:</value>
+  </data>
+  <data name="FormParametres_ButtonResetPhaser_Text" xml:space="preserve">
+    <value>✕</value>
+  </data>
+  <data name="FormParametres_Form_Text" xml:space="preserve">
+    <value>Paramètres - AudioPlay</value>
+  </data>
+  <data name="FormSelecteurPistesCD_Form_Text" xml:space="preserve">
+    <value>Sélection des pistes CD</value>
+  </data>
+  <data name="FormEditTracks_Label_PisteText_Text" xml:space="preserve">
+    <value>Piste #</value>
+  </data>
+  <data name="FormEditTracks_Label_PisteNumber_Text" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="FormEditTracks_Label_TitreText_Text" xml:space="preserve">
+    <value>Titre :</value>
+  </data>
+  <data name="FormEditTracks_Label_ArtisteText_Text" xml:space="preserve">
+    <value>Artiste :</value>
+  </data>
+  <data name="FormEditTracks_Button_PisteSuivante_Text" xml:space="preserve">
+    <value>Suivante...</value>
+  </data>
+  <data name="FormEditTracks_Button_PistePrecedente_Text" xml:space="preserve">
+    <value>Précédente...</value>
+  </data>
+  <data name="FormEditTracks_ButtonQuitter_Text" xml:space="preserve">
+    <value>Quitter</value>
+  </data>
+  <data name="FormEditTracks_Button_EffaceTitre_Text" xml:space="preserve">
+    <value>X</value>
+  </data>
+  <data name="FormEditTracks_Button_EffaceArtiste_Text" xml:space="preserve">
+    <value>X</value>
+  </data>
+  <data name="FormEditTracks_Form_Text" xml:space="preserve">
+    <value>Édition des pistes...</value>
+  </data>
+  <data name="FormCompresser_Label3_Text" xml:space="preserve">
+    <value>CD Pochette</value>
+  </data>
+  <data name="FormCompresser_LabelDimImagText_Text" xml:space="preserve">
+    <value>Dimensions image:</value>
+  </data>
+  <data name="FormCompresser_LabelTailleImagText_Text" xml:space="preserve">
+    <value>Taille image:</value>
+  </data>
+  <data name="FormCompresser_LabelNumCD_Text" xml:space="preserve">
+    <value>Numéro de CD:</value>
+  </data>
+  <data name="FormCompresser_LabelPremierNumPiste_Text" xml:space="preserve">
+    <value>Premier numéro de piste:</value>
+  </data>
+  <data name="FormCompresser_TextBoxPremierNumPiste_Text" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="FormCompresser_TextBoxNumCD_Text" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="FormCompresser_LabelTypeConversion_Text" xml:space="preserve">
+    <value>Type de conversion:</value>
+  </data>
+  <data name="FormCompresser_LabelQualiteConversion_Text" xml:space="preserve">
+    <value>Qualité de conversion:</value>
+  </data>
+  <data name="FormCompresser_LabelRepSauvegarde_Text" xml:space="preserve">
+    <value>Répertoire de sauvegarde:</value>
+  </data>
+  <data name="FormCompresser_ButtonQuitter_Text" xml:space="preserve">
+    <value>Quitter</value>
+  </data>
+  <data name="FormCompresser_ButtonExtraire_Text" xml:space="preserve">
+    <value>Extraire</value>
+  </data>
+  <data name="FormCompresser_ButtonAnnuler_Text" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="FormCompresser_ButtonRepSauvegarde_Text" xml:space="preserve">
+    <value>Parcourir</value>
+  </data>
+  <data name="FormCompresser_CheckBoxEjectCD_Text" xml:space="preserve">
+    <value>Éjecter le CD à la fin...</value>
+  </data>
+  <data name="FormCompresser_CheckBoxVerouillerCD_Text" xml:space="preserve">
+    <value>Verrouiller le plateau du lecteur pendant l'extraction</value>
+  </data>
+  <data name="FormCompresser_LabelCommentaire_Text" xml:space="preserve">
+    <value>Commentaire</value>
+  </data>
+  <data name="FormCompresser_CheckBox_FCompress_SelectDeselect_Text" xml:space="preserve">
+    <value>Sélectionner/Désélectionner toutes les pistes...</value>
+  </data>
+  <data name="FormCompresser_Button_EditTracks_Text" xml:space="preserve">
+    <value>Éditer les pistes...</value>
+  </data>
+  <data name="FormCompresser_ButtonSoumettreGnuDB_Text" xml:space="preserve">
+    <value>Soumettre à GnuDB</value>
+  </data>
+  <data name="FormCompresser_Button_Image_Erase_Text" xml:space="preserve">
+    <value>X</value>
+  </data>
+  <data name="FormCompresser_Button_Image_Suiv_Text" xml:space="preserve">
+    <value>--&gt;</value>
+  </data>
+  <data name="FormCompresser_Button_Image_Prec_Text" xml:space="preserve">
+    <value>&lt;--</value>
+  </data>
+  <data name="FormCompresser_Label1_Text" xml:space="preserve">
+    <value>Dimensions image:</value>
+  </data>
+  <data name="FormCompresser_Label2_Text" xml:space="preserve">
+    <value>Taille image:</value>
+  </data>
+  <data name="FormCompresser_Label_Im_Site_Text" xml:space="preserve">
+    <value>Site:</value>
+  </data>
+  <data name="FormCompresser_Label4_Text" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="FormCompresser_Label_Normalisation_Text" xml:space="preserve">
+    <value>Normalization</value>
+  </data>
+  <data name="FormCompresser_GroupBoxAnalyzerOptions_Text" xml:space="preserve">
+    <value>Options d'analyse</value>
+  </data>
+  <data name="FormCompresser_Button_Aide_MaxStartTrim_Text" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="FormCompresser_Button_Aide_MinSilence_Text" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="FormCompresser_Button_Aide_WindowAfter_Text" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="FormCompresser_Button_Aide_WindowBefore_Text" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="FormCompresser_LabelWindowBefore_Text" xml:space="preserve">
+    <value>Fenêtre avant TOC (s):</value>
+  </data>
+  <data name="FormCompresser_LabelWindowAfter_Text" xml:space="preserve">
+    <value>Fenêtre après TOC (s):</value>
+  </data>
+  <data name="FormCompresser_LabelMinSilence_Text" xml:space="preserve">
+    <value>Silence minimal soutenu (s):</value>
+  </data>
+  <data name="FormCompresser_LabelMaxStartTrim_Text" xml:space="preserve">
+    <value>Trim début max (s):</value>
+  </data>
+  <data name="FormCompresser_Button_Agrandir_Text" xml:space="preserve">
+    <value>▼</value>
+  </data>
+  <data name="FormCompresser_Button_rapetisser_Text" xml:space="preserve">
+    <value>▲</value>
+  </data>
+  <data name="FormCompresser_CheckBoxPostTraitementAuto_Text" xml:space="preserve">
+    <value>Post-traitement automatique</value>
+  </data>
+  <data name="FormCompresser_Form_Text" xml:space="preserve">
+    <value>Extraction du CD Audio</value>
+  </data>
+  <data name="FormDJ_LabelDureeDeckA_Text" xml:space="preserve">
+    <value>00:00 / 00:00</value>
+  </data>
+  <data name="FormDJ_LabelVolumeDeckA_Text" xml:space="preserve">
+    <value>Vol A: 75%</value>
+  </data>
+  <data name="FormDJ_LabelPitchDeckA_Text" xml:space="preserve">
+    <value>Pitch: 0.0%</value>
+  </data>
+  <data name="FormDJ_LabelBPMDeckA_Text" xml:space="preserve">
+    <value>BPM: --</value>
+  </data>
+  <data name="FormDJ_CheckBoxPhaserDeckA_Text" xml:space="preserve">
+    <value>🌀 PHASER</value>
+  </data>
+  <data name="FormDJ_CheckBoxReverbDeckA_Text" xml:space="preserve">
+    <value>🎵 REVERB</value>
+  </data>
+  <data name="FormDJ_CheckBoxEchoDeckA_Text" xml:space="preserve">
+    <value>📢 ECHO</value>
+  </data>
+  <data name="FormDJ_ButtonSyncDeckA_Text" xml:space="preserve">
+    <value>🔄 SYNC → B</value>
+  </data>
+  <data name="FormDJ_LabelDureeDeckB_Text" xml:space="preserve">
+    <value>00:00 / 00:00</value>
+  </data>
+  <data name="FormDJ_LabelVolumeDeckB_Text" xml:space="preserve">
+    <value>Vol B: 75%</value>
+  </data>
+  <data name="FormDJ_LabelPitchDeckB_Text" xml:space="preserve">
+    <value>Pitch: 0.0%</value>
+  </data>
+  <data name="FormDJ_LabelBPMDeckB_Text" xml:space="preserve">
+    <value>BPM: --</value>
+  </data>
+  <data name="FormDJ_CheckBoxPhaserDeckB_Text" xml:space="preserve">
+    <value>🌀 PHASER</value>
+  </data>
+  <data name="FormDJ_CheckBoxReverbDeckB_Text" xml:space="preserve">
+    <value>🎵 REVERB</value>
+  </data>
+  <data name="FormDJ_CheckBoxEchoDeckB_Text" xml:space="preserve">
+    <value>📢 ECHO</value>
+  </data>
+  <data name="FormDJ_ButtonSyncDeckB_Text" xml:space="preserve">
+    <value>🔄 SYNC → A</value>
+  </data>
+  <data name="FormDJ_LabelEnregistrement_Text" xml:space="preserve">
+    <value>Format:</value>
+  </data>
+  <data name="FormDJ_ButtonEnregistrement_Text" xml:space="preserve">
+    <value>⬤ REC</value>
+  </data>
+  <data name="FormDJ_LabelCrossfader_Text" xml:space="preserve">
+    <value>Crossfader: 50%</value>
+  </data>
+  <data name="FormDJ_ButtonRetourModeSimple_Text" xml:space="preserve">
+    <value>◀ Mode Simple</value>
+  </data>
+  <data name="FormDJ_ButtonParametres_Text" xml:space="preserve">
+    <value>⚙️ Paramètres</value>
+  </data>
+  <data name="FormDJ_ButtonQuitter_Text" xml:space="preserve">
+    <value>✖ Quitter</value>
+  </data>
+  <data name="FormDJ_GroupBoxPlaylist_Text" xml:space="preserve">
+    <value>📋 PLAYLIST DJ</value>
+  </data>
+  <data name="FormDJ_ButtonAjouterPiste_Text" xml:space="preserve">
+    <value>➕ Ajouter</value>
+  </data>
+  <data name="FormDJ_ButtonGererPlaylist_Text" xml:space="preserve">
+    <value>📋 Gérer</value>
+  </data>
+  <data name="FormDJ_Form_Text" xml:space="preserve">
+    <value>AudioPlay - Mode Mixeur DJ</value>
+  </data>
+  <data name="Form1_TextBox_Recherche_PlaceholderText" xml:space="preserve">
+    <value>Rechercher...</value>
+  </data>
+  <data name="FormTelechargerFFMpeg_LabelTitre_Text" xml:space="preserve">
+    <value>Téléchargement de FFMpeg</value>
+  </data>
+  <data name="FormTelechargerFFMpeg_LabelMessage_Text" xml:space="preserve">
+    <value>FFMpeg est nécessaire pour extraire en format FLAC et WMA.
+AudioPlay va télécharger FFMpeg automatiquement.
+Taille: ~120 MB</value>
+  </data>
+  <data name="FormTelechargerFFMpeg_LabelProgression_Text" xml:space="preserve">
+    <value>Préparation du téléchargement...</value>
+  </data>
+  <data name="FormTelechargerFFMpeg_ButtonAnnuler_Text" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="FormTelechargerFFMpeg_Form_Text" xml:space="preserve">
+    <value>Téléchargement FFMpeg pour AudioPlay</value>
+  </data>
+  <data name="FormInputEmail_LabelPrompt_Text" xml:space="preserve">
+    <value>Veuillez entrer votre adresse email :</value>
+  </data>
+  <data name="FormInputEmail_ButtonOK_Text" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="FormInputEmail_ButtonCancel_Text" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="FormInputEmail_Form_Text" xml:space="preserve">
+    <value>Envoie Courriel à GnuDB</value>
+  </data>
+  <data name="FormLight_Form_Text" xml:space="preserve">
+    <value>FormLight</value>
+  </data>
+  <data name="FormMetadonnees_ButtonFermer_Text" xml:space="preserve">
+    <value>Fermer</value>
+  </data>
+  <data name="FormMetadonnees_GroupBoxTags_Text" xml:space="preserve">
+    <value>🎵 Tags ID3 / Métadonnées (Éditable)</value>
+  </data>
+  <data name="FormMetadonnees_LabelBPM_Text" xml:space="preserve">
+    <value>BPM :</value>
+  </data>
+  <data name="FormMetadonnees_LabelAlbumArtiste_Text" xml:space="preserve">
+    <value>Artiste Album :</value>
+  </data>
+  <data name="FormMetadonnees_LabelPiste_Text" xml:space="preserve">
+    <value>N° de Piste :</value>
+  </data>
+  <data name="FormMetadonnees_LabelCommentaire_Text" xml:space="preserve">
+    <value>Commentaire :</value>
+  </data>
+  <data name="FormMetadonnees_LabelGenre_Text" xml:space="preserve">
+    <value>Genre :</value>
+  </data>
+  <data name="FormMetadonnees_LabelAnnee_Text" xml:space="preserve">
+    <value>Année :</value>
+  </data>
+  <data name="FormMetadonnees_LabelAlbum_Text" xml:space="preserve">
+    <value>Album :</value>
+  </data>
+  <data name="FormMetadonnees_LabelArtiste_Text" xml:space="preserve">
+    <value>Artiste :</value>
+  </data>
+  <data name="FormMetadonnees_LabelTitre_Text" xml:space="preserve">
+    <value>Titre :</value>
+  </data>
+  <data name="FormMetadonnees_ButtonSauvegarder_Text" xml:space="preserve">
+    <value>💾 Sauvegarder</value>
+  </data>
+  <data name="FormMetadonnees_Form_Text" xml:space="preserve">
+    <value>Métadonnées et Tags ID3 du fichier audio</value>
+  </data>
+  <data name="Form_APropos_Label_APropos_Ligne01_Text" xml:space="preserve">
+    <value>Bienvenue dans l'application AudioPlay!</value>
+  </data>
+  <data name="Form_APropos_Label_APropos_Ligne02_Text" xml:space="preserve">
+    <value>AudioPlay est un lecteur de fichiers audio</value>
+  </data>
+  <data name="Form_APropos_Label_APropos_Ligne03_Text" xml:space="preserve">
+    <value>Vous pouvez aussi envoyé votre don en utilisant le bouton Paypal suivant --&gt;</value>
+  </data>
+  <data name="Form_APropos_Button_Paypal_Text" xml:space="preserve">
+    <value>Paypal</value>
+  </data>
+  <data name="Form_APropos_Button_APropos_OK_Text" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Form_APropos_Label1_Text" xml:space="preserve">
+    <value>Si vous utilisez AudioPlay régulièrement, un petit don serait apprécié : jeanpel58@gmail.com</value>
+  </data>
+  <data name="Form_APropos_Label2_Text" xml:space="preserve">
+    <value>Don</value>
+  </data>
+  <data name="Form_APropos_Form_Text" xml:space="preserve">
+    <value>À propos...</value>
+  </data>
+  <data name="FormDJ_GroupBoxDeckA_Text" xml:space="preserve">
+    <value>Deck A</value>
+  </data>
+  <data name="FormDJ_Button1_Text" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="FormDJ_Button_DeckA_BackTo0_Text" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="FormDJ_LabelTrackDeckA_Text" xml:space="preserve">
+    <value>Glissez une piste ici ⬇</value>
+  </data>
+  <data name="FormDJ_ButtonPlayDeckA_Text" xml:space="preserve">
+    <value>►</value>
+  </data>
+  <data name="FormDJ_ButtonCueDeckA_Text" xml:space="preserve">
+    <value>CUE</value>
+  </data>
+  <data name="FormDJ_ButtonStopDeckA_Text" xml:space="preserve">
+    <value>⏹</value>
+  </data>
+  <data name="FormDJ_LabelDureeDeckA_Text" xml:space="preserve">
+    <value>00:00 / 00:00</value>
+  </data>
+  <data name="FormDJ_LabelVolumeDeckA_Text" xml:space="preserve">
+    <value>Vol A: 75%</value>
+  </data>
+  <data name="FormDJ_LabelPitchDeckA_Text" xml:space="preserve">
+    <value>Pitch: 0.0%</value>
+  </data>
+  <data name="FormDJ_LabelBPMDeckA_Text" xml:space="preserve">
+    <value>BPM: --</value>
+  </data>
+  <data name="FormDJ_CheckBoxPhaserDeckA_Text" xml:space="preserve">
+    <value>🌀 PHASER</value>
+  </data>
+  <data name="FormDJ_CheckBoxReverbDeckA_Text" xml:space="preserve">
+    <value>🎵 REVERB</value>
+  </data>
+  <data name="FormDJ_CheckBoxEchoDeckA_Text" xml:space="preserve">
+    <value>📢 ECHO</value>
+  </data>
+  <data name="FormDJ_ButtonSyncDeckA_Text" xml:space="preserve">
+    <value>🔄 SYNC → B</value>
+  </data>
+  <data name="FormDJ_Label_Avertissement_Text" xml:space="preserve">
+    <value>En développement....</value>
+  </data>
+  <data name="FormDJ_Button_DeckB_BackTo0_Text" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="FormDJ_LabelTrackDeckB_Text" xml:space="preserve">
+    <value>Glissez une piste ici ⬇</value>
+  </data>
+  <data name="FormDJ_ButtonPlayDeckB_Text" xml:space="preserve">
+    <value>▶</value>
+  </data>
+  <data name="FormDJ_ButtonCueDeckB_Text" xml:space="preserve">
+    <value>CUE</value>
+  </data>
+  <data name="FormDJ_ButtonStopDeckB_Text" xml:space="preserve">
+    <value>⏹</value>
+  </data>
+  <data name="FormDJ_LabelDureeDeckB_Text" xml:space="preserve">
+    <value>00:00 / 00:00</value>
+  </data>
+  <data name="FormDJ_LabelVolumeDeckB_Text" xml:space="preserve">
+    <value>Vol B: 75%</value>
+  </data>
+  <data name="FormDJ_LabelPitchDeckB_Text" xml:space="preserve">
+    <value>Pitch: 0.0%</value>
+  </data>
+  <data name="FormDJ_LabelBPMDeckB_Text" xml:space="preserve">
+    <value>BPM: --</value>
+  </data>
+  <data name="FormDJ_CheckBoxPhaserDeckB_Text" xml:space="preserve">
+    <value>🌀 PHASER</value>
+  </data>
+  <data name="FormDJ_CheckBoxReverbDeckB_Text" xml:space="preserve">
+    <value>🎵 REVERB</value>
+  </data>
+  <data name="FormDJ_CheckBoxEchoDeckB_Text" xml:space="preserve">
+    <value>📢 ECHO</value>
+  </data>
+  <data name="FormDJ_ButtonSyncDeckB_Text" xml:space="preserve">
+    <value>🔄 SYNC → A</value>
+  </data>
+  <data name="FormDJ_LabelEnregistrement_Text" xml:space="preserve">
+    <value>Format:</value>
+  </data>
+  <data name="FormDJ_ButtonEnregistrement_Text" xml:space="preserve">
+    <value>⬤ REC</value>
+  </data>
+  <data name="FormDJ_LabelCrossfader_Text" xml:space="preserve">
+    <value>Crossfader: 50%</value>
+  </data>
+  <data name="FormDJ_ButtonRetourModeSimple_Text" xml:space="preserve">
+    <value>◀ Mode Simple</value>
+  </data>
+  <data name="FormDJ_ButtonParametres_Text" xml:space="preserve">
+    <value>⚙️ Paramètres</value>
+  </data>
+  <data name="FormDJ_ButtonQuitter_Text" xml:space="preserve">
+    <value>✖ Quitter</value>
+  </data>
+  <data name="FormDJ_GroupBoxPlaylist_Text" xml:space="preserve">
+    <value>📋 PLAYLIST DJ</value>
+  </data>
+  <data name="FormDJ_ColumnNumDJ_Text" xml:space="preserve">
+    <value>#</value>
+  </data>
+  <data name="FormDJ_ColumnChansonDJ_Text" xml:space="preserve">
+    <value>Chansons</value>
+  </data>
+  <data name="FormDJ_ColumnBPMDJ_Text" xml:space="preserve">
+    <value>BPM</value>
+  </data>
+  <data name="FormDJ_ColumnDureeDJ_Text" xml:space="preserve">
+    <value>Durée</value>
+  </data>
+  <data name="FormDJ_ButtonAjouterPiste_Text" xml:space="preserve">
+    <value>➕ Ajouter</value>
+  </data>
+  <data name="FormDJ_ButtonGererPlaylist_Text" xml:space="preserve">
+    <value>📋 Gérer</value>
+  </data>
+  <data name="FormDJ_Form_Text" xml:space="preserve">
+    <value>AudioPlay - Mode Mixeur DJ</value>
+  </data>
   <data name="Menu_OpenList" xml:space="preserve">
     <value>Ouvrir une liste</value>
   </data>
@@ -299,6 +1625,12 @@
   </data>
   <data name="BPM_Error_Title" xml:space="preserve">
     <value>Erreur BPM</value>
+  </data>
+  <data name="BPM_PythonCheckTitle" xml:space="preserve">
+    <value>Vérification Python</value>
+  </data>
+  <data name="BPM_PythonLibrosa_OK" xml:space="preserve">
+    <value>Librosa est installé et prêt à l'emploi.</value>
   </data>
   <data name="AudioFilesFilter" xml:space="preserve">
     <value>Fichiers audio|*.mp3;*.wav;*.flac;*.m4a;*.aac;*.ogg;*.wma</value>
@@ -363,6 +1695,24 @@
   <data name="Params_BeatsCount" xml:space="preserve">
     <value>Nombre de beats :</value>
   </data>
+  <data name="AudioTypes_Applied" xml:space="preserve">
+    <value>Types audio appliqués.</value>
+  </data>
+  <data name="Button_ApplyNow" xml:space="preserve">
+    <value>Appliquer</value>
+  </data>
+  <data name="LabelLibrosaExist" xml:space="preserve">
+    <value>Vérifier si la librairie Librosa est présente sur votre système :</value>
+  </data>
+  <data name="LabelPythonPath" xml:space="preserve">
+    <value>Chemin Python (optionnel) :</value>
+  </data>
+  <data name="ButtonCheckLibrosa" xml:space="preserve">
+    <value>Vérifier</value>
+  </data>
+  <data name="ButtonBrowsePython" xml:space="preserve">
+    <value>Parcourir</value>
+  </data>
   <data name="Params_RemoveSilenceStart" xml:space="preserve">
     <value>Supprimer les silences au début des chansons</value>
   </data>
@@ -380,6 +1730,9 @@
   </data>
   <data name="Button_Cancel" xml:space="preserve">
     <value>Annuler</value>
+  </data>
+  <data name="Button_OK" xml:space="preserve">
+    <value>OK</value>
   </data>
   <data name="Button_Reset" xml:space="preserve">
     <value>Réinitialiser</value>
@@ -882,7 +2235,10 @@ Les nouvelles informations sont maintenant enregistrées dans le fichier.</value
     <value>Couleur bordure GroupBox</value>
   </data>
   <data name="Theme_Pick_TrackBarBack" xml:space="preserve">
-    <value>Couleur de fond TrackBar</value>
+    <value>Couleur d'arrière-plan du TrackBar</value>
+  </data>
+  <data name="Theme_Pick_AccentColor" xml:space="preserve">
+    <value>Accent (couleur des barres de progression)</value>
   </data>
   <data name="Theme_Apply" xml:space="preserve">
     <value>Appliquer</value>
@@ -942,6 +2298,21 @@ Thèmes protégés : Par défaut, Automne, Océan, Soleil, Sombre
 Pour personnaliser les couleurs :
 • Cliquez sur "Enregistrer le thème sous" pour créer une copie que vous pourrez modifier
 • Sélectionnez un thème que vous avez créé</value>
+  </data>
+  <data name="Theme_Name_Default" xml:space="preserve">
+    <value>Par défaut</value>
+  </data>
+  <data name="Theme_Name_Autumn" xml:space="preserve">
+    <value>Automne</value>
+  </data>
+  <data name="Theme_Name_Ocean" xml:space="preserve">
+    <value>Océan</value>
+  </data>
+  <data name="Theme_Name_Sun" xml:space="preserve">
+    <value>Soleil</value>
+  </data>
+  <data name="Theme_Name_Dark" xml:space="preserve">
+    <value>Sombre</value>
   </data>
   <data name="Theme_PreinstalledProtected_Title" xml:space="preserve">
     <value>Thème préinstallé protégé</value>
@@ -1004,6 +2375,105 @@ Veuillez choisir un autre nom pour votre thème.</value>
   <data name="Menu_SaveListAs" xml:space="preserve">
     <value>Enregistrer la liste sous...</value>
   </data>
+  <data name="Button_ViewCrashLog" xml:space="preserve">
+    <value>Afficher dernier crash</value>
+  </data>
+  <data name="Tip_Button_Play" xml:space="preserve">
+    <value>Jouer la chanson sélectionnée</value>
+  </data>
+  <data name="Tip_Button_Stop" xml:space="preserve">
+    <value>Arrêter la chanson en cours</value>
+  </data>
+  <data name="Tip_Button_Add" xml:space="preserve">
+    <value>Ajout d'une ou des chansons ou répertoire à la fenêtre de la liste...</value>
+  </data>
+  <data name="Tip_Button_ManageList" xml:space="preserve">
+    <value>Gérer la fenêtre de la liste</value>
+  </data>
+  <data name="Tip_TrackBar_Volume" xml:space="preserve">
+    <value>Régler le volume</value>
+  </data>
+  <data name="Tip_TrackBar_Position" xml:space="preserve">
+    <value>Position de lecture (glisser pour naviguer)</value>
+  </data>
+  <data name="Tip_Combo_SearchType" xml:space="preserve">
+    <value>Type de recherche (nom, BPM, durée)</value>
+  </data>
+  <data name="Tip_Label_Volume" xml:space="preserve">
+    <value>Niveau du volume actuel</value>
+  </data>
+  <data name="Tip_TrackBar_Aigues" xml:space="preserve">
+    <value>Ajustement général des aigues d'AudioPlay</value>
+  </data>
+  <data name="Tip_TrackBar_Basses" xml:space="preserve">
+    <value>Ajustement général des basses d'AudioPlay</value>
+  </data>
+  <data name="Tip_Label_DureeRestante" xml:space="preserve">
+    <value>Durée restante de la chanson en cours</value>
+  </data>
+  <data name="Tip_Button_Parametres" xml:space="preserve">
+    <value>Accès à tous les paramètres d'AudioPlay</value>
+  </data>
+  <data name="Tip_Button_Loop_Help" xml:space="preserve">
+    <value>Aide pour programmer une section de la chanson avec les touches 'I' et 'O'</value>
+  </data>
+  <data name="Tip_Button_Loop" xml:space="preserve">
+    <value>Jouer en boucle la section de la chanson sélectionné avec les touches du clavier 'I' et 'O'...</value>
+  </data>
+  <data name="Tip_Button_InfoSelect" xml:space="preserve">
+    <value>Accès à l'information de la chanson sélectionnée</value>
+  </data>
+  <data name="Tip_Button_DJMode" xml:space="preserve">
+    <value>AudioPlay en mode DJ (Mixeur)</value>
+  </data>
+  <data name="Tip_GroupBox_Avancement" xml:space="preserve">
+    <value>Avancement de la chanson en cours</value>
+  </data>
+  <data name="Tip_ListView1" xml:space="preserve">
+    <value>Fenêtre de la liste des chansons chargées</value>
+  </data>
+  <data name="Tip_Button_APropos" xml:space="preserve">
+    <value>À propos d'AudioPlay</value>
+  </data>
+  <data name="Tip_Button_AudioPlay_Help" xml:space="preserve">
+    <value>Aide générale d'AudioPlay</value>
+  </data>
+  <data name="Tip_Combo_TypeRecherche" xml:space="preserve">
+    <value>Choix du mode de recherche</value>
+  </data>
+  <data name="Tip_Button_ClearSearch" xml:space="preserve">
+    <value>Effacer la recherche</value>
+  </data>
+  <data name="Tip_Button_Power" xml:space="preserve">
+    <value>Fermer l'application</value>
+  </data>
+  <data name="Tip_Button_CalculBPM" xml:space="preserve">
+    <value>Calculer le BPM (Beats per minute) des chansons sélectionnées</value>
+  </data>
+  <data name="Tip_Button_Random" xml:space="preserve">
+    <value>Mode aléatoire de la liste de chansons</value>
+  </data>
+  <data name="Tip_Button_Mute" xml:space="preserve">
+    <value>Mettre en sourdine la chanson en cours</value>
+  </data>
+  <data name="Tip_Button_PauseResume" xml:space="preserve">
+    <value>Mettre en pause / Reprendre la lecture</value>
+  </data>
+  <data name="Tip_Button_Next" xml:space="preserve">
+    <value>Chanson suivante</value>
+  </data>
+  <data name="Tip_Button_Previous" xml:space="preserve">
+    <value>Chanson précédente</value>
+  </data>
+  <data name="Tip_TrackBar_ValuePrefix" xml:space="preserve">
+    <value>Valeur: </value>
+  </data>
+  <data name="CrashLog_NotFound" xml:space="preserve">
+    <value>Aucun crash enregistré (crash.log introuvable).</value>
+  </data>
+  <data name="CrashLog_Title" xml:space="preserve">
+    <value>Log d'erreur</value>
+  </data>
   <data name="Status_Paused" xml:space="preserve">
     <value>En pause</value>
   </data>
@@ -1019,15 +2489,6 @@ Veuillez choisir un autre nom pour votre thème.</value>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="AudioPlay_Logo_Bleu" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\AudioPlay_Logo_Bleu.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Rapetisser_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Rapetisser_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Rapetisser_Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Rapetisser_Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Rapetisser_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Rapetisser_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Karaoke_Title" xml:space="preserve">
     <value>Karaoke</value>
@@ -1059,125 +2520,11 @@ Veuillez choisir un autre nom pour votre thème.</value>
   <data name="Karaoke_Paused" xml:space="preserve">
     <value>En pause</value>
   </data>
-  <data name="AudioPlay_Vide__Carré" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Vide__Carré.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Aide_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Aide_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Aide_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Aide_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Aide_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Aide_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Ajout__Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Ajout__Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Ajout__Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Ajout__Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Ajout__Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Ajout__Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Ajout__Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Ajout__Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Rapetisser_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Rapetisser_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_BPM_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_BPM_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_BPM_Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_BPM_Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_BPM_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_BPM_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_BPM_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_BPM_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Jouer_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Jouer_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Jouer_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Jouer_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Jouer_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Jouer_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="AudioPlay_Led_Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\AudioPlay_Led_Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="AudioPlay_Led_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\AudioPlay_Led_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Mute_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Mute_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Mute_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Mute_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Mute_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Mute_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Pause_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Pause_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Pause_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Pause_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Pause_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Pause_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Power_Bleu" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Power_Bleu.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Power_Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Power_Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Power_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Power_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Power_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Power_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Random_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Random_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Random_Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Random_Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Random_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Random_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Random_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Random_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Suivant_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Suivant_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Suivant_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Suivant_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Suivant_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Suivant_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_Vide_Rond" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Vide_Rond.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_X_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_X_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_X_Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_X_Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_X_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_X_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AudioPlay_X_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_X_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Loop_Help_Title" xml:space="preserve">
     <value>Aide - Boucle (Loop)</value>
@@ -1788,14 +3135,466 @@ Voulez-vous ouvrir le dossier ?</value>
   <data name="DJ_Recording_Error_Title" xml:space="preserve">
     <value>Erreur</value>
   </data>
-  <data name="AudioPlay_Arreter_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Arreter_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="CDSelector_Title" xml:space="preserve">
+    <value>Sélection des pistes CD</value>
   </data>
-  <data name="AudioPlay_Arreter_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Arreter_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="CDSelector_Source" xml:space="preserve">
+    <value>Source:</value>
   </data>
-  <data name="AudioPlay_Arreter_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Arreter_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="CDSelector_LoadButton" xml:space="preserve">
+    <value>Charger</value>
+  </data>
+  <data name="CDSelector_ClearCacheButton" xml:space="preserve">
+    <value>Effacer cache</value>
+  </data>
+  <data name="CDSelector_LoadingDefault" xml:space="preserve">
+    <value>Chargement des métadonnées...</value>
+  </data>
+  <data name="CDSelector_SelectAllButton" xml:space="preserve">
+    <value>Tout sélectionner</value>
+  </data>
+  <data name="CDSelector_DeselectAllButton" xml:space="preserve">
+    <value>Tout désélectionner</value>
+  </data>
+  <data name="CDSelector_OKButton" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="CDSelector_CancelButton" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="CDSelector_SourceGnuDB" xml:space="preserve">
+    <value>GnuDB</value>
+  </data>
+  <data name="CDSelector_SourceMusicBrainz" xml:space="preserve">
+    <value>MusicBrainz</value>
+  </data>
+  <data name="CDSelector_SourceDiscogs" xml:space="preserve">
+    <value>Discogs</value>
+  </data>
+  <data name="CDSelector_SourceManual" xml:space="preserve">
+    <value>Saisie manuelle</value>
+  </data>
+  <data name="CDSelector_LoadedFromCache" xml:space="preserve">
+    <value>✓ Métadonnées chargées depuis le cache</value>
+  </data>
+  <data name="CDSelector_LoadingAutoGnuDB" xml:space="preserve">
+    <value>Chargement automatique depuis GnuDB...</value>
+  </data>
+  <data name="CDSelector_ErrorAutoLoad" xml:space="preserve">
+    <value>Erreur de chargement automatique: {0}</value>
+  </data>
+  <data name="CDSelector_AlbumFound" xml:space="preserve">
+    <value>✓ Album trouvé: {0} - {1}</value>
+  </data>
+  <data name="CDSelector_NoMetadataGnuDB" xml:space="preserve">
+    <value>⚠ Aucune métadonnée trouvée sur GnuDB</value>
+  </data>
+  <data name="CDSelector_ErrorGnuDB" xml:space="preserve">
+    <value>❌ Erreur GnuDB: {0}</value>
+  </data>
+  <data name="CDSelector_ManualMode" xml:space="preserve">
+    <value>Mode manuel - Vous pouvez modifier les noms directement</value>
+  </data>
+  <data name="CDSelector_ManualInstructions" xml:space="preserve">
+    <value>Saisissez manuellement les informations dans la liste</value>
+  </data>
+  <data name="CDSelector_SourceNotRecognized" xml:space="preserve">
+    <value>Source non reconnue</value>
+  </data>
+  <data name="CDSelector_ErrorTitle" xml:space="preserve">
+    <value>Erreur</value>
+  </data>
+  <data name="CDSelector_LoadingMusicBrainz" xml:space="preserve">
+    <value>Chargement depuis MusicBrainz...</value>
+  </data>
+  <data name="CDSelector_NoMetadataMusicBrainz" xml:space="preserve">
+    <value>⚠ Aucune métadonnée trouvée sur MusicBrainz</value>
+  </data>
+  <data name="CDSelector_ErrorMusicBrainz" xml:space="preserve">
+    <value>❌ Erreur MusicBrainz: {0}</value>
+  </data>
+  <data name="CDSelector_LoadingDiscogs" xml:space="preserve">
+    <value>Recherche sur Discogs...</value>
+  </data>
+  <data name="CDSelector_NoMetadataDiscogs" xml:space="preserve">
+    <value>⚠ Aucune métadonnée trouvée sur Discogs</value>
+  </data>
+  <data name="CDSelector_ErrorDiscogs" xml:space="preserve">
+    <value>❌ Erreur Discogs: {0}</value>
+  </data>
+  <data name="CDSelector_ConfirmClearCache" xml:space="preserve">
+    <value>Effacer les métadonnées en cache pour :{0}{1}</value>
+  </data>
+  <data name="CDSelector_ConfirmClearCacheTitle" xml:space="preserve">
+    <value>Confirmation</value>
+  </data>
+  <data name="CDSelector_CacheCleared" xml:space="preserve">
+    <value>✓ Cache effacé - Sélectionnez une source pour recharger</value>
+  </data>
+  <data name="CDSelector_CacheClearedMessage" xml:space="preserve">
+    <value>Les métadonnées ont été supprimées du cache.{0}Sélectionnez une source dans le menu déroulant pour recharger.</value>
+  </data>
+  <data name="CDSelector_CacheClearedTitle" xml:space="preserve">
+    <value>Cache effacé</value>
+  </data>
+  <data name="CDSelector_NoCacheForCD" xml:space="preserve">
+    <value>Aucune métadonnée en cache pour ce CD</value>
+  </data>
+  <data name="CDSelector_InformationTitle" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="CDSelector_ErrorClearCache" xml:space="preserve">
+    <value>Erreur lors de l'effacement du cache: {0}</value>
+  </data>
+  <data name="CDSelector_DiagnosticTitle" xml:space="preserve">
+    <value>Diagnostic CD</value>
+  </data>
+  <data name="CDSelector_ErrorDiagnostic" xml:space="preserve">
+    <value>Erreur diagnostic: {0}</value>
+  </data>
+  <data name="CDSelector_TitleWithDrive" xml:space="preserve">
+    <value>Sélectionner les pistes du CD - {0}</value>
+  </data>
+  <data name="CDSelector_DiscogsArtistPrompt" xml:space="preserve">
+    <value>Entrez le nom de l'artiste:</value>
+  </data>
+  <data name="CDSelector_DiscogsAlbumPrompt" xml:space="preserve">
+    <value>Entrez le titre de l'album:</value>
+  </data>
+  <data name="CDSelector_DiscogsSearchTitle" xml:space="preserve">
+    <value>Recherche Discogs</value>
+  </data>
+  <data name="CDSelector_NoCDDetected" xml:space="preserve">
+    <value>⚠ Aucun CD détecté dans le lecteur</value>
+  </data>
+  <data name="CDSelector_NewCDDetected" xml:space="preserve">
+    <value>✓ Nouveau CD détecté - Chargement...</value>
+  </data>
+  <data name="CDSelector_ExtractionButton" xml:space="preserve">
+    <value>Extraction de la ou les pistes audio...</value>
+  </data>
+  <data name="CDSelector_NoPistesForExtraction" xml:space="preserve">
+    <value>Aucune piste CD disponible pour l'extraction. Veuillez d'abord charger les métadonnées du CD.</value>
+  </data>
+  <data name="CDSelector_ButtonAdd" xml:space="preserve">
+    <value>Ajouter...</value>
+  </data>
+  <data name="CDSelector_ButtonSelectAll" xml:space="preserve">
+    <value>Tout sélectionner</value>
+  </data>
+  <data name="CDSelector_ButtonDeselectAll" xml:space="preserve">
+    <value>Tout désélectionner</value>
+  </data>
+  <data name="CDSelector_ButtonExtraction" xml:space="preserve">
+    <value>Extraction de la ou les pistes audio...</value>
+  </data>
+  <data name="CDSelector_ButtonCancel" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="CDSelector_SelectDeselectAll" xml:space="preserve">
+    <value>Tout sélectionner / Tout désélectionner</value>
+  </data>
+  <data name="CDSelector_FormTitle" xml:space="preserve">
+    <value>Sélection des pistes CD</value>
+  </data>
+  <data name="Compressor_FormTitle" xml:space="preserve">
+    <value>Extraction du CD Audio</value>
+  </data>
+  <data name="Compressor_DriveSelection" xml:space="preserve">
+    <value>Choix de lecteur</value>
+  </data>
+  <data name="Compressor_CDTitle" xml:space="preserve">
+    <value>CD Titre</value>
+  </data>
+  <data name="Compressor_CDArtist" xml:space="preserve">
+    <value>CD Artiste</value>
+  </data>
+  <data name="Compressor_Year" xml:space="preserve">
+    <value>Année</value>
+  </data>
+  <data name="Compressor_Genre" xml:space="preserve">
+    <value>Genre</value>
+  </data>
+  <data name="Compressor_CoverArt" xml:space="preserve">
+    <value>CD Pochette</value>
+  </data>
+  <data name="Compressor_ImageDimensions" xml:space="preserve">
+    <value>Dimensions image:</value>
+  </data>
+  <data name="Compressor_ImageSize" xml:space="preserve">
+    <value>Taille image:</value>
+  </data>
+  <data name="Compressor_CDNumber" xml:space="preserve">
+    <value>Numéro de CD:</value>
+  </data>
+  <data name="Compressor_FirstTrackNumber" xml:space="preserve">
+    <value>Premier numéro de piste:</value>
+  </data>
+  <data name="Compressor_Comment" xml:space="preserve">
+    <value>Commentaire</value>
+  </data>
+  <data name="Compressor_ConversionType" xml:space="preserve">
+    <value>Type de conversion:</value>
+  </data>
+  <data name="Compressor_ConversionQuality" xml:space="preserve">
+    <value>Qualité de conversion:</value>
+  </data>
+  <data name="Compressor_SaveDirectory" xml:space="preserve">
+    <value>Répertoire de sauvegarde:</value>
+  </data>
+  <data name="Compressor_ButtonBrowse" xml:space="preserve">
+    <value>Parcourir</value>
+  </data>
+  <data name="Compressor_ButtonExtract" xml:space="preserve">
+    <value>Extraire</value>
+  </data>
+  <data name="Compressor_ButtonCancel" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="Compressor_AnalyzingTracks" xml:space="preserve">
+    <value>Analyse des pistes en cours...</value>
+  </data>
+  <data name="Compressor_AnalyzingTrackProgress" xml:space="preserve">
+    <value>Analyse en cours... Piste {0} ({1}/{2})</value>
+  </data>
+  <data name="Compressor_CancelConfirmMessage" xml:space="preserve">
+    <value>Voulez-vous vraiment annuler l'extraction en cours ?
+
+La piste en cours sera terminée avant l'arrêt.</value>
+  </data>
+  <data name="Compressor_CancelConfirmTitle" xml:space="preserve">
+    <value>Confirmer l'annulation</value>
+  </data>
+  <data name="Compressor_CancelConfirmYes" xml:space="preserve">
+    <value>Oui</value>
+  </data>
+  <data name="Compressor_CancelConfirmNo" xml:space="preserve">
+    <value>Non</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Oui</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Non</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="Compressor_CancelInProgress" xml:space="preserve">
+    <value>Annulation en cours... (fin de la piste actuelle)</value>
+  </data>
+  <data name="Compressor_ExtractionCancelledMessage" xml:space="preserve">
+    <value>Extraction annulée par l'utilisateur.
+
+{0} piste(s) extraite(s) avec succès avant l'annulation.</value>
+  </data>
+  <data name="Compressor_ExtractionCancelledTitle" xml:space="preserve">
+    <value>Extraction annulée</value>
+  </data>
+  <data name="Compressor_ExtractionSuccessMessage" xml:space="preserve">
+    <value>{0} piste(s) extraite(s) avec succès</value>
+  </data>
+  <data name="Compressor_ExtractionFailedMessage" xml:space="preserve">
+    <value>{0} piste(s) ont échoué</value>
+  </data>
+  <data name="Compressor_ExtractionCompletedTitle" xml:space="preserve">
+    <value>Extraction terminée</value>
+  </data>
+  <data name="Compressor_GlobalProgress" xml:space="preserve">
+    <value>Progression globale: {0} / {1}</value>
+  </data>
+  <data name="Compressor_AnalysisInProgress" xml:space="preserve">
+    <value>Analyse en cours...</value>
+  </data>
+  <data name="Compressor_DefaultComment" xml:space="preserve">
+    <value>Extraction par AudioPlay...</value>
+  </data>
+  <data name="Compressor_ButtonQuit" xml:space="preserve">
+    <value>Quitter</value>
+  </data>
+  <data name="Compressor_ButtonEditTracks" xml:space="preserve">
+    <value>Modifier les pistes...</value>
+  </data>
+  <data name="Compressor_SelectDeselectAll" xml:space="preserve">
+    <value>Tout sélectionner / Tout désélectionner</value>
+  </data>
+  <data name="Compressor_EjectCD" xml:space="preserve">
+    <value>Éjecter le CD à la fin...</value>
+  </data>
+  <data name="Compressor_LockCD" xml:space="preserve">
+    <value>Verrouiller le plateau du lecteur pendant l'extraction</value>
+  </data>
+  <data name="Compressor_ColumnTrack" xml:space="preserve">
+    <value>Piste</value>
+  </data>
+  <data name="Compressor_ColumnTitle" xml:space="preserve">
+    <value>Titre</value>
+  </data>
+  <data name="Compressor_ColumnArtist" xml:space="preserve">
+    <value>Artiste</value>
+  </data>
+  <data name="Compressor_ColumnStart" xml:space="preserve">
+    <value>Début</value>
+  </data>
+  <data name="Compressor_ColumnLength" xml:space="preserve">
+    <value>Longueur</value>
+  </data>
+  <data name="Compressor_NoMoreCovers" xml:space="preserve">
+    <value>Aucune autre pochette trouvée pour cet album.</value>
+  </data>
+  <data name="Compressor_SearchTitle" xml:space="preserve">
+    <value>Recherche de pochette</value>
+  </data>
+  <data name="Compressor_ColumnSize" xml:space="preserve">
+    <value>Taille du fichier</value>
+  </data>
+  <data name="Compressor_ColumnCompressedSize" xml:space="preserve">
+    <value>Taille du fichier compressé</value>
+  </data>
+  <data name="Compressor_QualityLow" xml:space="preserve">
+    <value>Basse (128 kbps)</value>
+  </data>
+  <data name="Compressor_QualityMedium" xml:space="preserve">
+    <value>Moyenne (192 kbps)</value>
+  </data>
+  <data name="Compressor_QualityHigh" xml:space="preserve">
+    <value>Haute (256 kbps)</value>
+  </data>
+  <data name="Compressor_QualityVeryHigh" xml:space="preserve">
+    <value>Très Haute (320 kbps)</value>
+  </data>
+  <data name="Compressor_QualityFlacLevel0" xml:space="preserve">
+    <value>Niveau 0 (rapide)</value>
+  </data>
+  <data name="Compressor_QualityFlacLevel5" xml:space="preserve">
+    <value>Niveau 5 (équilibré)</value>
+  </data>
+  <data name="Compressor_QualityFlacLevel8" xml:space="preserve">
+    <value>Niveau 8 (meilleur)</value>
+  </data>
+  <data name="Compressor_QualityWav16" xml:space="preserve">
+    <value>PCM 16-bit 44.1 kHz</value>
+  </data>
+  <data name="Compressor_QualityWav24" xml:space="preserve">
+    <value>PCM 24-bit 96 kHz</value>
+  </data>
+  <data name="Compressor_QualityWav32" xml:space="preserve">
+    <value>PCM 32-bit 192 kHz</value>
+  </data>
+  <data name="Compressor_QualityWma128" xml:space="preserve">
+    <value>128 kbps</value>
+  </data>
+  <data name="Compressor_QualityWma192" xml:space="preserve">
+    <value>192 kbps</value>
+  </data>
+  <data name="Compressor_QualityWma256" xml:space="preserve">
+    <value>256 kbps</value>
+  </data>
+  <data name="EditTracks_FormTitle" xml:space="preserve">
+    <value>Modification des pistes</value>
+  </data>
+  <data name="EditTracks_TrackLabel" xml:space="preserve">
+    <value>Piste #</value>
+  </data>
+  <data name="EditTracks_TitleLabel" xml:space="preserve">
+    <value>Titre :</value>
+  </data>
+  <data name="EditTracks_ArtistLabel" xml:space="preserve">
+    <value>Artiste :</value>
+  </data>
+  <data name="EditTracks_ButtonPrevious" xml:space="preserve">
+    <value>Piste précédente</value>
+  </data>
+  <data name="EditTracks_ButtonNext" xml:space="preserve">
+    <value>Piste suivante</value>
+  </data>
+  <data name="EditTracks_ButtonQuit" xml:space="preserve">
+    <value>Quitter</value>
+  </data>
+  <data name="GnuDB_ButtonSubmit" xml:space="preserve">
+    <value>Soumettre à GnuDB</value>
+  </data>
+  <data name="GnuDB_SubmitDialogTitle" xml:space="preserve">
+    <value>Soumettre les métadonnées à GnuDB</value>
+  </data>
+  <data name="GnuDB_SubmitDialogMessage" xml:space="preserve">
+    <value>Vous êtes sur le point de soumettre les métadonnées de ce CD à la base de données GnuDB.
+
+Cela aidera d'autres utilisateurs à identifier ce CD automatiquement.
+
+Pour continuer, veuillez entrer votre adresse email (requise par CDDB) :</value>
+  </data>
+  <data name="GnuDB_SubmitEmailLabel" xml:space="preserve">
+    <value>Adresse email :</value>
+  </data>
+  <data name="GnuDB_SubmitSuccess" xml:space="preserve">
+    <value>Métadonnées soumises avec succès à GnuDB !
+
+Merci pour votre contribution à la base de données.</value>
+  </data>
+  <data name="GnuDB_SubmitSuccessTitle" xml:space="preserve">
+    <value>Soumission réussie</value>
+  </data>
+  <data name="GnuDB_SubmitError" xml:space="preserve">
+    <value>Erreur lors de la soumission à GnuDB :
+
+{0}</value>
+  </data>
+  <data name="GnuDB_SubmitErrorTitle" xml:space="preserve">
+    <value>Erreur de soumission</value>
+  </data>
+  <data name="GnuDB_SubmitClipboardCopied" xml:space="preserve">
+    <value>✓ Les métadonnées CDDB ont été copiées dans le presse-papiers !
+
+Votre client email va s'ouvrir avec un message pré-rempli pour GnuDB.
+
+Vérifiez les données et cliquez sur "Envoyer".
+
+Merci de contribuer à la base de données GnuDB !</value>
+  </data>
+  <data name="GnuDB_SubmitInvalidEmail" xml:space="preserve">
+    <value>Veuillez entrer une adresse email valide.</value>
+  </data>
+  <data name="GnuDB_SubmitMissingData" xml:space="preserve">
+    <value>Impossible de soumettre à GnuDB : certaines informations obligatoires sont manquantes.
+
+Assurez-vous que l'artiste, l'album et tous les titres de pistes sont remplis.</value>
+  </data>
+  <data name="AudioPlay_Aide_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Aide_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Aide_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Aide_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Aide_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Aide_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Ajout__Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Ajout__Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Ajout__Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Ajout__Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Ajout__Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Ajout__Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Ajout__Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Ajout__Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_DJMixeur__Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_DJMixeur__Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_DJMixeur__Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_DJMixeur__Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_DJMixeur__Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_DJMixeur__Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_DJMixeur__Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_DJMixeur__Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="AudioPlay_GererListe_Grise" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\AudioPlay_GererListe_Grise.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -1808,6 +3607,18 @@ Voulez-vous ouvrir le dossier ?</value>
   </data>
   <data name="AudioPlay_GererListe_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\AudioPlay_GererListe_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Loop_Carre_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Loop_Carre_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Loop_Carre_Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Loop_Carre_Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Loop_Carre_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Loop_Carre_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Loop_Carre_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Loop_Carre_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="AudioPlay_Metadonnees__Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\AudioPlay_Metadonnees__Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -1824,20 +3635,26 @@ Voulez-vous ouvrir le dossier ?</value>
   <data name="AudioPlay_Parametres_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\AudioPlay_Parametres_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="AudioPlay_Parametres_Rouges" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Parametres_Rouges.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="AudioPlay_Parametres_Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Parametres_Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="AudioPlay_Parametres_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\AudioPlay_Parametres_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="AudioPlay_Precedent_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Precedent_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="AudioPlay_Rapetisser_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Rapetisser_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="AudioPlay_Precedent_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Precedent_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="AudioPlay_Rapetisser_Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Rapetisser_Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="AudioPlay_Precedent_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Precedent_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="AudioPlay_Rapetisser_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Rapetisser_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Rapetisser_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Rapetisser_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Vide__Carré" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Vide__Carré.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="AudioPlay_X_Carre_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\AudioPlay_X_Carre_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -1851,16 +3668,211 @@ Voulez-vous ouvrir le dossier ?</value>
   <data name="AudioPlay_X_Carre_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\AudioPlay_X_Carre_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="AudioPlay_Loop_Carre_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Loop_Carre_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="AudioPlay_Ajout_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Ajout_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="AudioPlay_Loop_Carre_Noir" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Loop_Carre_Noir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="AudioPlay_Parametres_Rouges" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Parametres_Rouges.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="AudioPlay_Loop_Carre_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Loop_Carre_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="AudioPlay_Arreter_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Arreter_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="AudioPlay_Loop_Carre_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AudioPlay_Loop_Carre_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="AudioPlay_Arreter_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Arreter_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="AudioPlay_BPM_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_BPM_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_BPM_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_BPM_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_BPM_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_BPM_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Jouer_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Jouer_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Jouer_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Jouer_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Jouer_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Jouer_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Mute_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Mute_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Mute_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Mute_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Mute_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Mute_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Pause_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Pause_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Pause_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Pause_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Pause_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Pause_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Power_Bleu" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Power_Bleu.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Power_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Power_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Power_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Power_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Precedent_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Precedent_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Precedent_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Precedent_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Precedent_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Precedent_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Random_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Random_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Random_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Random_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Random_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Random_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Suivant_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Suivant_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Suivant_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Suivant_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Suivant_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Suivant_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Vide_Rond" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Vide_Rond.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_X_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_X_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_X_Rouge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_X_Rouge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_X_Vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_X_Vert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AudioPlay_Arreter_Gris" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\AudioPlay_Arreter_Gris.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FCompress_Label_ImageDimensions" xml:space="preserve">
+    <value>Dimensions image:</value>
+  </data>
+  <data name="FCompress_Label_ImageSite" xml:space="preserve">
+    <value>Site:</value>
+  </data>
+  <data name="FCompress_Label_ImageSize" xml:space="preserve">
+    <value>Taille image:</value>
+  </data>
+  <data name="GnuDB_Category" xml:space="preserve">
+    <value>Categorie: {0}</value>
+  </data>
+  <data name="GnuDB_DiscIDError" xml:space="preserve">
+    <value>Impossible de calculer le DiscID CDDB.</value>
+  </data>
+  <data name="GnuDB_EmailInvalid" xml:space="preserve">
+    <value>Adresse e-mail valide requise pour soumettre a GnuDB.</value>
+  </data>
+  <data name="GnuDB_EmailMissing" xml:space="preserve">
+    <value>E-mail manquant</value>
+  </data>
+  <data name="GnuDB_EmailPrompt" xml:space="preserve">
+    <value>Veuillez entrer votre adresse e-mail.
+
+Cette adresse est OBLIGATOIRE pour que GnuDB puisse vous notifier
+si votre soumission est acceptee ou rejetee.
+
+Votre e-mail ne sera utilise que pour la notification.</value>
+  </data>
+  <data name="GnuDB_EmailTitle" xml:space="preserve">
+    <value>Adresse e-mail requise</value>
+  </data>
+  <data name="GnuDB_Error" xml:space="preserve">
+    <value>Erreur</value>
+  </data>
+  <data name="GnuDB_ModePrompt" xml:space="preserve">
+    <value>Voulez-vous faire une soumission de TEST ?
+
+OUI = Mode TEST (recommande pour la premiere fois)
+      Le serveur verifiera votre soumission mais ne l&apos;enregistrera pas.
+
+NON = Mode SUBMIT (soumission reelle)
+      Votre contribution sera ajoutee a la base GnuDB.</value>
+  </data>
+  <data name="GnuDB_ModeTitle" xml:space="preserve">
+    <value>Mode de soumission</value>
+  </data>
+  <data name="GnuDB_TestTitle" xml:space="preserve">
+    <value>Test de soumission</value>
+  </data>
+  <data name="FCompress_Label_Normalization" xml:space="preserve">
+    <value>Normalisation Son</value>
+  </data>
+  <data name="GroupBoxAnalyzerOptions_Text" xml:space="preserve">
+    <value>Options d'analyse</value>
+  </data>
+  <data name="LabelWindowBefore_Text" xml:space="preserve">
+    <value>Fenêtre avant TOC (s):</value>
+  </data>
+  <data name="LabelWindowAfter_Text" xml:space="preserve">
+    <value>Fenêtre après TOC (s):</value>
+  </data>
+  <data name="LabelMinSilence_Text" xml:space="preserve">
+    <value>Silence minimal soutenu (s):</value>
+  </data>
+  <data name="LabelMaxStartTrim_Text" xml:space="preserve">
+    <value>Trim début max (s):</value>
+  </data>
+  <data name="FormInputEmail_Title" xml:space="preserve">
+    <value>Envoie Courriel à GnuDB</value>
+  </data>
+
+  <!-- Added keys for picture box context menu and prompts -->
+  <data name="Menu_SearchCover" xml:space="preserve">
+    <value>Rechercher pochette</value>
+  </data>
+  <data name="Menu_AddCoverFromFile" xml:space="preserve">
+    <value>Ajouter depuis fichier...</value>
+  </data>
+  <data name="Tooltip_PictureBox_Prompt" xml:space="preserve">
+    <value>Clic droit pour options: rechercher / ajouter image</value>
+  </data>
+  <data name="Compressor_EnterArtistAlbum" xml:space="preserve">
+    <value>Indiquez artiste et album avant recherche.</value>
+  </data>
+  <data name="Compressor_SelectCoverFile" xml:space="preserve">
+    <value>Sélectionner un fichier image...</value>
+  </data>
+  <data name="Compressor_InvalidImage" xml:space="preserve">
+    <value>Image invalide</value>
+  </data>
+  <data name="Compressor_Error" xml:space="preserve">
+    <value>Erreur</value>
+  </data>
+  <data name="Menu_Size" xml:space="preserve">
+    <value>Affichage</value>
+  </data>
+  <data name="Menu_Size_Normal" xml:space="preserve">
+    <value>Tel quel</value>
+  </data>
+  <data name="Menu_Size_Stretch" xml:space="preserve">
+    <value>Étiré</value>
+  </data>
+  <data name="Menu_Size_Zoom" xml:space="preserve">
+    <value>Ajuster (Zoom)</value>
+  </data>
+
+
 </root>

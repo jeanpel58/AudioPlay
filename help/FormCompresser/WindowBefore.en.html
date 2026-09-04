@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⏮️ Help - Window Before (TOC)</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; color: #333; }
+        .container { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #3498db; margin-top: 25px; }
+        .info { background-color: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        ul { line-height: 1.8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="icon">⏮️</span>Window Before (seconds)</h1>
+
+        <p>This setting controls how many seconds of audio are analyzed BEFORE the TOC (the point recorded in the disc table, usually the start of the next track) when searching for transitions between tracks.</p>
+
+        <h2>Why it exists</h2>
+        <p>The TOC marks the logical track boundary on the CD, but the real audio content may span across that boundary (crossfades). Analyzing a window before the TOC allows the analyzer to detect silence or fades indicating the true end of the previous track.</p>
+
+        <h2>What is the TOC?</h2>
+        <p>The TOC (Table of Contents) on an audio CD is a small table written to the disc that lists the start positions of each track (in minutes:seconds:frames) and the lead-out position. It is a logical index used by CD players. The TOC does not describe the actual waveform around those positions: it does not tell you whether tracks overlap, contain crossfades, or include silence. That is why analyzing audio around the TOC is necessary to find a safe silence where cutting is appropriate.</p>
+        <h2>Effect of changing it</h2>
+        <ul>
+            <li>Smaller value: faster analysis, may miss long fades.</li>
+            <li>Larger value: analyzes more audio and may detect silences better but costs more time.</li>
+        </ul>
+
+        <div class="info">
+            <strong>Recommendation:</strong> default conservative value: 20 seconds. Adjust between 10–30s depending on CD mastering.
+        </div>
+    </div>
+</body>
+</html>

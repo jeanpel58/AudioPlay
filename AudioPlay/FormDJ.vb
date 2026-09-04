@@ -1,8 +1,27 @@
 Imports System.IO
+Imports System.Threading
 Imports NAudio.Wave
 Imports NAudio.Wave.SampleProviders
 
 Public Class FormDJ
+    ' API Windows pour enlever le bouton X
+    Private Const SC_CLOSE As Integer = &HF060
+    Private Const MF_BYCOMMAND As Integer = &H0
+
+    <System.Runtime.InteropServices.DllImport("user32.dll")>
+    Private Shared Function GetSystemMenu(hWnd As IntPtr, bRevert As Boolean) As IntPtr
+    End Function
+
+    <System.Runtime.InteropServices.DllImport("user32.dll")>
+    Private Shared Function RemoveMenu(hMenu As IntPtr, uPosition As UInteger, uFlags As UInteger) As Boolean
+    End Function
+
+    Protected Overrides Sub OnLoad(e As EventArgs)
+        MyBase.OnLoad(e)
+        Dim hMenu As IntPtr = GetSystemMenu(Me.Handle, False)
+        RemoveMenu(hMenu, SC_CLOSE, MF_BYCOMMAND)
+    End Sub
+
     ' === Variables de lecture pour les deux platines ===
     Private lecteurDeckA As IWavePlayer = Nothing
     Private fichierAudioDeckA As AudioFileReader = Nothing
@@ -42,7 +61,7 @@ Public Class FormDJ
     Private crossfaderPosition As Single = 0.5F ' 0.0 (100% A) à 1.0 (100% B)
 
     ' === Timer pour mise à jour position ===
-    Private WithEvents timerPosition As New Timer()
+    Private WithEvents timerPosition As New System.Windows.Forms.Timer()
 
     ' === BPM ===
     ' Précision Double (3 décimales) comme Virtual DJ / Serato
@@ -65,6 +84,9 @@ Public Class FormDJ
     Private waveformDeckA As WaveformControl
     Private waveformDeckB As WaveformControl
 
+    ' Timer pour rafraîchir les waveform panels indépendamment (50ms)
+    Private WithEvents waveformTimer As New System.Windows.Forms.Timer() With {.Interval = 50}
+
     ' === HotCues ===
     Private hotcueManagerDeckA As New HotCueManager()
     Private hotcueManagerDeckB As New HotCueManager()
@@ -78,7 +100,7 @@ Public Class FormDJ
     ' === DJ Recording (Multi-format) ===
     Private djRecorder As DJRecorder = Nothing
     Private enregistrementEnCours As Boolean = False
-    Private timerEnregistrement As New Timer()
+    Private timerEnregistrement As New System.Windows.Forms.Timer()
     Private repertoireEnregistrement As String = ""
 
     ' === Sampler ===
@@ -90,7 +112,7 @@ Public Class FormDJ
     ' === AUTO-CALIBRATION SYNC : Ajustement automatique du ratio basé sur le drift mesuré ===
     Private autoCalibrationActive_DeckA As Boolean = False
     Private autoCalibrationActive_DeckB As Boolean = False
-    Private autoCalibTimer As New Timer() With {.Interval = 3000} ' Mesurer toutes les 3 secondes
+    Private autoCalibTimer As New System.Windows.Forms.Timer() With {.Interval = 3000} ' Mesurer toutes les 3 secondes
     Private lastCalibrationTime As DateTime = DateTime.Now
     Private driftAccumuléDeckA As Double = 0.0
     Private driftAccumuléDeckB As Double = 0.0
@@ -101,8 +123,19 @@ Public Class FormDJ
     Private isUserDraggingPositionA As Boolean = False
     Private isUserDraggingPositionB As Boolean = False
 
+    ' Flags temporaires pour le drag de waveform : se souvient si la lecture était en cours
+    Private dragWasPlayingDeckA As Boolean = False
+    Private dragWasPlayingDeckB As Boolean = False
+    ' Preview timers used to pause main player after short inactivity during drag
+    Private previewTimerDeckA As System.Windows.Forms.Timer = Nothing
+    Private previewTimerDeckB As System.Windows.Forms.Timer = Nothing
+
     ' === Flag de fermeture ===
     Private isClosing As Boolean = False
+
+    ' Hover flags for panels to ensure message filter targets correct panel
+    Private isMouseOverPlatineA As Boolean = False
+    Private isMouseOverPlatineB As Boolean = False
 
     Private Sub FormDJ_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ' Initialisation de l'interface DJ
@@ -137,9 +170,82 @@ Public Class FormDJ
 
         ' Configurer drag depuis ListView
         AddHandler ListViewPlaylist.ItemDrag, AddressOf ListViewPlaylist_ItemDrag
+        ' Activer la gestion du clavier pour le ListViewPlaylist
+        RemoveHandler ListViewPlaylist.KeyDown, AddressOf ListViewPlaylist_KeyDown
+        AddHandler ListViewPlaylist.KeyDown, AddressOf ListViewPlaylist_KeyDown
 
-        ' Charger la playlist sauvegardée
+        ' Attacher handlers Click/MouseUp à tous les contrôles existants pour restaurer le focus sur la playlist
+        Try
+            AttachHandlersToControlsContainer(Me)
+        Catch
+        End Try
+
+        ' Charger la playlist sauvegardée (en arrière-plan pour réactivité)
         ChargerPlaylistDJ()
+
+        ' Insérer les WaveformControl dans les panels existants
+        Try
+            waveformDeckA = New WaveformControl()
+            ' Faire remplir le WaveformControl au panel
+            waveformDeckA.Dock = DockStyle.Fill
+            ' Focus management: focus waveform when mouse enters panel or waveform
+            AddHandler Panel_Platine_A.MouseEnter, AddressOf Panel_Platine_MouseEnter
+            AddHandler Panel_Platine_A.MouseLeave, AddressOf Panel_Platine_MouseLeave
+            AddHandler waveformDeckA.MouseEnter, AddressOf Panel_Platine_MouseEnter
+            AddHandler waveformDeckA.MouseLeave, AddressOf Panel_Platine_MouseLeave
+            ' Initial zoom fixe au démarrage
+            waveformDeckA.Zoom = 2.0F
+            ' Temporarily disable PositionClicked handler to diagnose waveform disappearance on click
+            'AddHandler waveformDeckA.PositionClicked, AddressOf WaveformDeckA_PositionClicked
+            AddHandler waveformDeckA.DragStarted, AddressOf WaveformDeckA_DragStarted
+            AddHandler waveformDeckA.DragMoved, AddressOf WaveformDeckA_DragMoved
+            AddHandler waveformDeckA.DragEnded, AddressOf WaveformDeckA_DragEnded
+            ' Désactiver les scrollbars du panel : contrôle rempli par Dock.Fill
+            Panel_Platine_A.AutoScroll = False
+            Panel_Platine_A.Controls.Add(waveformDeckA)
+            ' Positionner et dimensionner correctement le contrôle pour permettre zoom illimité
+            Try
+                waveformDeckA.Location = New Point(0, 0)
+                AddHandler Panel_Platine_A.Resize, Sub(s, ev) waveformDeckA.UpdateLayoutToParent()
+                waveformDeckA.UpdateLayoutToParent()
+                waveformDeckA.BringToFront()
+            Catch
+            End Try
+
+            waveformDeckB = New WaveformControl()
+            waveformDeckB.Dock = DockStyle.Fill
+            AddHandler Panel_Platine_B.MouseEnter, AddressOf Panel_Platine_MouseEnter
+            AddHandler Panel_Platine_B.MouseLeave, AddressOf Panel_Platine_MouseLeave
+            AddHandler waveformDeckB.MouseEnter, AddressOf Panel_Platine_MouseEnter
+            AddHandler waveformDeckB.MouseLeave, AddressOf Panel_Platine_MouseLeave
+            waveformDeckB.Zoom = 2.0F
+            ' Temporarily disable PositionClicked handler to diagnose waveform disappearance on click
+            'AddHandler waveformDeckB.PositionClicked, AddressOf WaveformDeckB_PositionClicked
+            AddHandler waveformDeckB.DragStarted, AddressOf WaveformDeckB_DragStarted
+            AddHandler waveformDeckB.DragMoved, AddressOf WaveformDeckB_DragMoved
+            AddHandler waveformDeckB.DragEnded, AddressOf WaveformDeckB_DragEnded
+            Panel_Platine_B.AutoScroll = False
+            Panel_Platine_B.Controls.Add(waveformDeckB)
+            Try
+                waveformDeckB.Location = New Point(0, 0)
+                AddHandler Panel_Platine_B.Resize, Sub(s, ev) waveformDeckB.UpdateLayoutToParent()
+                waveformDeckB.UpdateLayoutToParent()
+                waveformDeckB.BringToFront()
+            Catch
+            End Try
+        Catch
+        End Try
+
+        ' Démarrer le timer de rafraîchissement des waveforms
+        waveformTimer.Start()
+
+        ' Installer un message filter pour intercepter la roulette souris même si un contrôle n'a pas le focus
+        Try
+            mwMessageFilterInstance = New MouseWheelMessageFilter(Me)
+            Application.AddMessageFilter(mwMessageFilterInstance)
+            AddHandler Me.FormClosed, AddressOf FormDJ_FormClosed_RemoveFilter
+        Catch
+        End Try
 
         ' Appliquer le thème
         ThemeManager.ApplyThemeToForm(Me)
@@ -162,13 +268,199 @@ Public Class FormDJ
 
         ' Initialiser les contrôles d'enregistrement
         InitialiserEnregistrement()
+        Debug.WriteLine("[INIT] FormDJ_Load terminé")
+
+        ' Initialiser le mode d'affichage waveform (global Deck A + Deck B)
+        Try
+            If ComboBoxDisplayMode IsNot Nothing AndAlso Not ComboBoxDisplayMode.IsDisposed Then
+                RemoveHandler ComboBoxDisplayMode.SelectedIndexChanged, AddressOf ComboBoxDisplayMode_SelectedIndexChanged
+                AddHandler ComboBoxDisplayMode.SelectedIndexChanged, AddressOf ComboBoxDisplayMode_SelectedIndexChanged
+
+                ' Remplir le combo depuis les ressources pour la langue actuelle
+                ComboBoxDisplayMode.Items.Clear()
+                Dim modes = New String() {"VirtualDJ", "Audacity", "Spectrogram", "Line", "Serato"}
+                For Each key In modes
+                    Dim resKey = "DisplayMode_" & key
+                    Dim txt = LanguageManager.GetString(resKey)
+                    If Not String.IsNullOrEmpty(txt) Then
+                        ComboBoxDisplayMode.Items.Add(txt)
+                    Else
+                        ComboBoxDisplayMode.Items.Add(key)
+                    End If
+                Next
+
+                ' Sélectionner VirtualDJ par défaut (localisé)
+                Dim defaultText = LanguageManager.GetString("DisplayMode_VirtualDJ")
+                If String.IsNullOrEmpty(defaultText) Then defaultText = "VirtualDJ"
+                If ComboBoxDisplayMode.Items.Contains(defaultText) Then
+                    ComboBoxDisplayMode.SelectedItem = defaultText
+                ElseIf ComboBoxDisplayMode.Items.Count > 0 Then
+                    ComboBoxDisplayMode.SelectedIndex = 0
+                End If
+
+                ' Appliquer le mode via enum en résolvant l'item localisé vers l'enum English key
+                Dim selectedKey = "VirtualDJ"
+                Try
+                    Dim selectedTxt = ComboBoxDisplayMode.SelectedItem?.ToString()
+                    ' Trouver l'enum correspondant en comparant aux ressources
+                    For Each key In modes
+                        Dim txt = LanguageManager.GetString("DisplayMode_" & key)
+                        If String.Equals(txt, selectedTxt, StringComparison.OrdinalIgnoreCase) OrElse String.Equals(key, selectedTxt, StringComparison.OrdinalIgnoreCase) Then
+                            selectedKey = key
+                            Exit For
+                        End If
+                    Next
+                Catch
+                End Try
+                Dim m = [Enum].Parse(GetType(WaveformControl.DisplayMode), selectedKey)
+                ApplyDisplayModeToAll(DirectCast(m, WaveformControl.DisplayMode))
+            End If
+        Catch
+        End Try
 
         ' === CONFIGURATION CROSSFADER FOCUS & ROULETTE GLOBALE ===
-        ' Donner le focus initial au crossfader
-        TrackBarCrossfader.Focus()
+        ' Donner le focus initial à la playlist
+        Try
+            If ListViewPlaylist IsNot Nothing AndAlso Not ListViewPlaylist.IsDisposed Then
+                ListViewPlaylist.Focus()
+            End If
+        Catch
+        End Try
 
         ' Note : OnMouseWheel est surchargé pour intercepter globalement la roulette
     End Sub
+
+    Private Sub ComboBoxDisplayMode_SelectedIndexChanged(sender As Object, e As EventArgs)
+        Try
+            Dim selectedTxt = ComboBoxDisplayMode.SelectedItem?.ToString()
+            If String.IsNullOrEmpty(selectedTxt) Then Return
+
+            ' Convert localized display text back to enum key (VirtualDJ, Audacity, Spectrogram, Line, Serato)
+            Dim modes = New String() {"VirtualDJ", "Audacity", "Spectrogram", "Line", "Serato"}
+            Dim matchedKey As String = Nothing
+            For Each key In modes
+                Dim txt = LanguageManager.GetString("DisplayMode_" & key)
+                If String.Equals(txt, selectedTxt, StringComparison.OrdinalIgnoreCase) OrElse String.Equals(key, selectedTxt, StringComparison.OrdinalIgnoreCase) Then
+                    matchedKey = key
+                    Exit For
+                End If
+            Next
+
+            If String.IsNullOrEmpty(matchedKey) Then
+                ' Fallback: try to use the selected text as-is (maybe already an enum name)
+                matchedKey = selectedTxt
+            End If
+
+            Dim mode = [Enum].Parse(GetType(WaveformControl.DisplayMode), matchedKey)
+            ApplyDisplayModeToAll(DirectCast(mode, WaveformControl.DisplayMode))
+        Catch
+        End Try
+    End Sub
+
+    Private Sub ApplyDisplayModeToAll(mode As WaveformControl.DisplayMode)
+        Try
+            If waveformDeckA IsNot Nothing Then waveformDeckA.DisplayModeSetting = mode
+            If waveformDeckB IsNot Nothing Then waveformDeckB.DisplayModeSetting = mode
+        Catch
+        End Try
+    End Sub
+
+    ' Message filter instance used to capture mouse wheel while hovering panels
+    Private mwMessageFilterInstance As MouseWheelMessageFilter = Nothing
+
+    Private Sub FormDJ_FormClosed_RemoveFilter(sender As Object, e As FormClosedEventArgs)
+        Try
+            If mwMessageFilterInstance IsNot Nothing Then
+                Application.RemoveMessageFilter(mwMessageFilterInstance)
+                mwMessageFilterInstance = Nothing
+            End If
+        Catch
+        End Try
+    End Sub
+
+    ' Message filter pour capter WM_MOUSEWHEEL et rediriger vers les platines quand la souris survole sans clic
+    Private Class MouseWheelMessageFilter
+        Implements IMessageFilter
+
+        Private ReadOnly _owner As FormDJ
+
+        Public Sub New(owner As FormDJ)
+            _owner = owner
+        End Sub
+
+        Public Function PreFilterMessage(ByRef m As Message) As Boolean Implements IMessageFilter.PreFilterMessage
+            Const WM_MOUSEWHEEL As Integer = &H20A
+            If m.Msg = WM_MOUSEWHEEL Then
+                Try
+                    Dim mousePtScreen As Point = Cursor.Position
+                    Dim mousePt As Point = _owner.PointToClient(mousePtScreen)
+                    System.Diagnostics.Debug.WriteLine($"[MouseWheelFilter] WM_MOUSEWHEEL at {mousePt} ModifierKeys={(Control.ModifierKeys And Keys.Control) = Keys.Control}")
+                    If (Control.ModifierKeys And Keys.Control) = Keys.Control Then
+                        ' Prefer hovered flags when available to avoid race conditions with Bounds.Contains
+                        If (_owner.isMouseOverPlatineA OrElse (_owner.Panel_Platine_A IsNot Nothing AndAlso _owner.Panel_Platine_A.Bounds.Contains(mousePt))) AndAlso _owner.waveformDeckA IsNot Nothing Then
+                            ' Extract wheel delta robustly from wParam (high-order word, signed 16-bit)
+                            Dim w As Long = m.WParam.ToInt64()
+                            Dim deltaRaw As Integer = CInt((w >> 16) And &HFFFF)
+                            ' Convert to signed 16-bit
+                            If deltaRaw >= &H8000 Then deltaRaw = deltaRaw - &H10000
+                            System.Diagnostics.Debug.WriteLine($"[MouseWheelFilter] Over Panel A rawDelta={deltaRaw}")
+                            ' Compute steps based on WHEEL_DELTA (120)
+                            Dim sign As Integer = Math.Sign(deltaRaw)
+                            Dim steps As Integer = If(deltaRaw = 0, 0, Math.Max(1, Math.Abs(deltaRaw) \ 120))
+                            If steps = 0 AndAlso deltaRaw <> 0 Then steps = 1
+                            If sign <> 0 Then
+                                _owner.waveformDeckA.Zoom = Math.Max(0.1F, _owner.waveformDeckA.Zoom + (0.1F * sign * steps))
+                                Try
+                                    _owner.waveformDeckA.UpdateLayoutToParent()
+                                Catch
+                                End Try
+                            End If
+                            Return True
+                        ElseIf (_owner.isMouseOverPlatineB OrElse (_owner.Panel_Platine_B IsNot Nothing AndAlso _owner.Panel_Platine_B.Bounds.Contains(mousePt))) AndAlso _owner.waveformDeckB IsNot Nothing Then
+                            Dim w As Long = m.WParam.ToInt64()
+                            Dim deltaRaw As Integer = CInt((w >> 16) And &HFFFF)
+                            If deltaRaw >= &H8000 Then deltaRaw = deltaRaw - &H10000
+                            System.Diagnostics.Debug.WriteLine($"[MouseWheelFilter] Over Panel B rawDelta={deltaRaw}")
+                            Dim sign As Integer = Math.Sign(deltaRaw)
+                            Dim steps As Integer = If(deltaRaw = 0, 0, Math.Max(1, Math.Abs(deltaRaw) \ 120))
+                            If steps = 0 AndAlso deltaRaw <> 0 Then steps = 1
+                            If sign <> 0 Then
+                                _owner.waveformDeckB.Zoom = Math.Max(0.1F, _owner.waveformDeckB.Zoom + (0.1F * sign * steps))
+                                Try
+                                    _owner.waveformDeckB.UpdateLayoutToParent()
+                                Catch
+                                End Try
+                            End If
+                            Return True
+                        End If
+                    End If
+                Catch
+                End Try
+            End If
+            Return False
+        End Function
+    End Class
+
+    ' Parcourt récursivement les contrôles d'un container et attache les handlers Click/MouseUp
+    Private Sub AttachHandlersToControlsContainer(container As Control)
+        If container Is Nothing Then Return
+        For Each c As Control In container.Controls
+            Try
+                AddHandler c.Click, AddressOf Control_Click
+            Catch
+            End Try
+            Try
+                AddHandler c.MouseUp, AddressOf Control_MouseUp
+            Catch
+            End Try
+            ' Recurse into child containers
+            If c.HasChildren Then
+                AttachHandlersToControlsContainer(c)
+            End If
+        Next
+    End Sub
+
+    ' Méthodes utilitaires pour la gestion de la playlist DJ
 
     ''' <summary>
     ''' Intercepter la roulette souris au niveau du Form pour contrôler le crossfader globalement
@@ -178,30 +470,103 @@ Public Class FormDJ
         If isClosing OrElse TrackBarCrossfader Is Nothing OrElse TrackBarCrossfader.IsDisposed Then
             Return
         End If
+        ' Si Ctrl appuyé et la souris est sur un des panels platine -> contrôler le Zoom de la waveform
+        Try
+            Dim mousePt As Point = Me.PointToClient(Cursor.Position)
+            Dim handled As Boolean = False
+            If (Control.ModifierKeys And Keys.Control) = Keys.Control Then
+                If Panel_Platine_A IsNot Nothing AndAlso Panel_Platine_A.Bounds.Contains(mousePt) AndAlso waveformDeckA IsNot Nothing Then
+                    If e.Delta > 0 Then
+                        waveformDeckA.Zoom = waveformDeckA.Zoom + 0.1F
+                    Else
+                        waveformDeckA.Zoom = Math.Max(0.1F, waveformDeckA.Zoom - 0.1F)
+                    End If
+                    waveformDeckA.CenterViewOnCurrentPosition()
+                    handled = True
+                ElseIf Panel_Platine_B IsNot Nothing AndAlso Panel_Platine_B.Bounds.Contains(mousePt) AndAlso waveformDeckB IsNot Nothing Then
+                    If e.Delta > 0 Then
+                        waveformDeckB.Zoom = waveformDeckB.Zoom + 0.1F
+                    Else
+                        waveformDeckB.Zoom = Math.Max(0.1F, waveformDeckB.Zoom - 0.1F)
+                    End If
+                    waveformDeckB.CenterViewOnCurrentPosition()
+                    handled = True
+                End If
+            End If
 
-        ' Contrôler le crossfader avec la roulette peu importe où se trouve la souris
-        Dim nouveauValue As Integer = TrackBarCrossfader.Value
+            If handled Then
+                Return
+            End If
 
-        If e.Delta > 0 Then
-            ' Roulette vers le haut : augmenter (vers Deck B)
-            nouveauValue += 2
-        Else
-            ' Roulette vers le bas : diminuer (vers Deck A)
-            nouveauValue -= 2
-        End If
+            ' Contrôler le crossfader avec la roulette peu importe où se trouve la souris
+            Dim nouveauValue As Integer = TrackBarCrossfader.Value
 
-        ' Limiter entre 0 et 100
-        nouveauValue = Math.Max(0, Math.Min(100, nouveauValue))
+            If e.Delta > 0 Then
+                ' Roulette vers le haut : augmenter (vers Deck B)
+                nouveauValue += 2
+            Else
+                ' Roulette vers le bas : diminuer (vers Deck A)
+                nouveauValue -= 2
+            End If
 
-        ' Appliquer la valeur
-        If nouveauValue <> TrackBarCrossfader.Value Then
-            TrackBarCrossfader.Value = nouveauValue
-            ' L'événement Scroll se déclenchera automatiquement
-        End If
+            ' Limiter entre 0 et 100
+            nouveauValue = Math.Max(0, Math.Min(100, nouveauValue))
+
+            ' Appliquer la valeur
+            If nouveauValue <> TrackBarCrossfader.Value Then
+                TrackBarCrossfader.Value = nouveauValue
+                ' L'événement Scroll se déclenchera automatiquement
+            End If
+
+        Catch
+        End Try
 
         ' Ne pas appeler la base pour éviter le scroll par défaut
         ' MyBase.OnMouseWheel(e)
     End Sub
+
+    Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
+        ' Désactiver les raccourcis si la playlist a le focus pour éviter double traitement
+        If ListViewPlaylist IsNot Nothing AndAlso ListViewPlaylist.Focused Then
+            Return MyBase.ProcessCmdKey(msg, keyData)
+        End If
+
+        ' Gérer raccourcis globaux en mode DJ
+        If keyData = Keys.Escape Then
+            Return MyBase.ProcessCmdKey(msg, keyData)
+        ElseIf keyData = Keys.Space Then
+            ' Espace = pause/reprise sur deck actif
+            If lectureEnCoursDeckA OrElse enPauseDeckA Then
+                ButtonPlayDeckA.PerformClick()
+            ElseIf lectureEnCoursDeckB OrElse enPauseDeckB Then
+                ButtonPlayDeckB.PerformClick()
+            End If
+            Return True
+        ElseIf keyData = (Keys.Control Or Keys.P) Then
+            ButtonPlayDeckA.PerformClick()
+            Return True
+        ElseIf keyData = (Keys.Control Or Keys.S) Then
+            ToggleMuteDJ()
+            Return True
+        ElseIf keyData = (Keys.Control Or Keys.A) Then
+            ' Ctrl+A : charger sélection Deck A
+            If ListViewPlaylist.SelectedItems.Count = 1 Then
+                ChargerFichierDeckA(ExtraireCheminDepuisItemDJ(ListViewPlaylist.SelectedItems(0)))
+            End If
+            Return True
+        ElseIf keyData = (Keys.Control Or Keys.B) Then
+            ' Ctrl+B : charger sélection Deck B
+            If ListViewPlaylist.SelectedItems.Count = 1 Then
+                ChargerFichierDeckB(ExtraireCheminDepuisItemDJ(ListViewPlaylist.SelectedItems(0)))
+            End If
+            Return True
+        ElseIf keyData = Keys.Delete Then
+            SupprimerDeListeDJ()
+            Return True
+        End If
+
+        Return MyBase.ProcessCmdKey(msg, keyData)
+    End Function
 
     Protected Overrides Sub OnClick(e As EventArgs)
         MyBase.OnClick(e)
@@ -210,8 +575,265 @@ Public Class FormDJ
             Return
         End If
 
-        ' Après chaque clic, redonner le focus au crossfader
-        TrackBarCrossfader.Focus()
+        ' Après chaque clic, redonner le focus à la playlist
+        Try
+            If ListViewPlaylist IsNot Nothing AndAlso Not ListViewPlaylist.IsDisposed Then
+                ListViewPlaylist.Focus()
+            End If
+        Catch
+        End Try
+    End Sub
+
+    ' Lorsque la souris entre dans un panel de platine, donner le focus à ce panel.
+    Private Sub Panel_Platine_MouseEnter(sender As Object, e As EventArgs)
+        Try
+            ' If mouse entered the panel itself, focus the waveform control inside so it receives wheel/keyboard input
+            If sender Is Panel_Platine_A Then
+                If waveformDeckA IsNot Nothing AndAlso Not waveformDeckA.IsDisposed Then waveformDeckA.Focus()
+                ' Give focus to the form so it receives MouseWheel even without a click
+                TryCast(Me, Form).Activate()
+                isMouseOverPlatineA = True
+                Return
+            ElseIf sender Is Panel_Platine_B Then
+                If waveformDeckB IsNot Nothing AndAlso Not waveformDeckB.IsDisposed Then waveformDeckB.Focus()
+                TryCast(Me, Form).Activate()
+                isMouseOverPlatineB = True
+                Return
+            End If
+
+            ' If sender is the waveform control, focus it directly
+            Dim ctl = TryCast(sender, Control)
+            If ctl Is Nothing Then Return
+            ctl.Focus()
+        Catch
+        End Try
+    End Sub
+
+    ' Lorsque la souris quitte un panel de platine, redonner le focus à la playlist si la souris n'est plus au-dessus d'aucun des deux.
+    Private Sub Panel_Platine_MouseLeave(sender As Object, e As EventArgs)
+        Try
+            Dim mousePt As Point = Me.PointToClient(Cursor.Position)
+            Dim overA As Boolean = (Panel_Platine_A IsNot Nothing AndAlso Panel_Platine_A.Bounds.Contains(mousePt))
+            Dim overB As Boolean = (Panel_Platine_B IsNot Nothing AndAlso Panel_Platine_B.Bounds.Contains(mousePt))
+            ' Update hovered flags
+            If Not overA Then isMouseOverPlatineA = False
+            If Not overB Then isMouseOverPlatineB = False
+            If Not overA AndAlso Not overB Then
+                If ListViewPlaylist IsNot Nothing AndAlso Not ListViewPlaylist.IsDisposed Then
+                    ListViewPlaylist.Focus()
+                End If
+            End If
+        Catch
+        End Try
+    End Sub
+
+    Private Sub ListViewPlaylist_KeyDown(sender As Object, e As KeyEventArgs)
+        ' Implémentation minimale pour reproduire les raccourcis de Form1
+        Try
+            ' Ctrl+Flèche haut/bas : déplacer l'item
+            If e.Control AndAlso e.KeyCode = Keys.Up Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                DeplacerSelectionListViewDJ(-1)
+                Return
+            End If
+            If e.Control AndAlso e.KeyCode = Keys.Down Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                DeplacerSelectionListViewDJ(1)
+                Return
+            End If
+
+            ' Flèche haut/bas sans Ctrl : changer la sélection
+            If Not e.Control AndAlso e.KeyCode = Keys.Up Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                If ListViewPlaylist.SelectedIndices.Count > 0 Then
+                    Dim idx = ListViewPlaylist.SelectedIndices(0)
+                    If idx > 0 Then
+                        ListViewPlaylist.SelectedItems.Clear()
+                        ListViewPlaylist.Items(idx - 1).Selected = True
+                        ListViewPlaylist.Items(idx - 1).EnsureVisible()
+                    End If
+                End If
+                Return
+            End If
+            If Not e.Control AndAlso e.KeyCode = Keys.Down Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                If ListViewPlaylist.SelectedIndices.Count > 0 Then
+                    Dim idx = ListViewPlaylist.SelectedIndices(0)
+                    If idx < ListViewPlaylist.Items.Count - 1 Then
+                        ListViewPlaylist.SelectedItems.Clear()
+                        ListViewPlaylist.Items(idx + 1).Selected = True
+                        ListViewPlaylist.Items(idx + 1).EnsureVisible()
+                    End If
+                End If
+                Return
+            End If
+
+            ' Supprimer la sélection avec la touche Suppr
+            If e.KeyCode = Keys.Delete Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                SupprimerDeListeDJ()
+                Return
+            End If
+
+            ' Home / End
+            If e.KeyCode = Keys.Home Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                If ListViewPlaylist.Items.Count > 0 Then
+                    ListViewPlaylist.SelectedItems.Clear()
+                    ListViewPlaylist.Items(0).Selected = True
+                    ListViewPlaylist.Items(0).EnsureVisible()
+                End If
+                Return
+            End If
+            If e.KeyCode = Keys.End Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                If ListViewPlaylist.Items.Count > 0 Then
+                    ListViewPlaylist.SelectedItems.Clear()
+                    Dim lastIdx As Integer = ListViewPlaylist.Items.Count - 1
+                    ListViewPlaylist.Items(lastIdx).Selected = True
+                    ListViewPlaylist.Items(lastIdx).EnsureVisible()
+                End If
+                Return
+            End If
+
+            ' Page Up / Page Down
+            If e.KeyCode = Keys.PageUp Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                If ListViewPlaylist.Items.Count > 0 Then
+                    Dim visibleCount As Integer = ListViewPlaylist.ClientSize.Height \ ListViewPlaylist.Items(0).Bounds.Height
+                    Dim idx As Integer = If(ListViewPlaylist.SelectedIndices.Count > 0, ListViewPlaylist.SelectedIndices(0), 0)
+                    Dim newIdx As Integer = Math.Max(0, idx - visibleCount)
+                    ListViewPlaylist.SelectedItems.Clear()
+                    ListViewPlaylist.Items(newIdx).Selected = True
+                    ListViewPlaylist.Items(newIdx).EnsureVisible()
+                End If
+                Return
+            End If
+            If e.KeyCode = Keys.PageDown Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                If ListViewPlaylist.Items.Count > 0 Then
+                    Dim visibleCount As Integer = ListViewPlaylist.ClientSize.Height \ ListViewPlaylist.Items(0).Bounds.Height
+                    Dim idx As Integer = If(ListViewPlaylist.SelectedIndices.Count > 0, ListViewPlaylist.SelectedIndices(0), 0)
+                    Dim newIdx As Integer = Math.Min(ListViewPlaylist.Items.Count - 1, idx + visibleCount)
+                    ListViewPlaylist.SelectedItems.Clear()
+                    ListViewPlaylist.Items(newIdx).Selected = True
+                    ListViewPlaylist.Items(newIdx).EnsureVisible()
+                End If
+                Return
+            End If
+
+            ' Espace : bascule pause/reprise sur la platine en cours, sinon charge dans Deck A
+            If e.KeyCode = Keys.Space Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                ' Priorité Deck A si actif ou en pause
+                If lectureEnCoursDeckA OrElse enPauseDeckA Then
+                    ButtonPlayDeckA.PerformClick()
+                ElseIf lectureEnCoursDeckB OrElse enPauseDeckB Then
+                    ButtonPlayDeckB.PerformClick()
+                ElseIf ListViewPlaylist.SelectedItems.Count > 0 Then
+                    ' Si rien ne joue, charger la sélection dans Deck A
+                    ChargerFichierDeckA(ExtraireCheminDepuisItemDJ(ListViewPlaylist.SelectedItems(0)))
+                End If
+                Return
+            End If
+
+            ' Ctrl+P = Pause/Reprise sur Deck A
+            If e.Control AndAlso e.KeyCode = Keys.P Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                ButtonPlayDeckA.PerformClick()
+                Return
+            End If
+
+            ' Ctrl+A = charger la sélection dans Deck A
+            If e.Control AndAlso e.KeyCode = Keys.A Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                If ListViewPlaylist.SelectedItems.Count = 0 Then
+                    MessageBox.Show(LanguageManager.GetString("DJ_Load_NoSelection_DeckA"), LanguageManager.GetString("Info_Title"), MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    Return
+                End If
+                If ListViewPlaylist.SelectedItems.Count > 1 Then
+                    MessageBox.Show(LanguageManager.GetString("DJ_Load_MultipleSelection_DeckA"), LanguageManager.GetString("Warning_Title"), MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    Return
+                End If
+                ChargerFichierDeckA(ExtraireCheminDepuisItemDJ(ListViewPlaylist.SelectedItems(0)))
+                Return
+            End If
+
+            ' Ctrl+B = charger la sélection dans Deck B
+            If e.Control AndAlso e.KeyCode = Keys.B Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                If ListViewPlaylist.SelectedItems.Count = 0 Then
+                    MessageBox.Show(LanguageManager.GetString("DJ_Load_NoSelection_DeckB"), LanguageManager.GetString("Info_Title"), MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    Return
+                End If
+                If ListViewPlaylist.SelectedItems.Count > 1 Then
+                    MessageBox.Show(LanguageManager.GetString("DJ_Load_MultipleSelection_DeckB"), LanguageManager.GetString("Warning_Title"), MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    Return
+                End If
+                ChargerFichierDeckB(ExtraireCheminDepuisItemDJ(ListViewPlaylist.SelectedItems(0)))
+                Return
+            End If
+
+            ' Ctrl+S = Sourdine (Mute) -> mute master si présent
+            If e.Control AndAlso e.KeyCode = Keys.S Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                ToggleMuteDJ()
+                Return
+            End If
+
+            ' Ctrl+Espace = Arrêter decks
+            If e.Control AndAlso e.KeyCode = Keys.Space Then
+                e.Handled = True
+                e.SuppressKeyPress = True
+                ButtonStopAllDecks()
+                Return
+            End If
+        Catch ex As Exception
+            Debug.WriteLine("Erreur ListViewPlaylist_KeyDown: " & ex.Message)
+        End Try
+    End Sub
+
+    ' Basculer le mute au niveau DJ (si Button_Mute présent dans FormDJ) sinon appeler la logique globale
+    Private Sub ToggleMuteDJ()
+        Try
+            If Me.Controls IsNot Nothing Then
+                For Each c As Control In Me.Controls
+                    If c IsNot Nothing AndAlso c.Name = "Button_Mute" AndAlso TypeOf c Is Button Then
+                        DirectCast(c, Button).PerformClick()
+                        Return
+                    End If
+                Next
+            End If
+        Catch
+        End Try
+
+        ' Sinon, appeler la méthode globale si Form1 est ouverte
+        Try
+            For Each frm As Form In Application.OpenForms
+                If TypeOf frm Is Form1 Then
+                    Dim f1 As Form1 = DirectCast(frm, Form1)
+                    If f1.Button_Mute IsNot Nothing Then
+                        f1.Button_Mute.PerformClick()
+                    End If
+                    Return
+                End If
+            Next
+        Catch
+        End Try
     End Sub
 
     Protected Overrides Sub OnControlAdded(e As ControlEventArgs)
@@ -230,26 +852,55 @@ Public Class FormDJ
 
     Private Sub Control_Click(sender As Object, e As EventArgs)
         ' Protection : Ne rien faire si le form est en cours de fermeture
-        If isClosing OrElse TrackBarCrossfader Is Nothing OrElse TrackBarCrossfader.IsDisposed Then
+        If isClosing OrElse ListViewPlaylist Is Nothing OrElse ListViewPlaylist.IsDisposed Then
             Return
         End If
 
-        ' Après chaque clic sur un contrôle, redonner le focus au crossfader
-        If sender IsNot TrackBarCrossfader Then
-            TrackBarCrossfader.Focus()
-        End If
+        ' Après chaque clic sur un contrôle, redonner le focus à la playlist
+        Try
+            Dim ctrl = TryCast(sender, Control)
+            If ctrl Is Nothing Then Return
+            ' Exclure certains contrôles qui doivent garder le focus (TrackBars, Waveform, etc.)
+            If TypeOf ctrl Is TrackBar OrElse ctrl.GetType().Name = "WaveformControl" Then
+                Return
+            End If
+            If ctrl.Name IsNot Nothing Then
+                Select Case ctrl.Name
+                    Case "TrackBarCrossfader", "TrackBarVolumeDeckA", "TrackBarVolumeDeckB", "TrackBarPitchDeckA", "TrackBarPitchDeckB"
+                        Return
+                End Select
+            End If
+            If ctrl IsNot ListViewPlaylist Then
+                ListViewPlaylist.Focus()
+            End If
+        Catch
+        End Try
     End Sub
 
     Private Sub Control_MouseUp(sender As Object, e As MouseEventArgs)
         ' Protection : Ne rien faire si le form est en cours de fermeture
-        If isClosing OrElse TrackBarCrossfader Is Nothing OrElse TrackBarCrossfader.IsDisposed Then
+        If isClosing OrElse ListViewPlaylist Is Nothing OrElse ListViewPlaylist.IsDisposed Then
             Return
         End If
 
         ' Après chaque relâchement de souris, redonner le focus au crossfader
-        If sender IsNot TrackBarCrossfader Then
-            TrackBarCrossfader.Focus()
-        End If
+        Try
+            If sender IsNot ListViewPlaylist Then
+                ListViewPlaylist.Focus()
+            End If
+        Catch
+        End Try
+    End Sub
+
+    Protected Overrides Sub OnActivated(e As EventArgs)
+        MyBase.OnActivated(e)
+        If isClosing Then Return
+        Try
+            If ListViewPlaylist IsNot Nothing AndAlso Not ListViewPlaylist.IsDisposed Then
+                ListViewPlaylist.Focus()
+            End If
+        Catch
+        End Try
     End Sub
 
     ''' <summary>
@@ -348,6 +999,8 @@ Public Class FormDJ
     Private Sub UpdateCrossfaderLabel(value As Integer)
         LabelCrossfader.Text = String.Format(LanguageManager.GetString("DJ_CrossfaderLabel"), value)
     End Sub
+
+
 
     ' === Handlers BeatSync : Ajustement temporaire du tempo (pitch bend) ===
     ' Variables pour stocker les tempo de base
@@ -453,7 +1106,7 @@ Public Class FormDJ
                 Dim driftMoyen As Double = driftAccumuléDeckA / calibrationCountDeckA
 
                 ' Si le drift moyen dépasse 10ms, ajuster le ratio
-                If Math.Abs(driftMoyen) > 0.010 Then
+                If Math.Abs(driftMoyen) > 0.01 Then
                     ' Calculer la correction nécessaire
                     Dim tempsEcoule As Double = 9.0 ' 3 mesures × 3 secondes
                     Dim correctionRatio As Double = driftMoyen / tempsEcoule
@@ -515,7 +1168,7 @@ Public Class FormDJ
                 Dim driftMoyen As Double = driftAccumuléDeckB / calibrationCountDeckB
 
                 ' Si le drift moyen dépasse 10ms, ajuster le ratio
-                If Math.Abs(driftMoyen) > 0.010 Then
+                If Math.Abs(driftMoyen) > 0.01 Then
                     ' Calculer la correction nécessaire
                     Dim tempsEcoule As Double = 9.0 ' 3 mesures × 3 secondes
                     Dim correctionRatio As Double = driftMoyen / tempsEcoule
@@ -556,69 +1209,93 @@ Public Class FormDJ
             ' ✅ EXÉCUTER LA DÉTECTION COMPLÈTE EN ARRIÈRE-PLAN (thread worker)
             ' Cela empêche de bloquer l'UI pendant l'analyse (qui peut prendre plusieurs secondes)
             Await Task.Run(Async Function()
-                Try
-                    ' Utiliser BPMDetector (Librosa/SoundTouch configurable)
-                    Dim bpm As Double = Await BPMDetector.DetecterBPM(cheminActuelDeckA)
+                               Try
+                                   ' Utiliser BPMDetector (Librosa/SoundTouch configurable)
+                                   Dim bpm As Double = Await BPMDetector.DetecterBPM(cheminActuelDeckA)
 
-                    ' Mettre à jour l'UI depuis le thread UI
-                    Me.Invoke(Sub()
-                        bpmDeckA = CSng(bpm)
-                        If bpm > 0 Then
-                            LabelBPMDeckA.Text = String.Format(LanguageManager.GetString("DJ_BPM_Value"), bpm)
-                        Else
-                            LabelBPMDeckA.Text = LanguageManager.GetString("DJ_BPM_Unknown")
-                        End If
-                    End Sub)
+                                   ' Mettre à jour l'UI depuis le thread UI
+                                   Me.Invoke(Sub()
+                                                 bpmDeckA = CSng(bpm)
+                                                 If bpm > 0 Then
+                                                     LabelBPMDeckA.Text = String.Format(LanguageManager.GetString("DJ_BPM_Value"), bpm)
+                                                 Else
+                                                     LabelBPMDeckA.Text = LanguageManager.GetString("DJ_BPM_Unknown")
+                                                 End If
+                                             End Sub)
 
-                    If bpm > 0 Then
-                        ' === DÉTECTION DES DOWNBEATS (premiers beats de mesure) ===
-                        Debug.WriteLine($"[DOWNBEAT A] Détection des downbeats pour Deck A...")
-                        Dim downbeatResult As DownbeatDetector.DownbeatResult = Await DownbeatDetector.DetecterDownbeats(cheminActuelDeckA)
+                                   If bpm > 0 Then
+                                       ' === DÉTECTION DES DOWNBEATS (premiers beats de mesure) ===
+                                       Debug.WriteLine($"[DOWNBEAT A] Détection des downbeats pour Deck A...")
+                                       Dim downbeatResult As DownbeatDetector.DownbeatResult = Await DownbeatDetector.DetecterDownbeats(cheminActuelDeckA)
 
-                        If downbeatResult IsNot Nothing Then
-                            Debug.WriteLine($"[DOWNBEAT A] BPM: {downbeatResult.BPM:F3}, Signature: {downbeatResult.TimeSignature}/4")
-                            Debug.WriteLine($"[DOWNBEAT A] Beats: {downbeatResult.Beats.Count}, Downbeats: {downbeatResult.Downbeats.Count}")
-                            Debug.WriteLine($"[DOWNBEAT A] Confiance: {downbeatResult.Confidence:F2}")
+                                       If downbeatResult IsNot Nothing Then
+                                           Debug.WriteLine($"[DOWNBEAT A] BPM: {downbeatResult.BPM:F3}, Signature: {downbeatResult.TimeSignature}/4")
+                                           Debug.WriteLine($"[DOWNBEAT A] Beats: {downbeatResult.Beats.Count}, Downbeats: {downbeatResult.Downbeats.Count}")
+                                           Debug.WriteLine($"[DOWNBEAT A] Confiance: {downbeatResult.Confidence:F2}")
 
-                            ' Stocker les informations de downbeat pour utilisation future dans le SYNC
-                            ' (peut être stocké dans une variable membre si nécessaire)
-                            If downbeatResult.Downbeats.Count > 0 Then
-                                Debug.WriteLine($"[DOWNBEAT A] Premier downbeat à {downbeatResult.Downbeats(0):F3}s")
-                                Debug.WriteLine($"[DOWNBEAT A] Détection réussie ✓ - Prêt pour SYNC phrase-aware")
-                            End If
-                        Else
-                            Debug.WriteLine($"[DOWNBEAT A] Détection impossible - Utilisation des beats réguliers")
-                        End If
+                                           ' Stocker les informations de downbeat pour utilisation future dans le SYNC
+                                           ' (peut être stocké dans une variable membre si nécessaire)
+                                           If downbeatResult.Downbeats.Count > 0 Then
+                                               Debug.WriteLine($"[DOWNBEAT A] Premier downbeat à {downbeatResult.Downbeats(0):F3}s")
+                                               Debug.WriteLine($"[DOWNBEAT A] Détection réussie ✓ - Prêt pour SYNC phrase-aware")
+                                           End If
+                                           ' Use the first reliable beat as anchor and generate a strict BPM grid
+                                           Try
+                                               Dim firstBeat As Double = downbeatResult.Beats(0)
+                                               Dim bpmUsed As Double = downbeatResult.BPM
+                                               If bpmUsed > 0 Then
+                                                   Dim interval As Double = 60.0 / bpmUsed
+                                                   Dim totalSec As Double = fichierAudioDeckA.TotalTime.TotalSeconds
+                                                   Dim centers As New System.Collections.Generic.List(Of Single)()
+                                                   Dim t As Double = firstBeat
+                                                   While t < totalSec
+                                                       centers.Add(CSng(t / totalSec))
+                                                       t += interval
+                                                   End While
+                                                   ' Ne plus injecter les marqueurs d'onsets dans WaveformControl (évite rectangles rouges couvrants)
+                                                   ' If centers.Count > 0 AndAlso waveformDeckA IsNot Nothing AndAlso waveformDeckA.IsHandleCreated Then
+                                                   '     Dim arr() As Single = centers.ToArray()
+                                                   '     waveformDeckA.BeginInvoke(New MethodInvoker(Sub()
+                                                   '                                              waveformDeckA.WaveformColor = Color.DodgerBlue
+                                                   '                                              waveformDeckA.SetOnsetMarkers(arr)
+                                                   '                                          End Sub))
+                                                   ' End If
+                                               End If
+                                           Catch
+                                           End Try
+                                       Else
+                                           Debug.WriteLine($"[DOWNBEAT A] Détection impossible - Utilisation des beats réguliers")
+                                       End If
 
-                        ' === ANALYSE MACHINE LEARNING (si Essentia installé) ===
-                        If mlInstalle Then
-                            Debug.WriteLine($"[ML A] Analyse Machine Learning Deck A...")
-                            Dim mlResult = Await MLAudioAnalyzer.AnalyserAvecML(cheminActuelDeckA)
+                                       ' === ANALYSE MACHINE LEARNING (si Essentia installé) ===
+                                       If mlInstalle Then
+                                           Debug.WriteLine($"[ML A] Analyse Machine Learning Deck A...")
+                                           Dim mlResult = Await MLAudioAnalyzer.AnalyserAvecML(cheminActuelDeckA)
 
-                            If mlResult IsNot Nothing Then
-                                ' Stocker et afficher les résultats ML
-                                Me.Invoke(Sub()
-                                    mlResultDeckA = mlResult
-                                    AfficherResultatsML_DeckA(mlResultDeckA)
-                                    VerifierCompatibiliteHarmonique()
-                                End Sub)
+                                           If mlResult IsNot Nothing Then
+                                               ' Stocker et afficher les résultats ML
+                                               Me.Invoke(Sub()
+                                                             mlResultDeckA = mlResult
+                                                             AfficherResultatsML_DeckA(mlResultDeckA)
+                                                             VerifierCompatibiliteHarmonique()
+                                                         End Sub)
 
-                                Debug.WriteLine($"[ML A] ✓ Key: {mlResult.CamelotCode} ({mlResult.Key} {mlResult.Scale})")
-                                Debug.WriteLine($"[ML A] ✓ Genre: {mlResult.Genre}, Danceability: {mlResult.Danceability:F2}")
-                                Debug.WriteLine($"[ML A] ✓ Energy: {mlResult.Energy:F2}, Valence: {mlResult.Valence:F2}")
-                            Else
-                                Debug.WriteLine($"[ML A] ⚠ Analyse ML échouée")
-                            End If
-                        End If
-                    End If
+                                               Debug.WriteLine($"[ML A] ✓ Key: {mlResult.CamelotCode} ({mlResult.Key} {mlResult.Scale})")
+                                               Debug.WriteLine($"[ML A] ✓ Genre: {mlResult.Genre}, Danceability: {mlResult.Danceability:F2}")
+                                               Debug.WriteLine($"[ML A] ✓ Energy: {mlResult.Energy:F2}, Valence: {mlResult.Valence:F2}")
+                                           Else
+                                               Debug.WriteLine($"[ML A] ⚠ Analyse ML échouée")
+                                           End If
+                                       End If
+                                   End If
 
-                Catch ex As Exception
-                    Me.Invoke(Sub()
-                        LabelBPMDeckA.Text = LanguageManager.GetString("DJ_BPM_Unknown")
-                    End Sub)
-                    Debug.WriteLine($"Erreur détection BPM Deck A: {ex.Message}")
-                End Try
-            End Function)
+                               Catch ex As Exception
+                                   Me.Invoke(Sub()
+                                                 LabelBPMDeckA.Text = LanguageManager.GetString("DJ_BPM_Unknown")
+                                             End Sub)
+                                   Debug.WriteLine($"Erreur détection BPM Deck A: {ex.Message}")
+                               End Try
+                           End Function)
 
         Catch ex As Exception
             LabelBPMDeckA.Text = LanguageManager.GetString("DJ_BPM_Unknown")
@@ -640,69 +1317,69 @@ Public Class FormDJ
             ' ✅ EXÉCUTER LA DÉTECTION COMPLÈTE EN ARRIÈRE-PLAN (thread worker)
             ' Cela empêche de bloquer l'UI pendant l'analyse (qui peut prendre plusieurs secondes)
             Await Task.Run(Async Function()
-                Try
-                    ' Utiliser BPMDetector (Librosa/SoundTouch configurable)
-                    Dim bpm As Double = Await BPMDetector.DetecterBPM(cheminActuelDeckB)
+                               Try
+                                   ' Utiliser BPMDetector (Librosa/SoundTouch configurable)
+                                   Dim bpm As Double = Await BPMDetector.DetecterBPM(cheminActuelDeckB)
 
-                    ' Mettre à jour l'UI depuis le thread UI
-                    Me.Invoke(Sub()
-                        bpmDeckB = CSng(bpm)
-                        If bpm > 0 Then
-                            LabelBPMDeckB.Text = String.Format(LanguageManager.GetString("DJ_BPM_Value"), bpm)
-                        Else
-                            LabelBPMDeckB.Text = LanguageManager.GetString("DJ_BPM_Unknown")
-                        End If
-                    End Sub)
+                                   ' Mettre à jour l'UI depuis le thread UI
+                                   Me.Invoke(Sub()
+                                                 bpmDeckB = CSng(bpm)
+                                                 If bpm > 0 Then
+                                                     LabelBPMDeckB.Text = String.Format(LanguageManager.GetString("DJ_BPM_Value"), bpm)
+                                                 Else
+                                                     LabelBPMDeckB.Text = LanguageManager.GetString("DJ_BPM_Unknown")
+                                                 End If
+                                             End Sub)
 
-                    If bpm > 0 Then
-                        ' === DÉTECTION DES DOWNBEATS (premiers beats de mesure) ===
-                        Debug.WriteLine($"[DOWNBEAT B] Détection des downbeats pour Deck B...")
-                        Dim downbeatResult As DownbeatDetector.DownbeatResult = Await DownbeatDetector.DetecterDownbeats(cheminActuelDeckB)
+                                   If bpm > 0 Then
+                                       ' === DÉTECTION DES DOWNBEATS (premiers beats de mesure) ===
+                                       Debug.WriteLine($"[DOWNBEAT B] Détection des downbeats pour Deck B...")
+                                       Dim downbeatResult As DownbeatDetector.DownbeatResult = Await DownbeatDetector.DetecterDownbeats(cheminActuelDeckB)
 
-                        If downbeatResult IsNot Nothing Then
-                            Debug.WriteLine($"[DOWNBEAT B] BPM: {downbeatResult.BPM:F3}, Signature: {downbeatResult.TimeSignature}/4")
-                            Debug.WriteLine($"[DOWNBEAT B] Beats: {downbeatResult.Beats.Count}, Downbeats: {downbeatResult.Downbeats.Count}")
-                            Debug.WriteLine($"[DOWNBEAT B] Confiance: {downbeatResult.Confidence:F2}")
+                                       If downbeatResult IsNot Nothing Then
+                                           Debug.WriteLine($"[DOWNBEAT B] BPM: {downbeatResult.BPM:F3}, Signature: {downbeatResult.TimeSignature}/4")
+                                           Debug.WriteLine($"[DOWNBEAT B] Beats: {downbeatResult.Beats.Count}, Downbeats: {downbeatResult.Downbeats.Count}")
+                                           Debug.WriteLine($"[DOWNBEAT B] Confiance: {downbeatResult.Confidence:F2}")
 
-                            ' Stocker les informations de downbeat pour utilisation future dans le SYNC
-                            ' (peut être stocké dans une variable membre si nécessaire)
-                            If downbeatResult.Downbeats.Count > 0 Then
-                                Debug.WriteLine($"[DOWNBEAT B] Premier downbeat à {downbeatResult.Downbeats(0):F3}s")
-                                Debug.WriteLine($"[DOWNBEAT B] Détection réussie ✓ - Prêt pour SYNC phrase-aware")
-                            End If
-                        Else
-                            Debug.WriteLine($"[DOWNBEAT B] Détection impossible - Utilisation des beats réguliers")
-                        End If
+                                           ' Stocker les informations de downbeat pour utilisation future dans le SYNC
+                                           ' (peut être stocké dans une variable membre si nécessaire)
+                                           If downbeatResult.Downbeats.Count > 0 Then
+                                               Debug.WriteLine($"[DOWNBEAT B] Premier downbeat à {downbeatResult.Downbeats(0):F3}s")
+                                               Debug.WriteLine($"[DOWNBEAT B] Détection réussie ✓ - Prêt pour SYNC phrase-aware")
+                                           End If
+                                       Else
+                                           Debug.WriteLine($"[DOWNBEAT B] Détection impossible - Utilisation des beats réguliers")
+                                       End If
 
-                        ' === ANALYSE MACHINE LEARNING (si Essentia installé) ===
-                        If mlInstalle Then
-                            Debug.WriteLine($"[ML B] Analyse Machine Learning Deck B...")
-                            Dim mlResult = Await MLAudioAnalyzer.AnalyserAvecML(cheminActuelDeckB)
+                                       ' === ANALYSE MACHINE LEARNING (si Essentia installé) ===
+                                       If mlInstalle Then
+                                           Debug.WriteLine($"[ML B] Analyse Machine Learning Deck B...")
+                                           Dim mlResult = Await MLAudioAnalyzer.AnalyserAvecML(cheminActuelDeckB)
 
-                            If mlResult IsNot Nothing Then
-                                ' Stocker et afficher les résultats ML
-                                Me.Invoke(Sub()
-                                    mlResultDeckB = mlResult
-                                    AfficherResultatsML_DeckB(mlResultDeckB)
-                                    VerifierCompatibiliteHarmonique()
-                                End Sub)
+                                           If mlResult IsNot Nothing Then
+                                               ' Stocker et afficher les résultats ML
+                                               Me.Invoke(Sub()
+                                                             mlResultDeckB = mlResult
+                                                             AfficherResultatsML_DeckB(mlResultDeckB)
+                                                             VerifierCompatibiliteHarmonique()
+                                                         End Sub)
 
-                                Debug.WriteLine($"[ML B] ✓ Key: {mlResult.CamelotCode} ({mlResult.Key} {mlResult.Scale})")
-                                Debug.WriteLine($"[ML B] ✓ Genre: {mlResult.Genre}, Danceability: {mlResult.Danceability:F2}")
-                                Debug.WriteLine($"[ML B] ✓ Energy: {mlResult.Energy:F2}, Valence: {mlResult.Valence:F2}")
-                            Else
-                                Debug.WriteLine($"[ML B] ⚠ Analyse ML échouée")
-                            End If
-                        End If
-                    End If
+                                               Debug.WriteLine($"[ML B] ✓ Key: {mlResult.CamelotCode} ({mlResult.Key} {mlResult.Scale})")
+                                               Debug.WriteLine($"[ML B] ✓ Genre: {mlResult.Genre}, Danceability: {mlResult.Danceability:F2}")
+                                               Debug.WriteLine($"[ML B] ✓ Energy: {mlResult.Energy:F2}, Valence: {mlResult.Valence:F2}")
+                                           Else
+                                               Debug.WriteLine($"[ML B] ⚠ Analyse ML échouée")
+                                           End If
+                                       End If
+                                   End If
 
-                Catch ex As Exception
-                    Me.Invoke(Sub()
-                        LabelBPMDeckB.Text = LanguageManager.GetString("DJ_BPM_Unknown")
-                    End Sub)
-                    Debug.WriteLine($"Erreur détection BPM Deck B: {ex.Message}")
-                End Try
-            End Function)
+                               Catch ex As Exception
+                                   Me.Invoke(Sub()
+                                                 LabelBPMDeckB.Text = LanguageManager.GetString("DJ_BPM_Unknown")
+                                             End Sub)
+                                   Debug.WriteLine($"Erreur détection BPM Deck B: {ex.Message}")
+                               End Try
+                           End Function)
 
         Catch ex As Exception
             LabelBPMDeckB.Text = LanguageManager.GetString("DJ_BPM_Unknown")
@@ -798,33 +1475,37 @@ Public Class FormDJ
         Dim phaseB As Double = tempBeatGridB.CalculerPhase(positionB)
 
         ' === SNAP SIMPLE : Aligner Deck A sur son beat le plus proche MAINTENANT ===
-        ' 
-        ' L'idée : On veut que les beats "tombent" en même temps.
-        ' Au lieu de copier la phase fractionnelle (qui ne marche que si les positions sont similaires),
-        ' on trouve simplement le beat le plus proche de Deck A et on saute dessus.
-        ' Ensuite, comme les BPM sont maintenant identiques, les beats resteront alignés.
+        ' Ne faire le snap que si les BPM effectifs des deux decks sont suffisamment proches
+        Dim epsRel As Double = 0.01 ' tolérance relative 1%
+        Dim bpmDiffRel As Double = 1.0
+        If bpmEffectifA > 0 AndAlso bpmEffectifB > 0 Then
+            bpmDiffRel = Math.Abs(bpmEffectifA - bpmEffectifB) / Math.Max(1.0, Math.Max(bpmEffectifA, bpmEffectifB))
+        End If
+        If bpmDiffRel <= epsRel Then
+            ' Trouver le beat le plus proche de Deck A (celui qui est le plus proche de sa position actuelle)
+            Dim beatLePlusProcheA As Double = tempBeatGridA.TrouverBeatLePlusProche(positionA)
 
-        ' Trouver le beat le plus proche de Deck A (celui qui est le plus proche de sa position actuelle)
-        Dim beatLePlusProcheA As Double = tempBeatGridA.TrouverBeatLePlusProche(positionA)
+            ' Calculer à quelle distance on est de ce beat
+            Dim distanceAuBeat As Double = Math.Abs(positionA - beatLePlusProcheA)
 
-        ' Calculer à quelle distance on est de ce beat
-        Dim distanceAuBeat As Double = Math.Abs(positionA - beatLePlusProcheA)
+            Debug.WriteLine($"[SYNC A→B] Position A actuelle : {positionA:F3}s")
+            Debug.WriteLine($"[SYNC A→B] Beat le plus proche : {beatLePlusProcheA:F3}s")
+            Debug.WriteLine($"[SYNC A→B] Distance au beat : {distanceAuBeat * 1000:F1}ms")
 
-        Debug.WriteLine($"[SYNC A→B] Position A actuelle : {positionA:F3}s")
-        Debug.WriteLine($"[SYNC A→B] Beat le plus proche : {beatLePlusProcheA:F3}s")
-        Debug.WriteLine($"[SYNC A→B] Distance au beat : {distanceAuBeat * 1000:F1}ms")
+            ' SNAP INSTANTANÉ au beat le plus proche
+            Dim anciennePositionA As Double = positionA
+            fichierAudioDeckA.CurrentTime = TimeSpan.FromSeconds(beatLePlusProcheA)
+            TrackBarPositionDeckA.Value = CInt(beatLePlusProcheA)
+            LabelDureeDeckA.Text = String.Format(LanguageManager.GetString("DJ_Duration_Format"),
+                                                 fichierAudioDeckA.CurrentTime,
+                                                 fichierAudioDeckA.TotalTime)
 
-        ' SNAP INSTANTANÉ au beat le plus proche
-        Dim anciennePositionA As Double = positionA
-        fichierAudioDeckA.CurrentTime = TimeSpan.FromSeconds(beatLePlusProcheA)
-        TrackBarPositionDeckA.Value = CInt(beatLePlusProcheA)
-        LabelDureeDeckA.Text = String.Format(LanguageManager.GetString("DJ_Duration_Format"),
-                                             fichierAudioDeckA.CurrentTime,
-                                             fichierAudioDeckA.TotalTime)
-
-        Dim sautTemps As Double = beatLePlusProcheA - anciennePositionA
-        Debug.WriteLine($"[SYNC A→B] ÉTAPE 2: BEAT SNAP ⚡ - Saut de {sautTemps:F3}s")
-        Debug.WriteLine($"[SYNC A→B] Deck A: {anciennePositionA:F3}s → {beatLePlusProcheA:F3}s (beat le plus proche)")
+            Dim sautTemps As Double = beatLePlusProcheA - anciennePositionA
+            Debug.WriteLine($"[SYNC A→B] ÉTAPE 2: BEAT SNAP ⚡ - Saut de {sautTemps:F3}s")
+            Debug.WriteLine($"[SYNC A→B] Deck A: {anciennePositionA:F3}s → {beatLePlusProcheA:F3}s (beat le plus proche)")
+        Else
+            Debug.WriteLine($"[SYNC A→B] SKIP SNAP : BPM mismatch (A={bpmEffectifA:F3}, B={bpmEffectifB:F3}), diffRel={bpmDiffRel:F3} > {epsRel:F3}")
+        End If
 
 
         ' === ÉTAPE 3 : TEMPO LOCK - PAS de corrections automatiques ===
@@ -972,33 +1653,37 @@ Public Class FormDJ
         Debug.WriteLine($"[SYNC B→A] Phases : A={phaseA:F3}, B={phaseB:F3}")
 
         ' === SNAP SIMPLE : Aligner Deck B sur son beat le plus proche MAINTENANT ===
-        ' 
-        ' L'idée : On veut que les beats "tombent" en même temps.
-        ' Au lieu de copier la phase fractionnelle (qui ne marche que si les positions sont similaires),
-        ' on trouve simplement le beat le plus proche de Deck B et on saute dessus.
-        ' Ensuite, comme les BPM sont maintenant identiques, les beats resteront alignés.
+        ' Ne faire le snap que si les BPM effectifs des deux decks sont suffisamment proches
+        Dim epsRel As Double = 0.01 ' tolérance relative 1%
+        Dim bpmDiffRel As Double = 1.0
+        If bpmEffectifA > 0 AndAlso bpmEffectifB > 0 Then
+            bpmDiffRel = Math.Abs(bpmEffectifA - bpmEffectifB) / Math.Max(1.0, Math.Max(bpmEffectifA, bpmEffectifB))
+        End If
+        If bpmDiffRel <= epsRel Then
+            ' Trouver le beat le plus proche de Deck B (celui qui est le plus proche de sa position actuelle)
+            Dim beatLePlusProcheB As Double = tempBeatGridB.TrouverBeatLePlusProche(positionB)
 
-        ' Trouver le beat le plus proche de Deck B (celui qui est le plus proche de sa position actuelle)
-        Dim beatLePlusProcheB As Double = tempBeatGridB.TrouverBeatLePlusProche(positionB)
+            ' Calculer à quelle distance on est de ce beat
+            Dim distanceAuBeat As Double = Math.Abs(positionB - beatLePlusProcheB)
 
-        ' Calculer à quelle distance on est de ce beat
-        Dim distanceAuBeat As Double = Math.Abs(positionB - beatLePlusProcheB)
+            Debug.WriteLine($"[SYNC B→A] Position B actuelle : {positionB:F3}s")
+            Debug.WriteLine($"[SYNC B→A] Beat le plus proche : {beatLePlusProcheB:F3}s")
+            Debug.WriteLine($"[SYNC B→A] Distance au beat : {distanceAuBeat * 1000:F1}ms")
 
-        Debug.WriteLine($"[SYNC B→A] Position B actuelle : {positionB:F3}s")
-        Debug.WriteLine($"[SYNC B→A] Beat le plus proche : {beatLePlusProcheB:F3}s")
-        Debug.WriteLine($"[SYNC B→A] Distance au beat : {distanceAuBeat * 1000:F1}ms")
+            ' SNAP INSTANTANÉ au beat le plus proche
+            Dim anciennePositionB As Double = positionB
+            fichierAudioDeckB.CurrentTime = TimeSpan.FromSeconds(beatLePlusProcheB)
+            TrackBarPositionDeckB.Value = CInt(beatLePlusProcheB)
+            LabelDureeDeckB.Text = String.Format(LanguageManager.GetString("DJ_Duration_Format"),
+                                                 fichierAudioDeckB.CurrentTime,
+                                                 fichierAudioDeckB.TotalTime)
 
-        ' SNAP INSTANTANÉ au beat le plus proche
-        Dim anciennePositionB As Double = positionB
-        fichierAudioDeckB.CurrentTime = TimeSpan.FromSeconds(beatLePlusProcheB)
-        TrackBarPositionDeckB.Value = CInt(beatLePlusProcheB)
-        LabelDureeDeckB.Text = String.Format(LanguageManager.GetString("DJ_Duration_Format"),
-                                             fichierAudioDeckB.CurrentTime,
-                                             fichierAudioDeckB.TotalTime)
-
-        Dim sautTemps As Double = beatLePlusProcheB - anciennePositionB
-        Debug.WriteLine($"[SYNC B→A] ÉTAPE 2: BEAT SNAP ⚡ - Saut de {sautTemps:F3}s")
-        Debug.WriteLine($"[SYNC B→A] Deck B: {anciennePositionB:F3}s → {beatLePlusProcheB:F3}s (beat le plus proche)")
+            Dim sautTemps As Double = beatLePlusProcheB - anciennePositionB
+            Debug.WriteLine($"[SYNC B→A] ÉTAPE 2: BEAT SNAP ⚡ - Saut de {sautTemps:F3}s")
+            Debug.WriteLine($"[SYNC B→A] Deck B: {anciennePositionB:F3}s → {beatLePlusProcheB:F3}s (beat le plus proche)")
+        Else
+            Debug.WriteLine($"[SYNC B→A] SKIP SNAP : BPM mismatch (A={bpmEffectifA:F3}, B={bpmEffectifB:F3}), diffRel={bpmDiffRel:F3} > {epsRel:F3}")
+        End If
 
 
         ' === ÉTAPE 3 : TEMPO LOCK - PAS de corrections automatiques ===
@@ -1063,6 +1748,12 @@ Public Class FormDJ
             cheminActuelDeckA = cheminFichier
             LabelTrackDeckA.Text = Path.GetFileName(cheminFichier)
 
+            ' Purger le cache des waveforms en arrière-plan au chargement d'une nouvelle piste
+            Try
+                Task.Run(Sub() PurgeOldWaveformCache())
+            Catch
+            End Try
+
             ' === RESET PITCH ET TEMPO À 0% ===
             ' Remettre le pitch à 0% quand on charge une nouvelle chanson
             pitchDeckA = 0.0F
@@ -1072,6 +1763,263 @@ Public Class FormDJ
 
             ' Créer la chaîne audio avec time stretch (SoundTouch), effets et metering
             fichierAudioDeckA = New AudioFileReader(cheminFichier)
+
+            ' Générer la waveform en tâche de fond et l'appliquer au contrôle
+            Task.Run(Sub()
+                         Try
+                             ' Avant de recalculer, tenter de lire depuis le cache
+                             Try
+                                 Dim cacheDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "waveforms")
+                                 Dim info = New FileInfo(cheminFichier)
+                                 Dim hash = info.FullName.GetHashCode().ToString("X8") & "_" & info.LastWriteTimeUtc.ToFileTime().ToString()
+                                 Dim cacheFile = Path.Combine(cacheDir, hash & "_B.dat")
+                                 If File.Exists(cacheFile) Then
+                                     Using fs As New FileStream(cacheFile, FileMode.Open, FileAccess.Read)
+                                         Dim br As New BinaryReader(fs)
+                                         Dim len = br.ReadInt32()
+                                         Dim cached(len - 1) As Single
+                                         For i As Integer = 0 To len - 1
+                                             cached(i) = br.ReadSingle()
+                                         Next
+                                         If waveformDeckB IsNot Nothing AndAlso waveformDeckB.IsHandleCreated Then
+                                             waveformDeckB.Invoke(Sub() waveformDeckB.SetWaveformSamples(cached))
+                                         End If
+                                     End Using
+                                     Return
+                                 End If
+                             Catch
+                             End Try
+                             ' Avant de recalculer, tenter de lire depuis le cache
+                             Try
+                                 Dim cacheDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "waveforms")
+                                 Dim info = New FileInfo(cheminFichier)
+                                 Dim hash = info.FullName.GetHashCode().ToString("X8") & "_" & info.LastWriteTimeUtc.ToFileTime().ToString()
+                                 Dim cacheFile = Path.Combine(cacheDir, hash & "_A.dat")
+                                 If File.Exists(cacheFile) Then
+                                     Using fs As New FileStream(cacheFile, FileMode.Open, FileAccess.Read)
+                                         Dim br As New BinaryReader(fs)
+                                         Dim len = br.ReadInt32()
+                                         Dim cached(len - 1) As Single
+                                         For i As Integer = 0 To len - 1
+                                             cached(i) = br.ReadSingle()
+                                         Next
+                                         If waveformDeckA IsNot Nothing AndAlso waveformDeckA.IsHandleCreated Then
+                                             waveformDeckA.Invoke(Sub() waveformDeckA.SetWaveformSamples(cached))
+                                         End If
+                                     End Using
+                                     Return
+                                 End If
+                             Catch
+                             End Try
+                             Dim samplesPerPixel As Integer = Math.Max(1, CInt(fichierAudioDeckA.Length / (waveformDeckA.Width * 4)))
+                             Dim pixelCount As Integer = Math.Max(1, waveformDeckA.Width)
+                             Dim samples(pixelCount - 1) As Single
+
+                             Using reader As New AudioFileReader(cheminFichier)
+                                 Dim buffer(samplesPerPixel * reader.WaveFormat.Channels - 1) As Single
+                                 For px As Integer = 0 To pixelCount - 1
+                                     Dim read = reader.Read(buffer, 0, buffer.Length)
+                                     If read <= 0 Then Exit For
+                                     Dim maxVal As Single = 0
+                                     For i As Integer = 0 To read - 1
+                                         maxVal = Math.Max(maxVal, Math.Abs(buffer(i)))
+                                     Next
+                                     samples(px) = maxVal
+                                 Next
+                             End Using
+                             ' Sauvegarder en cache si demandé
+                             Try
+                                 Dim cacheDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "waveforms")
+                                 If Not Directory.Exists(cacheDir) Then Directory.CreateDirectory(cacheDir)
+                                 Dim info = New FileInfo(cheminFichier)
+                                 Dim hash = info.FullName.GetHashCode().ToString("X8") & "_" & info.LastWriteTimeUtc.ToFileTime().ToString()
+                                 Dim cacheFile = Path.Combine(cacheDir, hash & "_B.dat")
+                                 Using fs As New FileStream(cacheFile, FileMode.Create, FileAccess.Write)
+                                     Dim bw As New BinaryWriter(fs)
+                                     bw.Write(samples.Length)
+                                     For i As Integer = 0 To samples.Length - 1
+                                         bw.Write(samples(i))
+                                     Next
+                                     bw.Flush()
+                                 End Using
+                             Catch
+                             End Try
+                             ' Sauvegarder en cache si demandé
+                             Try
+                                 Dim cacheDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "waveforms")
+                                 If Not Directory.Exists(cacheDir) Then Directory.CreateDirectory(cacheDir)
+                                 Dim info = New FileInfo(cheminFichier)
+                                 Dim hash = info.FullName.GetHashCode().ToString("X8") & "_" & info.LastWriteTimeUtc.ToFileTime().ToString()
+                                 Dim cacheFile = Path.Combine(cacheDir, hash & "_A.dat")
+                                 Using fs As New FileStream(cacheFile, FileMode.Create, FileAccess.Write)
+                                     Dim bw As New BinaryWriter(fs)
+                                     bw.Write(samples.Length)
+                                     For i As Integer = 0 To samples.Length - 1
+                                         bw.Write(samples(i))
+                                     Next
+                                     bw.Flush()
+                                 End Using
+                             Catch
+                             End Try
+
+                             ' Normalisation simple
+                             Dim maxAll As Single = 0
+                             For i As Integer = 0 To samples.Length - 1
+                                 If samples(i) > maxAll Then maxAll = samples(i)
+                             Next
+                             If maxAll > 0 Then
+                                 For i As Integer = 0 To samples.Length - 1
+                                     samples(i) = samples(i) / maxAll
+                                 Next
+                             End If
+
+                             ' Appliquer sur le thread UI
+                             If waveformDeckA IsNot Nothing AndAlso waveformDeckA.IsHandleCreated Then
+                                 waveformDeckA.Invoke(Sub()
+                                                          ' Set waveform and retrieve trim info
+                                                          waveformDeckA.SetWaveformSamples(samples)
+                                                      End Sub)
+                             End If
+                             ' Calcul d'onsets sur audio complet (RMS + novelty) pour alignement plus précis sur les beats
+                             Dim arrA() As Single = Nothing
+                             Try
+                                 Using readerAll As New AudioFileReader(cheminFichier)
+                                     Dim allSamples As New System.Collections.Generic.List(Of Single)()
+                                     Dim readBuffer(8191) As Single
+                                     Dim readCount As Integer = 0
+                                     Do
+                                         readCount = readerAll.Read(readBuffer, 0, readBuffer.Length)
+                                         If readCount > 0 Then
+                                             For ii As Integer = 0 To readCount - 1
+                                                 allSamples.Add(readBuffer(ii))
+                                             Next
+                                         End If
+                                     Loop While readCount > 0
+
+                                     Dim channels As Integer = Math.Max(1, readerAll.WaveFormat.Channels)
+                                     Dim totalFrames As Integer = Math.Max(1, allSamples.Count \ channels)
+                                     Dim sampleRate As Integer = Math.Max(1, readerAll.WaveFormat.SampleRate)
+
+                                     ' RMS frame-level
+                                     Dim frameEnergy(totalFrames - 1) As Double
+                                     For f As Integer = 0 To totalFrames - 1
+                                         Dim sumSq As Double = 0.0
+                                         Dim baseIndex As Integer = f * channels
+                                         For c As Integer = 0 To channels - 1
+                                             Dim idx As Integer = baseIndex + c
+                                             If idx < allSamples.Count Then
+                                                 Dim v As Double = allSamples(idx)
+                                                 sumSq += v * v
+                                             End If
+                                         Next
+                                         frameEnergy(f) = sumSq / channels
+                                     Next
+
+                                     ' Fenêtre d'analyse (~50 ms), hop 50%
+                                     Dim windowSeconds As Double = 0.05
+                                     Dim windowSize As Integer = Math.Max(1, CInt(sampleRate * windowSeconds))
+                                     Dim hopSize As Integer = Math.Max(1, windowSize \ 2)
+
+                                     Dim envelope As New System.Collections.Generic.List(Of Double)()
+                                     Dim envelopeStartFrame As New System.Collections.Generic.List(Of Integer)()
+                                     Dim pos As Integer = 0
+                                     While pos + windowSize <= totalFrames
+                                         Dim e As Double = 0.0
+                                         For jj As Integer = 0 To windowSize - 1
+                                             e += frameEnergy(pos + jj)
+                                         Next
+                                         envelope.Add(e / windowSize)
+                                         envelopeStartFrame.Add(pos)
+                                         pos += hopSize
+                                     End While
+
+                                     Dim sensitivityA As Single = 1.8F
+                                     Try
+                                         sensitivityA = ParametresGlobaux.OnsetDetectionSensitivity
+                                     Catch
+                                     End Try
+
+                                     Dim detectedA As New System.Collections.Generic.List(Of Single)()
+                                     If envelope.Count > 2 Then
+                                         Dim novelty As New System.Collections.Generic.List(Of Double)()
+                                         For i As Integer = 1 To envelope.Count - 1
+                                             Dim d As Double = envelope(i) - envelope(i - 1)
+                                             novelty.Add(If(d > 0.0, d, 0.0))
+                                         Next
+
+                                         Dim meanN As Double = 0.0
+                                         For Each nv In novelty
+                                             meanN += nv
+                                         Next
+                                         If novelty.Count > 0 Then
+                                             meanN /= novelty.Count
+                                         End If
+
+                                         Dim varN As Double = 0.0
+                                         For Each nv In novelty
+                                             varN += (nv - meanN) * (nv - meanN)
+                                         Next
+                                         Dim stdN As Double = Math.Sqrt(varN / Math.Max(1, novelty.Count))
+                                         Dim threshold As Double = meanN + (CDbl(sensitivityA) * stdN)
+
+                                         For k As Integer = 1 To novelty.Count - 2
+                                             If novelty(k) > novelty(k - 1) AndAlso novelty(k) >= novelty(k + 1) AndAlso novelty(k) > threshold Then
+                                                 Dim envIdx As Integer = k + 1
+                                                 ' Use the envelope window bounds as a tighter beat window
+                                                 Dim startFrameLocal As Integer = Math.Max(0, envelopeStartFrame(envIdx))
+                                                 Dim endFrameLocal As Integer = Math.Min(totalFrames - 1, envelopeStartFrame(envIdx) + windowSize)
+                                                 Dim sNorm As Single = CSng(startFrameLocal) / CSng(totalFrames)
+                                                 Dim eNorm As Single = CSng(endFrameLocal) / CSng(totalFrames)
+                                                 detectedA.Add(Math.Max(0.0F, Math.Min(1.0F, sNorm)))
+                                                 detectedA.Add(Math.Max(0.0F, Math.Min(1.0F, eNorm)))
+                                             End If
+                                         Next
+                                         If detectedA.Count > 0 Then
+                                             arrA = detectedA.ToArray()
+                                         End If
+                                     End If
+                                 End Using
+                                 ' Appliquer les positions détectées sur la waveform A (lignes blanches)
+                                 If arrA IsNot Nothing AndAlso waveformDeckA IsNot Nothing AndAlso waveformDeckA.IsHandleCreated Then
+                                     ' Need to convert beat times (normalized over full file) into positions relative to trimmed waveform
+                                     waveformDeckA.BeginInvoke(New MethodInvoker(Sub()
+                                                                                     waveformDeckA.WaveformColor = Color.DodgerBlue
+                                                                                     Try
+                                                                                         Dim trimmedStart As Integer = waveformDeckA.LastTrimStartPixel
+                                                                                         Dim trimmedLen As Integer = waveformDeckA.LastTrimLengthPixels
+                                                                                         If trimmedLen <= 0 Then
+                                                                                             ' no trimming; markers are already normalized
+                                                                                             waveformDeckA.SetOnsetMarkers(arrA)
+                                                                                         Else
+                                                                                             ' arrA contains start/end pairs (normalized over full file)
+                                                                                             Dim converted As New System.Collections.Generic.List(Of Single)()
+                                                                                             For i As Integer = 0 To arrA.Length - 1 Step 2
+                                                                                                 Dim sNorm As Single = arrA(i)
+                                                                                                 Dim eNorm As Single = arrA(i + 1)
+                                                                                                 ' convert to pixel indices on original samples length approximated by trimmedLen
+                                                                                                 Dim sPixel As Integer = CInt(sNorm * trimmedLen)
+                                                                                                 Dim ePixel As Integer = CInt(eNorm * trimmedLen)
+                                                                                                 ' shift relative to trimmed start
+                                                                                                 sPixel = Math.Max(0, sPixel - trimmedStart)
+                                                                                                 ePixel = Math.Max(0, ePixel - trimmedStart)
+                                                                                                 ' normalize to trimmed length
+                                                                                                 Dim sRel As Single = sPixel / CSng(Math.Max(1, trimmedLen))
+                                                                                                 Dim eRel As Single = ePixel / CSng(Math.Max(1, trimmedLen))
+                                                                                                 converted.Add(sRel)
+                                                                                                 converted.Add(eRel)
+                                                                                             Next
+                                                                                             waveformDeckA.SetOnsetMarkers(converted.ToArray())
+                                                                                         End If
+                                                                                     Catch
+                                                                                         waveformDeckA.SetOnsetMarkers(arrA)
+                                                                                     End Try
+                                                                                 End Sub))
+                                 End If
+                             Catch
+                             End Try
+                         Catch
+                         End Try
+                     End Sub)
 
             ' Time Stretch provider (SoundTouch, qualité professionnelle)
             timeStretchProviderDeckA = New TimeStretchSampleProvider(fichierAudioDeckA)
@@ -1099,7 +2047,8 @@ Public Class FormDJ
             If crossfaderPosition < 0.5F Then
                 volumeA = 1.0F
             Else
-                volumeA = ((1.0F - crossfaderPosition) * 2.0F) ^ 3
+                ' Use Math.Pow to compute cubic and cast explicitly to Single to satisfy Option Strict
+                volumeA = CSng(Math.Pow((1.0F - crossfaderPosition) * 2.0F, 3))
             End If
             volumeProviderDeckA.Volume = (TrackBarVolumeDeckA.Value / 100.0F) * volumeA
 
@@ -1196,6 +2145,12 @@ Public Class FormDJ
             cheminActuelDeckB = cheminFichier
             LabelTrackDeckB.Text = Path.GetFileName(cheminFichier)
 
+            ' Purger le cache des waveforms en arrière-plan au chargement d'une nouvelle piste
+            Try
+                Task.Run(Sub() PurgeOldWaveformCache())
+            Catch
+            End Try
+
             ' === RESET PITCH ET TEMPO À 0% ===
             ' Remettre le pitch à 0% quand on charge une nouvelle chanson
             pitchDeckB = 0.0F
@@ -1205,6 +2160,82 @@ Public Class FormDJ
 
             ' Créer la chaîne audio avec time stretch (SoundTouch), effets et metering
             fichierAudioDeckB = New AudioFileReader(cheminFichier)
+
+            ' Générer la waveform en tâche de fond et l'appliquer au contrôle
+            Task.Run(Sub()
+                         Try
+                             Dim samplesPerPixel As Integer = Math.Max(1, CInt(fichierAudioDeckB.Length / (waveformDeckB.Width * 4)))
+                             Dim pixelCount As Integer = Math.Max(1, waveformDeckB.Width)
+                             Dim samples(pixelCount - 1) As Single
+
+                             Using reader As New AudioFileReader(cheminFichier)
+                                 Dim buffer(samplesPerPixel * reader.WaveFormat.Channels - 1) As Single
+                                 For px As Integer = 0 To pixelCount - 1
+                                     Dim read = reader.Read(buffer, 0, buffer.Length)
+                                     If read <= 0 Then Exit For
+                                     Dim maxVal As Single = 0
+                                     For i As Integer = 0 To read - 1
+                                         maxVal = Math.Max(maxVal, Math.Abs(buffer(i)))
+                                     Next
+                                     samples(px) = maxVal
+                                 Next
+                             End Using
+
+                             ' Normalisation simple
+                             Dim maxAll As Single = 0
+                             For i As Integer = 0 To samples.Length - 1
+                                 If samples(i) > maxAll Then maxAll = samples(i)
+                             Next
+                             If maxAll > 0 Then
+                                 For i As Integer = 0 To samples.Length - 1
+                                     samples(i) = samples(i) / maxAll
+                                 Next
+                             End If
+                             ' no fallback here for Deck B generation
+
+                             ' Appliquer sur le thread UI
+                             If waveformDeckB IsNot Nothing AndAlso waveformDeckB.IsHandleCreated Then
+                                 waveformDeckB.Invoke(Sub() waveformDeckB.SetWaveformSamples(samples))
+                             End If
+                             ' Calcul simple d'onsets (energy-based peak picking) pour Deck B
+                             Try
+                                 Dim onsetListB As New System.Collections.Generic.List(Of Single)()
+                                 Dim windowB As Integer = Math.Max(3, CInt(pixelCount * 0.002))
+                                 Dim sensitivityB As Single = 1.8F
+                                 Try
+                                     sensitivityB = ParametresGlobaux.OnsetDetectionSensitivity
+                                 Catch
+                                 End Try
+                                 For i As Integer = windowB To samples.Length - windowB - 1
+                                     Dim energyB As Single = 0
+                                     For j As Integer = i - windowB To i + windowB
+                                         If j >= 0 AndAlso j < samples.Length Then
+                                             energyB += Math.Abs(samples(j))
+                                         End If
+                                     Next
+                                     Dim localAvgB As Single = energyB / (windowB * 2 + 1)
+                                     If Math.Abs(samples(i)) > localAvgB * sensitivityB AndAlso Math.Abs(samples(i)) > 0.01F Then
+                                         ' produce a tight window around the sample i using sample-level neighborhood
+                                         Dim sIdx As Integer = Math.Max(0, i - (windowB \ 2))
+                                         Dim eIdx As Integer = Math.Min(samples.Length - 1, i + (windowB \ 2))
+                                         onsetListB.Add(sIdx / CSng(samples.Length))
+                                         onsetListB.Add(eIdx / CSng(samples.Length))
+                                     End If
+                                 Next
+                                 ' Désactivé: ne plus injecter les marqueurs d'onsets dans WaveformControl (Deck B)
+                                 ' Désactivé: ne plus injecter les marqueurs d'onsets dans WaveformControl (Deck B)
+                                 ' If onsetListB.Count > 0 AndAlso waveformDeckB IsNot Nothing AndAlso waveformDeckB.IsHandleCreated Then
+                                 '     Dim arrB() As Single = onsetListB.ToArray()
+                                 '     waveformDeckB.BeginInvoke(New MethodInvoker(Sub()
+                                 '                                                  waveformDeckB.WaveformColor = Color.OrangeRed
+                                 '                                                  waveformDeckB.SetOnsetMarkers(arrB)
+                                 '                                              End Sub))
+                                 ' End If
+                             Catch
+                             End Try
+                         Catch
+                         End Try
+                     End Sub)
 
             ' Time Stretch provider (SoundTouch, qualité professionnelle)
             timeStretchProviderDeckB = New TimeStretchSampleProvider(fichierAudioDeckB)
@@ -1230,7 +2261,7 @@ Public Class FormDJ
             ' Calculer le volume en tenant compte du crossfader
             Dim volumeB As Single
             If crossfaderPosition < 0.5F Then
-                volumeB = (crossfaderPosition * 2.0F) ^ 3
+                volumeB = CSng(Math.Pow((crossfaderPosition * 2.0F), 3))
             Else
                 volumeB = 1.0F
             End If
@@ -1333,11 +2364,11 @@ Public Class FormDJ
         If crossfaderPosition < 0.5F Then
             ' Côté A (0-50) : A plein volume, B diminue
             volumeA = 1.0F
-            volumeB = (crossfaderPosition * 2.0F) ^ 3 ' Courbe cubique pour coupe agressive
+            volumeB = CSng(Math.Pow((crossfaderPosition * 2.0F), 3)) ' Courbe cubique pour coupe agressive
         Else
             ' Côté B (50-100) : B plein volume, A diminue
             volumeB = 1.0F
-            volumeA = ((1.0F - crossfaderPosition) * 2.0F) ^ 3
+            volumeA = CSng(Math.Pow((1.0F - crossfaderPosition) * 2.0F, 3))
         End If
 
         ' Appliquer les volumes
@@ -1364,7 +2395,7 @@ Public Class FormDJ
             If crossfaderPosition < 0.5F Then
                 volumeA = 1.0F
             Else
-                volumeA = ((1.0F - crossfaderPosition) * 2.0F) ^ 3
+                volumeA = CSng(Math.Pow((1.0F - crossfaderPosition) * 2.0F, 3))
             End If
             volumeProviderDeckA.Volume = (TrackBarVolumeDeckA.Value / 100.0F) * volumeA
         End If
@@ -1379,7 +2410,7 @@ Public Class FormDJ
             ' Prendre en compte le crossfader
             Dim volumeB As Single
             If crossfaderPosition < 0.5F Then
-                volumeB = (crossfaderPosition * 2.0F) ^ 3
+                volumeB = CSng(Math.Pow((crossfaderPosition * 2.0F), 3))
             Else
                 volumeB = 1.0F
             End If
@@ -1583,6 +2614,293 @@ Public Class FormDJ
         End If
     End Sub
 
+    Private Sub WaveformDeckA_PositionClicked(position As Single)
+        Try
+            If fichierAudioDeckA Is Nothing Then Return
+
+            Dim positionNormalisee As Double = Math.Max(0.0R, Math.Min(1.0R, CDbl(position)))
+            Dim total As Double = Math.Max(1.0R, fichierAudioDeckA.TotalTime.TotalSeconds)
+            fichierAudioDeckA.CurrentTime = TimeSpan.FromSeconds(total * positionNormalisee)
+
+            If TrackBarPositionDeckA.Maximum > 0 Then
+                Dim positionSecondes As Integer = CInt(fichierAudioDeckA.CurrentTime.TotalSeconds)
+                TrackBarPositionDeckA.Value = Math.Max(TrackBarPositionDeckA.Minimum, Math.Min(TrackBarPositionDeckA.Maximum, positionSecondes))
+            End If
+
+            LabelDureeDeckA.Text = String.Format(LanguageManager.GetString("DJ_Duration_Format"), fichierAudioDeckA.CurrentTime, fichierAudioDeckA.TotalTime)
+        Catch
+        End Try
+    End Sub
+
+    Private Sub WaveformDeckA_DragMoved(position As Single)
+        ' Pendant le drag, déplacer la position du fichier audio pour qu'on entende ce qui passe sous la ligne centrale
+        Try
+            If fichierAudioDeckA Is Nothing Then Return
+            Dim positionNormalisee As Double = Math.Max(0.0R, Math.Min(1.0R, CDbl(position)))
+            Dim total As Double = Math.Max(1.0R, fichierAudioDeckA.TotalTime.TotalSeconds)
+            Dim targetSec As Double = total * positionNormalisee
+
+            ' Si la piste était en lecture au début du drag, utiliser le lecteur principal en mode preview (pas de creation de scrub player)
+            If dragWasPlayingDeckA Then
+                Try
+                    ' Mettre la position du lecteur principal temporairement pour audition (preview)
+                    If fichierAudioDeckA IsNot Nothing Then
+                        fichierAudioDeckA.CurrentTime = TimeSpan.FromSeconds(targetSec)
+                        LabelDureeDeckA.Text = String.Format(LanguageManager.GetString("DJ_Duration_Format"), fichierAudioDeckA.CurrentTime, fichierAudioDeckA.TotalTime)
+                    End If
+                    ' Démarrer un timer court qui remettra le lecteur en pause si la souris n'a plus bougé
+                    If previewTimerDeckA Is Nothing Then
+                        previewTimerDeckA = New System.Windows.Forms.Timer()
+                        previewTimerDeckA.Interval = 120
+                        AddHandler previewTimerDeckA.Tick, Sub(s2, ev2)
+                                                              Try
+                                                                  If lecteurDeckA IsNot Nothing Then
+                                                                      lecteurDeckA.Pause()
+                                                                      enPauseDeckA = True
+                                                                      lectureEnCoursDeckA = False
+                                                                      ButtonPlayDeckA.Text = LanguageManager.GetString("DJ_Button_Play")
+                                                                  End If
+                                                              Catch
+                                                              End Try
+                                                              Try
+                                                                  previewTimerDeckA.Stop()
+                                                              Catch
+                                                              End Try
+                                                          End Sub
+                    End If
+                    ' Relancer/Restart the preview timer on each move
+                    Try
+                        previewTimerDeckA.Stop()
+                        previewTimerDeckA.Start()
+                    Catch
+                    End Try
+                Catch
+                End Try
+            Else
+                ' If not playing, only update the file's current time so playback will start here if play is pressed later
+                fichierAudioDeckA.CurrentTime = TimeSpan.FromSeconds(targetSec)
+                If TrackBarPositionDeckA.Maximum > 0 Then
+                    Dim positionSecondes As Integer = CInt(fichierAudioDeckA.CurrentTime.TotalSeconds)
+                    TrackBarPositionDeckA.Value = Math.Max(TrackBarPositionDeckA.Minimum, Math.Min(TrackBarPositionDeckA.Maximum, positionSecondes))
+                End If
+                LabelDureeDeckA.Text = String.Format(LanguageManager.GetString("DJ_Duration_Format"), fichierAudioDeckA.CurrentTime, fichierAudioDeckA.TotalTime)
+            End If
+        Catch
+        End Try
+    End Sub
+
+    Private Sub WaveformDeckA_DragStarted()
+        Try
+            ' Indiquer que l'utilisateur commence un drag : le contrôle est alors entièrement pris en charge par la souris.
+            dragWasPlayingDeckA = lectureEnCoursDeckA
+            isUserDraggingPositionA = True
+            ' Si la piste était en lecture, on la laisse tourner pour auditionner pendant le drag en mettant à jour CurrentTime
+            ' On n'arrête pas immédiatement le lecteur principal ici pour éviter un artefact; previewTimer gérera la pause sur immobilité
+            If lecteurDeckA IsNot Nothing AndAlso lectureEnCoursDeckA Then
+                ' nothing here, preview will be managed in DragMoved
+            End If
+            ' nothing to prepare here for preview; DragMoved will manage preview playback
+        Catch
+        End Try
+    End Sub
+
+    Private Sub WaveformDeckA_DragEnded()
+        Try
+            ' When drag ends, optionally consider snapping center to nearest beat if BPMs match
+            Dim snapped As Boolean = False
+            Try
+                If fichierAudioDeckA IsNot Nothing AndAlso fichierAudioDeckB IsNot Nothing Then
+                    Dim bpmA As Double = If(bpmDeckA > 0, bpmDeckA * (1.0 + pitchDeckA), 0.0)
+                    Dim bpmB As Double = If(bpmDeckB > 0, bpmDeckB * (1.0 + pitchDeckB), 0.0)
+                    Dim epsRel As Double = 0.01
+                    Dim diffRel As Double = 1.0
+                    If bpmA > 0 AndAlso bpmB > 0 Then
+                        diffRel = Math.Abs(bpmA - bpmB) / Math.Max(1.0, Math.Max(bpmA, bpmB))
+                    End If
+                    If diffRel <= epsRel Then
+                        ' Both files present and BPMs similar -> snap
+                        Dim centerPos As Single = 0.5F
+                        Dim totalA As Double = Math.Max(1.0, fichierAudioDeckA.TotalTime.TotalSeconds)
+                        Dim targetSec As Double = totalA * centerPos
+                        If bpmDeckA > 0 Then
+                            Dim bpmEffectifA As Double = bpmDeckA * (1.0 + pitchDeckA)
+                            Dim gridA As New BeatGrid(bpmEffectifA, totalA)
+                            Dim nearestBeat As Double = gridA.TrouverBeatLePlusProche(targetSec)
+                            fichierAudioDeckA.CurrentTime = TimeSpan.FromSeconds(nearestBeat)
+                            TrackBarPositionDeckA.Value = CInt(Math.Max(TrackBarPositionDeckA.Minimum, Math.Min(TrackBarPositionDeckA.Maximum, CInt(nearestBeat))))
+                            LabelDureeDeckA.Text = String.Format(LanguageManager.GetString("DJ_Duration_Format"), fichierAudioDeckA.CurrentTime, fichierAudioDeckA.TotalTime)
+                            snapped = True
+                        End If
+                    End If
+                End If
+            Catch
+            End Try
+            ' Nettoyer les timers de preview et reprendre la lecture principale si nécessaire
+            Try
+                If previewTimerDeckA IsNot Nothing Then
+                    Try
+                        previewTimerDeckA.Stop()
+                    Catch
+                    End Try
+                    previewTimerDeckA = Nothing
+                End If
+            Catch
+            End Try
+            If dragWasPlayingDeckA AndAlso lecteurDeckA IsNot Nothing Then
+                Try
+                    lecteurDeckA.Play()
+                    lectureEnCoursDeckA = True
+                    enPauseDeckA = False
+                    ButtonPlayDeckA.Text = LanguageManager.GetString("DJ_Button_Pause")
+                Catch
+                End Try
+            End If
+            isUserDraggingPositionA = False
+            dragWasPlayingDeckA = False
+        Catch
+        End Try
+    End Sub
+
+    Private Sub WaveformDeckB_PositionClicked(position As Single)
+        Try
+            If fichierAudioDeckB Is Nothing Then Return
+
+            Dim positionNormalisee As Double = Math.Max(0.0R, Math.Min(1.0R, CDbl(position)))
+            Dim total As Double = Math.Max(1.0R, fichierAudioDeckB.TotalTime.TotalSeconds)
+            fichierAudioDeckB.CurrentTime = TimeSpan.FromSeconds(total * positionNormalisee)
+
+            If TrackBarPositionDeckB.Maximum > 0 Then
+                Dim positionSecondes As Integer = CInt(fichierAudioDeckB.CurrentTime.TotalSeconds)
+                TrackBarPositionDeckB.Value = Math.Max(TrackBarPositionDeckB.Minimum, Math.Min(TrackBarPositionDeckB.Maximum, positionSecondes))
+            End If
+
+            LabelDureeDeckB.Text = String.Format(LanguageManager.GetString("DJ_Duration_Format"), fichierAudioDeckB.CurrentTime, fichierAudioDeckB.TotalTime)
+        Catch
+        End Try
+    End Sub
+
+    Private Sub WaveformDeckB_DragMoved(position As Single)
+        Try
+            If fichierAudioDeckB Is Nothing Then Return
+            Dim positionNormalisee As Double = Math.Max(0.0R, Math.Min(1.0R, CDbl(position)))
+            Dim total As Double = Math.Max(1.0R, fichierAudioDeckB.TotalTime.TotalSeconds)
+            Dim targetSec As Double = total * positionNormalisee
+
+            If dragWasPlayingDeckB Then
+                Try
+                    If fichierAudioDeckB IsNot Nothing Then
+                        fichierAudioDeckB.CurrentTime = TimeSpan.FromSeconds(targetSec)
+                        LabelDureeDeckB.Text = String.Format(LanguageManager.GetString("DJ_Duration_Format"), fichierAudioDeckB.CurrentTime, fichierAudioDeckB.TotalTime)
+                    End If
+                    If previewTimerDeckB Is Nothing Then
+                        previewTimerDeckB = New System.Windows.Forms.Timer()
+                        previewTimerDeckB.Interval = 120
+                        AddHandler previewTimerDeckB.Tick, Sub(s2, ev2)
+                                                              Try
+                                                                  If lecteurDeckB IsNot Nothing Then
+                                                                      lecteurDeckB.Pause()
+                                                                      enPauseDeckB = True
+                                                                      lectureEnCoursDeckB = False
+                                                                      ButtonPlayDeckB.Text = LanguageManager.GetString("DJ_Button_Play")
+                                                                  End If
+                                                              Catch
+                                                              End Try
+                                                              Try
+                                                                  previewTimerDeckB.Stop()
+                                                              Catch
+                                                              End Try
+                                                          End Sub
+                    End If
+                    Try
+                        previewTimerDeckB.Stop()
+                        previewTimerDeckB.Start()
+                    Catch
+                    End Try
+                Catch
+                End Try
+            Else
+                fichierAudioDeckB.CurrentTime = TimeSpan.FromSeconds(targetSec)
+                If TrackBarPositionDeckB.Maximum > 0 Then
+                    Dim positionSecondes As Integer = CInt(fichierAudioDeckB.CurrentTime.TotalSeconds)
+                    TrackBarPositionDeckB.Value = Math.Max(TrackBarPositionDeckB.Minimum, Math.Min(TrackBarPositionDeckB.Maximum, positionSecondes))
+                End If
+                LabelDureeDeckB.Text = String.Format(LanguageManager.GetString("DJ_Duration_Format"), fichierAudioDeckB.CurrentTime, fichierAudioDeckB.TotalTime)
+            End If
+        Catch
+        End Try
+    End Sub
+
+    Private Sub WaveformDeckB_DragStarted()
+        Try
+            dragWasPlayingDeckB = lectureEnCoursDeckB
+            isUserDraggingPositionB = True
+            ' Si la piste était en lecture, la mettre en pause pour éviter la double lecture et permettre le scrub player
+            If lecteurDeckB IsNot Nothing AndAlso lectureEnCoursDeckB Then
+                Try
+                    lecteurDeckB.Pause()
+                Catch
+                End Try
+                lectureEnCoursDeckB = False
+                enPauseDeckB = True
+                ButtonPlayDeckB.Text = LanguageManager.GetString("DJ_Button_Play")
+            End If
+            ' nothing to prepare here for preview; DragMoved will manage preview/pause
+        Catch
+        End Try
+    End Sub
+
+    Private Sub WaveformDeckB_DragEnded()
+        Try
+            If fichierAudioDeckA Is Nothing OrElse fichierAudioDeckB Is Nothing Then Return
+            Dim bpmA As Double = If(bpmDeckA > 0, bpmDeckA * (1.0 + pitchDeckA), 0.0)
+            Dim bpmB As Double = If(bpmDeckB > 0, bpmDeckB * (1.0 + pitchDeckB), 0.0)
+            Dim epsRel As Double = 0.01
+            Dim diffRel As Double = 1.0
+            If bpmA > 0 AndAlso bpmB > 0 Then
+                diffRel = Math.Abs(bpmA - bpmB) / Math.Max(1.0, Math.Max(bpmA, bpmB))
+            End If
+            If diffRel > epsRel Then
+                Return
+            End If
+
+            Dim centerPos As Single = 0.5F
+            If fichierAudioDeckB Is Nothing Then Return
+            Dim totalB As Double = Math.Max(1.0, fichierAudioDeckB.TotalTime.TotalSeconds)
+            Dim targetSec As Double = totalB * centerPos
+            If bpmDeckB <= 0 Then Return
+            Dim bpmEffectifB As Double = bpmDeckB * (1.0 + pitchDeckB)
+            Dim gridB As New BeatGrid(bpmEffectifB, totalB)
+            Dim nearestBeatB As Double = gridB.TrouverBeatLePlusProche(targetSec)
+            Dim anciennePositionB As Double = fichierAudioDeckB.CurrentTime.TotalSeconds
+            fichierAudioDeckB.CurrentTime = TimeSpan.FromSeconds(nearestBeatB)
+            TrackBarPositionDeckB.Value = CInt(Math.Max(TrackBarPositionDeckB.Minimum, Math.Min(TrackBarPositionDeckB.Maximum, CInt(nearestBeatB))))
+            LabelDureeDeckB.Text = String.Format(LanguageManager.GetString("DJ_Duration_Format"), fichierAudioDeckB.CurrentTime, fichierAudioDeckB.TotalTime)
+            ' Nettoyer le timer de preview et reprendre la lecture principale si nécessaire
+            Try
+                If previewTimerDeckB IsNot Nothing Then
+                    Try
+                        previewTimerDeckB.Stop()
+                    Catch
+                    End Try
+                    previewTimerDeckB = Nothing
+                End If
+            Catch
+            End Try
+            If dragWasPlayingDeckB AndAlso lecteurDeckB IsNot Nothing Then
+                Try
+                    lecteurDeckB.Play()
+                    lectureEnCoursDeckB = True
+                    enPauseDeckB = False
+                    ButtonPlayDeckB.Text = LanguageManager.GetString("DJ_Button_Pause")
+                Catch
+                End Try
+            End If
+            isUserDraggingPositionB = False
+            dragWasPlayingDeckB = False
+        Catch
+        End Try
+    End Sub
+
     ' === Effets Deck A ===
     Private Sub CheckBoxPhaserDeckA_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBoxPhaserDeckA.CheckedChanged
         If phaserProviderDeckA IsNot Nothing Then
@@ -1722,14 +3040,8 @@ Public Class FormDJ
 
     ' === Bouton retour mode simple ===
     Private Sub ButtonRetourModeSimple_Click(sender As Object, e As EventArgs) Handles ButtonRetourModeSimple.Click
-        ' Demander confirmation
-        Dim result = MessageBox.Show(
-            LanguageManager.GetString("Confirm_ReturnSimpleMode"),
-            LanguageManager.GetString("Confirm_Title"),
-            MessageBoxButtons.YesNo,
-            MessageBoxIcon.Question)
-
-        If result = DialogResult.Yes Then
+        ' Basculer directement en mode simple sans confirmation
+        Try
             ' Désactiver le mode DJ et redémarrer
             ParametresGlobaux.ModeMixeurDJ = False
 
@@ -1745,10 +3057,13 @@ Public Class FormDJ
                 Next
                 File.WriteAllLines(cheminConfig, lignes)
             End If
+        Catch
+        End Try
 
-            ' Redémarrer l'application
+        Try
             Application.Restart()
-        End If
+        Catch
+        End Try
     End Sub
 
     ' === Bouton Paramètres ===
@@ -1855,6 +3170,99 @@ Public Class FormDJ
         If meteringProviderDeckB IsNot Nothing Then
             VUMeterDeckB.Level = meteringProviderDeckB.Level
         End If
+
+        ' Mettre à jour la position courante des waveforms si présents
+        Try
+            If waveformDeckA IsNot Nothing AndAlso fichierAudioDeckA IsNot Nothing Then
+                waveformDeckA.CurrentPosition = CSng(fichierAudioDeckA.CurrentTime.TotalSeconds / Math.Max(1.0, fichierAudioDeckA.TotalTime.TotalSeconds))
+                ' Ensure waveform content is scrolled so current position sits at center
+                waveformDeckA.CenterViewOnCurrentPosition()
+            End If
+        Catch
+        End Try
+        Try
+            If waveformDeckB IsNot Nothing AndAlso fichierAudioDeckB IsNot Nothing Then
+                waveformDeckB.CurrentPosition = CSng(fichierAudioDeckB.CurrentTime.TotalSeconds / Math.Max(1.0, fichierAudioDeckB.TotalTime.TotalSeconds))
+                waveformDeckB.CenterViewOnCurrentPosition()
+            End If
+        Catch
+        End Try
+
+        ' Si une piste vient de se terminer, lancer le purge du cache en arrière-plan
+        Try
+            If fichierAudioDeckA IsNot Nothing AndAlso Not lectureEnCoursDeckA AndAlso Not enPauseDeckA Then
+                ' On considère qu'elle est arrêtée et on peut purger le cache
+                Task.Run(Sub() PurgeOldWaveformCache())
+            End If
+        Catch
+        End Try
+        Try
+            If fichierAudioDeckB IsNot Nothing AndAlso Not lectureEnCoursDeckB AndAlso Not enPauseDeckB Then
+                Task.Run(Sub() PurgeOldWaveformCache())
+            End If
+        Catch
+        End Try
+    End Sub
+
+    Private Sub PurgeOldWaveformCache()
+        Try
+            Dim cacheDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "waveforms")
+            If Not Directory.Exists(cacheDir) Then Return
+
+            ' Purge conditionnée à la taille totale du dossier : supprimer les fichiers les plus anciens
+            Dim maxSizeMB As Integer = 200
+            Try
+                maxSizeMB = Math.Max(1, ParametresGlobaux.WaveformCacheMaxSizeMB)
+            Catch
+            End Try
+            Dim maxBytes As Long = CLng(maxSizeMB) * 1024L * 1024L
+
+            Dim files = Directory.GetFiles(cacheDir, "*.dat")
+            If files Is Nothing OrElse files.Length = 0 Then Return
+
+            Dim fileInfos = New System.Collections.Generic.List(Of FileInfo)()
+            Dim totalBytes As Long = 0
+            For Each f In files
+                Try
+                    Dim fi = New FileInfo(f)
+                    fileInfos.Add(fi)
+                    totalBytes += fi.Length
+                Catch
+                End Try
+            Next
+
+            If totalBytes <= maxBytes Then Return
+
+            ' Trier par date de modification (les plus vieux en premier)
+            fileInfos.Sort(Function(a, b) a.LastWriteTimeUtc.CompareTo(b.LastWriteTimeUtc))
+
+            For Each fi In fileInfos
+                Try
+                    Dim len = fi.Length
+                    fi.Delete()
+                    totalBytes -= len
+                    If totalBytes <= maxBytes Then Exit For
+                Catch
+                    ' Ignorer les fichiers verrouillés et continuer
+                End Try
+            Next
+        Catch
+        End Try
+    End Sub
+
+    Private Sub waveformTimer_Tick(sender As Object, e As EventArgs) Handles waveformTimer.Tick
+        Try
+            If waveformDeckA IsNot Nothing AndAlso Not waveformDeckA.IsDisposed Then
+                waveformDeckA.Invalidate()
+            End If
+        Catch
+        End Try
+        Try
+            If waveformDeckB IsNot Nothing AndAlso Not waveformDeckB.IsDisposed Then
+                waveformDeckB.Invalidate()
+            End If
+        Catch
+        End Try
     End Sub
 
     ' === Nettoyage à la fermeture ===
@@ -1933,34 +3341,416 @@ Public Class FormDJ
     ' GESTION DE LA PLAYLIST DJ
     ' ========================================
 
-    ' === Charger la playlist depuis playlistDJ.txt ===
-    Private Sub ChargerPlaylistDJ()
-        Dim fichierPlaylist = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "AudioPlay",
-            "playlistDJ.txt")
-        If Not File.Exists(fichierPlaylist) Then Return
+    ' UI status strip for DJ playlist metadata progress
+    Private StatusStripPlaylist As StatusStrip = Nothing
 
+    ' Cancellation token source for DJ metadata processing
+    Private metadataCancellationTokenSource_DJ As Threading.CancellationTokenSource = Nothing
+
+    Private Function IsMetadataCancellationRequested_DJ() As Boolean
         Try
-            Dim lignes = File.ReadAllLines(fichierPlaylist)
-            For Each ligne In lignes
-                If Not String.IsNullOrWhiteSpace(ligne) Then
-                    Dim parties = ligne.Split("|"c)
-                    If parties.Length >= 2 Then
-                        Dim chemin = parties(0)
-                        Dim nom = parties(1)
-                        Dim bpm = If(parties.Length >= 3, parties(2), "")
-                        Dim duree = If(parties.Length >= 4, parties(3), "")
+            Return (metadataCancellationTokenSource_DJ IsNot Nothing) AndAlso metadataCancellationTokenSource_DJ.IsCancellationRequested
+        Catch
+            Return False
+        End Try
+    End Function
 
-                        If File.Exists(chemin) Then
-                            AjouterFichierAListeDJ(chemin, nom, bpm, duree)
-                        End If
+    ' Counters for DJ metadata progress
+    Private metadataTotal_DJ As Integer = 0
+    Private metadataDone_DJ As Integer = 0
+
+    Private Sub InitMetadataProgressDJ(totalItems As Integer)
+        Try
+            metadataTotal_DJ = totalItems
+            metadataDone_DJ = 0
+            If StatusStripPlaylist Is Nothing Then
+                Dim ss As New StatusStrip()
+                ss.Name = "StatusStripPlaylist"
+                Dim lbl As New ToolStripStatusLabel()
+                lbl.Name = "ToolStripStatusLabel_MetadataDJ"
+                lbl.Text = ""
+                ss.Items.Add(lbl)
+                Dim pb As New ToolStripProgressBar()
+                pb.Name = "ToolStripProgressBar_MetadataDJ"
+                pb.Minimum = 0
+                pb.Maximum = Math.Max(1, totalItems)
+                pb.Value = 0
+                pb.AutoSize = False
+                pb.Size = New Size(200, 16)
+                ss.Items.Add(pb)
+                Dim btn As New ToolStripButton()
+                btn.Name = "ToolStripButton_MetadataCancelDJ"
+                btn.Text = "Annuler"
+                AddHandler btn.Click, Sub()
+                                         Try
+                                             RequestCancelMetadataProcessingDJ()
+                                             btn.Enabled = False
+                                         Catch
+                                         End Try
+                                     End Sub
+                ss.Items.Add(btn)
+                Me.Controls.Add(ss)
+                ss.BringToFront()
+                StatusStripPlaylist = ss
+            End If
+
+            Dim label = CType(StatusStripPlaylist.Items.OfType(Of ToolStripItem)().FirstOrDefault(Function(it) it.Name = "ToolStripStatusLabel_MetadataDJ"), ToolStripStatusLabel)
+            If label Is Nothing Then
+                label = New ToolStripStatusLabel("ToolStripStatusLabel_MetadataDJ")
+                StatusStripPlaylist.Items.Add(label)
+            End If
+            label.Text = String.Format("Chargement playlist DJ: 0/{0}", metadataTotal_DJ)
+            Try
+                Dim pb = CType(StatusStripPlaylist.Items.OfType(Of ToolStripItem)().FirstOrDefault(Function(it) it.Name = "ToolStripProgressBar_MetadataDJ"), ToolStripProgressBar)
+                If pb IsNot Nothing Then
+                    pb.Maximum = Math.Max(1, metadataTotal_DJ)
+                    pb.Value = 0
+                End If
+            Catch
+            End Try
+        Catch
+        End Try
+    End Sub
+
+    Private Sub UpdateMetadataProgressDJ(done As Integer, total As Integer)
+        Try
+            If StatusStripPlaylist Is Nothing Then Return
+            Dim label = CType(StatusStripPlaylist.Items.OfType(Of ToolStripItem)().FirstOrDefault(Function(it) it.Name = "ToolStripStatusLabel_MetadataDJ"), ToolStripStatusLabel)
+            If label Is Nothing Then Return
+            label.Text = String.Format("Chargement playlist DJ: {0}/{1}", done, total)
+            Try
+                Dim pb = CType(StatusStripPlaylist.Items.OfType(Of ToolStripItem)().FirstOrDefault(Function(it) it.Name = "ToolStripProgressBar_MetadataDJ"), ToolStripProgressBar)
+                If pb IsNot Nothing Then
+                    pb.Value = Math.Min(pb.Maximum, done)
+                End If
+            Catch
+            End Try
+            Try
+                If done >= total OrElse IsMetadataCancellationRequested_DJ() Then
+                    If Not Me.IsDisposed AndAlso Me.IsHandleCreated Then
+                        Me.BeginInvoke(Sub()
+                                           Try
+                                               If StatusStripPlaylist IsNot Nothing Then
+                                                   Try
+                                                       Me.Controls.Remove(StatusStripPlaylist)
+                                                       StatusStripPlaylist.Dispose()
+                                                   Catch
+                                                   End Try
+                                                   StatusStripPlaylist = Nothing
+                                               End If
+                                           Catch
+                                           End Try
+                                           metadataTotal_DJ = 0
+                                           metadataDone_DJ = 0
+                                       End Sub)
                     End If
                 End If
+            Catch
+            End Try
+        Catch
+        End Try
+    End Sub
+
+    Private Sub RequestCancelMetadataProcessingDJ()
+        Try
+            If metadataCancellationTokenSource_DJ IsNot Nothing Then
+                Try
+                    metadataCancellationTokenSource_DJ.Cancel()
+                Catch
+                End Try
+            End If
+        Catch
+        End Try
+    End Sub
+
+    Private Sub DemarrerTraitementMetadonneesEnArrierePlanDJ(batchEntries As List(Of Tuple(Of String, String, String)))
+        Try
+            If batchEntries Is Nothing OrElse batchEntries.Count = 0 Then Return
+
+            Dim maxDegree As Integer = Math.Max(1, Math.Min(Environment.ProcessorCount, 4))
+            Dim semaphore As New Threading.SemaphoreSlim(maxDegree)
+
+            Dim total = batchEntries.Count
+            For Each entry In batchEntries
+                Dim cheminLocal = entry.Item1
+                Dim bpmExistantLocal = entry.Item2
+                Dim dureeExistanteLocal = entry.Item3
+                If IsMetadataCancellationRequested_DJ() Then
+                    Exit For
+                End If
+
+                Threading.ThreadPool.QueueUserWorkItem(Sub()
+                                                           semaphore.Wait()
+                                                           Try
+                                                               If String.IsNullOrWhiteSpace(cheminLocal) OrElse Not File.Exists(cheminLocal) Then
+                                                                   Dim currentDone = Interlocked.Increment(metadataDone_DJ)
+                                                                   Try
+                                                                       Me.BeginInvoke(Sub() UpdateMetadataProgressDJ(currentDone, metadataTotal_DJ))
+                                                                   Catch
+                                                                   End Try
+                                                                   Return
+                                                               End If
+
+                                                               Dim needDuree As Boolean = String.IsNullOrWhiteSpace(dureeExistanteLocal) OrElse dureeExistanteLocal = "--:--"
+                                                               Dim needBpm As Boolean = String.IsNullOrWhiteSpace(bpmExistantLocal)
+                                                               If Not needDuree AndAlso Not needBpm Then
+                                                                   Dim currentDone = Interlocked.Increment(metadataDone_DJ)
+                                                                   Try
+                                                                       Me.BeginInvoke(Sub() UpdateMetadataProgressDJ(currentDone, metadataTotal_DJ))
+                                                                   Catch
+                                                                   End Try
+                                                                   Return
+                                                               End If
+
+                                                               Dim newDuree As String = Nothing
+                                                               Dim newBpm As String = Nothing
+
+                                                               If IsMetadataCancellationRequested_DJ() Then Return
+
+                                                               If needDuree Then
+                                                                   Try
+                                                                       Using reader As New AudioFileReader(cheminLocal)
+                                                                           Dim ts = reader.TotalTime
+                                                                           newDuree = String.Format("{0:D2}:{1:D2}", CInt(ts.TotalMinutes), ts.Seconds)
+                                                                       End Using
+                                                                   Catch
+                                                                   End Try
+                                                               End If
+
+                                                               If needBpm Then
+                                                                   Try
+                                                                       Dim bpmMetadata = BPMMetadataManager.LireBPMPrecisDepuisMetadonnees(cheminLocal)
+                                                                       If bpmMetadata > 0 Then
+                                                                           newBpm = bpmMetadata.ToString("F2", Globalization.CultureInfo.InvariantCulture)
+                                                                       End If
+                                                                   Catch
+                                                                   End Try
+                                                               End If
+
+                                                               If String.IsNullOrWhiteSpace(newDuree) AndAlso String.IsNullOrWhiteSpace(newBpm) Then
+                                                                   Dim currentDone = Interlocked.Increment(metadataDone_DJ)
+                                                                   Try
+                                                                       Me.BeginInvoke(Sub() UpdateMetadataProgressDJ(currentDone, metadataTotal_DJ))
+                                                                   Catch
+                                                                   End Try
+                                                                   Return
+                                                               End If
+
+                                                               If Not Me.IsDisposed AndAlso Me.IsHandleCreated Then
+                                                                   Me.BeginInvoke(Sub()
+                                                                                      Try
+                                                                                          Dim targetItem As ListViewItem = Nothing
+                                                                                          For Each lvItem As ListViewItem In ListViewPlaylist.Items
+                                                                                              Dim tagChemin As String = ""
+                                                                                              If TypeOf lvItem.Tag Is Dictionary(Of String, Object) Then
+                                                                                                  Dim existingTag = DirectCast(lvItem.Tag, Dictionary(Of String, Object))
+                                                                                                  If existingTag.ContainsKey("Chemin") Then
+                                                                                                      tagChemin = existingTag("Chemin")?.ToString()
+                                                                                                  End If
+                                                                                              ElseIf TypeOf lvItem.Tag Is String Then
+                                                                                                  tagChemin = lvItem.Tag.ToString()
+                                                                                              End If
+
+                                                                                              If String.Equals(tagChemin, cheminLocal, StringComparison.OrdinalIgnoreCase) Then
+                                                                                                  targetItem = lvItem
+                                                                                                  Exit For
+                                                                                              End If
+                                                                                          Next
+
+                                                                                          If targetItem Is Nothing Then Return
+
+                                                                                          If Not String.IsNullOrWhiteSpace(newDuree) Then
+                                                                                              targetItem.SubItems(3).Text = newDuree
+                                                                                          End If
+
+                                                                                          If Not String.IsNullOrWhiteSpace(newBpm) Then
+                                                                                              targetItem.SubItems(2).Text = newBpm
+
+                                                                                              Dim tagDict As Dictionary(Of String, Object)
+                                                                                              If TypeOf targetItem.Tag Is Dictionary(Of String, Object) Then
+                                                                                                  tagDict = DirectCast(targetItem.Tag, Dictionary(Of String, Object))
+                                                                                              Else
+                                                                                                  tagDict = New Dictionary(Of String, Object) From {
+                                                                                                      {"Chemin", cheminLocal}
+                                                                                                  }
+                                                                                              End If
+
+                                                                                              Dim bpmValue As Double = 0
+                                                                                              If Double.TryParse(newBpm, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, bpmValue) Then
+                                                                                                  tagDict("BPM") = bpmValue
+                                                                                              End If
+                                                                                              targetItem.Tag = tagDict
+                                                                                          End If
+                                                                                      Catch
+                                                                                      End Try
+                                                                                  End Sub)
+                                                               End If
+
+                                                               ' Update cache asynchronously
+                                                               Try
+                                                                   Threading.ThreadPool.QueueUserWorkItem(Sub()
+                                                                                                              Try
+                                                                                                                  If Not String.IsNullOrEmpty(cheminLocal) Then
+                                                                                                                      MetadataCache.UpdateCache(cheminLocal, If(newDuree, ""), If(newBpm, ""))
+                                                                                                                  End If
+                                                                                                              Catch
+                                                                                                              End Try
+                                                                                                          End Sub)
+                                                               Catch
+                                                               End Try
+
+                                                               Dim currentDoneFinal = Interlocked.Increment(metadataDone_DJ)
+                                                               Try
+                                                                   Me.BeginInvoke(Sub() UpdateMetadataProgressDJ(currentDoneFinal, metadataTotal_DJ))
+                                                               Catch
+                                                               End Try
+                                                           Catch
+                                                           Finally
+                                                               semaphore.Release()
+                                                           End Try
+                                                       End Sub)
             Next
-            MettreAJourNumerotationDJ()
-        Catch ex As Exception
-            ' Ignorer les erreurs de chargement
+        Catch
+        End Try
+    End Sub
+
+    ' === Charger la playlist depuis playlistDJ.txt ===
+    Private Sub ChargerPlaylistDJ()
+        Try
+            Dim t As New Threading.Thread(Sub()
+                                              Try
+                                                  Dim fichierPlaylist = Path.Combine(
+                                                      Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                                                      "AudioPlay",
+                                                      "playlistDJ.txt")
+                                                  If Not File.Exists(fichierPlaylist) Then Return
+
+                                                  Dim lignes = File.ReadAllLines(fichierPlaylist)
+                                                  Dim entries As New List(Of Tuple(Of String, String, String))()
+                                                  For Each ligne In lignes
+                                                      If String.IsNullOrWhiteSpace(ligne) Then Continue For
+                                                      Dim parties = ligne.Split("|"c)
+                                                      If parties.Length >= 2 Then
+                                                          Dim chemin = parties(0)
+                                                          Dim nom = parties(1)
+                                                          Dim bpm = If(parties.Length >= 3, parties(2), "")
+                                                          Dim duree = If(parties.Length >= 4, parties(3), "")
+                                                          If File.Exists(chemin) Then
+                                                              entries.Add(Tuple.Create(chemin, bpm, duree))
+                                                          End If
+                                                      End If
+                                                  Next
+
+                                                  Dim batchSize As Integer = 100
+                                                  Dim firstBatchSize As Integer = Math.Min(20, batchSize)
+                                                  Dim index As Integer = 0
+
+                                                  ' Initialize DJ cancellation token and progress UI
+                                                  Try
+                                                      If metadataCancellationTokenSource_DJ IsNot Nothing Then
+                                                          Try
+                                                              metadataCancellationTokenSource_DJ.Dispose()
+                                                          Catch
+                                                          End Try
+                                                      End If
+                                                      metadataCancellationTokenSource_DJ = New Threading.CancellationTokenSource()
+                                                  Catch
+                                                  End Try
+
+                                                  If entries.Count > 0 Then
+                                                      ' Init progress UI on UI thread
+                                                      If Not Me.IsDisposed AndAlso Me.IsHandleCreated Then
+                                                          Me.BeginInvoke(Sub()
+                                                                             Try
+                                                                                 InitMetadataProgressDJ(entries.Count)
+                                                                             Catch
+                                                                             End Try
+                                                                         End Sub)
+                                                      End If
+
+                                                      Dim firstBatch = entries.Take(firstBatchSize).ToList()
+                                                      If Not Me.IsDisposed AndAlso Me.IsHandleCreated Then
+                                                          Me.BeginInvoke(Sub()
+                                                                             Try
+                                                                                 ListViewPlaylist.BeginUpdate()
+                                                                                 For Each entry In firstBatch
+                                                                                         AjouterItemLightDJ(entry.Item1, Path.GetFileName(entry.Item1), entry.Item2, entry.Item3)
+                                                                                 Next
+                                                                             Catch
+                                                                             Finally
+                                                                                 Try
+                                                                                     ListViewPlaylist.EndUpdate()
+                                                                                 Catch
+                                                                                 End Try
+                                                                             End Try
+
+                                                                             Try
+                                                                                 MettreAJourNumerotationDJ()
+                                                                                 DemarrerTraitementMetadonneesEnArrierePlanDJ(firstBatch)
+                                                                             Catch
+                                                                             End Try
+                                                                         End Sub)
+                                                      End If
+                                                      index += firstBatchSize
+                                                  End If
+
+                                                  While index < entries.Count
+                                                      Dim batch As New List(Of Tuple(Of String, String, String))()
+                                                      Dim maxIndex As Integer = Math.Min(index + batchSize, entries.Count)
+                                                      For i As Integer = index To maxIndex - 1
+                                                          batch.Add(entries(i))
+                                                      Next
+
+                                                      Try
+                                                          If Not Me.IsDisposed AndAlso Me.IsHandleCreated Then
+                                                              Me.BeginInvoke(Sub()
+                                                                                 Try
+                                                                                     ListViewPlaylist.BeginUpdate()
+                                                                                     For Each entry In batch
+                                                                                         AjouterItemLightDJ(entry.Item1, Path.GetFileName(entry.Item1), entry.Item2, entry.Item3)
+                                                                                     Next
+                                                                                 Catch
+                                                                                 Finally
+                                                                                     Try
+                                                                                         ListViewPlaylist.EndUpdate()
+                                                                                     Catch
+                                                                                     End Try
+                                                                                 End Try
+
+                                                                             Try
+                                                                                     MettreAJourNumerotationDJ()
+                                                                                 Catch
+                                                                                 End Try
+                                                                                 Try
+                                                                                     DemarrerTraitementMetadonneesEnArrierePlanDJ(batch)
+                                                                                 Catch
+                                                                                 End Try
+                                                                             End Sub)
+                                                          End If
+                                                      Catch
+                                                      End Try
+
+                                                      Try
+                                                          Threading.ThreadPool.QueueUserWorkItem(Sub()
+                                                                                                     For Each cacheEntry In batch
+                                                                                                         Try
+                                                                                                             MetadataCache.GetCached(cacheEntry.Item1)
+                                                                                                         Catch
+                                                                                                         End Try
+                                                                                                     Next
+                                                                                                 End Sub)
+                                                      Catch
+                                                      End Try
+
+                                                      index += batchSize
+                                                      Threading.Thread.Sleep(10)
+                                                  End While
+                                              Catch
+                                              End Try
+                                          End Sub)
+            t.IsBackground = True
+            t.Start()
+        Catch
         End Try
     End Sub
 
@@ -2050,11 +3840,94 @@ Public Class FormDJ
         ListViewPlaylist.Items.Add(item)
     End Sub
 
+    ' Ajoute un item léger dans la ListViewPlaylist sans ouvrir le fichier audio (rapide pour affichage initial)
+    Private Sub AjouterItemLightDJ(chemin As String, nomFichier As String, bpm As String, duree As String)
+        Try
+            Dim newItem As New ListViewItem()
+            newItem.Text = "" ' Colonne Num (remplie par MettreAJourNumerotationDJ)
+            newItem.SubItems.Add(nomFichier) ' Colonne Chanson
+            newItem.SubItems.Add(If(String.IsNullOrWhiteSpace(bpm), "", bpm)) ' Colonne BPM
+            newItem.SubItems.Add(If(String.IsNullOrWhiteSpace(duree), "--:--", duree)) ' Colonne Durée
+
+            Dim tagDict As New Dictionary(Of String, Object) From {
+                {"Chemin", chemin}
+            }
+
+            Dim bpmValue As Double = 0
+            If Not String.IsNullOrWhiteSpace(bpm) AndAlso Double.TryParse(bpm, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, bpmValue) Then
+                tagDict("BPM") = bpmValue
+            End If
+
+            newItem.Tag = tagDict
+            ListViewPlaylist.Items.Add(newItem)
+        Catch
+            ' Ignorer les erreurs d'ajout
+        End Try
+    End Sub
+
     ' === Mettre à jour la numérotation de la playlist ===
     Private Sub MettreAJourNumerotationDJ()
         For i = 0 To ListViewPlaylist.Items.Count - 1
             ListViewPlaylist.Items(i).SubItems(0).Text = (i + 1).ToString()
         Next
+    End Sub
+
+    ' Déplacer la sélection dans la ListViewPlaylist (déplacement d'un index)
+    Private Sub DeplacerSelectionListViewDJ(delta As Integer)
+        If ListViewPlaylist.SelectedIndices.Count = 0 Then Return
+        Dim idx As Integer = ListViewPlaylist.SelectedIndices(0)
+        Dim newIdx As Integer = idx + delta
+        If newIdx < 0 OrElse newIdx >= ListViewPlaylist.Items.Count Then Return
+        Dim item As ListViewItem = ListViewPlaylist.Items(idx)
+        ListViewPlaylist.Items.RemoveAt(idx)
+        ListViewPlaylist.Items.Insert(newIdx, item)
+        ListViewPlaylist.SelectedItems.Clear()
+        ListViewPlaylist.Items(newIdx).Selected = True
+        ListViewPlaylist.Items(newIdx).EnsureVisible()
+        MettreAJourNumerotationDJ()
+        SauvegarderPlaylistDJ()
+    End Sub
+
+    ' Supprimer la sélection dans la ListViewPlaylist (avec confirmation optionnelle)
+    Private Sub SupprimerDeListeDJ()
+        If ListViewPlaylist.SelectedItems.Count = 0 Then Return
+        If ParametresGlobaux.ConfirmerEffacementChansons Then
+            Dim rep = MessageBox.Show(LanguageManager.GetString("Playlist_DeleteConfirm_Message"),
+                                       LanguageManager.GetString("Confirmation_Title"),
+                                       MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+            If rep <> DialogResult.Yes Then Return
+        End If
+        Dim cheminsASupprimer As New List(Of String)
+        For Each item As ListViewItem In ListViewPlaylist.SelectedItems
+            Dim chemin = ExtraireCheminDepuisItemDJ(item)
+            If Not String.IsNullOrEmpty(chemin) Then cheminsASupprimer.Add(chemin)
+        Next
+        If cheminsASupprimer.Contains(cheminActuelDeckA) Then ArreterDeckA()
+        If cheminsASupprimer.Contains(cheminActuelDeckB) Then ArreterDeckB()
+        For Each item As ListViewItem In ListViewPlaylist.SelectedItems.Cast(Of ListViewItem).ToList()
+            ListViewPlaylist.Items.Remove(item)
+        Next
+        MettreAJourNumerotationDJ()
+        SauvegarderPlaylistDJ()
+    End Sub
+
+    ' Extraire le chemin stocké dans l'item de la playlist DJ
+    Private Function ExtraireCheminDepuisItemDJ(item As ListViewItem) As String
+        If item Is Nothing Then Return String.Empty
+        If item.Tag Is Nothing Then Return String.Empty
+        If TypeOf item.Tag Is Dictionary(Of String, Object) Then
+            Dim d = DirectCast(item.Tag, Dictionary(Of String, Object))
+            If d.ContainsKey("Chemin") Then Return d("Chemin").ToString()
+        ElseIf TypeOf item.Tag Is String Then
+            Return item.Tag.ToString()
+        End If
+        Return String.Empty
+    End Function
+
+    ' Arrêter tous les decks
+    Private Sub ButtonStopAllDecks()
+        ArreterDeckA()
+        ArreterDeckB()
     End Sub
 
     ' === Bouton AJOUTER : Menu contextuel avec Fichier/Répertoire ===
@@ -2439,7 +4312,7 @@ Public Class FormDJ
             MettreAJourNumerotationDJ()
             SauvegarderPlaylistDJ()
         Else
-            MessageBox.Show("Aucun item sélectionné.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            MessageBox.Show(LanguageManager.GetString("FormDJ_NoItemSelected_Message"), LanguageManager.GetString("FormDJ_NoItemSelected_Title"), MessageBoxButtons.OK, MessageBoxIcon.Information)
         End If
     End Sub
 

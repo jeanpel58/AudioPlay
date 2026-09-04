@@ -93,7 +93,7 @@ Public Class MixRecorder
     Public Function GetRecordingDuration() As TimeSpan
         If writer IsNot Nothing AndAlso m_isRecording Then
             Try
-                Dim totalSamples As Long = writer.Length / (waveFormat.BitsPerSample / 8)
+                Dim totalSamples As Long = CLng(writer.Length / (waveFormat.BitsPerSample / 8))
                 Dim seconds As Double = totalSamples / CDbl(waveFormat.SampleRate * waveFormat.Channels)
                 Return TimeSpan.FromSeconds(seconds)
             Catch ex As Exception

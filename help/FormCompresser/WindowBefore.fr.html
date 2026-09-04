@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⏮️ Aide - Fenêtre avant (TOC)</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; color: #333; }
+        .container { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #3498db; margin-top: 25px; }
+        .info { background-color: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .icon { font-size: 1.3em; margin-right: 5px; }
+        ul { line-height: 1.8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="icon">⏮️</span>Fenêtre avant TOC (secondes)</h1>
+
+        <p>Ce paramètre contrôle le nombre de secondes analysées AVANT la frontière TOC (le point indiqué dans la table du disque, généralement le début de la piste suivante) pour détecter les transitions entre pistes.</p>
+
+        <h2>Pourquoi</h2>
+        <p>Le TOC marque la frontière logique, mais le contenu audio réel peut chevaucher (crossfades). L'analyse avant le TOC permet de détecter un silence ou un fondu indiquant la vraie fin de la piste précédente.</p>
+
+        <h2>Qu'est-ce que le TOC ?</h2>
+        <p>Le TOC (Table of Contents) d'un CD audio est une table enregistrée sur le disque qui indique les positions de début de chaque piste (en minutes:secondes:frames) et la position du lead-out. Il sert d'index logique pour le lecteur. Le TOC ne décrit pas la forme d'onde réelle autour de ces positions : il n'indique pas si les pistes se chevauchent, s'il y a des crossfades ou des silences. C'est pourquoi l'analyse audio autour du TOC est nécessaire pour repérer le silence effectif où il est sûr de couper.</p>
+
+        <h2>Effet d'un changement</h2>
+        <ul>
+            <li>Valeur plus petite : analyse plus rapide, risque de manquer de longs fondues.</li>
+            <li>Valeur plus grande : analyse plus large, détecte mieux les silences mais coûte plus de temps.</li>
+        </ul>
+
+        <div class="info">
+            <strong>Recommandation :</strong> valeur conservatrice : 20 secondes. Ajustez entre 10–30s selon le mastering du CD.
+        </div>
+    </div>
+</body>
+</html>

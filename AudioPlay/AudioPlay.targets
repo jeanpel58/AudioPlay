@@ -1,0 +1,15 @@
+<Project>
+  <Target Name="FixDesignerBug" BeforeTargets="BeforeBuild">
+	<Message Text="Vérification du bug du designer Visual Studio..." Importance="high" />
+
+	<!-- Lire le fichier Designer -->
+	<ReadLinesFromFile File="Form1.Designer.vb">
+	  <Output TaskParameter="Lines" ItemName="DesignerLines" />
+	</ReadLinesFromFile>
+
+	<!-- PowerShell pour supprimer les lignes Dim Button* -->
+	<Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;&amp; { $content = Get-Content 'Form1.Designer.vb' -Raw; if ($content -match '\s*Dim\s+\w+\s+As\s+Button\r?\n') { $content = $content -replace '(\s*Private Sub InitializeComponent\(\)\r?\n)(\s*Dim\s+\w+\s+As\s+Button\r?\n)+', '$1'; Set-Content 'Form1.Designer.vb' -Value $content -NoNewline; Write-Host '✓ Bug du designer corrigé automatiquement' -ForegroundColor Green } else { Write-Host '✓ Pas de correction nécessaire' -ForegroundColor Gray } }&quot;"
+		  WorkingDirectory="$(MSBuildProjectDirectory)"
+		  IgnoreExitCode="true" />
+  </Target>
+</Project>

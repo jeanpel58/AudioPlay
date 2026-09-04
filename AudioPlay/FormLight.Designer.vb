@@ -31,7 +31,7 @@ Partial Class FormLight
         Me.ClientSize = New System.Drawing.Size(200, 200)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
         Me.Name = "FormLight"
-        Me.Text = "FormLight"
+        Me.Text = LanguageManager.GetString("FormLight_Form_Text")
         Me.ResumeLayout(False)
     End Sub
 End Class

@@ -9,6 +9,7 @@ Imports System.Threading
 Public Class LanguageManager
     Private Shared _resourceManager As ResourceManager
     Private Shared _currentCulture As CultureInfo
+    Public Shared Event LanguageChanged(ByVal newCulture As CultureInfo)
 
     ''' <summary>
     ''' Initialise le gestionnaire de ressources
@@ -43,11 +44,11 @@ Public Class LanguageManager
     Public Shared Function GetString(key As String) As String
         Try
             Dim value = _resourceManager.GetString(key, _currentCulture)
-            If String.IsNullOrEmpty(value) OrElse value = key Then
+            If String.IsNullOrEmpty(value) Then
                 ' Fallback : essayer la ressource française
                 value = _resourceManager.GetString(key, New CultureInfo("fr"))
             End If
-            If String.IsNullOrEmpty(value) OrElse value = key Then
+            If String.IsNullOrEmpty(value) Then
                 System.Diagnostics.Debug.WriteLine($"Ressource non trouvée : {key}")
                 Return "[RESX introuvable] " & key
             End If
@@ -83,6 +84,11 @@ Public Class LanguageManager
             Dim newCulture As New CultureInfo(cultureCode)
             CurrentCulture = newCulture
             System.Diagnostics.Debug.WriteLine($"Langue changée vers : {newCulture.DisplayName}")
+            Try
+                RaiseEvent LanguageChanged(newCulture)
+            Catch ex As Exception
+                System.Diagnostics.Debug.WriteLine($"Erreur lors du déclenchement de LanguageChanged: {ex.Message}")
+            End Try
         Catch ex As Exception
             System.Diagnostics.Debug.WriteLine($"Erreur lors du changement de langue vers {cultureCode} : {ex.Message}")
         End Try

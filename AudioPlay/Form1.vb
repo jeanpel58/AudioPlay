@@ -8,9 +8,28 @@ Imports SoundTouchSharp
 Imports Microsoft.Win32
 
 Public Class Form1
+    ' API Windows pour enlever le bouton X
+    Private Const SC_CLOSE As Integer = &HF060
+    Private Const MF_BYCOMMAND As Integer = &H0
 
-    Private Version As String = "1.26.06.11"
-    Private VersionChiffre As String = "1260611"
+    <System.Runtime.InteropServices.DllImport("user32.dll")>
+    Private Shared Function GetSystemMenu(hWnd As IntPtr, bRevert As Boolean) As IntPtr
+    End Function
+
+    <System.Runtime.InteropServices.DllImport("user32.dll")>
+    Private Shared Function RemoveMenu(hMenu As IntPtr, uPosition As UInteger, uFlags As UInteger) As Boolean
+    End Function
+
+    Protected Overrides Sub OnLoad(e As EventArgs)
+        MyBase.OnLoad(e)
+        Dim hMenu As IntPtr = GetSystemMenu(Me.Handle, False)
+        RemoveMenu(hMenu, SC_CLOSE, MF_BYCOMMAND)
+    End Sub
+
+    Private toolTipForm1 As ToolTip = Nothing
+
+    Private Version As String = "1.26.08.20"
+    Private VersionChiffre As String = "1260820"
 
     ' === Volume global partagé ===
     Public Shared VolumeLecture As Integer = 50
@@ -35,6 +54,9 @@ Public Class Form1
     Private hasLoopMarkers As Boolean = False
     Private labelLoopStart As Label = Nothing
     Private labelLoopEnd As Label = Nothing
+    ' Labels pour l'échelle du TrackBar (0..100)
+    Private trackBarScaleLabels As List(Of Label) = Nothing
+    Private trackBarMinorTicks As List(Of Panel) = Nothing
     Private Sub Button_Parametres_Click(sender As Object, e As EventArgs) Handles Button_Parametres.Click
         Dim dlg As New FormParametres()
         dlg.ShowDialog(Me)
@@ -47,10 +69,160 @@ Public Class Form1
 
             ' Appliquer les paramètres rechargés aux contrôles UI
             AppliquerParametresAuxControles()
+
+            ' Rafraîchir la langue pour mettre à jour tous les textes et tooltips
+            RefreshLanguage()
+
+            ' Abonner un handler inline pour rafraîchir automatiquement la langue
+            Try
+                AddHandler LanguageManager.LanguageChanged, Sub(c)
+                                                                Try
+                                                                    If Me.InvokeRequired Then
+                                                                        Me.BeginInvoke(New Action(AddressOf RefreshLanguage))
+                                                                    Else
+                                                                        RefreshLanguage()
+                                                                    End If
+                                                                Catch
+                                                                End Try
+                                                            End Sub
+            Catch
+            End Try
+
+            ' Appliquer le thème actuel (peut avoir changé dans FormParametres)
+            ThemeManager.ApplyThemeToForm(Me)
+
             ' Mettre à jour la couleur des marqueurs de boucle au cas où le thème a changé
             MettreAJourCouleurMarqueursLoop()
             ListView1.Focus()
         End If
+    End Sub
+
+    ''' <summary>
+    ''' Lit AudioDefaut.txt et applique les associations pour l'utilisateur courant (HKCU)
+    ''' </summary>
+    Private Sub AssurerAssociationsAudioParDefaut()
+        Try
+            Dim mp3 As Boolean = False
+            Dim flac As Boolean = False
+            Dim wma As Boolean = False
+            Dim wav As Boolean = False
+            Dim aac As Boolean = False
+            AudioDefautManager.ChargerAudioDefaut(mp3, flac, wma, wav, aac)
+
+            If mp3 Then RegisterProgForExtension(".mp3", "AudioPlay.mp3")
+            If flac Then RegisterProgForExtension(".flac", "AudioPlay.flac")
+            If wma Then RegisterProgForExtension(".wma", "AudioPlay.wma")
+            If wav Then RegisterProgForExtension(".wav", "AudioPlay.wav")
+            If aac Then RegisterProgForExtension(".aac", "AudioPlay.aac")
+        Catch
+        End Try
+    End Sub
+
+    ''' <summary>
+    ''' Tente d'appeler IApplicationAssociationRegistration::SetAppAsDefault via COM (late-bound).
+    ''' Retourne True si l'appel a été effectué sans lever d'exception.
+    ''' </summary>
+    Private Function TrySetAppAsDefault(progId As String, setValue As String) As Boolean
+        Try
+            Dim comType As Type = Nothing
+            Try
+                comType = Type.GetTypeFromProgID("ApplicationAssociationRegistration")
+            Catch
+            End Try
+
+            If comType Is Nothing Then
+                Try
+                    comType = Type.GetTypeFromCLSID(New Guid("591209c7-767b-42b2-9fba-44ee4615f2c7"))
+                Catch
+                    comType = Nothing
+                End Try
+            End If
+
+            If comType Is Nothing Then Return False
+
+            Dim comObj = Activator.CreateInstance(comType)
+            If comObj Is Nothing Then Return False
+
+            Dim mi = comType.GetMethod("SetAppAsDefault")
+            If mi Is Nothing Then
+                mi = comObj.GetType().GetMethod("SetAppAsDefault")
+            End If
+            If mi Is Nothing Then Return False
+
+            ' Paramètres: pszAppRegistryName, pszSet, at (association type)
+            ' Utiliser le progId pour le nom de l'application et pour la valeur à définir
+            ' pszAppRegistryName = progId, pszSet = extension or association (setValue), at = association type (0 = file extension)
+            mi.Invoke(comObj, New Object() {progId, setValue, 0})
+            Return True
+        Catch
+            Return False
+        End Try
+    End Function
+
+    Private Sub RegisterProgForExtension(extension As String, progId As String)
+        Try
+            Dim exePath = Application.ExecutablePath
+            ' Créer/mettre à jour le ProgID
+            Using progKey = Registry.CurrentUser.CreateSubKey($"Software\Classes\{progId}")
+                progKey.SetValue("", $"AudioPlay file ({extension})")
+                Using iconKey = progKey.CreateSubKey("DefaultIcon")
+                    iconKey.SetValue("", """" & exePath & """,0")
+                End Using
+                Using cmdKey = progKey.CreateSubKey("shell\open\command")
+                    cmdKey.SetValue("", """" & exePath & """ ""%1""")
+                End Using
+            End Using
+
+            ' Associer l'extension
+            Using extKey = Registry.CurrentUser.CreateSubKey($"Software\Classes\{extension}")
+                extKey.SetValue("", progId)
+            End Using
+
+            ' Ajouter à OpenWithProgids
+            Using ow = Registry.CurrentUser.CreateSubKey($"Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\{extension}\OpenWithProgids")
+                ow.SetValue(progId, String.Empty, RegistryValueKind.String)
+            End Using
+            ' Essayer de définir l'application par défaut via l'API COM (SetAppAsDefault)
+            Try
+                TrySetAppAsDefault(progId, extension)
+            Catch
+            End Try
+        Catch
+        End Try
+    End Sub
+
+    ' Basculer en mode DJ : afficher FormDJ et rendre Form1 invisible
+    Private Sub ButtonModeDJ_Click(sender As Object, e As EventArgs) Handles ButtonModeDJ.Click
+
+
+        Try
+            Dim djForm As New FormDJ()
+            Try
+                djForm.Show(Me)
+            Catch ex As Exception
+                Try
+                    djForm.Show()
+                Catch ex2 As Exception
+                    MessageBox.Show(String.Format(LanguageManager.GetString("Form1_OpenFormDJ_Error_Message"), ex2.Message), LanguageManager.GetString("Form1_OpenFormDJ_Error_Title"), MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    Return
+                End Try
+            End Try
+            ' Masquer la form principale pour mode DJ
+            Try
+                Me.Hide()
+            Catch ex As Exception
+                ' afficher erreur si masquage échoue
+                Try
+                    MessageBox.Show(String.Format(LanguageManager.GetString("Form1_HideError_Message"), ex.Message), LanguageManager.GetString("Form1_HideError_Title"), MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Catch
+                End Try
+            End Try
+        Catch ex As Exception
+            Try
+                MessageBox.Show(String.Format(LanguageManager.GetString("Form1_SwitchToDJ_Error_Message"), ex.Message), LanguageManager.GetString("Form1_SwitchToDJ_Error_Title"), MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Catch
+            End Try
+        End Try
     End Sub
 
     ' Cancellation token source for background metadata processing
@@ -94,12 +266,12 @@ Public Class Form1
                 btn.Name = "ToolStripButton_MetadataCancel"
                 btn.Text = "Annuler"
                 AddHandler btn.Click, Sub()
-                                         Try
-                                             RequestCancelMetadataProcessing()
-                                             btn.Enabled = False
-                                         Catch
-                                         End Try
-                                     End Sub
+                                          Try
+                                              RequestCancelMetadataProcessing()
+                                              btn.Enabled = False
+                                          Catch
+                                          End Try
+                                      End Sub
                 ss.Items.Add(btn)
                 Me.Controls.Add(ss)
                 ss.BringToFront()
@@ -185,24 +357,46 @@ Public Class Form1
                                                   ' Charger la playlist en utilisant la méthode existante mais
                                                   ' sans bloquer le thread UI. On collecte d'abord les entrées
                                                   ' puis on ajoute en batch sur le thread UI pour rester réactif.
-                                                  Dim fichierPlaylist = Path.Combine(
+                                                  Dim dossier = Path.Combine(
                                                       Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                                                      "AudioPlay",
-                                                      "playlist.txt")
-                                                  If Not File.Exists(fichierPlaylist) Then Return
+                                                      "AudioPlay")
+                                                  Dim fichierPlaylist = Path.Combine(dossier, "playlist.txt")
+
+                                                  ' Si le fichier principal n'existe pas ou est vide, essayer le backup
+                                                  If Not File.Exists(fichierPlaylist) OrElse New FileInfo(fichierPlaylist).Length = 0 Then
+                                                      Dim fichierBackup = Path.Combine(dossier, "playlist.txt.bak")
+                                                      If File.Exists(fichierBackup) AndAlso New FileInfo(fichierBackup).Length > 0 Then
+                                                          Try
+                                                              File.Copy(fichierBackup, fichierPlaylist, True)
+                                                          Catch
+                                                              ' Si la copie échoue, utiliser directement le backup
+                                                              fichierPlaylist = fichierBackup
+                                                          End Try
+                                                      Else
+                                                          Return
+                                                      End If
+                                                  End If
 
                                                   Dim lignes = File.ReadAllLines(fichierPlaylist)
-                                                  Dim entries As New List(Of Tuple(Of String, String, String))()
+                                                  Dim entries As New List(Of Tuple(Of String, String, String, String))()
                                                   For Each ligne In lignes
                                                       If String.IsNullOrWhiteSpace(ligne) Then Continue For
                                                       Dim parties = ligne.Split("|"c)
                                                       If parties.Length >= 2 Then
                                                           Dim chemin = parties(0)
+                                                          Dim nom = parties(1)
                                                           Dim bpm = If(parties.Length >= 3, parties(2), "")
                                                           Dim duree = If(parties.Length >= 4, parties(3), "")
-                                                          If File.Exists(chemin) Then
-                                                              entries.Add(Tuple.Create(chemin, bpm, duree))
+
+                                                          ' Ignorer les pistes CD audio (CDDA://)
+                                                          ' L'utilisateur doit les ajouter manuellement à chaque session
+                                                          If chemin.StartsWith("CDDA://", StringComparison.OrdinalIgnoreCase) Then
+                                                              Continue For
                                                           End If
+
+                                                          ' Ajouter tous les fichiers, même s'ils n'existent pas temporairement
+                                                          ' (par exemple, lecteur réseau non monté)
+                                                          entries.Add(Tuple.Create(chemin, nom, bpm, duree))
                                                       End If
                                                   Next
 
@@ -219,11 +413,14 @@ Public Class Form1
                                                       metadataCancellationTokenSource = New Threading.CancellationTokenSource()
                                                   Catch
                                                   End Try
-                                                  ' Initialize progress UI
+                                                  ' Initialize progress UI avec tous les fichiers (plus de CD dans la liste)
+                                                  Dim totalFichiers = entries.Count
                                                   If Not Me.IsDisposed AndAlso Me.IsHandleCreated Then
                                                       Me.BeginInvoke(Sub()
                                                                          Try
-                                                                             InitMetadataProgress(entries.Count)
+                                                                             If totalFichiers > 0 Then
+                                                                                 InitMetadataProgress(totalFichiers)
+                                                                             End If
                                                                          Catch
                                                                          End Try
                                                                      End Sub)
@@ -237,7 +434,7 @@ Public Class Form1
                                                                              Try
                                                                                  ListView1.BeginUpdate()
                                                                                  For Each entry In firstBatch
-                                                                                     AjouterItemLight(entry.Item1, Path.GetFileName(entry.Item1), entry.Item2, entry.Item3)
+                                                                                     AjouterItemLight(entry.Item1, entry.Item2, entry.Item3, entry.Item4)
                                                                                  Next
                                                                              Catch
                                                                              Finally
@@ -249,7 +446,10 @@ Public Class Form1
 
                                                                              Try
                                                                                  MettreAJourNumerotation()
-                                                                                 DemarrerTraitementMetadonneesEnArrierePlan(firstBatch)
+                                                                                 ' Plus besoin de filtrer, la liste ne contient que des fichiers normaux
+                                                                                 If firstBatch.Count > 0 Then
+                                                                                     DemarrerTraitementMetadonneesEnArrierePlan(firstBatch)
+                                                                                 End If
                                                                              Catch
                                                                              End Try
                                                                          End Sub)
@@ -258,7 +458,7 @@ Public Class Form1
                                                   End If
 
                                                   While index < entries.Count
-                                                      Dim batch As New List(Of Tuple(Of String, String, String))()
+                                                      Dim batch As New List(Of Tuple(Of String, String, String, String))()
                                                       Dim maxIndex As Integer = Math.Min(index + batchSize, entries.Count)
                                                       For i As Integer = index To maxIndex - 1
                                                           batch.Add(entries(i))
@@ -270,7 +470,7 @@ Public Class Form1
                                                                                  Try
                                                                                      ListView1.BeginUpdate()
                                                                                      For Each entry In batch
-                                                                                         AjouterItemLight(entry.Item1, Path.GetFileName(entry.Item1), entry.Item2, entry.Item3)
+                                                                                         AjouterItemLight(entry.Item1, entry.Item2, entry.Item3, entry.Item4)
                                                                                      Next
                                                                                  Catch
                                                                                  Finally
@@ -282,7 +482,10 @@ Public Class Form1
 
                                                                                  Try
                                                                                      MettreAJourNumerotation()
-                                                                                     DemarrerTraitementMetadonneesEnArrierePlan(batch)
+                                                                                     ' Plus besoin de filtrer, la liste ne contient que des fichiers normaux
+                                                                                     If batch.Count > 0 Then
+                                                                                         DemarrerTraitementMetadonneesEnArrierePlan(batch)
+                                                                                     End If
                                                                                  Catch
                                                                                  End Try
                                                                              End Sub)
@@ -317,15 +520,46 @@ Public Class Form1
     ' Ajoute un item léger dans la ListView sans ouverture du fichier audio.
     Private Sub AjouterItemLight(chemin As String, nomFichier As String, bpm As String, duree As String)
         Try
+            ' Pour les pistes CD, utiliser le nom sauvegardé dans playlist.txt
+            ' (déjà formaté avec icône et traduction correcte)
+            ' Pour les fichiers normaux, nomFichier est déjà correct
+
             Dim newItem As New ListViewItem()
-            newItem.Text = "" ' Colonne Num (remplie par MettreAJourNumerotation)
-            newItem.SubItems.Add(nomFichier) ' Colonne Chansons
-            newItem.SubItems.Add(If(String.IsNullOrWhiteSpace(bpm), "", bpm)) ' Colonne BPM
-            newItem.SubItems.Add(If(String.IsNullOrWhiteSpace(duree), "--:--", duree)) ' Colonne Durée
+            newItem.Text = ""
+            newItem.SubItems.Add(nomFichier)
+            newItem.SubItems.Add(If(String.IsNullOrWhiteSpace(bpm), "", bpm))
+            newItem.SubItems.Add(If(String.IsNullOrWhiteSpace(duree), "--:--", duree))
+
+            ' Marquer visuellement les fichiers inaccessibles
+            Dim estCDAudio = CDAudioManager.EstCheminCDAudio(chemin)
+            If Not estCDAudio AndAlso Not File.Exists(chemin) Then
+                ' Fichier introuvable : utiliser une couleur atténuée basée sur le thème
+                Dim theme = ThemeManager.GetCurrentTheme()
+                Dim couleurNormale = theme.ListViewForeColor
+                ' Atténuer la couleur : mélanger avec le fond (50% opacité)
+                Dim couleurAttenuee = Color.FromArgb(
+                    (couleurNormale.R + theme.ListViewBackColor.R) \ 2,
+                    (couleurNormale.G + theme.ListViewBackColor.G) \ 2,
+                    (couleurNormale.B + theme.ListViewBackColor.B) \ 2
+                )
+                newItem.ForeColor = couleurAttenuee
+                ' Ajouter une indication visuelle dans le nom
+                newItem.SubItems(1).Text = "⚠ " & nomFichier
+            End If
 
             Dim tagDict As New Dictionary(Of String, Object) From {
                 {"Chemin", chemin}
             }
+
+            ' Détecter si c'est une piste CD pour ajouter les métadonnées
+            If estCDAudio Then
+                tagDict.Add("TypeSource", "CDAudio")
+                Dim cdTrack = CDAudioManager.ParseCheminCDAudio(chemin)
+                If cdTrack IsNot Nothing Then
+                    tagDict.Add("CDDrive", cdTrack.Drive)
+                    tagDict.Add("CDTrackNumber", cdTrack.TrackNumber)
+                End If
+            End If
 
             Dim bpmValue As Double = 0
             If Not String.IsNullOrWhiteSpace(bpm) AndAlso Double.TryParse(bpm, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, bpmValue) Then
@@ -335,12 +569,11 @@ Public Class Form1
             newItem.Tag = tagDict
             ListView1.Items.Add(newItem)
         Catch
-            ' Ignorer les erreurs d'ajout
         End Try
     End Sub
 
     ' Traite les métadonnées (durée / BPM) en arrière-plan et met à jour l'UI via BeginInvoke.
-    Private Sub DemarrerTraitementMetadonneesEnArrierePlan(batchEntries As List(Of Tuple(Of String, String, String)))
+    Private Sub DemarrerTraitementMetadonneesEnArrierePlan(batchEntries As List(Of Tuple(Of String, String, String, String)))
         Try
             If batchEntries Is Nothing OrElse batchEntries.Count = 0 Then Return
 
@@ -351,8 +584,9 @@ Public Class Form1
             Dim done As Integer = 0
             For Each entry In batchEntries
                 Dim cheminLocal = entry.Item1
-                Dim bpmExistantLocal = entry.Item2
-                Dim dureeExistanteLocal = entry.Item3
+                Dim nomLocal = entry.Item2
+                Dim bpmExistantLocal = entry.Item3
+                Dim dureeExistanteLocal = entry.Item4
                 If IsMetadataCancellationRequested() Then
                     Exit For
                 End If
@@ -478,6 +712,9 @@ Public Class Form1
         ' Toggle mute sans modifier dernierVolume ni le TrackBar
         isMuted = Not isMuted
 
+        ' Appliquer le mute au système Windows
+        WindowsVolumeControl.SetMute(isMuted)
+
         If isMuted Then
             ' Mute activé : bouton devient rouge
             If Button_Mute IsNot Nothing Then
@@ -510,7 +747,7 @@ Public Class Form1
 
     ' === Variables de lecture audio ===
     Private lecteur As IWavePlayer = Nothing
-    Private fichierAudio As AudioFileReader = Nothing
+    Private fichierAudio As WaveStream = Nothing ' Changé pour supporter CD et fichiers
     Private volumeProvider As VolumeSampleProvider = Nothing
     Private equalizerProvider As SimpleEqualizerProvider = Nothing
 
@@ -574,8 +811,6 @@ Public Class Form1
     Private nombreBeatsMetronome As Integer = 4 ' 4 beats par défaut
     Private metronomeSonActif As Boolean = True ' Son du métronome activé par défaut
     Private metronomeLumiereActive As Boolean = True ' Lumière LED activée par défaut
-    Private supprimerSilenceDebut As Boolean = False ' Suppression silence début désactivé par défaut
-    Private supprimerSilenceFin As Boolean = False ' Suppression silence fin désactivé par défaut
 
     Private Const ListViewInternalDragFormat As String = "AudioPlay.ListView.InternalMove"
 
@@ -755,7 +990,22 @@ Public Class Form1
             Button_APropos.BackColor = Color.Transparent
             Button_APropos.ForeColor = Color.Black
         End If
+
+        ' Bouton Mode DJ (icône)
+        If ButtonModeDJ IsNot Nothing Then
+            ButtonModeDJ.BackgroundImage = AudioPlay.Resources.AudioPlay_DJMixeur__Gris
+            ButtonModeDJ.BackColor = Color.Transparent
+        End If
+
+        ' Bouton Aide Loop
+        If Button_Loop_Aide IsNot Nothing Then
+            Button_Loop_Aide.BackgroundImage = AudioPlay.Resources.AudioPlay_Vide__Carré
+            Button_Loop_Aide.BackColor = Color.Transparent
+            Button_Loop_Aide.ForeColor = Color.Black
+        End If
+
     End Sub
+
 
     ' ========================================
     ' EFFETS DE SURVOL POUR LES BOUTONS
@@ -808,6 +1058,9 @@ Public Class Form1
 
         ' Bouton AudioPlay Aide
         ConfigurerSurvol(Button_AudioPlay_Aide, AudioPlay.Resources.AudioPlay_Aide_Gris, AudioPlay.Resources.AudioPlay_Aide_Vert, AudioPlay.Resources.AudioPlay_Aide_Rouge)
+
+        ' Bouton Mode DJ
+        ConfigurerSurvol(ButtonModeDJ, AudioPlay.Resources.AudioPlay_DJMixeur__Gris, AudioPlay.Resources.AudioPlay_DJMixeur__Vert, AudioPlay.Resources.AudioPlay_DJMixeur__Rouge)
 
         ' Bouton À Propos (effets sur le texte uniquement)
         ConfigurerSurvolTexte(Button_APropos)
@@ -999,11 +1252,11 @@ Public Class Form1
         ' État normal : texte noir
         bouton.ForeColor = Color.Black
 
-        ' Gestionnaire MouseEnter : texte vert lime
+        ' Gestionnaire MouseEnter : texte reste noir
         AddHandler bouton.MouseEnter, Sub()
                                           Try
                                               If estEnFermeture Then Return
-                                              bouton.ForeColor = Color.Lime
+                                              bouton.ForeColor = Color.Black
                                           Catch
                                               ' Ignorer les erreurs pendant la fermeture
                                           End Try
@@ -1076,6 +1329,20 @@ Public Class Form1
         Catch
         End Try
 
+        ' === Ne pas tronquer le fichier de diagnostics au démarrage de l'application ===
+        ' Le log ne doit être réinitialisé que lors d'une extraction (ButtonExtraire).
+        ' Ici on ajoute une ligne d'information si possible, sans écraser le contenu existant.
+        Try
+            Try
+                CDAudioAnalyzer.DiagnosticWrite($"APPLICATION STARTUP: {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - UI démarrée (pas une session d'extraction){Environment.NewLine}")
+                System.Diagnostics.Debug.WriteLine($"[Form1] Diagnostics log append attempted: {CDAudioAnalyzer.DiagnosticsLogPath}")
+            Catch ex As Exception
+                System.Diagnostics.Debug.WriteLine($"[Form1] Impossible d'écrire dans le log de diagnostics au démarrage: {ex.Message}")
+            End Try
+        Catch
+            ' Ignorer si CDAudioAnalyzer n'est pas disponible pour une raison quelconque
+        End Try
+
         ' === Vérifier le Mode Mixeur DJ ===
         If ParametresGlobaux.ModeMixeurDJ Then
             ' L'utilisateur a activé le Mode DJ : afficher FormDJ au lieu de Form1
@@ -1087,6 +1354,15 @@ Public Class Form1
         End If
 
         ' Indiquer que l'initialisation est en cours (empêche les événements Scroll de sauvegarder)
+        ' Connecter les handlers MouseMove pour l'affichage dynamique des ToolTip des TrackBars
+        Try
+            AddHandler TrackBar_Volume.MouseMove, AddressOf TrackBar_MouseMove_ShowValue
+            AddHandler TrackBar_Aigues.MouseMove, AddressOf TrackBar_MouseMove_ShowValue
+            AddHandler TrackBar_Basses.MouseMove, AddressOf TrackBar_MouseMove_ShowValue
+            AddHandler TrackBar_Avancement.MouseMove, AddressOf TrackBar_MouseMove_ShowValue
+        Catch
+            ' Ignorer si contrôles non initialisés
+        End Try
         initialisationEnCours = True
 
         ' Enlever tout texte sur les boutons
@@ -1105,15 +1381,9 @@ Public Class Form1
         Button_Parametres.Text = ""
         Button_Loop.Text = ""
         Button_AudioPlay_Aide.Text = ""
+        ButtonModeDJ.Text = ""
 
-        ' Vérification des associations audio par défaut
-        Dim nonAssocies = AudioAssociationChecker.GetNonAssociatedTypes()
-        If nonAssocies.Count > 0 Then
-            MessageBox.Show(
-                LanguageManager.GetString("FileAssociation_NotDefault", String.Join(", ", nonAssocies)),
-                LanguageManager.GetString("Info_Title"),
-                MessageBoxButtons.OK, MessageBoxIcon.Information)
-        End If
+        ' Les associations seront vérifiées/appliquées après le chargement des paramètres
         Dim args = Environment.GetCommandLineArgs()
         ' === Instance unique Mutex + NamedPipe ===
         If instanceMutex Is Nothing Then
@@ -1189,6 +1459,33 @@ Public Class Form1
 
         ' Charger les paramètres applicatifs
         ChargerParametres()
+
+        ' Appliquer les associations audio par défaut enregistrées (AudioDefaut.txt)
+        Try
+            AssurerAssociationsAudioParDefaut()
+        Catch
+        End Try
+
+        ' Vérifier maintenant si des types restent non associés et proposer d'ouvrir les Paramètres
+        Try
+            Dim nonAssociesAfter = AudioAssociationChecker.GetNonAssociatedTypes()
+            If nonAssociesAfter.Count > 0 Then
+                Dim msg = LanguageManager.GetString("FileAssociation_NotDefault", String.Join(", ", nonAssociesAfter)) & Environment.NewLine & Environment.NewLine & LanguageManager.GetString("FileAssociation_OfferOpenSettings")
+                Dim res = MessageBox.Show(msg, LanguageManager.GetString("Info_Title"), MessageBoxButtons.YesNo, MessageBoxIcon.Information)
+                If res = DialogResult.Yes Then
+                    Try
+                        Process.Start(New ProcessStartInfo("ms-settings:defaultapps") With {.UseShellExecute = True})
+                    Catch
+                        ' Fallback: ouvrir la page de paramètres via control panel
+                        Try
+                            Process.Start(New ProcessStartInfo("control", "/name Microsoft.DefaultPrograms") With {.UseShellExecute = True})
+                        Catch
+                        End Try
+                    End Try
+                End If
+            End If
+        Catch
+        End Try
 
         ' Charger les paramètres audio depuis Son_Ajustement.txt (fichier séparé)
         ChargerAudioAjustements()
@@ -1283,6 +1580,9 @@ Public Class Form1
 
         ' Initialiser les labels de boucle (I et O)
         InitialiserLabelsLoop()
+
+        ' Initialiser l'échelle numérique 0..100 au-dessus du TrackBar
+        InitialiserEchelleTrackBar()
 
         ' Vérifier et installer Python/librosa si nécessaire
         Await VerifierEtInstallerPython()
@@ -1398,28 +1698,52 @@ Public Class Form1
 
         ' Extraire le chemin depuis le Tag (peut être un Dictionary ou une String)
         Dim chemin As String = ""
+        Dim estCDAudio As Boolean = False
         If TypeOf item.Tag Is Dictionary(Of String, Object) Then
             Dim tagDict = DirectCast(item.Tag, Dictionary(Of String, Object))
             If tagDict.ContainsKey("Chemin") Then
                 chemin = tagDict("Chemin")?.ToString()
             End If
+            ' Vérifier si c'est une piste CD
+            If tagDict.ContainsKey("TypeSource") AndAlso tagDict("TypeSource")?.ToString() = "CDAudio" Then
+                estCDAudio = True
+            End If
         ElseIf TypeOf item.Tag Is String Then
             chemin = item.Tag.ToString()
+            ' Vérifier si c'est un chemin CDDA://
+            estCDAudio = CDAudioManager.EstCheminCDAudio(chemin)
         End If
 
-        ' Si le fichier n'existe pas, passer automatiquement au suivant
-        If String.IsNullOrEmpty(chemin) OrElse Not File.Exists(chemin) Then
-            tentativesLectureFichier += 1
-            System.Diagnostics.Debug.WriteLine($"Fichier manquant ({tentativesLectureFichier}/{ListView1.Items.Count}) : {chemin}, passage au suivant...")
-            ' Sélectionner le prochain item (aléatoire ou séquentiel)
-            SelectionnerItemSuivantSansTentative()
-            ' Réessayer avec le nouveau fichier sélectionné
-            JouerItemSelectionneAvecTentatives()
-            Return
+        ' Pour les fichiers normaux, vérifier que le chemin n'est pas vide
+        ' Ne PAS utiliser File.Exists() car il peut retourner False pour les chemins réseau/NAS
+        If Not estCDAudio Then
+            If String.IsNullOrEmpty(chemin) Then
+                tentativesLectureFichier += 1
+                System.Diagnostics.Debug.WriteLine($"Chemin vide ({tentativesLectureFichier}/{ListView1.Items.Count}), passage au suivant...")
+                ' Sélectionner le prochain item (aléatoire ou séquentiel)
+                SelectionnerItemSuivantSansTentative()
+                ' Réessayer avec le nouveau fichier sélectionné
+                JouerItemSelectionneAvecTentatives()
+                Return
+            End If
+            ' Si le fichier n'est vraiment pas accessible, NAudio lancera une exception
+            ' qui sera gérée plus bas dans ChargerFichierAudio()
+        Else
+            ' Pour les pistes CD, vérifier que le CD est toujours présent
+            Dim cdTrack = CDAudioManager.ParseCheminCDAudio(chemin)
+            If cdTrack Is Nothing OrElse Not CDAudioManager.EstCDAudioPresent(cdTrack.Drive) Then
+                tentativesLectureFichier += 1
+                System.Diagnostics.Debug.WriteLine($"CD absent ({tentativesLectureFichier}/{ListView1.Items.Count}) : {chemin}, passage au suivant...")
+                ' Sélectionner le prochain item (aléatoire ou séquentiel)
+                SelectionnerItemSuivantSansTentative()
+                ' Réessayer avec le nouveau fichier sélectionné
+                JouerItemSelectionneAvecTentatives()
+                Return
+            End If
         End If
 
-        ' Fichier trouvé, réinitialiser le compteur
-        tentativesLectureFichier = 0
+        ' Ne pas réinitialiser le compteur ici : ne le remettre à zéro
+        ' QUE si l'ouverture du fichier a réussi (évite boucle infinie si tous les fichiers sont corrompus)
 
         ' --- GESTION BPM MÉTRONOME ---
         If metronomeActif Then
@@ -1459,57 +1783,120 @@ Public Class Form1
             End If
         End If
 
-        Try
-            ' Arrêter la lecture en cours
-            ArreterLecture()
+        ' Use an iterative attempt loop to avoid recursion and ensure termination when all files are invalid
+        Dim opened As Boolean = False
+        Dim attempts As Integer = 0
+        Dim maxAttempts As Integer = Math.Max(1, ListView1.Items.Count)
+        Do While Not opened AndAlso attempts < maxAttempts
+            attempts += 1
+            Try
+                ' Arrêter la lecture en cours
+                ArreterLecture()
 
-            ' Effacer les marqueurs de boucle pour la nouvelle chanson
-            EffacerMarqueursLoop()
+                ' Effacer les marqueurs de boucle pour la nouvelle chanson
+                EffacerMarqueursLoop()
 
-            ' Obtenir le gain de normalisation AVANT d'ouvrir le fichier
-            ' MAIS seulement si le métronome est désactivé pour éviter les conflits COM
-            If metronomeActif Then
-                ' Désactiver temporairement la normalisation avec le métronome
-                gainNormalisationActuel = 1.0F
-            Else
-                gainNormalisationActuel = ObtenirGainNormalisation(item, chemin)
-            End If
+                ' Obtenir le gain de normalisation AVANT d'ouvrir le fichier
+                If metronomeActif Then
+                    gainNormalisationActuel = 1.0F
+                Else
+                    gainNormalisationActuel = ObtenirGainNormalisation(item, chemin)
+                End If
 
-            ' Récupérer ou calculer la durée réelle si l'option est activée
-            dureeReelleActuelle = TimeSpan.Zero
-            If supprimerSilenceFin AndAlso TypeOf item.Tag Is Dictionary(Of String, Object) Then
-                Dim tagDict = DirectCast(item.Tag, Dictionary(Of String, Object))
-                If tagDict.ContainsKey("DureeReelle") Then
-                    ' La durée réelle existe déjà dans le Tag
-                    Dim dureeObj = tagDict("DureeReelle")
-                    If TypeOf dureeObj Is TimeSpan Then
-                        dureeReelleActuelle = DirectCast(dureeObj, TimeSpan)
-                        System.Diagnostics.Debug.WriteLine($"Utilisation durée réelle (cache): {dureeReelleActuelle.TotalSeconds:F2}s")
+                ' Récupérer ou calculer la durée réelle si l'option est activée (pas pour CD audio)
+                dureeReelleActuelle = TimeSpan.Zero
+                If Not estCDAudio AndAlso ParametresGlobaux.SupprimerSilenceFin AndAlso TypeOf item.Tag Is Dictionary(Of String, Object) Then
+                    Dim tagDict = DirectCast(item.Tag, Dictionary(Of String, Object))
+                    If tagDict.ContainsKey("DureeReelle") Then
+                        Dim dureeObj = tagDict("DureeReelle")
+                        If TypeOf dureeObj Is TimeSpan Then
+                            dureeReelleActuelle = DirectCast(dureeObj, TimeSpan)
+                        End If
+                    Else
+                        Try
+                            dureeReelleActuelle = SilenceDetector.TrouverDureeReelle(chemin)
+                            If dureeReelleActuelle > TimeSpan.Zero Then
+                                tagDict.Add("DureeReelle", dureeReelleActuelle)
+                            End If
+                        Catch
+                        End Try
+                    End If
+                End If
+
+                ' Créer le nouveau lecteur (différent pour CD audio)
+                If estCDAudio Then
+                    Dim cdTrack = CDAudioManager.ParseCheminCDAudio(chemin)
+                    If cdTrack IsNot Nothing Then
+                        fichierAudio = CDAudioManager.CreerLecteurCDAudio(cdTrack)
+                        If fichierAudio Is Nothing Then
+                            Throw New Exception("Impossible de créer le lecteur CD audio")
+                        End If
+                    Else
+                        Throw New Exception("Chemin CD audio invalide")
                     End If
                 Else
-                    ' Calculer la durée réelle à la demande et la mettre en cache
                     Try
-                        dureeReelleActuelle = SilenceDetector.TrouverDureeReelle(chemin)
-                        If dureeReelleActuelle > TimeSpan.Zero Then
-                            tagDict.Add("DureeReelle", dureeReelleActuelle)
-                            System.Diagnostics.Debug.WriteLine($"Durée réelle calculée à la demande: {dureeReelleActuelle.TotalSeconds:F2}s")
+                        fichierAudio = New AudioFileReader(chemin)
+                    Catch exReader As Exception
+                        ' Log and skip silently to next track
+                        Try
+                            CDAudioAnalyzer.DiagnosticWrite($"PLAYBACK_ERROR: Failed opening audio {chemin}: {exReader.Message}")
+                        Catch
+                        End Try
+                        ' mark attempt and select next
+                        tentativesLectureFichier = attempts
+                        SelectionnerItemSuivantSansTentative()
+                        ' prepare for next loop iteration with new selection
+                        If attempts >= maxAttempts Then Exit Do
+                        ' update item and chemin for the newly selected item
+                        If ListView1.SelectedItems.Count = 0 Then Exit Do
+                        item = ListView1.SelectedItems(0)
+                        If TypeOf item.Tag Is Dictionary(Of String, Object) Then
+                            Dim tagDict2 = DirectCast(item.Tag, Dictionary(Of String, Object))
+                            If tagDict2.ContainsKey("Chemin") Then chemin = tagDict2("Chemin")?.ToString()
+                            If tagDict2.ContainsKey("TypeSource") AndAlso tagDict2("TypeSource")?.ToString() = "CDAudio" Then estCDAudio = True Else estCDAudio = False
+                        ElseIf TypeOf item.Tag Is String Then
+                            chemin = item.Tag.ToString()
+                            estCDAudio = CDAudioManager.EstCheminCDAudio(chemin)
                         End If
-                    Catch ex As Exception
-                        System.Diagnostics.Debug.WriteLine($"Erreur calcul durée réelle: {ex.Message}")
+                        Continue Do
                     End Try
                 End If
-            End If
 
-            ' Créer le nouveau lecteur
-            fichierAudio = New AudioFileReader(chemin)
+                ' If we reach here, opening succeeded
+                opened = True
+                tentativesLectureFichier = 0
+            Catch ex As Exception
+                ' If unexpected exception occurs, log and stop attempts
+                Try
+                    CDAudioAnalyzer.DiagnosticWrite($"PLAYBACK_ERROR: Unexpected error preparing playback {chemin}: {ex.Message}")
+                Catch
+                End Try
+                Exit Do
+            End Try
+        Loop
 
-            ' Mettre à jour le taux d'échantillonnage
-            If Label_SampleRate IsNot Nothing Then
+        If Not opened Then
+            ' All attempts failed: stop without crashing
+            System.Diagnostics.Debug.WriteLine("Lecture abandonnée : aucun fichier valide trouvé dans la liste.")
+            tentativesLectureFichier = 0
+            Return
+        End If
+
+        ' Mettre à jour le taux d'échantillonnage
+        If Label_SampleRate IsNot Nothing Then
+            If estCDAudio Then
+                Label_SampleRate.Text = "44100 Hz" ' CD Audio standard
+            Else
                 Label_SampleRate.Text = $"{fichierAudio.WaveFormat.SampleRate} Hz"
             End If
+        End If
 
-            ' Calculer et afficher le bitrate
-            If Label_Bitrate IsNot Nothing Then
+        ' Calculer et afficher le bitrate
+        If Label_Bitrate IsNot Nothing Then
+            If estCDAudio Then
+                Label_Bitrate.Text = "1411 kbps" ' CD Audio standard: 44.1kHz * 16-bit * 2 channels
+            Else
                 Try
                     ' Calculer le bitrate approximatif
                     Dim fileInfo As New FileInfo(chemin)
@@ -1527,209 +1914,208 @@ Public Class Form1
                     Label_Bitrate.Text = "-- kbps"
                 End Try
             End If
+        End If
 
-            ' Convertir le fichier audio en SampleProvider
-            Dim audioSampleProvider = fichierAudio.ToSampleProvider()
+        ' Convertir le fichier audio en SampleProvider
+        Dim audioSampleProvider = fichierAudio.ToSampleProvider()
 
-            ' Supprimer le silence au début si l'option est activée
-            ' (ou si le métronome est actif, pour que la chanson démarre immédiatement après)
-            If supprimerSilenceDebut OrElse metronomeActif Then
-                audioSampleProvider = New SkipSilenceSampleProvider(audioSampleProvider)
-            End If
+        ' Supprimer le silence au début si l'option est activée
+        ' (ou si le métronome est actif, pour que la chanson démarre immédiatement après)
+        ' Ne pas appliquer pour les pistes CD (qui peuvent ne pas encore avoir de vraie lecture audio)
+        If Not estCDAudio AndAlso (ParametresGlobaux.SupprimerSilenceDebut OrElse metronomeActif) Then
+            audioSampleProvider = New SkipSilenceSampleProvider(audioSampleProvider)
+        End If
 
-            ' DÉSACTIVÉ TEMPORAIREMENT : La suppression du silence à la fin cause des problèmes
-            ' TODO : Implémenter une meilleure approche (détection anticipée du silence final)
-            'If supprimerSilenceFin Then
-            '    audioSampleProvider = New TrimEndSilenceSampleProvider(audioSampleProvider)
-            'End If
+        ' DÉSACTIVÉ TEMPORAIREMENT : La suppression du silence à la fin cause des problèmes
+        ' TODO : Implémenter une meilleure approche (détection anticipée du silence final)
+        'If ParametresGlobaux.SupprimerSilenceFin Then
+        '    audioSampleProvider = New TrimEndSilenceSampleProvider(audioSampleProvider)
+        'End If
 
-            ' Créer le provider de base
-            Dim sampleProviderBase As ISampleProvider
+        ' Créer le provider de base
+        Dim sampleProviderBase As ISampleProvider
 
-            ' Si le métronome est activé, créer la séquence métronome + audio
-            If metronomeActif Then
-                ' Obtenir le BPM depuis les métadonnées ou le Tag
-                Dim bpmFichier As Double = 120.0 ' BPM par défaut
-                If TypeOf item.Tag Is Dictionary(Of String, Object) Then
-                    Dim tagDict = DirectCast(item.Tag, Dictionary(Of String, Object))
-                    If tagDict.ContainsKey("BPM") Then
-                        Dim bpmObj = tagDict("BPM")
-                        If bpmObj IsNot Nothing Then
-                            Double.TryParse(bpmObj.ToString(), bpmFichier)
-                        End If
+        ' Si le métronome est activé, créer la séquence métronome + audio
+        If metronomeActif Then
+            ' Obtenir le BPM depuis les métadonnées ou le Tag
+            Dim bpmFichier As Double = 120.0 ' BPM par défaut
+            If TypeOf item.Tag Is Dictionary(Of String, Object) Then
+                Dim tagDict = DirectCast(item.Tag, Dictionary(Of String, Object))
+                If tagDict.ContainsKey("BPM") Then
+                    Dim bpmObj = tagDict("BPM")
+                    If bpmObj IsNot Nothing Then
+                        Double.TryParse(bpmObj.ToString(), bpmFichier)
                     End If
                 End If
+            End If
 
-                System.Diagnostics.Debug.WriteLine($"Création métronome avec BPM: {bpmFichier}")
+            System.Diagnostics.Debug.WriteLine($"Création métronome avec BPM: {bpmFichier}")
 
-                ' Sauvegarder les paramètres du métronome pour la LED
-                metronomeBPM = bpmFichier
-                metronomeNombreBeats = nombreBeatsMetronome
+            ' Sauvegarder les paramètres du métronome pour la LED
+            metronomeBPM = bpmFichier
+            metronomeNombreBeats = nombreBeatsMetronome
 
-                ' Si le son du métronome est activé, créer le provider audio
-                If metronomeSonActif Then
-                    ' Créer le métronome avec le BPM du fichier
-                    Dim metronome As New MetronomeProvider(
+            ' Si le son du métronome est activé, créer le provider audio
+            If metronomeSonActif Then
+                ' Créer le métronome avec le BPM du fichier
+                Dim metronome As New MetronomeProvider(
                         fichierAudio.WaveFormat.SampleRate,
                         bpmFichier,
                         nombreBeatsMetronome
                     )
 
-                    ' Sauvegarder la référence au métronome
-                    metronomeEnCours = metronome
+                ' Sauvegarder la référence au métronome
+                metronomeEnCours = metronome
 
-                    ' Créer le séquenceur qui joue métronome puis audio
-                    Dim sequenceur As New MetronomeAudioSequencer(metronome, audioSampleProvider)
-                    sampleProviderBase = sequenceur
-                Else
-                    ' Pas de son métronome, mais si la lumière est activée, créer un délai silencieux
-                    If metronomeLumiereActive Then
-                        ' Créer un délai silencieux pour la durée du métronome
-                        Dim silentDelay As New SilentDelayProvider(
-                            fichierAudio.WaveFormat.SampleRate,
-                            bpmFichier,
-                            nombreBeatsMetronome
-                        )
-
-                        ' Créer le séquenceur qui joue silence puis audio
-                        Dim sequenceur As New SilentDelayAudioSequencer(silentDelay, audioSampleProvider)
-                        sampleProviderBase = sequenceur
-
-                        ' Créer un métronome invisible pour la LED (juste pour le timing)
-                        metronomeEnCours = New MetronomeProvider(
-                            fichierAudio.WaveFormat.SampleRate,
-                            bpmFichier,
-                            nombreBeatsMetronome
-                        )
-                    Else
-                        ' Ni son ni lumière, utiliser directement le fichier audio
-                        sampleProviderBase = audioSampleProvider
-                    End If
-                End If
-
-                ' Ouvrir la fenêtre LED si la lumière est activée
-                If metronomeLumiereActive Then
-                    If formLight Is Nothing Then
-                        formLight = New FormLight()
-                    End If
-                    formLight.ShowLight()
-                End If
+                ' Créer le séquenceur qui joue métronome puis audio
+                Dim sequenceur As New MetronomeAudioSequencer(metronome, audioSampleProvider)
+                sampleProviderBase = sequenceur
             Else
-                ' Pas de métronome, utiliser directement le fichier audio
-                sampleProviderBase = audioSampleProvider
+                ' Pas de son métronome, mais si la lumière est activée, créer un délai silencieux
+                If metronomeLumiereActive Then
+                    ' Créer un délai silencieux pour la durée du métronome
+                    Dim silentDelay As New SilentDelayProvider(
+                            fichierAudio.WaveFormat.SampleRate,
+                            bpmFichier,
+                            nombreBeatsMetronome
+                        )
+
+                    ' Créer le séquenceur qui joue silence puis audio
+                    Dim sequenceur As New SilentDelayAudioSequencer(silentDelay, audioSampleProvider)
+                    sampleProviderBase = sequenceur
+
+                    ' Créer un métronome invisible pour la LED (juste pour le timing)
+                    metronomeEnCours = New MetronomeProvider(
+                            fichierAudio.WaveFormat.SampleRate,
+                            bpmFichier,
+                            nombreBeatsMetronome
+                        )
+                Else
+                    ' Ni son ni lumière, utiliser directement le fichier audio
+                    sampleProviderBase = audioSampleProvider
+                End If
             End If
 
-            ' Créer la chaîne audio avec égaliseur personnalisé
-            equalizerProvider = New SimpleEqualizerProvider(sampleProviderBase, dernieresBasses, dernieresAigues)
+            ' Ouvrir la fenêtre LED si la lumière est activée
+            If metronomeLumiereActive Then
+                If formLight Is Nothing Then
+                    formLight = New FormLight()
+                End If
+                formLight.ShowLight()
+            End If
+        Else
+            ' Pas de métronome, utiliser directement le fichier audio
+            sampleProviderBase = audioSampleProvider
+        End If
 
-            ' === Appliquer les effets audio dans l'ordre ===
-            Dim currentProvider As ISampleProvider = equalizerProvider
+        ' Créer la chaîne audio avec égaliseur personnalisé
+        equalizerProvider = New SimpleEqualizerProvider(sampleProviderBase, dernieresBasses, dernieresAigues)
 
-            ' Debug: Afficher l'état des effets
-            System.Diagnostics.Debug.WriteLine("=== État des effets audio ===")
-            System.Diagnostics.Debug.WriteLine($"Reverb: Actif={ParametresGlobaux.EffetReverbActif}, Mix={ParametresGlobaux.EffetReverbMix}")
-            System.Diagnostics.Debug.WriteLine($"Echo: Actif={ParametresGlobaux.EffetEchoActif}, Mix={ParametresGlobaux.EffetEchoMix}, Délai={ParametresGlobaux.EffetEchoDelai}ms, Feedback={ParametresGlobaux.EffetEchoFeedback}")
-            System.Diagnostics.Debug.WriteLine($"TimeStretch: Actif={ParametresGlobaux.EffetTimeStretchActif}, Ratio={ParametresGlobaux.EffetTimeStretchRatio}")
-            System.Diagnostics.Debug.WriteLine($"PitchShift: Actif={ParametresGlobaux.EffetPitchShiftActif}, SemiTones={ParametresGlobaux.EffetPitchShiftSemiTones}")
-            System.Diagnostics.Debug.WriteLine($"Phaser: Actif={ParametresGlobaux.EffetPhaserActif}, Rate={ParametresGlobaux.EffetPhaserRate}, Depth={ParametresGlobaux.EffetPhaserDepth}, Feedback={ParametresGlobaux.EffetPhaserFeedback}, Mix={ParametresGlobaux.EffetPhaserMix}, Stages={ParametresGlobaux.EffetPhaserStages}")
+        ' === Appliquer les effets audio dans l'ordre ===
+        Dim currentProvider As ISampleProvider = equalizerProvider
 
-            ' 1. Time Stretch (changement de tempo)
-            timeStretchProvider = New TimeStretchSampleProvider(currentProvider)
-            timeStretchProvider.Enabled = ParametresGlobaux.EffetTimeStretchActif
-            timeStretchProvider.TempoChange = ParametresGlobaux.EffetTimeStretchRatio
-            currentProvider = timeStretchProvider
+        ' Debug: Afficher l'état des effets
+        System.Diagnostics.Debug.WriteLine("=== État des effets audio ===")
+        System.Diagnostics.Debug.WriteLine($"Reverb: Actif={ParametresGlobaux.EffetReverbActif}, Mix={ParametresGlobaux.EffetReverbMix}")
+        System.Diagnostics.Debug.WriteLine($"Echo: Actif={ParametresGlobaux.EffetEchoActif}, Mix={ParametresGlobaux.EffetEchoMix}, Délai={ParametresGlobaux.EffetEchoDelai}ms, Feedback={ParametresGlobaux.EffetEchoFeedback}")
+        System.Diagnostics.Debug.WriteLine($"TimeStretch: Actif={ParametresGlobaux.EffetTimeStretchActif}, Ratio={ParametresGlobaux.EffetTimeStretchRatio}")
+        System.Diagnostics.Debug.WriteLine($"PitchShift: Actif={ParametresGlobaux.EffetPitchShiftActif}, SemiTones={ParametresGlobaux.EffetPitchShiftSemiTones}")
+        System.Diagnostics.Debug.WriteLine($"Phaser: Actif={ParametresGlobaux.EffetPhaserActif}, Rate={ParametresGlobaux.EffetPhaserRate}, Depth={ParametresGlobaux.EffetPhaserDepth}, Feedback={ParametresGlobaux.EffetPhaserFeedback}, Mix={ParametresGlobaux.EffetPhaserMix}, Stages={ParametresGlobaux.EffetPhaserStages}")
 
-            ' 2. Pitch Shift (changement de hauteur)
-            pitchShiftProvider = New PitchShiftSampleProvider(currentProvider)
-            pitchShiftProvider.Enabled = ParametresGlobaux.EffetPitchShiftActif
-            pitchShiftProvider.PitchSemiTones = ParametresGlobaux.EffetPitchShiftSemiTones
-            currentProvider = pitchShiftProvider
+        ' 1. Time Stretch (changement de tempo)
+        timeStretchProvider = New TimeStretchSampleProvider(currentProvider)
+        timeStretchProvider.Enabled = ParametresGlobaux.EffetTimeStretchActif
+        timeStretchProvider.TempoChange = ParametresGlobaux.EffetTimeStretchRatio
+        currentProvider = timeStretchProvider
 
-            ' 3. Phaser (effet de balayage de phase)
-            phaserProvider = New PhaserSampleProvider(currentProvider)
-            phaserProvider.Enabled = ParametresGlobaux.EffetPhaserActif
-            phaserProvider.Rate = ParametresGlobaux.EffetPhaserRate
-            phaserProvider.Depth = ParametresGlobaux.EffetPhaserDepth
-            phaserProvider.Feedback = ParametresGlobaux.EffetPhaserFeedback
-            phaserProvider.Mix = ParametresGlobaux.EffetPhaserMix
-            phaserProvider.Stages = ParametresGlobaux.EffetPhaserStages
-            currentProvider = phaserProvider
+        ' 2. Pitch Shift (changement de hauteur)
+        pitchShiftProvider = New PitchShiftSampleProvider(currentProvider)
+        pitchShiftProvider.Enabled = ParametresGlobaux.EffetPitchShiftActif
+        pitchShiftProvider.PitchSemiTones = ParametresGlobaux.EffetPitchShiftSemiTones
+        currentProvider = pitchShiftProvider
 
-            ' 4. Reverb (réverbération)
-            reverbProvider = New ReverbSampleProvider(currentProvider)
-            reverbProvider.Enabled = ParametresGlobaux.EffetReverbActif
-            reverbProvider.Mix = ParametresGlobaux.EffetReverbMix
-            currentProvider = reverbProvider
+        ' 3. Phaser (effet de balayage de phase)
+        phaserProvider = New PhaserSampleProvider(currentProvider)
+        phaserProvider.Enabled = ParametresGlobaux.EffetPhaserActif
+        phaserProvider.Rate = ParametresGlobaux.EffetPhaserRate
+        phaserProvider.Depth = ParametresGlobaux.EffetPhaserDepth
+        phaserProvider.Feedback = ParametresGlobaux.EffetPhaserFeedback
+        phaserProvider.Mix = ParametresGlobaux.EffetPhaserMix
+        phaserProvider.Stages = ParametresGlobaux.EffetPhaserStages
+        currentProvider = phaserProvider
 
-            ' 5. Echo (écho)
-            echoProvider = New EchoSampleProvider(currentProvider)
-            echoProvider.Enabled = ParametresGlobaux.EffetEchoActif
-            echoProvider.Mix = ParametresGlobaux.EffetEchoMix
-            echoProvider.DelayMilliseconds = ParametresGlobaux.EffetEchoDelai
-            echoProvider.Feedback = ParametresGlobaux.EffetEchoFeedback
-            currentProvider = echoProvider
+        ' 4. Reverb (réverbération)
+        reverbProvider = New ReverbSampleProvider(currentProvider)
+        reverbProvider.Enabled = ParametresGlobaux.EffetReverbActif
+        reverbProvider.Mix = ParametresGlobaux.EffetReverbMix
+        currentProvider = reverbProvider
 
-            System.Diagnostics.Debug.WriteLine("=== Chaîne audio créée avec effets ===")
+        ' 5. Echo (écho)
+        echoProvider = New EchoSampleProvider(currentProvider)
+        echoProvider.Enabled = ParametresGlobaux.EffetEchoActif
+        echoProvider.Mix = ParametresGlobaux.EffetEchoMix
+        echoProvider.DelayMilliseconds = ParametresGlobaux.EffetEchoDelai
+        echoProvider.Feedback = ParametresGlobaux.EffetEchoFeedback
+        currentProvider = echoProvider
 
-            ' Appliquer le volume avec normalisation
-            volumeProvider = New VolumeSampleProvider(currentProvider) With {
+        System.Diagnostics.Debug.WriteLine("=== Chaîne audio créée avec effets ===")
+
+        ' Appliquer le volume avec normalisation
+        volumeProvider = New VolumeSampleProvider(currentProvider) With {
                 .Volume = dernierVolume * gainNormalisationActuel
             }
 
-            ' Initialiser le lecteur
-            lecteur = New WaveOutEvent()
-            AddHandler DirectCast(lecteur, WaveOutEvent).PlaybackStopped, AddressOf OnPlaybackStopped
-            lecteur.Init(volumeProvider)
-            lecteur.Play()
+        ' Initialiser le lecteur
+        lecteur = New WaveOutEvent()
+        AddHandler DirectCast(lecteur, WaveOutEvent).PlaybackStopped, AddressOf OnPlaybackStopped
+        lecteur.Init(volumeProvider)
+        lecteur.Play()
 
-            cheminActuel = chemin
-            lectureEnCours = True
-            enPause = False
+        cheminActuel = chemin
+        lectureEnCours = True
+        enPause = False
 
-            ' Démarrer le timer LED si métronome actif ET lumière activée
-            If metronomeActif AndAlso metronomeEnCours IsNot Nothing AndAlso metronomeLumiereActive Then
-                DemarrerTimerMetronomeLED()
+        ' Démarrer le timer LED si métronome actif ET lumière activée
+        If metronomeActif AndAlso metronomeEnCours IsNot Nothing AndAlso metronomeLumiereActive Then
+            DemarrerTimerMetronomeLED()
+        End If
+
+        ' Mettre le bouton Jouer en vert pendant la lecture
+        If Button_Jouer IsNot Nothing Then
+            Button_Jouer.BackgroundImage = AudioPlay.Resources.AudioPlay_Jouer_Vert
+        End If
+
+        ' Mettre le bouton Pause/Reprise en vert pendant la lecture
+        If Button_PauseReprise IsNot Nothing Then
+            Button_PauseReprise.BackgroundImage = AudioPlay.Resources.AudioPlay_Pause_Vert
+        End If
+
+        ' Mettre le bouton Arrêter en vert pendant la lecture
+        If Button_Arreter IsNot Nothing Then
+            Button_Arreter.BackgroundImage = AudioPlay.Resources.AudioPlay_Arreter_Vert
+        End If
+
+        ' Mettre le bouton Mute en vert (sauf si déjà muté = rouge)
+        If Button_Mute IsNot Nothing Then
+            If isMuted Then
+                Button_Mute.BackgroundImage = AudioPlay.Resources.AudioPlay_Mute_Rouge
+            Else
+                Button_Mute.BackgroundImage = AudioPlay.Resources.AudioPlay_Mute_Vert
             End If
+        End If
 
-            ' Mettre le bouton Jouer en vert pendant la lecture
-            If Button_Jouer IsNot Nothing Then
-                Button_Jouer.BackgroundImage = AudioPlay.Resources.AudioPlay_Jouer_Vert
-            End If
+        Button_Jouer.Text = "" ' Image seulement, pas de texte
+        Button_PauseReprise.Text = "" ' Image seulement, pas de texte
 
-            ' Mettre le bouton Pause/Reprise en vert pendant la lecture
-            If Button_PauseReprise IsNot Nothing Then
-                Button_PauseReprise.BackgroundImage = AudioPlay.Resources.AudioPlay_Pause_Vert
-            End If
+        ' Mettre à jour l'affichage avec le nom du fichier
+        If TextBox_Display IsNot Nothing Then
+            TextBox_Display.Text = item.SubItems(1).Text ' Nom du fichier depuis la colonne "Chansons"
+        End If
 
-            ' Mettre le bouton Arrêter en vert pendant la lecture
-            If Button_Arreter IsNot Nothing Then
-                Button_Arreter.BackgroundImage = AudioPlay.Resources.AudioPlay_Arreter_Vert
-            End If
+        ' === DÉTECTION ET CHARGEMENT DU FICHIER CDG ===
+        DetecterEtChargerCDG(chemin)
 
-            ' Mettre le bouton Mute en vert (sauf si déjà muté = rouge)
-            If Button_Mute IsNot Nothing Then
-                If isMuted Then
-                    Button_Mute.BackgroundImage = AudioPlay.Resources.AudioPlay_Mute_Rouge
-                Else
-                    Button_Mute.BackgroundImage = AudioPlay.Resources.AudioPlay_Mute_Vert
-                End If
-            End If
-
-            Button_Jouer.Text = "" ' Image seulement, pas de texte
-            Button_PauseReprise.Text = "" ' Image seulement, pas de texte
-
-            ' Mettre à jour l'affichage avec le nom du fichier
-            If TextBox_Display IsNot Nothing Then
-                TextBox_Display.Text = item.SubItems(1).Text ' Nom du fichier depuis la colonne "Chansons"
-            End If
-
-            ' === DÉTECTION ET CHARGEMENT DU FICHIER CDG ===
-            DetecterEtChargerCDG(chemin)
-
-        Catch ex As Exception
-            MessageBox.Show(LanguageManager.GetString("Error_PlaybackError", ex.Message), LanguageManager.GetString("Error_Title"), MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ArreterLecture()
-        End Try
+        ' Top-level Try/Catch removed: inner loop handles failures and ensures safe termination when no valid files remain.
     End Sub
 
     ' Obtenir le gain de normalisation pour un fichier
@@ -2011,7 +2397,14 @@ Public Class Form1
                 Dim rnd As New Random()
                 nouvelIndex = rnd.Next(0, ListView1.Items.Count)
             Else
-                nouvelIndex = (indexActuel + 1) Mod ListView1.Items.Count
+                ' If we're at the last item, do NOT wrap to the first: signal end by
+                ' setting tentativesLectureFichier so the caller will stop further attempts.
+                If indexActuel >= ListView1.Items.Count - 1 Then
+                    tentativesLectureFichier = ListView1.Items.Count
+                    Return
+                Else
+                    nouvelIndex = indexActuel + 1
+                End If
             End If
 
             ListView1.SelectedItems.Clear()
@@ -2333,36 +2726,36 @@ Public Class Form1
                         End If
 
                         If Not ligne.StartsWith("#") Then
-                            If File.Exists(ligne) Then
-                                AjouterFichierAListe(ligne)
+                            ' Ajouter le fichier même s'il n'existe pas temporairement
+                            ' (lecteur réseau non monté, etc.)
+                            AjouterFichierAListe(ligne)
 
-                                If Not String.IsNullOrEmpty(bpmEnAttente) AndAlso ListView1.Items.Count > 0 Then
-                                    Dim bpmCharge As Double
-                                    If Double.TryParse(bpmEnAttente, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, bpmCharge) Then
-                                        ListView1.Items(ListView1.Items.Count - 1).SubItems(2).Text = bpmCharge.ToString("F2", Globalization.CultureInfo.InvariantCulture)
-                                        ' Synchroniser aussi dans le Tag
-                                        Dim itemAjoute = ListView1.Items(ListView1.Items.Count - 1)
+                            If Not String.IsNullOrEmpty(bpmEnAttente) AndAlso ListView1.Items.Count > 0 Then
+                                Dim bpmCharge As Double
+                                If Double.TryParse(bpmEnAttente, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, bpmCharge) Then
+                                    ListView1.Items(ListView1.Items.Count - 1).SubItems(2).Text = bpmCharge.ToString("F2", Globalization.CultureInfo.InvariantCulture)
+                                    ' Synchroniser aussi dans le Tag
+                                    Dim itemAjoute = ListView1.Items(ListView1.Items.Count - 1)
+                                    If TypeOf itemAjoute.Tag Is Dictionary(Of String, Object) Then
+                                        Dim tagDict = DirectCast(itemAjoute.Tag, Dictionary(Of String, Object))
+                                        If Not tagDict.ContainsKey("BPM") Then
+                                            tagDict.Add("BPM", bpmCharge)
+                                        Else
+                                            tagDict("BPM") = bpmCharge
+                                        End If
+                                    End If
+                                Else
+                                    ListView1.Items(ListView1.Items.Count - 1).SubItems(2).Text = bpmEnAttente
+                                    ' Essayer de synchroniser aussi dans le Tag si possible
+                                    Dim itemAjoute = ListView1.Items(ListView1.Items.Count - 1)
+                                    Dim bpmColValue As Double
+                                    If Double.TryParse(bpmEnAttente, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, bpmColValue) Then
                                         If TypeOf itemAjoute.Tag Is Dictionary(Of String, Object) Then
                                             Dim tagDict = DirectCast(itemAjoute.Tag, Dictionary(Of String, Object))
                                             If Not tagDict.ContainsKey("BPM") Then
-                                                tagDict.Add("BPM", bpmCharge)
+                                                tagDict.Add("BPM", bpmColValue)
                                             Else
-                                                tagDict("BPM") = bpmCharge
-                                            End If
-                                        End If
-                                    Else
-                                        ListView1.Items(ListView1.Items.Count - 1).SubItems(2).Text = bpmEnAttente
-                                        ' Essayer de synchroniser aussi dans le Tag si possible
-                                        Dim itemAjoute = ListView1.Items(ListView1.Items.Count - 1)
-                                        Dim bpmColValue As Double
-                                        If Double.TryParse(bpmEnAttente, Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, bpmColValue) Then
-                                            If TypeOf itemAjoute.Tag Is Dictionary(Of String, Object) Then
-                                                Dim tagDict = DirectCast(itemAjoute.Tag, Dictionary(Of String, Object))
-                                                If Not tagDict.ContainsKey("BPM") Then
-                                                    tagDict.Add("BPM", bpmColValue)
-                                                Else
-                                                    tagDict("BPM") = bpmColValue
-                                                End If
+                                                tagDict("BPM") = bpmColValue
                                             End If
                                         End If
                                     End If
@@ -2452,6 +2845,20 @@ Public Class Form1
                 ArreterLecture()
                 ListView1.Items.Clear()
                 SauvegarderPlaylist()
+
+                ' Supprimer aussi le backup pour éviter qu'il soit restauré au prochain démarrage
+                Try
+                    Dim dossier = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                        "AudioPlay")
+                    Dim fichierBackup = Path.Combine(dossier, "playlist.txt.bak")
+                    If File.Exists(fichierBackup) Then
+                        File.Delete(fichierBackup)
+                    End If
+                Catch
+                    ' Ignorer les erreurs de suppression du backup
+                End Try
+
                 MessageBox.Show(LanguageManager.GetString("Playlist_NewCreated"), LanguageManager.GetString("Success_Title"), MessageBoxButtons.OK, MessageBoxIcon.Information)
             End If
         Else
@@ -2477,20 +2884,94 @@ Public Class Form1
                                          If Button_Ajout IsNot Nothing Then
                                              Button_Ajout.BackgroundImage = Resources.AudioPlay_Ajout__Gris
                                          End If
-                                         ListView1.Focus
+                                         ListView1.Focus()
                                      End Sub
 
         ' Option 1 : Ajout d'un fichier
         Dim menuItemFichier As New ToolStripMenuItem(LanguageManager.GetString("Menu_AddFile"))
-        AddHandler menuItemFichier.Click, Sub() AjouterFichier
+        AddHandler menuItemFichier.Click, Sub() AjouterFichier()
 
         ' Option 2 : Ajout d'un répertoire
         Dim menuItemRepertoire As New ToolStripMenuItem(LanguageManager.GetString("Menu_AddDirectory"))
-        AddHandler menuItemRepertoire.Click, Sub() AjouterRepertoire
+        AddHandler menuItemRepertoire.Click, Sub() AjouterRepertoire()
+
+        ' Option 3 : Ajout d'un CD audio (avec sous-menu des lecteurs)
+        Dim menuItemCDAudio As New ToolStripMenuItem(LanguageManager.GetString("Menu_AddCDAudio"))
+
+        ' ✅ Rafraîchir la liste des lecteurs à chaque ouverture du sous-menu
+        AddHandler menuItemCDAudio.DropDownOpening, Sub(senderMenu, eMenu)
+                                                        ' Vider le sous-menu existant
+                                                        menuItemCDAudio.DropDownItems.Clear()
+
+                                                        ' Détecter tous les lecteurs CD/DVD/Bluray
+                                                        Dim lecteurs = CDAudioManager.DetecterLecteursCDAudio()
+                                                        System.Diagnostics.Debug.WriteLine($"[Form1] {lecteurs.Count} lecteur(s) CD détecté(s)")
+
+                                                        If lecteurs.Count > 0 Then
+                                                            ' Créer un sous-menu pour chaque lecteur
+                                                            For Each lecteurCD In lecteurs
+                                                                Dim lecteurLocal = lecteurCD ' Capture locale pour le lambda
+
+                                                                ' Vérifier si un CD est présent en essayant de lire les pistes
+                                                                Dim cdPresent As Boolean = False
+                                                                Dim nombrePistes As Integer = 0
+
+                                                                Try
+                                                                    System.Diagnostics.Debug.WriteLine($"[Form1] === Vérification lecteur {lecteurLocal} ===")
+
+                                                                    ' Essayer directement de lire les pistes via DeviceIoControl
+                                                                    Dim pistes = CDAudioManager.LirePistesCD(lecteurLocal)
+                                                                    nombrePistes = pistes.Count
+                                                                    cdPresent = nombrePistes > 0
+
+                                                                    If cdPresent Then
+                                                                        System.Diagnostics.Debug.WriteLine($"[Form1] ✓ Lecteur {lecteurLocal}: {nombrePistes} pistes détectées")
+                                                                    Else
+                                                                        System.Diagnostics.Debug.WriteLine($"[Form1] ✗ Lecteur {lecteurLocal}: Aucune piste (vide ou pas de CD audio)")
+                                                                    End If
+                                                                Catch ex As Exception
+                                                                    System.Diagnostics.Debug.WriteLine($"[Form1] ✗ Erreur lecture lecteur {lecteurLocal}: {ex.Message}")
+                                                                End Try
+
+                                                                ' Créer le texte du menu avec traduction
+                                                                Dim texteMenu As String
+                                                                Dim tracksLabel As String = LanguageManager.GetString("Menu_CDTracks")
+                                                                Dim emptyLabel As String = LanguageManager.GetString("Menu_CDEmpty")
+
+                                                                If cdPresent Then
+                                                                    texteMenu = $"💿 {lecteurLocal} ({nombrePistes} {tracksLabel})"
+                                                                Else
+                                                                    texteMenu = $"📀 {lecteurLocal} ({emptyLabel})"
+                                                                End If
+
+                                                                Dim menuLecteur As New ToolStripMenuItem(texteMenu)
+
+                                                                ' Désactiver si pas de CD
+                                                                menuLecteur.Enabled = cdPresent
+
+                                                                ' Si CD présent, texte noir, sinon gris
+                                                                If Not cdPresent Then
+                                                                    menuLecteur.ForeColor = Color.Gray
+                                                                End If
+
+                                                                ' Action : ajouter les pistes de ce lecteur
+                                                                AddHandler menuLecteur.Click, Sub() AjouterCDAudioDuLecteur(lecteurLocal)
+
+                                                                menuItemCDAudio.DropDownItems.Add(menuLecteur)
+                                                            Next
+                                                        Else
+                                                            ' Aucun lecteur détecté
+                                                            Dim menuAucun As New ToolStripMenuItem(LanguageManager.GetString("Menu_NoCDDrive"))
+                                                            menuAucun.Enabled = False
+                                                            menuAucun.ForeColor = Color.Gray
+                                                            menuItemCDAudio.DropDownItems.Add(menuAucun)
+                                                        End If
+                                                    End Sub
 
         ' Ajouter les options au menu
         menuAjout.Items.Add(menuItemFichier)
         menuAjout.Items.Add(menuItemRepertoire)
+        menuAjout.Items.Add(menuItemCDAudio)
 
         ' Afficher le menu sous le bouton
         menuAjout.Show(Button_Ajout, New Point(0, Button_Ajout.Height))
@@ -2642,6 +3123,109 @@ Public Class Form1
                 SauvegarderPlaylist()
             End If
         End Using
+    End Sub
+
+    ' Méthode pour ajouter un CD audio
+    ' Méthode pour ajouter un CD audio depuis un lecteur spécifique
+    Private Sub AjouterCDAudioDuLecteur(lecteur As String)
+        Try
+            System.Diagnostics.Debug.WriteLine($"[AjouterCDAudioDuLecteur] Ajout des pistes du lecteur {lecteur}")
+
+            ' Lire les pistes du CD
+            Dim pistes = CDAudioManager.LirePistesCD(lecteur)
+
+            If pistes.Count = 0 Then
+                MessageBox.Show($"Aucune piste audio détectée sur le CD dans le lecteur {lecteur}.",
+                              "CD Audio",
+                              MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Return
+            End If
+
+            ' ✅ Ouvrir le formulaire de sélection des pistes
+            Using formSelecteur As New FormSelecteurPistesCD(lecteur, pistes)
+                Dim result = formSelecteur.ShowDialog(Me)
+
+                ' Redonner le focus à ListView1 après fermeture du formulaire
+                If ListView1 IsNot Nothing Then
+                    ListView1.Focus()
+                End If
+
+                If result = DialogResult.OK Then
+                    ' Récupérer les pistes sélectionnées
+                    Dim pistesSelectionnees = formSelecteur.ObtenirPistesSelectionnees()
+
+                    If pistesSelectionnees.Count = 0 Then
+                        ' L'utilisateur n'a rien sélectionné
+                        Return
+                    End If
+
+                    ' Ajouter chaque piste sélectionnée à la liste
+                    Dim cdIcon As String = "💿 " ' Icône CD
+                    Dim trackPrefix As String = LanguageManager.GetString("CDTrack_Prefix") ' "Piste", "Track", etc.
+                    Dim cdInfo = formSelecteur.ObtenirMetadonnees()
+
+                    For Each piste In pistesSelectionnees
+                        ' Utiliser le titre réel si disponible, sinon format générique
+                        Dim nomAffiche As String
+                        If Not String.IsNullOrEmpty(piste.Title) Then
+                            ' Format: 💿 01. Paul McCartney - Another Day
+                            If Not String.IsNullOrEmpty(piste.Artist) Then
+                                nomAffiche = $"{cdIcon}{piste.TrackNumber:D2}. {piste.Artist} - {piste.Title}"
+                            Else
+                                nomAffiche = $"{cdIcon}{piste.TrackNumber:D2}. {piste.Title}"
+                            End If
+                        Else
+                            nomAffiche = $"{cdIcon}{trackPrefix} {piste.TrackNumber:D2}"
+                        End If
+
+                        Dim dureeStr As String = piste.Duration.ToString("mm\:ss")
+
+                        ' Créer l'item de liste avec le chemin virtuel CDDA://
+                        Dim item As New ListViewItem(New String() {"", nomAffiche, "", dureeStr}) With {
+                            .Tag = New Dictionary(Of String, Object) From {
+                                {"Chemin", piste.VirtualPath},
+                                {"Nom", nomAffiche},
+                                {"BPM", 0},
+                                {"Duree", piste.Duration.TotalSeconds},
+                                {"TypeSource", "CDAudio"},
+                                {"CDDrive", piste.Drive},
+                                {"CDTrackNumber", piste.TrackNumber}
+                            }
+                        }
+
+                        ' Ajouter l'artiste et l'album si disponibles
+                        If cdInfo IsNot Nothing Then
+                            Dim tagDict = DirectCast(item.Tag, Dictionary(Of String, Object))
+                            If Not String.IsNullOrEmpty(cdInfo.Artist) Then
+                                tagDict.Add("CDArtist", cdInfo.Artist)
+                            End If
+                            If Not String.IsNullOrEmpty(cdInfo.Album) Then
+                                tagDict.Add("CDAlbum", cdInfo.Album)
+                            End If
+                        End If
+
+                        ' Ajouter l'artiste spécifique de la piste si disponible
+                        If Not String.IsNullOrEmpty(piste.Artist) Then
+                            Dim tagDict = DirectCast(item.Tag, Dictionary(Of String, Object))
+                            tagDict("CDArtist") = piste.Artist ' Écraser avec l'artiste spécifique
+                        End If
+
+                        ListView1.Items.Add(item)
+                    Next
+
+                    MettreAJourNumerotation()
+                    SauvegarderPlaylist()
+
+                    System.Diagnostics.Debug.WriteLine($"[AjouterCDAudioDuLecteur] {pistesSelectionnees.Count} pistes ajoutées du lecteur {lecteur}")
+                End If
+            End Using
+
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"[AjouterCDAudioDuLecteur] Erreur: {ex.Message}")
+            MessageBox.Show($"Erreur lors de l'ajout du CD audio: {ex.Message}",
+                          "Erreur",
+                          MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Sub
 
     Private Sub Button_CalculBPM_Click(sender As Object, e As EventArgs) Handles Button_CalculBPM.Click
@@ -3221,6 +3805,8 @@ Public Class Form1
         ' Si le mute est activé et qu'on bouge le volume, désactiver le mute
         If isMuted Then
             isMuted = False
+            ' Désactiver le mute système également
+            WindowsVolumeControl.SetMute(False)
             ' Remettre le bouton Mute à la bonne couleur
             If Button_Mute IsNot Nothing Then
                 If lectureEnCours Then
@@ -3233,6 +3819,10 @@ Public Class Form1
 
         dernierVolume = TrackBar_Volume.Value / CSng(TrackBar_Volume.Maximum)
 
+        ' Appliquer le volume au système Windows
+        WindowsVolumeControl.SetVolume(dernierVolume)
+
+        ' Optionnel : aussi appliquer au volumeProvider pour les effets qui en dépendent
         If volumeProvider IsNot Nothing Then
             ' Appliquer le volume avec le gain de normalisation
             volumeProvider.Volume = dernierVolume * gainNormalisationActuel
@@ -3303,7 +3893,7 @@ Public Class Form1
 
             ' Si la suppression du silence final est active et qu'on a une durée réelle,
             ' arrêter la lecture avant le silence final
-            If supprimerSilenceFin AndAlso dureeReelleActuelle > TimeSpan.Zero Then
+            If ParametresGlobaux.SupprimerSilenceFin AndAlso dureeReelleActuelle > TimeSpan.Zero Then
                 If actuel >= dureeReelleActuelle.TotalSeconds Then
                     ' On a atteint la fin de la partie audible, arrêter
                     System.Diagnostics.Debug.WriteLine($"Fin de la durée réelle atteinte: {actuel:F2}s >= {dureeReelleActuelle.TotalSeconds:F2}s")
@@ -3341,7 +3931,11 @@ Public Class Form1
     ' PLAYLIST
     ' ========================================
     Public Sub AjouterFichierAListe(chemin As String, Optional bpmExistant As String = Nothing, Optional dureeExistante As String = Nothing)
-        If Not File.Exists(chemin) Then Return
+        ' Vérifier si c'est une piste CD ou un fichier normal
+        Dim estCDAudio = CDAudioManager.EstCheminCDAudio(chemin)
+
+        ' Ne plus rejeter les fichiers inexistants - ils seront marqués visuellement
+        ' If Not estCDAudio AndAlso Not File.Exists(chemin) Then Return
 
         ' Vérifier si le fichier existe déjà
         For Each item As ListViewItem In ListView1.Items
@@ -3362,32 +3956,68 @@ Public Class Form1
         Dim duree = ""
         Dim bpm = ""
         Dim dureeReelle As TimeSpan = TimeSpan.Zero
+        Dim fichierExiste As Boolean = estCDAudio OrElse File.Exists(chemin)
 
         Try
-            ' ✅ SI UNE DURÉE EXISTANTE EST FOURNIE (depuis playlist.txt), L'UTILISER
-            ' Sinon, lire la durée depuis le fichier audio
-            If Not String.IsNullOrEmpty(dureeExistante) Then
-                duree = dureeExistante
-            Else
-                Using reader As New AudioFileReader(chemin)
-                    Dim ts = reader.TotalTime
-                    duree = $"{CInt(ts.TotalMinutes):D2}:{ts.Seconds:D2}"
-                End Using
-            End If
+            If estCDAudio Then
+                ' ===== PISTE CD AUDIO =====
+                Dim cdTrack = CDAudioManager.ParseCheminCDAudio(chemin)
+                If cdTrack IsNot Nothing Then
+                    ' Utiliser les informations du chemin virtuel
+                    Dim cdIcon As String = "💿 "
+                    Dim trackPrefix As String = LanguageManager.GetString("CDTrack_Prefix")
+                    nomFichier = $"{cdIcon}{trackPrefix} {cdTrack.TrackNumber:D2}"
 
-            ' NE PAS analyser la durée réelle au chargement pour accélérer le démarrage
-            ' L'analyse sera faite à la demande lors de la première lecture du fichier
+                    ' Utiliser la durée depuis le chemin ou la durée fournie
+                    If Not String.IsNullOrEmpty(dureeExistante) Then
+                        duree = dureeExistante
+                    Else
+                        ' Si le CD est présent, lire la durée réelle
+                        If CDAudioManager.EstCDAudioPresent(cdTrack.Drive) Then
+                            Dim pistes = CDAudioManager.LirePistesCD(cdTrack.Drive)
+                            Dim pisteInfo = pistes.FirstOrDefault(Function(p) p.TrackNumber = cdTrack.TrackNumber)
+                            If pisteInfo IsNot Nothing Then
+                                duree = pisteInfo.Duration.ToString("mm\:ss")
+                            Else
+                                duree = "00:00"
+                            End If
+                        Else
+                            duree = "00:00" ' CD absent, durée inconnue
+                        End If
+                    End If
 
-            ' ✅ SI UN BPM EXISTANT EST FOURNI (depuis playlist.txt), L'UTILISER
-            ' Sinon, lire le BPM précis depuis les métadonnées s'il existe
-            If Not String.IsNullOrEmpty(bpmExistant) Then
-                bpm = bpmExistant
-            Else
-                Dim bpmMetadata = BPMMetadataManager.LireBPMPrecisDepuisMetadonnees(chemin)
-                If bpmMetadata > 0 Then
-                    bpm = bpmMetadata.ToString("F2", Globalization.CultureInfo.InvariantCulture)
+                    bpm = "" ' Pas de BPM pour les pistes CD
                 End If
-            End If
+            Else
+                ' ===== FICHIER AUDIO NORMAL =====
+                ' ✅ SI UNE DURÉE EXISTANTE EST FOURNIE (depuis playlist.txt), L'UTILISER
+                ' Sinon, lire la durée depuis le fichier audio SI LE FICHIER EXISTE
+                If Not String.IsNullOrEmpty(dureeExistante) Then
+                    duree = dureeExistante
+                ElseIf fichierExiste Then
+                    Using reader As New AudioFileReader(chemin)
+                        Dim ts = reader.TotalTime
+                        duree = $"{CInt(ts.TotalMinutes):D2}:{ts.Seconds:D2}"
+                    End Using
+                Else
+                    ' Fichier introuvable : durée inconnue
+                    duree = "--:--"
+                End If
+
+                ' NE PAS analyser la durée réelle au chargement pour accélérer le démarrage
+                ' L'analyse sera faite à la demande lors de la première lecture du fichier
+
+
+                ' Sinon, lire le BPM précis depuis les métadonnées s'il existe (pas pour CD)
+                If Not String.IsNullOrEmpty(bpmExistant) Then
+                    bpm = bpmExistant
+                ElseIf fichierExiste Then
+                    Dim bpmMetadata = BPMMetadataManager.LireBPMPrecisDepuisMetadonnees(chemin)
+                    If bpmMetadata > 0 Then
+                        bpm = bpmMetadata.ToString("F2", Globalization.CultureInfo.InvariantCulture)
+                    End If
+                End If
+            End If ' Fin du bloc fichier normal
         Catch
             duree = "00:00"
         End Try
@@ -3398,10 +4028,35 @@ Public Class Form1
         newItem.SubItems.Add(bpm) ' Colonne BPM (lu depuis métadonnées)
         newItem.SubItems.Add(duree) ' Colonne Durée
 
+        ' Marquer visuellement les fichiers inaccessibles (sauf CD Audio)
+        If Not estCDAudio AndAlso Not fichierExiste Then
+            ' Fichier introuvable : utiliser une couleur atténuée basée sur le thème
+            Dim theme = ThemeManager.GetCurrentTheme()
+            Dim couleurNormale = theme.ListViewForeColor
+            ' Atténuer la couleur : mélanger avec le fond (50% opacité)
+            Dim couleurAttenuee = Color.FromArgb(
+                (couleurNormale.R + theme.ListViewBackColor.R) \ 2,
+                (couleurNormale.G + theme.ListViewBackColor.G) \ 2,
+                (couleurNormale.B + theme.ListViewBackColor.B) \ 2
+            )
+            newItem.ForeColor = couleurAttenuee
+            newItem.SubItems(1).Text = "⚠ " & nomFichier
+        End If
+
         ' Utiliser un Dictionary pour le Tag afin de stocker le chemin, le BPM, le gain ET la durée réelle
         Dim tagDict As New Dictionary(Of String, Object) From {
             {"Chemin", chemin}
         }
+
+        ' Marquer les pistes CD avec TypeSource
+        If estCDAudio Then
+            tagDict.Add("TypeSource", "CDAudio")
+            Dim cdTrack = CDAudioManager.ParseCheminCDAudio(chemin)
+            If cdTrack IsNot Nothing Then
+                tagDict.Add("CDDrive", cdTrack.Drive)
+                tagDict.Add("CDTrackNumber", cdTrack.TrackNumber)
+            End If
+        End If
 
         ' Ajouter le BPM au Tag s'il existe
         Dim bpmValue As Double = 0
@@ -3409,8 +4064,8 @@ Public Class Form1
             tagDict.Add("BPM", bpmValue)
         End If
 
-        ' Ajouter la durée réelle si elle a été calculée
-        If dureeReelle > TimeSpan.Zero Then
+        ' Ajouter la durée réelle si elle a été calculée (pas pour CD)
+        If Not estCDAudio AndAlso dureeReelle > TimeSpan.Zero Then
             tagDict.Add("DureeReelle", dureeReelle)
         End If
 
@@ -3670,23 +4325,43 @@ Public Class Form1
             Button_Suivant.PerformClick()
             Return True
         ElseIf keyData = Keys.I Then
-            ' Marquer le début de la boucle
+            ' Marquer le début de la boucle (afficher immédiatement le marqueur I)
             If fichierAudio IsNot Nothing AndAlso Not enPause Then
-                loopStartPosition = fichierAudio.CurrentTime
-                If loopEndPosition > TimeSpan.Zero AndAlso loopStartPosition < loopEndPosition Then
-                    hasLoopMarkers = True
-                    MettreAJourPositionLabelsLoop()
+                ' Si un marqueur O était déjà défini, l'effacer pour reprogrammer la fin
+                If loopEndPosition > TimeSpan.Zero Then
+                    loopEndPosition = TimeSpan.Zero
+                    loopEnabled = False
+                    ' Remettre le bouton Loop en gris
+                    If Button_Loop IsNot Nothing Then
+                        Button_Loop.BackgroundImage = AudioPlay.Resources.AudioPlay_Loop_Carre_Gris
+                    End If
+                ElseIf loopStartPosition > TimeSpan.Zero Then
+                    ' Cas: I déjà posé sans O -> deuxième appui sur I = annuler le marqueur I
+                    loopStartPosition = TimeSpan.Zero
+                    hasLoopMarkers = False
+                    loopEnabled = False
+                    ' Cacher les labels de loop
+                    If labelLoopStart IsNot Nothing Then labelLoopStart.Visible = False
+                    If labelLoopEnd IsNot Nothing Then labelLoopEnd.Visible = False
+                    ' Remettre le bouton Loop en gris
+                    If Button_Loop IsNot Nothing Then
+                        Button_Loop.BackgroundImage = AudioPlay.Resources.AudioPlay_Loop_Carre_Gris
+                    End If
+                    Return True
                 End If
+
+                ' Poser (ou reposer) le marqueur I
+                loopStartPosition = fichierAudio.CurrentTime
+                hasLoopMarkers = True
+                MettreAJourPositionLabelsLoop()
             End If
             Return True
         ElseIf keyData = Keys.O Then
-            ' Marquer la fin de la boucle
+            ' Marquer la fin de la boucle (afficher immédiatement le marqueur O)
             If fichierAudio IsNot Nothing AndAlso Not enPause Then
                 loopEndPosition = fichierAudio.CurrentTime
-                If loopStartPosition > TimeSpan.Zero AndAlso loopEndPosition > loopStartPosition Then
-                    hasLoopMarkers = True
-                    MettreAJourPositionLabelsLoop()
-                End If
+                hasLoopMarkers = True
+                MettreAJourPositionLabelsLoop()
             End If
             Return True
         End If
@@ -3965,9 +4640,9 @@ Public Class Form1
                 ElseIf ligne.StartsWith("MetronomeLumiereActive=") Then
                     metronomeLumiereActive = Boolean.Parse(ligne.Substring("MetronomeLumiereActive=".Length))
                 ElseIf ligne.StartsWith("SupprimerSilenceDebut=") Then
-                    supprimerSilenceDebut = Boolean.Parse(ligne.Substring("SupprimerSilenceDebut=".Length))
+                    ParametresGlobaux.SupprimerSilenceDebut = Boolean.Parse(ligne.Substring("SupprimerSilenceDebut=".Length))
                 ElseIf ligne.StartsWith("SupprimerSilenceFin=") Then
-                    supprimerSilenceFin = Boolean.Parse(ligne.Substring("SupprimerSilenceFin=".Length))
+                    ParametresGlobaux.SupprimerSilenceFin = Boolean.Parse(ligne.Substring("SupprimerSilenceFin=".Length))
                 ElseIf ligne.StartsWith("ModeAleatoire=") Then
                     modeAleatoire = Boolean.Parse(ligne.Substring("ModeAleatoire=".Length))
                 ElseIf ligne.StartsWith("Langue=") Then
@@ -4005,6 +4680,17 @@ Public Class Form1
                     If Single.TryParse(ligne.Substring("EffetTimeStretchRatio=".Length), Globalization.NumberStyles.Float, Globalization.CultureInfo.InvariantCulture, ratio) Then
                         ParametresGlobaux.EffetTimeStretchRatio = ratio
                     End If
+                ElseIf ligne.StartsWith("RepertoireExtractionCD=") Then
+                    ParametresGlobaux.repertoireExtractionCD = ligne.Substring("RepertoireExtractionCD=".Length)
+                ElseIf ligne.StartsWith("VolumeExtractionCD=") Then
+                    Dim vol As Integer
+                    If Integer.TryParse(ligne.Substring("VolumeExtractionCD=".Length), vol) Then
+                        If vol >= 1 AndAlso vol <= 100 Then
+                            ParametresGlobaux.volumeExtractionCD = vol
+                        End If
+                    End If
+                ElseIf ligne.StartsWith("ModeTOCPrecis=") Then
+                    Boolean.TryParse(ligne.Substring("ModeTOCPrecis=".Length), ParametresGlobaux.ModeTOCPrecis)
                 End If
             Next
 
@@ -4055,8 +4741,8 @@ Public Class Form1
                 $"NombreBeatsMetronome={nombreBeatsMetronome}",
                 $"MetronomeSonActif={metronomeSonActif}",
                 $"MetronomeLumiereActive={metronomeLumiereActive}",
-                $"SupprimerSilenceDebut={supprimerSilenceDebut}",
-                $"SupprimerSilenceFin={supprimerSilenceFin}",
+                $"SupprimerSilenceDebut={ParametresGlobaux.SupprimerSilenceDebut}",
+                $"SupprimerSilenceFin={ParametresGlobaux.SupprimerSilenceFin}",
                 $"ModeAleatoire={modeAleatoire}",
                 $"Langue={LanguageManager.GetCurrentLanguageCode()}",
                 $"EffetReverbActif={ParametresGlobaux.EffetReverbActif}",
@@ -4075,9 +4761,50 @@ Public Class Form1
                 $"EffetPhaserFeedback={ParametresGlobaux.EffetPhaserFeedback.ToString(Globalization.CultureInfo.InvariantCulture)}",
                 $"EffetPhaserMix={ParametresGlobaux.EffetPhaserMix.ToString(Globalization.CultureInfo.InvariantCulture)}",
                 $"EffetPhaserStages={ParametresGlobaux.EffetPhaserStages}",
-                $"ModeMixeurDJ={ParametresGlobaux.ModeMixeurDJ}"
+                $"ModeMixeurDJ={ParametresGlobaux.ModeMixeurDJ}",
+                $"RepertoireExtractionCD={ParametresGlobaux.repertoireExtractionCD}",
+                $"VolumeExtractionCD={ParametresGlobaux.volumeExtractionCD}",
+                $"ModeTOCPrecis={ParametresGlobaux.ModeTOCPrecis}"
             }
-            File.WriteAllLines(fichierParam, lignes)
+            ' Preserve specific keys that may have been written elsewhere (e.g., FormCompresser_Agrandir)
+            Try
+                Dim existing As New Dictionary(Of String, String)(StringComparer.InvariantCultureIgnoreCase)
+                If File.Exists(fichierParam) Then
+                    For Each l In File.ReadAllLines(fichierParam)
+                        Try
+                            Dim i = l.IndexOf("=")
+                            If i > 0 Then
+                                Dim k = l.Substring(0, i).Trim()
+                                Dim v = l.Substring(i + 1).Trim()
+                                If Not existing.ContainsKey(k) Then existing.Add(k, v)
+                            End If
+                        Catch
+                        End Try
+                    Next
+                End If
+
+                ' If FormCompresser_Agrandir exists in existing file, ensure it's kept
+                If existing.ContainsKey("FormCompresser_Agrandir") Then
+                    ' remove any entry we might have added already
+                    For i = lignes.Count - 1 To 0 Step -1
+                        Try
+                            If lignes(i).StartsWith("FormCompresser_Agrandir=", StringComparison.InvariantCultureIgnoreCase) Then
+                                lignes.RemoveAt(i)
+                            End If
+                        Catch
+                        End Try
+                    Next
+                    lignes.Add($"FormCompresser_Agrandir={existing("FormCompresser_Agrandir")}")
+                End If
+
+                File.WriteAllLines(fichierParam, lignes)
+            Catch exWriteAll As Exception
+                ' fallback: try a best-effort write
+                Try
+                    File.WriteAllLines(fichierParam, lignes)
+                Catch
+                End Try
+            End Try
         Catch ex As Exception
             ' Ignorer les erreurs de sauvegarde
         End Try
@@ -4118,6 +4845,15 @@ Public Class Form1
             "AudioPlay",
             "Son_Ajustement.txt")
 
+        ' Charger le volume depuis le système Windows
+        Try
+            dernierVolume = WindowsVolumeControl.GetVolume()
+            System.Diagnostics.Debug.WriteLine($"[Form1] ✅ Volume système chargé: {dernierVolume:F3}")
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"[Form1] ⚠️ Erreur lecture volume système: {ex.Message}")
+            dernierVolume = 0.5F ' Valeur par défaut
+        End Try
+
         If Not File.Exists(fichierAudio) Then
             ' Fichier manquant : tenter migration depuis parametres.txt
             System.Diagnostics.Debug.WriteLine("[Form1] ⚠️ Son_Ajustement.txt manquant, tentative de migration...")
@@ -4129,21 +4865,16 @@ Public Class Form1
             Dim lignes = File.ReadAllLines(fichierAudio)
             For Each ligne In lignes
                 If ligne.StartsWith("Volume=") Then
-                    dernierVolume = Single.Parse(ligne.Substring("Volume=".Length), Globalization.CultureInfo.InvariantCulture)
-                    ' Migration : si la valeur est > 1.0, c'est l'ancien format (0-40 ou 0-100)
-                    If dernierVolume > 1.0F Then
-                        dernierVolume = dernierVolume / 100.0F
-                    End If
-                    ' Sécurité : limiter entre 0.0 et 1.0
-                    If dernierVolume < 0.0F Then dernierVolume = 0.0F
-                    If dernierVolume > 1.0F Then dernierVolume = 1.0F
+                    ' Ignorer le volume du fichier, utiliser le volume système à la place
+                    ' (commenté pour référence)
+                    ' dernierVolume = Single.Parse(ligne.Substring("Volume=".Length), Globalization.CultureInfo.InvariantCulture)
                 ElseIf ligne.StartsWith("Basses=") Then
                     dernieresBasses = Single.Parse(ligne.Substring("Basses=".Length), Globalization.CultureInfo.InvariantCulture)
                 ElseIf ligne.StartsWith("Aigues=") Then
                     dernieresAigues = Single.Parse(ligne.Substring("Aigues=".Length), Globalization.CultureInfo.InvariantCulture)
                 End If
             Next
-            System.Diagnostics.Debug.WriteLine($"[Form1] ✅ Audio ajustements chargés: Volume={dernierVolume:F3}, Basses={dernieresBasses:F1}, Aigues={dernieresAigues:F1}")
+            System.Diagnostics.Debug.WriteLine($"[Form1] ✅ Audio ajustements chargés: Volume={dernierVolume:F3} (système), Basses={dernieresBasses:F1}, Aigues={dernieresAigues:F1}")
         Catch ex As Exception
             System.Diagnostics.Debug.WriteLine($"[Form1] ❌ Erreur chargement audio: {ex.Message}")
             ' En cas d'erreur, créer le fichier avec valeurs par défaut
@@ -4238,11 +4969,25 @@ Public Class Form1
     End Sub
 
     Private Sub ChargerPlaylist()
-        Dim fichierPlaylist = Path.Combine(
+        Dim dossier = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "AudioPlay",
-            "playlist.txt")
-        If Not File.Exists(fichierPlaylist) Then Return
+            "AudioPlay")
+        Dim fichierPlaylist = Path.Combine(dossier, "playlist.txt")
+
+        ' Si le fichier principal n'existe pas ou est vide, essayer le backup
+        If Not File.Exists(fichierPlaylist) OrElse New FileInfo(fichierPlaylist).Length = 0 Then
+            Dim fichierBackup = Path.Combine(dossier, "playlist.txt.bak")
+            If File.Exists(fichierBackup) AndAlso New FileInfo(fichierBackup).Length > 0 Then
+                Try
+                    File.Copy(fichierBackup, fichierPlaylist, True)
+                Catch
+                    ' Si la copie échoue, utiliser directement le backup
+                    fichierPlaylist = fichierBackup
+                End Try
+            Else
+                Return
+            End If
+        End If
 
         Try
             Dim lignes = File.ReadAllLines(fichierPlaylist)
@@ -4254,6 +4999,13 @@ Public Class Form1
                         Dim bpm = If(parties.Length >= 3, parties(2), "")
                         Dim duree = If(parties.Length >= 4, parties(3), "")
 
+                        ' Ignorer les pistes CD audio (CDDA://)
+                        ' L'utilisateur doit les ajouter manuellement à chaque session
+                        If chemin.StartsWith("CDDA://", StringComparison.OrdinalIgnoreCase) Then
+                            Continue For
+                        End If
+
+                        ' Charger uniquement les fichiers audio normaux qui existent
                         If File.Exists(chemin) Then
                             ' ✅ PASSER LE BPM ET LA DURÉE DEPUIS playlist.txt POUR ÉVITER DE RELIRE LES FICHIERS
                             AjouterFichierAListe(chemin, bpm, duree)
@@ -4279,6 +5031,15 @@ Public Class Form1
                 Directory.CreateDirectory(dossier)
             End If
 
+            ' Backup automatique si le fichier existe et contient des données
+            If File.Exists(fichierPlaylist) Then
+                Dim infoFichier As New FileInfo(fichierPlaylist)
+                If infoFichier.Length > 0 Then
+                    Dim fichierBackup = Path.Combine(dossier, "playlist.txt.bak")
+                    File.Copy(fichierPlaylist, fichierBackup, True)
+                End If
+            End If
+
             Dim lignes As New List(Of String)
             For Each item As ListViewItem In ListView1.Items
                 ' Extraire le chemin du Tag
@@ -4292,10 +5053,14 @@ Public Class Form1
                     chemin = item.Tag.ToString()
                 End If
 
-                Dim nom = item.SubItems(1).Text
-                Dim bpm = item.SubItems(2).Text
-                Dim duree = item.SubItems(3).Text
-                lignes.Add($"{chemin}|{nom}|{bpm}|{duree}")
+                ' Exclure les fichiers CD audio (CDDA://) de la sauvegarde
+                ' L'utilisateur devra les recharger à chaque session
+                If Not String.IsNullOrEmpty(chemin) AndAlso Not chemin.StartsWith("CDDA://", StringComparison.OrdinalIgnoreCase) Then
+                    Dim nom = item.SubItems(1).Text
+                    Dim bpm = item.SubItems(2).Text
+                    Dim duree = item.SubItems(3).Text
+                    lignes.Add($"{chemin}|{nom}|{bpm}|{duree}")
+                End If
             Next
             File.WriteAllLines(fichierPlaylist, lignes)
         Catch ex As Exception
@@ -4429,6 +5194,29 @@ Public Class Form1
         End If
     End Sub
 
+    Private Sub Form1_Activated(sender As Object, e As EventArgs) Handles MyBase.Activated
+        ' Redonner automatiquement le focus à ListView1 quand Form1 redevient actif
+        ' (utile après fermeture de FormCompresser ou autres dialogues)
+        If ListView1 IsNot Nothing AndAlso Not initialisationEnCours Then
+            Try
+                ListView1.Focus()
+            Catch
+                ' Ignorer les erreurs
+            End Try
+        End If
+
+        ' Restaurer l'échelle du TrackBar si elle a disparu
+        ' (cela peut arriver quand on revient de FormParametres qui applique le thème)
+        If TrackBar_Avancement IsNot Nothing AndAlso GroupBox_Avancement IsNot Nothing Then
+            Try
+                ' Réinitialiser complètement l'échelle pour recréer les ticks et labels
+                InitialiserEchelleTrackBar()
+            Catch
+                ' Ignorer les erreurs
+            End Try
+        End If
+    End Sub
+
     ' ========================================
     ' GESTION MULTI-LANGUE
     ' ========================================
@@ -4504,6 +5292,61 @@ Public Class Form1
         Button_Parametres.Text = "" ' Image seulement, pas de texte
         Button_Loop_Aide.Text = LanguageManager.GetString("Button_Help")
 
+        ' Tooltips : réinitialisation complète pour changement de langue
+        Try
+            ' Disposer l'ancien tooltip s'il existe
+            If toolTipForm1 IsNot Nothing Then
+                toolTipForm1.RemoveAll()
+                toolTipForm1.Dispose()
+                toolTipForm1 = Nothing
+            End If
+
+            ' Créer un nouveau tooltip
+            toolTipForm1 = New ToolTip()
+            toolTipForm1.AutoPopDelay = 5000
+            toolTipForm1.InitialDelay = 500
+            toolTipForm1.ReshowDelay = 200
+            toolTipForm1.ShowAlways = True
+
+            ' Boutons
+            toolTipForm1.SetToolTip(Button_Jouer, LanguageManager.GetString("Tip_Button_Play"))
+            toolTipForm1.SetToolTip(Button_Arreter, LanguageManager.GetString("Tip_Button_Stop"))
+            toolTipForm1.SetToolTip(Button_Ajout, LanguageManager.GetString("Tip_Button_Add"))
+            toolTipForm1.SetToolTip(Button_Playlist, LanguageManager.GetString("Tip_Button_ManageList"))
+            toolTipForm1.SetToolTip(ButtonModeDJ, LanguageManager.GetString("Tip_Button_DJMode"))
+            toolTipForm1.SetToolTip(Button_Parametres, LanguageManager.GetString("Tip_Button_Parametres"))
+            toolTipForm1.SetToolTip(Button_Loop_Aide, LanguageManager.GetString("Tip_Button_Loop_Help"))
+            toolTipForm1.SetToolTip(Button_Loop, LanguageManager.GetString("Tip_Button_Loop"))
+            toolTipForm1.SetToolTip(Button_InfoSelect, LanguageManager.GetString("Tip_Button_InfoSelect"))
+            toolTipForm1.SetToolTip(Button_APropos, LanguageManager.GetString("Tip_Button_APropos"))
+            toolTipForm1.SetToolTip(Button_AudioPlay_Aide, LanguageManager.GetString("Tip_Button_AudioPlay_Help"))
+            toolTipForm1.SetToolTip(Button_ClearRecherche, LanguageManager.GetString("Tip_Button_ClearSearch"))
+            toolTipForm1.SetToolTip(Button_Power, LanguageManager.GetString("Tip_Button_Power"))
+            toolTipForm1.SetToolTip(Button_CalculBPM, LanguageManager.GetString("Tip_Button_CalculBPM"))
+            toolTipForm1.SetToolTip(Button_Aleatoire, LanguageManager.GetString("Tip_Button_Random"))
+            toolTipForm1.SetToolTip(Button_Mute, LanguageManager.GetString("Tip_Button_Mute"))
+            toolTipForm1.SetToolTip(Button_PauseReprise, LanguageManager.GetString("Tip_Button_PauseResume"))
+            toolTipForm1.SetToolTip(Button_Suivant, LanguageManager.GetString("Tip_Button_Next"))
+            toolTipForm1.SetToolTip(Button_Precedent, LanguageManager.GetString("Tip_Button_Previous"))
+
+            ' Trackbars
+            toolTipForm1.SetToolTip(TrackBar_Aigues, LanguageManager.GetString("Tip_TrackBar_Aigues"))
+            toolTipForm1.SetToolTip(TrackBar_Basses, LanguageManager.GetString("Tip_TrackBar_Basses"))
+            toolTipForm1.SetToolTip(TrackBar_Volume, LanguageManager.GetString("Tip_TrackBar_Volume"))
+            toolTipForm1.SetToolTip(TrackBar_Avancement, LanguageManager.GetString("Tip_TrackBar_Position"))
+
+            ' ComboBox / ListView / GroupBox / Labels
+            toolTipForm1.SetToolTip(ComboBox_TypeRecherche, LanguageManager.GetString("Tip_Combo_TypeRecherche"))
+            toolTipForm1.SetToolTip(ListView1, LanguageManager.GetString("Tip_ListView1"))
+            toolTipForm1.SetToolTip(GroupBox_Avancement, LanguageManager.GetString("Tip_GroupBox_Avancement"))
+            toolTipForm1.SetToolTip(Label_DureeRestante, LanguageManager.GetString("Tip_Label_DureeRestante"))
+            toolTipForm1.SetToolTip(LabelVolume, LanguageManager.GetString("Tip_Label_Volume"))
+
+            System.Diagnostics.Debug.WriteLine("[RefreshLanguage] Tooltips rafraîchis avec succès")
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"[RefreshLanguage] Erreur lors de la configuration des tooltips: {ex.Message}")
+        End Try
+
         ' Rafraîchir le bouton Pause/Reprendre selon l'état
         If enPause Then
             ' Button_PauseReprise.Text = LanguageManager.GetString("Button_Resume")
@@ -4555,7 +5398,62 @@ Public Class Form1
         ' Recréer le menu contextuel pour appliquer les traductions
         CreerMenuContextuel()
 
+        ' Vérification automatique (log/debug) des clés de localisation liées à la recherche
+        Try
+            Dim keysToCheck As New Dictionary(Of String, String) From {
+                {"Search_Placeholder", LanguageManager.GetString("Search_Placeholder")},
+                {"Search_ByFileName", LanguageManager.GetString("Search_ByFileName")},
+                {"Search_ByBPM", LanguageManager.GetString("Search_ByBPM")},
+                {"Search_ByDuration", LanguageManager.GetString("Search_ByDuration")}
+            }
+
+            Dim missing As New List(Of String)
+            For Each kvp In keysToCheck
+                If String.IsNullOrEmpty(kvp.Value) Then
+                    missing.Add(kvp.Key)
+                End If
+            Next
+
+            If missing.Count > 0 Then
+                System.Diagnostics.Debug.WriteLine($"[Localisation][Form1] Clés manquantes: {String.Join(", ", missing)}")
+            Else
+                System.Diagnostics.Debug.WriteLine("[Localisation][Form1] Clés de recherche présentes")
+            End If
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"[Localisation][Form1] Erreur vérification clés: {ex.Message}")
+        End Try
+
         System.Diagnostics.Debug.WriteLine("Langue rafraîchie dans Form1")
+    End Sub
+
+    ''' <summary>
+    ''' Méthode publique pour restaurer l'échelle du TrackBar après l'application du thème
+    ''' </summary>
+    Public Sub RestaurerEchelleTrackBar()
+        Try
+            InitialiserEchelleTrackBar()
+            System.Diagnostics.Debug.WriteLine("[RestaurerEchelleTrackBar] Échelle du TrackBar restaurée")
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"[RestaurerEchelleTrackBar] Erreur: {ex.Message}")
+        End Try
+    End Sub
+
+    Private Sub TrackBar_MouseMove_ShowValue(sender As Object, e As MouseEventArgs)
+        Try
+            Dim tb = TryCast(sender, TrackBar)
+            If tb Is Nothing OrElse toolTipForm1 Is Nothing Then Return
+            Dim val As String = tb.Value.ToString()
+            Dim prefix As String = LanguageManager.GetString("Tip_TrackBar_ValuePrefix")
+            If String.IsNullOrEmpty(prefix) Then
+                prefix = "Valeur: "
+            End If
+            Dim tipText As String = prefix & val
+            ' Montrer la bulle près du curseur (convertir la position globale en locale)
+            Dim pt As Point = tb.PointToClient(Cursor.Position)
+            toolTipForm1.Show(tipText, tb, pt.X + 15, pt.Y + 15, 1500)
+        Catch
+            ' Ignorer erreurs
+        End Try
     End Sub
 
     ' === Serveur NamedPipe pour recevoir les fichiers des autres instances ===
@@ -4627,11 +5525,11 @@ Public Class Form1
             ' Extraire le chemin de l'exécutable cible (tolérant)
             Dim openCmdExe As String = openCmdStr
             Dim idx As Integer
-            If openCmdStr.StartsWith("\"") Then
-                idx = openCmdStr.IndexOf(" \ "", 1) Then
+            If openCmdStr.StartsWith("""") Then
+                idx = openCmdStr.IndexOf(""""c, 1)
                 If idx > 1 Then openCmdExe = openCmdStr.Substring(1, idx - 1)
             Else
-                idx = openCmdStr.IndexOf(" ")
+                idx = openCmdStr.IndexOf(" "c)
                 If idx > 0 Then openCmdExe = openCmdStr.Substring(0, idx)
             End If
             openCmdExe = openCmdExe.Trim(""""c)
@@ -4737,6 +5635,171 @@ Public Class Form1
     End Sub
 
     ''' <summary>
+    ''' Initialise et affiche une échelle numérique (0..100) au-dessus de TrackBar_Avancement
+    ''' </summary>
+    Private Sub InitialiserEchelleTrackBar()
+        Try
+            If TrackBar_Avancement Is Nothing OrElse GroupBox_Avancement Is Nothing Then Return
+
+            ' Supprimer les anciens labels et ticks si présents
+            If trackBarScaleLabels IsNot Nothing Then
+                For Each l In trackBarScaleLabels
+                    Try
+                        GroupBox_Avancement.Controls.Remove(l)
+                        l.Dispose()
+                    Catch
+                    End Try
+                Next
+            End If
+            If trackBarMinorTicks IsNot Nothing Then
+                For Each t In trackBarMinorTicks
+                    Try
+                        GroupBox_Avancement.Controls.Remove(t)
+                        t.Dispose()
+                    Catch
+                    End Try
+                Next
+            End If
+
+            trackBarScaleLabels = New List(Of Label)()
+            trackBarMinorTicks = New List(Of Panel)()
+
+            ' Créer des repères de 0 à 100 tous les 10 (labels majeurs)
+            For i As Integer = 0 To 10
+                Dim value As Integer = i * 10
+                Dim lbl As New Label()
+                lbl.AutoSize = True
+                lbl.Text = value.ToString()
+                lbl.Font = New Font("Segoe UI", 7)
+                lbl.BackColor = Color.Transparent
+                lbl.ForeColor = SystemColors.ControlText
+                lbl.Name = "TrackBarScaleLabel_" & value  ' Identifiant unique pour le ThemeManager
+                lbl.Tag = value
+                GroupBox_Avancement.Controls.Add(lbl)
+                lbl.BringToFront()
+                trackBarScaleLabels.Add(lbl)
+            Next
+
+            ' Créer des petites lignes (minor ticks) entre les chiffres.
+            ' Ici on crée un tick tous les 2 points (valeurs 0..100 step 2) sauf les valeurs majeures (multiples de 10)
+            For v As Integer = 0 To 100 Step 2
+                If v Mod 10 <> 0 Then
+                    Dim tick As New Panel()
+                    tick.Size = New Size(1, 6)
+                    tick.BackColor = Color.Gray
+                    tick.Name = "TrackBarMinorTick_" & v  ' Identifiant unique pour le ThemeManager
+                    tick.Tag = v
+                    GroupBox_Avancement.Controls.Add(tick)
+                    tick.BringToFront()
+                    trackBarMinorTicks.Add(tick)
+                End If
+            Next
+
+            ' Positionner maintenant les labels et les ticks correctement
+            MettreAJourEchelleTrackBar(Nothing, EventArgs.Empty)
+
+            ' Retirer les anciens handlers pour éviter les doublons
+            Try
+                RemoveHandler TrackBar_Avancement.SizeChanged, AddressOf MettreAJourEchelleTrackBar
+                RemoveHandler GroupBox_Avancement.SizeChanged, AddressOf MettreAJourEchelleTrackBar
+                RemoveHandler TrackBar_Avancement.MouseDown, AddressOf TrackBar_Avancement_MouseDown
+            Catch
+            End Try
+
+            ' Réagir au redimensionnement du TrackBar ou du groupe
+            AddHandler TrackBar_Avancement.SizeChanged, AddressOf MettreAJourEchelleTrackBar
+            AddHandler GroupBox_Avancement.SizeChanged, AddressOf MettreAJourEchelleTrackBar
+            AddHandler TrackBar_Avancement.MouseDown, AddressOf TrackBar_Avancement_MouseDown
+        Catch
+        End Try
+    End Sub
+
+    Private Sub TrackBar_Avancement_MouseDown(sender As Object, e As MouseEventArgs)
+        Try
+            If TrackBar_Avancement Is Nothing Then Return
+
+            Dim tb = TrackBar_Avancement
+            Dim thumbPadding As Integer = ObtenirTrackBarPadding(tb)
+            Dim trackWidth As Integer = Math.Max(1, tb.Width - (2 * thumbPadding))
+            Dim localX As Integer = e.X - thumbPadding
+            Dim ratio As Double = 0.0
+            If localX <= 0 Then
+                ratio = 0.0
+            ElseIf localX >= trackWidth Then
+                ratio = 1.0
+            Else
+                ratio = localX / CDbl(trackWidth)
+            End If
+
+            ' Mettre à jour la valeur du TrackBar
+            Dim newValue As Integer = tb.Minimum + CInt(Math.Round(ratio * (tb.Maximum - tb.Minimum)))
+            newValue = Math.Max(tb.Minimum, Math.Min(tb.Maximum, newValue))
+            tb.Value = newValue
+
+            ' Déplacer la lecture audio à la position correspondante
+            If fichierAudio IsNot Nothing AndAlso fichierAudio.TotalTime.TotalSeconds > 0 Then
+                Dim targetSeconds = ratio * fichierAudio.TotalTime.TotalSeconds
+                Try
+                    fichierAudio.CurrentTime = TimeSpan.FromSeconds(targetSeconds)
+                Catch
+                End Try
+                MettreAJourPositionLabelsLoop()
+            End If
+
+            ' Si lecture en pause, reprendre; sinon si aucune lecture, lancer la lecture de l'item sélectionné
+            If lectureEnCours Then
+                If enPause Then
+                    Try
+                        Button_PauseReprise.PerformClick()
+                    Catch
+                    End Try
+                End If
+            Else
+                If ListView1.SelectedItems.Count > 0 Then
+                    Try
+                        JouerItemSelectionne()
+                    Catch
+                    End Try
+                End If
+            End If
+        Catch
+        End Try
+    End Sub
+
+    Private Sub MettreAJourEchelleTrackBar(sender As Object, e As EventArgs)
+        Try
+            If TrackBar_Avancement Is Nothing OrElse trackBarScaleLabels Is Nothing Then Return
+            If TrackBar_Avancement.Width <= 0 Then Return
+
+            Dim thumbPadding As Integer = ObtenirTrackBarPadding(TrackBar_Avancement)
+            Dim trackWidth As Integer = Math.Max(1, TrackBar_Avancement.Width - (2 * thumbPadding))
+            Dim trackStartX As Integer = TrackBar_Avancement.Left + thumbPadding
+
+            For Each lbl In trackBarScaleLabels
+                Dim value = CInt(lbl.Tag)
+                Dim ratio As Double = value / 100.0
+                Dim x As Integer = trackStartX + CInt(Math.Round(ratio * trackWidth)) - (lbl.Width \ 2)
+                Dim y As Integer = TrackBar_Avancement.Top - lbl.Height - 6
+                lbl.Location = New Point(x, y)
+                lbl.Visible = True
+            Next
+
+            ' Positionner les minor ticks s'ils existent
+            If trackBarMinorTicks IsNot Nothing Then
+                For Each tick In trackBarMinorTicks
+                    Dim value = CInt(tick.Tag)
+                    Dim ratio As Double = value / 100.0
+                    Dim x As Integer = trackStartX + CInt(Math.Round(ratio * trackWidth)) - (tick.Width \ 2)
+                    Dim y As Integer = TrackBar_Avancement.Top - tick.Height - 2
+                    tick.Location = New Point(x, y)
+                    tick.Visible = True
+                Next
+            End If
+        Catch
+        End Try
+    End Sub
+
+    ''' <summary>
     ''' Calcule le padding horizontal du TrackBar (marge avant le début du track effectif)
     ''' </summary>
     Private Function ObtenirTrackBarPadding(tb As TrackBar) As Integer
@@ -4795,7 +5858,12 @@ Public Class Form1
     End Sub
 
     Private Sub MettreAJourPositionLabelsLoop()
-        If Not hasLoopMarkers Then Return
+        If Not hasLoopMarkers Then
+            ' Aucun marqueur posé -> masquer les labels
+            If labelLoopStart IsNot Nothing Then labelLoopStart.Visible = False
+            If labelLoopEnd IsNot Nothing Then labelLoopEnd.Visible = False
+            Return
+        End If
 
         If fichierAudio IsNot Nothing AndAlso fichierAudio.TotalTime.TotalSeconds > 0 Then
             Dim total = fichierAudio.TotalTime.TotalSeconds
@@ -4808,23 +5876,31 @@ Public Class Form1
             Dim trackWidth As Integer = TrackBar_Avancement.Width - (2 * thumbPadding)
             Dim trackStartX As Integer = TrackBar_Avancement.Left + thumbPadding
 
-            ' Position du label I - calculer la position exacte du thumb pour loopStartPosition
-            Dim startRatio As Double = loopStartPosition.TotalSeconds / total
-            ' Utiliser Math.Round pour éviter les erreurs d'arrondi
-            Dim startThumbX As Integer = trackStartX + CInt(Math.Round(startRatio * trackWidth))
-            ' Centrer le label I au-dessus du thumb
-            Dim startX As Integer = startThumbX - (labelLoopStart.Width \ 2)
-            Dim startY As Integer = TrackBar_Avancement.Top - labelLoopStart.Height - 2
-            labelLoopStart.Location = New Point(startX, startY)
-            labelLoopStart.Visible = True
+            ' Position du label I - si défini
+            If loopStartPosition > TimeSpan.Zero AndAlso labelLoopStart IsNot Nothing Then
+                Dim startRatio As Double = Math.Min(1.0, Math.Max(0.0, loopStartPosition.TotalSeconds / total))
+                Dim startThumbX As Integer = trackStartX + CInt(Math.Round(startRatio * trackWidth))
+                Dim startX As Integer = startThumbX - (labelLoopStart.Width \ 2)
+                Dim startY As Integer = TrackBar_Avancement.Top - labelLoopStart.Height - 2
+                labelLoopStart.Location = New Point(startX, startY)
+                labelLoopStart.Visible = True
+                labelLoopStart.BringToFront()
+            ElseIf labelLoopStart IsNot Nothing Then
+                labelLoopStart.Visible = False
+            End If
 
-            ' Position du label O - calculer la position exacte du thumb pour loopEndPosition
-            Dim endRatio As Double = loopEndPosition.TotalSeconds / total
-            Dim endThumbX As Integer = trackStartX + CInt(Math.Round(endRatio * trackWidth))
-            Dim endX As Integer = endThumbX - (labelLoopEnd.Width \ 2)
-            Dim endY As Integer = TrackBar_Avancement.Top - labelLoopEnd.Height - 2
-            labelLoopEnd.Location = New Point(endX, endY)
-            labelLoopEnd.Visible = True
+            ' Position du label O - si défini
+            If loopEndPosition > TimeSpan.Zero AndAlso labelLoopEnd IsNot Nothing Then
+                Dim endRatio As Double = Math.Min(1.0, Math.Max(0.0, loopEndPosition.TotalSeconds / total))
+                Dim endThumbX As Integer = trackStartX + CInt(Math.Round(endRatio * trackWidth))
+                Dim endX As Integer = endThumbX - (labelLoopEnd.Width \ 2)
+                Dim endY As Integer = TrackBar_Avancement.Top - labelLoopEnd.Height - 2
+                labelLoopEnd.Location = New Point(endX, endY)
+                labelLoopEnd.Visible = True
+                labelLoopEnd.BringToFront()
+            ElseIf labelLoopEnd IsNot Nothing Then
+                labelLoopEnd.Visible = False
+            End If
         End If
     End Sub
 
@@ -4865,7 +5941,8 @@ Public Class Form1
                 fichierAudio.CurrentTime = loopStartPosition
             End If
         Else
-            Button_Loop.BackgroundImage = AudioPlay.Resources.AudioPlay_Loop_Carre_Gris
+            ' Désactiver la boucle et effacer les marqueurs I et O
+            EffacerMarqueursLoop()
         End If
     End Sub
 
@@ -4910,6 +5987,21 @@ Public Class Form1
                           LanguageManager.GetString("Error_Title"),
                           MessageBoxButtons.OK,
                           MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    ' Ouvrir le dernier crash.log si présent (menu Aide)
+    Private Sub Button_ViewCrashLog_Click(sender As Object, e As EventArgs)
+        Try
+            Dim logDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay")
+            Dim logFile = Path.Combine(logDir, "crash.log")
+            If File.Exists(logFile) Then
+                Process.Start(New ProcessStartInfo(logFile) With {.UseShellExecute = True})
+            Else
+                MessageBox.Show(LanguageManager.GetString("CrashLog_NotFound"), LanguageManager.GetString("CrashLog_Title"), MessageBoxButtons.OK, MessageBoxIcon.Information)
+            End If
+        Catch ex As Exception
+            MessageBox.Show(LanguageManager.GetString("Error_Generic"), LanguageManager.GetString("Error_Title"), MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 
@@ -4971,49 +6063,21 @@ Public Class Form1
         ' Définir le placeholder du TextBox
         TextBox_Recherche.PlaceholderText = LanguageManager.GetString("Search_Placeholder")
 
-        ' Configurer le bouton Clear
-        Button_ClearRecherche.FlatStyle = FlatStyle.Flat
-        Button_ClearRecherche.FlatAppearance.BorderSize = 0
+        ' Note: La configuration visuelle de Button_ClearRecherche (FlatStyle, couleurs)
+        ' est gérée automatiquement par le Designer via FlatAppearance
 
         ' Connecter les événements pour la recherche instantanée
         AddHandler TextBox_Recherche.TextChanged, AddressOf TextBox_Recherche_TextChanged
         AddHandler ComboBox_TypeRecherche.SelectedIndexChanged, AddressOf ComboBox_TypeRecherche_SelectedIndexChanged
         AddHandler TextBox_Recherche.KeyDown, AddressOf TextBox_Recherche_KeyDown
         AddHandler Button_ClearRecherche.Click, AddressOf Button_ClearRecherche_Click
-        AddHandler Button_ClearRecherche.MouseEnter, AddressOf Button_ClearRecherche_MouseEnter
-        AddHandler Button_ClearRecherche.MouseLeave, AddressOf Button_ClearRecherche_MouseLeave
-        AddHandler Button_ClearRecherche.MouseDown, AddressOf Button_ClearRecherche_MouseDown
-        AddHandler Button_ClearRecherche.MouseUp, AddressOf Button_ClearRecherche_MouseUp
+        ' Note: MouseEnter/Leave/Down/Up supprimés - FlatAppearance gère automatiquement les couleurs
     End Sub
 
     Private Sub Button_ClearRecherche_Click(sender As Object, e As EventArgs)
         ' Vider le TextBox et remettre le focus sur le ListView
         TextBox_Recherche.Clear()
         ListView1.Focus()
-    End Sub
-
-    Private Sub Button_ClearRecherche_MouseEnter(sender As Object, e As EventArgs)
-        ' Changer la couleur en Lime lors du survol
-        Button_ClearRecherche.ForeColor = Color.Lime
-    End Sub
-
-    Private Sub Button_ClearRecherche_MouseLeave(sender As Object, e As EventArgs)
-        ' Restaurer la couleur par défaut
-        Button_ClearRecherche.ForeColor = SystemColors.ControlText
-    End Sub
-
-    Private Sub Button_ClearRecherche_MouseDown(sender As Object, e As MouseEventArgs)
-        ' Changer la couleur en Rouge lors du clic
-        Button_ClearRecherche.ForeColor = Color.Red
-    End Sub
-
-    Private Sub Button_ClearRecherche_MouseUp(sender As Object, e As MouseEventArgs)
-        ' Revenir à Lime après le clic (si la souris est toujours sur le bouton)
-        If Button_ClearRecherche.ClientRectangle.Contains(Button_ClearRecherche.PointToClient(Cursor.Position)) Then
-            Button_ClearRecherche.ForeColor = Color.Lime
-        Else
-            Button_ClearRecherche.ForeColor = SystemColors.ControlText
-        End If
     End Sub
 
     Private Sub TextBox_Recherche_KeyDown(sender As Object, e As KeyEventArgs)

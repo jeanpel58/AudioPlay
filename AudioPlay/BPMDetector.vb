@@ -101,7 +101,7 @@ Public Class BPMDetector
                 End If
 
                 ' Créer l'instance BPMDetect de SoundTouch
-                Dim bpmDetect As New BPMDetect(CUInt(reader.WaveFormat.Channels), CUInt(reader.WaveFormat.SampleRate))
+                Dim bpmDetect As New BPMDetect(CInt(reader.WaveFormat.Channels), CInt(reader.WaveFormat.SampleRate))
 
                 ' Envoyer les échantillons au détecteur de BPM
                 bpmDetect.PutSamples(buffer, CUInt(echantillonsLus / reader.WaveFormat.Channels))
@@ -152,7 +152,7 @@ Public Class BPMDetector
                 End If
 
                 ' Créer l'instance BPMDetect
-                Dim bpmDetect As New BPMDetect(CUInt(reader.WaveFormat.Channels), CUInt(reader.WaveFormat.SampleRate))
+                Dim bpmDetect As New BPMDetect(CInt(reader.WaveFormat.Channels), CInt(reader.WaveFormat.SampleRate))
 
                 ' Envoyer les échantillons
                 bpmDetect.PutSamples(buffer, CUInt(echantillonsLus / reader.WaveFormat.Channels))

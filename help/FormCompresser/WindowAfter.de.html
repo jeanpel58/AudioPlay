@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⏭️ Hilfe - Fenster nach TOC</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; color: #333; }
+        .container { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #3498db; margin-top: 25px; }
+        .info { background-color: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .icon { font-size: 1.3em; margin-right: 5px; }
+        ul { line-height: 1.8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="icon">⏭️</span>Fenster nach TOC (Sekunden)</h1>
+
+        <p>Diese Einstellung steuert, wie viele Sekunden Audio NACH dem TOC (Track-Grenze) analysiert werden, um Übergänge zu erkennen.</p>
+
+        <h2>Warum</h2>
+        <p>Manchmal liegt das echte Ende eines Tracks nach dem TOC (verstecktes Lead-out) oder der nächste Track beginnt später. Die Analyse nach dem TOC erkennt Stille oder Ausblendungen unmittelbar nach der Grenze.</p>
+
+        <h2>Was ist der TOC?</h2>
+        <p>Der TOC (Table of Contents) einer Audio-CD ist eine auf der Disc gespeicherte Tabelle, die die Startpositionen jeder Spur (in Minuten:Sekunden:Frames) und die Lead-out-Position auflistet. Er dient als logisches Inhaltsverzeichnis für CD-Player. Der TOC beschreibt nicht die tatsächliche Wellenform um diese Positionen: er sagt nicht, ob sich Spuren überlappen, Crossfades enthalten oder Stille besitzen. Deshalb ist eine Audiowiedergabeanalyse rund um den TOC notwendig, um die sichere Stille zu finden, an der geschnitten werden kann.</p>
+
+        <h2>Auswirkung einer Änderung</h2>
+        <ul>
+            <li>Kleinerer Wert: schneller, kann kurze Post-TOC-Stille verpassen.</li>
+            <li>Größerer Wert: analysiert mehr Audio und kann eine bessere Trennung finden, kostet aber Zeit.</li>
+        </ul>
+
+        <div class="info">
+            <strong>Empfehlung:</strong> Standard: 20 Sekunden. Verwenden Sie 10–30s für lange Lead-outs.
+        </div>
+    </div>
+</body>
+</html>

@@ -220,6 +220,34 @@
             margin-top: 50px;
         }
 
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .print-button:hover {
+            background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(40, 167, 69, 0.6);
+        }
+
+        .print-button:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+        }
+
         @media print {
             body {
                 background: white;
@@ -233,10 +261,17 @@
             nav {
                 display: none;
             }
+
+            .print-button {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Bouton d'impression flottant -->
+    <button class="print-button" onclick="window.print()">🖨️ Imprimer le guide</button>
+
     <div class="container">
         <header>
             <h1>🎵 AudioPlay</h1>
@@ -250,6 +285,7 @@
                 <li><a href="#parametres">⚙️ Paramètres</a></li>
                 <li><a href="#modedj">🎧 Mode DJ</a></li>
                 <li><a href="#metadonnees">📝 Métadonnées</a></li>
+                <li><a href="#cdaudio">💿 CD Audio</a></li>
                 <li><a href="#fonctionnalites">✨ Fonctionnalités</a></li>
             </ul>
         </nav>
@@ -1219,6 +1255,242 @@
                     <li><strong>Types de tags</strong> : ID3v1, ID3v2, Vorbis Comments, APEv2, etc.</li>
                     <li><strong>Encodage</strong> : Bitrate moyen/constant/variable (ABR/CBR/VBR)</li>
                     <li><strong>Canaux audio</strong> : Mono, Stéréo, 5.1, 7.1</li>
+                </ul>
+            </section>
+
+            <!-- SECTION CD AUDIO -->
+            <section id="cdaudio">
+                <h2>💿 CD Audio - Lecture et Extraction</h2>
+
+                <div class="success">
+                    <strong>Nouvelle fonctionnalité !</strong><br>
+                    AudioPlay peut maintenant lire et extraire des CD audio directement depuis vos lecteurs CD/DVD.
+                </div>
+
+                <h3>🎵 Lecture de CD Audio</h3>
+
+                <div class="button-desc">
+                    <strong>Accès au lecteur CD</strong><br>
+                    Pour lire un CD audio :
+                    <ol>
+                        <li>Insérez un CD audio dans votre lecteur CD/DVD</li>
+                        <li>Cliquez sur le bouton <strong>"Ajout" (Button_Ajout)</strong> dans la barre d'outils</li>
+                        <li>Dans le menu contextuel qui apparaît, choisissez <strong>"Ajout d'un CD Audio"</strong></li>
+                        <li>AudioPlay détecte automatiquement les lecteurs contenant un CD audio</li>
+                        <li>Sélectionnez le lecteur dans la liste déroulante</li>
+                        <li>Les pistes du CD s'affichent automatiquement</li>
+                    </ol>
+
+                    <div class="tip">
+                        <strong>Détection automatique :</strong> AudioPlay surveille en temps réel les lecteurs CD. 
+                        Si vous éjectez ou insérez un CD, l'interface se met à jour automatiquement.
+                    </div>
+                </div>
+
+                <h3>📝 Métadonnées CD</h3>
+
+                <div class="button-desc">
+                    <strong>Chargement automatique des informations</strong><br>
+                    AudioPlay récupère automatiquement les métadonnées du CD :
+                    <ul>
+                        <li><strong>Artiste</strong> : Nom de l'artiste ou du groupe</li>
+                        <li><strong>Album</strong> : Titre de l'album</li>
+                        <li><strong>Année</strong> : Année de sortie</li>
+                        <li><strong>Genre</strong> : Style musical</li>
+                        <li><strong>Titres des pistes</strong> : Nom de chaque chanson</li>
+                        <li><strong>Pochette</strong> : Image de la couverture de l'album (si disponible)</li>
+                    </ul>
+
+                    <div class="warning">
+                        <strong>Sources de métadonnées :</strong>
+                        <ul>
+                            <li><strong>GnuDB</strong> : Base de données CD gratuite (par défaut)</li>
+                            <li><strong>MusicBrainz</strong> : Base de données musicale communautaire</li>
+                            <li><strong>Cache local</strong> : Métadonnées sauvegardées des CD déjà lus</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>💾 Extraction de CD Audio</h3>
+
+                <div class="button-desc">
+                    <strong>Convertir vos CD en fichiers audio</strong><br>
+                    AudioPlay peut extraire les pistes d'un CD audio vers votre disque dur :
+
+                    <h4>📂 Formats d'extraction supportés :</h4>
+                    <table>
+                        <tr>
+                            <th>Format</th>
+                            <th>Description</th>
+                            <th>Qualités disponibles</th>
+                        </tr>
+                        <tr>
+                            <td><strong>MP3</strong></td>
+                            <td>Format compressé universel</td>
+                            <td>
+                                • Basse (128 kbps)<br>
+                                • Moyenne (192 kbps)<br>
+                                • Haute (256 kbps)<br>
+                                • <strong>Très haute (320 kbps)</strong> ⭐
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>FLAC</strong></td>
+                            <td>Compression sans perte (lossless)</td>
+                            <td>
+                                • Niveau 0 (rapide)<br>
+                                • Niveau 5 (équilibré)<br>
+                                • <strong>Niveau 8 (meilleur)</strong> ⭐
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>WAV</strong></td>
+                            <td>Format non compressé (qualité CD)</td>
+                            <td>
+                                • PCM 16-bit 44.1 kHz<br>
+                                • <strong>PCM 24-bit 96 kHz</strong> ⭐<br>
+                                • PCM 32-bit 192 kHz
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>WMA</strong></td>
+                            <td>Windows Media Audio</td>
+                            <td>
+                                • 128 kbps<br>
+                                • 192 kbps<br>
+                                • <strong>256 kbps</strong> ⭐
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="tip">
+                        <strong>Par défaut :</strong> AudioPlay extrait en <strong>MP3</strong> à <strong>Très haute qualité (320 kbps)</strong>
+                    </div>
+                </div>
+
+                <h3>⚙️ Processus d'extraction</h3>
+
+                <div class="button-desc">
+                    <strong>Comment extraire un CD :</strong>
+                    <ol>
+                        <li><strong>Sélectionner les pistes</strong> : Cochez les pistes à extraire dans la liste</li>
+                        <li><strong>Choisir le format</strong> : MP3, FLAC, WAV ou WMA</li>
+                        <li><strong>Choisir la qualité</strong> : Selon le format sélectionné</li>
+                        <li><strong>Définir le dossier de sauvegarde</strong> : Où sauvegarder les fichiers</li>
+                        <li><strong>Ajuster les métadonnées</strong> :
+                            <ul>
+                                <li>Artiste, Album, Année</li>
+                                <li>Genre, Commentaire</li>
+                                <li>Numéro de la première piste (pour albums partiels)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Options avancées</strong> :
+                            <ul>
+                                <li>☑️ <strong>Verrouiller le CD</strong> : Empêche l'éjection pendant l'extraction</li>
+                                <li>☑️ <strong>Éjecter le CD</strong> : Éjecte automatiquement le CD une fois terminé</li>
+                                <li>🔊 <strong>Normalisation Son</strong> : Ajustez le volume d'extraction (1-100%, défaut 95%)
+                                    <ul>
+                                        <li><strong>95%</strong> : Valeur recommandée pour éviter la saturation</li>
+                                        <li><strong>100%</strong> : Volume maximum (risque de distorsion)</li>
+                                        <li><strong>Moins de 95%</strong> : Réduction du volume si les pistes sont trop fortes</li>
+                                        <li>💾 <em>La valeur est sauvegardée automatiquement entre les sessions</em></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><strong>Cliquer sur "Extraire"</strong></li>
+                    </ol>
+
+                    <div class="success">
+                        <strong>Organisation automatique :</strong><br>
+                        Les fichiers sont automatiquement organisés de cette manière :<br>
+                        <code>Dossier_Sauvegarde\(Année) Artiste - Album\NN - Artiste - Titre.ext</code><br><br>
+                        <strong>Exemple :</strong><br>
+                        <code>Musique\(2005) Paul McCartney - Never Stop Doing What You Love\01 - Paul McCartney - Another Day.mp3</code>
+                    </div>
+
+                    <div class="warning">
+                        <strong>Numérotation intelligente :</strong> Les numéros de piste sont automatiquement formatés avec des zéros devant (01, 02... 09, 10, etc.)
+                    </div>
+                </div>
+
+                <h3>📊 Suivi de progression</h3>
+
+                <div class="button-desc">
+                    <strong>Indicateurs en temps réel :</strong>
+                    <ul>
+                        <li><strong>Piste en cours</strong> : Affiche "Artiste - Titre" de la piste actuellement extraite</li>
+                        <li><strong>Progression par piste</strong> : Barre de progression de la piste actuelle</li>
+                        <li><strong>Progression globale</strong> : Barre de progression de toutes les pistes sélectionnées</li>
+                    </ul>
+
+                    <div class="tip">
+                        <strong>Extraction en arrière-plan :</strong> Vous pouvez minimiser la fenêtre pendant l'extraction. 
+                        AudioPlay continuera de travailler en arrière-plan.
+                    </div>
+                </div>
+
+                <h3>🔧 Installation automatique de FFMpeg</h3>
+
+                <div class="button-desc">
+                    <strong>Pour les formats FLAC et WMA :</strong><br>
+                    AudioPlay nécessite FFMpeg pour extraire en FLAC et WMA. Si FFMpeg n'est pas installé :
+                    <ol>
+                        <li>AudioPlay détecte automatiquement son absence</li>
+                        <li>Une fenêtre de téléchargement s'affiche</li>
+                        <li>FFMpeg est téléchargé et installé automatiquement</li>
+                        <li>L'extraction démarre ensuite normalement</li>
+                    </ol>
+
+                    <div class="success">
+                        <strong>Installation transparente :</strong> Vous n'avez rien à faire ! AudioPlay gère tout automatiquement.
+                    </div>
+
+                    <div class="warning">
+                        <strong>Emplacement :</strong> FFMpeg est installé dans <code>Tools\ffmpeg.exe</code> du dossier d'AudioPlay
+                    </div>
+                </div>
+
+                <h3>❓ Questions fréquentes</h3>
+
+                <h4>💿 Mon CD n'est pas détecté</h4>
+                <ul>
+                    <li>Vérifiez que le CD est bien inséré dans le lecteur</li>
+                    <li>Assurez-vous qu'il s'agit bien d'un CD audio (pas MP3 ou données)</li>
+                    <li>Cliquez de nouveau sur <strong>Button_Ajout → "Ajout d'un CD Audio"</strong></li>
+                    <li>Redémarrez AudioPlay si le problème persiste</li>
+                </ul>
+
+                <h4>📝 Les métadonnées ne se chargent pas</h4>
+                <ul>
+                    <li>Vérifiez votre connexion Internet (GnuDB et MusicBrainz en ont besoin)</li>
+                    <li>Essayez de changer de source de métadonnées</li>
+                    <li>Le CD peut être rare ou non répertorié dans les bases de données</li>
+                    <li>Vous pouvez saisir les métadonnées manuellement dans le formulaire d'extraction</li>
+                </ul>
+
+                <h4>⚡ L'extraction est lente</h4>
+                <ul>
+                    <li>L'extraction en temps réel prend le même temps que la lecture du CD</li>
+                    <li>Les formats compressés (MP3, FLAC, WMA) ajoutent un temps d'encodage</li>
+                    <li>Le format WAV est le plus rapide (pas de compression)</li>
+                    <li>Fermez les autres applications pour libérer des ressources</li>
+                </ul>
+
+                <h4>🔒 Le CD reste bloqué</h4>
+                <ul>
+                    <li>Si l'option "Verrouiller le CD" est cochée, le CD ne peut pas être éjecté pendant l'extraction</li>
+                    <li>Attendez la fin de l'extraction</li>
+                    <li>Si cochée, l'option "Éjecter le CD" l'éjectera automatiquement à la fin</li>
+                    <li>En cas de problème, fermez AudioPlay et le CD sera déverrouillé</li>
+                </ul>
+
+                <h4>💾 Où sont sauvegardés mes fichiers ?</h4>
+                <ul>
+                    <li>Les fichiers sont sauvegardés dans le dossier que vous avez choisi</li>
+                    <li>Un sous-dossier est créé automatiquement : <code>(Année) Artiste - Album</code></li>
+                    <li>Les fichiers sont nommés : <code>NN - Artiste - Titre.ext</code></li>
+                    <li>Vous pouvez changer le dossier de sauvegarde à chaque extraction</li>
                 </ul>
             </section>
 

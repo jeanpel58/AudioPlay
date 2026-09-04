@@ -34,6 +34,13 @@ Public Module ParametresGlobaux
     ' Mode Mixeur DJ
     Public ModeMixeurDJ As Boolean = False ' Mode lecteur simple (False) ou mixeur DJ (True)
 
+    ' Chemin vers l'exécutable Python s'il est défini par l'utilisateur (optionnel)
+    Public PythonPath As String = ""
+
+    ' Paramètres utilisés par le rendu des waveforms et la détection
+    Public OnsetDetectionSensitivity As Single = 1.8F
+    Public WaveformCacheMaxSizeMB As Integer = 200
+
     ' === Paramètres persistants globaux (répertoires utilisés) ===
     Public repertoireParDefaut As String = ""
     Public dernierRepertoireAjoutFichier As String = ""
@@ -50,6 +57,21 @@ Public Module ParametresGlobaux
     Public dernierRepertoirePlaylist_DJ As String = ""
     Public avantDernierRepertoireAjoutRepertoire_DJ As String = ""
     Public dernierRepertoireAjoutRepertoireChoisi_DJ As String = ""
+    ' === Répertoire d'extraction CD ===
+    Public repertoireExtractionCD As String = ""
+    ' === Volume d'extraction CD (1-100, défaut 95) ===
+    Public volumeExtractionCD As Integer = 95
+    ' === Mode TOC précis pour extraction CD (pour les albums sans silences) ===
+    Public ModeTOCPrecis As Boolean = False
+    ' === Forcer l'utilisation uniquement du ripper externe (désactive le fallback interne) ===
+    ' Par défaut False : freac est prioritaire mais l'extracteur interne sert de fallback.
+    Public ForceOnlyExternalRipper As Boolean = False
+    ' === Option de test: empêcher temporairement le resampling/post-traitement WAV
+    ' Utilisez True pour conserver strictement le WAV produit par le ripper externe (freac)
+    Public SkipEnsureWavQuality As Boolean = False
+    ' === Suppression des silences ===
+    Public SupprimerSilenceDebut As Boolean = False
+    Public SupprimerSilenceFin As Boolean = False
     ' Supprimer de manière robuste un dossier temporaire créé par AudioPlay
     Public Sub SupprimerDossierTemporaire(ByVal dossier As String)
         If String.IsNullOrEmpty(dossier) Then Return
@@ -127,13 +149,13 @@ End Module
 Public Module ParametresGlobauxHelpers
     Public Sub EcrireCleParametres(cle As String, valeur As String)
         Try
-            Dim fichierParam = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "parametres.txt")
+            Dim dossierApp = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay")
+            Dim fichierParam = Path.Combine(dossierApp, "parametres.txt")
+            If Not Directory.Exists(dossierApp) Then Directory.CreateDirectory(dossierApp)
+
             Dim lignes As New List(Of String)()
             If File.Exists(fichierParam) Then
                 lignes = File.ReadAllLines(fichierParam).ToList()
-            Else
-                Dim dossier = Path.GetDirectoryName(fichierParam)
-                If Not Directory.Exists(dossier) Then Directory.CreateDirectory(dossier)
             End If
 
             Dim found As Boolean = False
@@ -149,9 +171,30 @@ Public Module ParametresGlobauxHelpers
                 lignes.Add(cle & "=" & valeur)
             End If
 
-            File.WriteAllLines(fichierParam, lignes)
-        Catch
-            ' Ignorer les erreurs d'écriture
+            Dim tempFile = fichierParam & ".tmp"
+            File.WriteAllLines(tempFile, lignes)
+            If File.Exists(fichierParam) Then
+                File.Replace(tempFile, fichierParam, Nothing)
+            Else
+                File.Move(tempFile, fichierParam)
+            End If
+
+            Try
+                Dim trace = Path.Combine(Path.GetTempPath(), "AudioPlay_param_write_debug.txt")
+                File.AppendAllText(trace, "[" & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") & "] WROTE " & cle & "=" & valeur & " to " & fichierParam & Environment.NewLine)
+            Catch
+            End Try
+        Catch ex As Exception
+            Try
+                Dim tempFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioPlay", "parametres.txt.tmp")
+                If File.Exists(tempFile) Then File.Delete(tempFile)
+            Catch
+            End Try
+            Try
+                Dim trace = Path.Combine(Path.GetTempPath(), "AudioPlay_param_write_debug.txt")
+                File.AppendAllText(trace, "[" & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") & "] FAILED WRITE " & cle & "=" & valeur & " - " & ex.Message & Environment.NewLine)
+            Catch
+            End Try
         End Try
     End Sub
 End Module
