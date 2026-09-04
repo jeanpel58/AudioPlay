@@ -89,7 +89,7 @@ Partial Class FormMetadonnees
         GroupBoxTags.Controls.Add(LabelArtiste)
         GroupBoxTags.Controls.Add(TextBoxTitre)
         GroupBoxTags.Controls.Add(LabelTitre)
-        GroupBoxTags.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        GroupBoxTags.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         GroupBoxTags.Location = New Point(12, 318)
         GroupBoxTags.Name = "GroupBoxTags"
         GroupBoxTags.Size = New Size(660, 320)
@@ -107,7 +107,7 @@ Partial Class FormMetadonnees
         ' LabelBPM
         ' 
         LabelBPM.AutoSize = True
-        LabelBPM.Font = New Font("Segoe UI", 9F)
+        LabelBPM.Font = New Font("Segoe UI", 9.0F)
         LabelBPM.Location = New Point(15, 289)
         LabelBPM.Name = "LabelBPM"
         LabelBPM.Size = New Size(38, 15)
@@ -124,7 +124,7 @@ Partial Class FormMetadonnees
         ' LabelAlbumArtiste
         ' 
         LabelAlbumArtiste.AutoSize = True
-        LabelAlbumArtiste.Font = New Font("Segoe UI", 9F)
+        LabelAlbumArtiste.Font = New Font("Segoe UI", 9.0F)
         LabelAlbumArtiste.Location = New Point(15, 260)
         LabelAlbumArtiste.Name = "LabelAlbumArtiste"
         LabelAlbumArtiste.Size = New Size(86, 15)
@@ -141,7 +141,7 @@ Partial Class FormMetadonnees
         ' LabelPiste
         ' 
         LabelPiste.AutoSize = True
-        LabelPiste.Font = New Font("Segoe UI", 9F)
+        LabelPiste.Font = New Font("Segoe UI", 9.0F)
         LabelPiste.Location = New Point(15, 231)
         LabelPiste.Name = "LabelPiste"
         LabelPiste.Size = New Size(71, 15)
@@ -159,7 +159,7 @@ Partial Class FormMetadonnees
         ' LabelCommentaire
         ' 
         LabelCommentaire.AutoSize = True
-        LabelCommentaire.Font = New Font("Segoe UI", 9F)
+        LabelCommentaire.Font = New Font("Segoe UI", 9.0F)
         LabelCommentaire.Location = New Point(15, 173)
         LabelCommentaire.Name = "LabelCommentaire"
         LabelCommentaire.Size = New Size(86, 15)
@@ -176,7 +176,7 @@ Partial Class FormMetadonnees
         ' LabelGenre
         ' 
         LabelGenre.AutoSize = True
-        LabelGenre.Font = New Font("Segoe UI", 9F)
+        LabelGenre.Font = New Font("Segoe UI", 9.0F)
         LabelGenre.Location = New Point(15, 144)
         LabelGenre.Name = "LabelGenre"
         LabelGenre.Size = New Size(44, 15)
@@ -193,7 +193,7 @@ Partial Class FormMetadonnees
         ' LabelAnnee
         ' 
         LabelAnnee.AutoSize = True
-        LabelAnnee.Font = New Font("Segoe UI", 9F)
+        LabelAnnee.Font = New Font("Segoe UI", 9.0F)
         LabelAnnee.Location = New Point(15, 115)
         LabelAnnee.Name = "LabelAnnee"
         LabelAnnee.Size = New Size(47, 15)
@@ -210,7 +210,7 @@ Partial Class FormMetadonnees
         ' LabelAlbum
         ' 
         LabelAlbum.AutoSize = True
-        LabelAlbum.Font = New Font("Segoe UI", 9F)
+        LabelAlbum.Font = New Font("Segoe UI", 9.0F)
         LabelAlbum.Location = New Point(15, 86)
         LabelAlbum.Name = "LabelAlbum"
         LabelAlbum.Size = New Size(49, 15)
@@ -227,7 +227,7 @@ Partial Class FormMetadonnees
         ' LabelArtiste
         ' 
         LabelArtiste.AutoSize = True
-        LabelArtiste.Font = New Font("Segoe UI", 9F)
+        LabelArtiste.Font = New Font("Segoe UI", 9.0F)
         LabelArtiste.Location = New Point(15, 57)
         LabelArtiste.Name = "LabelArtiste"
         LabelArtiste.Size = New Size(47, 15)
@@ -245,7 +245,7 @@ Partial Class FormMetadonnees
         ' LabelTitre
         ' 
         LabelTitre.AutoSize = True
-        LabelTitre.Font = New Font("Segoe UI", 9F)
+        LabelTitre.Font = New Font("Segoe UI", 9.0F)
         LabelTitre.Location = New Point(15, 28)
         LabelTitre.Name = "LabelTitre"
         LabelTitre.Size = New Size(37, 15)
@@ -254,7 +254,7 @@ Partial Class FormMetadonnees
         ' 
         ' ButtonSauvegarder
         ' 
-        ButtonSauvegarder.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        ButtonSauvegarder.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         ButtonSauvegarder.Location = New Point(479, 644)
         ButtonSauvegarder.Name = "ButtonSauvegarder"
         ButtonSauvegarder.Size = New Size(112, 30)
@@ -264,7 +264,7 @@ Partial Class FormMetadonnees
         ' 
         ' FormMetadonnees
         ' 
-        AutoScaleDimensions = New SizeF(7F, 15F)
+        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(684, 686)
         Controls.Add(ButtonSauvegarder)

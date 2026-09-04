@@ -1840,8 +1840,7 @@ Public Class Form1
                     Catch exReader As Exception
                         ' Log and skip silently to next track
                         Try
-                            Dim trace = Path.Combine(Path.GetTempPath(), "AudioPlay_playback_error_debug.txt")
-                            File.AppendAllText(trace, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Failed opening audio {chemin}: {exReader.Message}{Environment.NewLine}")
+                            CDAudioAnalyzer.DiagnosticWrite($"PLAYBACK_ERROR: Failed opening audio {chemin}: {exReader.Message}")
                         Catch
                         End Try
                         ' mark attempt and select next
@@ -1870,8 +1869,7 @@ Public Class Form1
             Catch ex As Exception
                 ' If unexpected exception occurs, log and stop attempts
                 Try
-                    Dim trace2 = Path.Combine(Path.GetTempPath(), "AudioPlay_playback_error_debug.txt")
-                    File.AppendAllText(trace2, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Unexpected error preparing playback {chemin}: {ex.Message}{Environment.NewLine}")
+                    CDAudioAnalyzer.DiagnosticWrite($"PLAYBACK_ERROR: Unexpected error preparing playback {chemin}: {ex.Message}")
                 Catch
                 End Try
                 Exit Do

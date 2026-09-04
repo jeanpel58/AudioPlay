@@ -278,7 +278,7 @@ Partial Class Form1
         GroupBox2.Controls.Add(Button_PauseReprise)
         GroupBox2.Controls.Add(Button_CalculBPM)
         GroupBox2.Controls.Add(Button_Mute)
-        GroupBox2.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0)
+        GroupBox2.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         GroupBox2.Location = New Point(13, 129)
         GroupBox2.Name = "GroupBox2"
         GroupBox2.Size = New Size(533, 54)
@@ -493,7 +493,7 @@ Partial Class Form1
         GroupBox3.Controls.Add(TextBox_Recherche)
         GroupBox3.Controls.Add(ComboBox_TypeRecherche)
         GroupBox3.Controls.Add(ListView1)
-        GroupBox3.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0)
+        GroupBox3.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         GroupBox3.Location = New Point(13, 189)
         GroupBox3.Name = "GroupBox3"
         GroupBox3.Size = New Size(534, 467)
@@ -585,7 +585,7 @@ Partial Class Form1
         GroupBox4.Controls.Add(Button_Playlist)
         GroupBox4.Controls.Add(Button_InfoSelect)
         GroupBox4.Controls.Add(Button_Ajout)
-        GroupBox4.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0)
+        GroupBox4.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         GroupBox4.Location = New Point(14, 720)
         GroupBox4.Name = "GroupBox4"
         GroupBox4.Size = New Size(533, 50)
@@ -661,7 +661,7 @@ Partial Class Form1
         ' GroupBox_Avancement
         ' 
         GroupBox_Avancement.Controls.Add(TrackBar_Avancement)
-        GroupBox_Avancement.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0)
+        GroupBox_Avancement.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, 0)
         GroupBox_Avancement.Location = New Point(14, 662)
         GroupBox_Avancement.Name = "GroupBox_Avancement"
         GroupBox_Avancement.Size = New Size(533, 52)
@@ -680,7 +680,7 @@ Partial Class Form1
         ' 
         ' Form1
         ' 
-        AutoScaleDimensions = New SizeF(7F, 15F)
+        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.LightBlue
         BackgroundImageLayout = ImageLayout.Stretch

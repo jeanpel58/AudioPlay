@@ -50,7 +50,7 @@ Partial Class FormEditTracks
         ' Label_PisteNumber
         ' 
         Label_PisteNumber.FlatStyle = FlatStyle.Flat
-        Label_PisteNumber.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Label_PisteNumber.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Label_PisteNumber.Location = New Point(87, 9)
         Label_PisteNumber.Name = "Label_PisteNumber"
         Label_PisteNumber.Size = New Size(22, 23)
@@ -61,7 +61,7 @@ Partial Class FormEditTracks
         ' Label_TitreText
         ' 
         Label_TitreText.FlatStyle = FlatStyle.Flat
-        Label_TitreText.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Label_TitreText.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Label_TitreText.Location = New Point(12, 43)
         Label_TitreText.Name = "Label_TitreText"
         Label_TitreText.Size = New Size(69, 23)
@@ -72,7 +72,7 @@ Partial Class FormEditTracks
         ' Label_ArtisteText
         ' 
         Label_ArtisteText.FlatStyle = FlatStyle.Flat
-        Label_ArtisteText.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Label_ArtisteText.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Label_ArtisteText.Location = New Point(12, 76)
         Label_ArtisteText.Name = "Label_ArtisteText"
         Label_ArtisteText.Size = New Size(69, 23)
@@ -103,7 +103,7 @@ Partial Class FormEditTracks
         Button_PisteSuivante.FlatAppearance.MouseDownBackColor = Color.Red
         Button_PisteSuivante.FlatAppearance.MouseOverBackColor = Color.Lime
         Button_PisteSuivante.FlatStyle = FlatStyle.Flat
-        Button_PisteSuivante.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Button_PisteSuivante.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Button_PisteSuivante.Location = New Point(325, 114)
         Button_PisteSuivante.Name = "Button_PisteSuivante"
         Button_PisteSuivante.Size = New Size(117, 25)
@@ -116,7 +116,7 @@ Partial Class FormEditTracks
         Button_PistePrecedente.FlatAppearance.MouseDownBackColor = Color.Red
         Button_PistePrecedente.FlatAppearance.MouseOverBackColor = Color.Lime
         Button_PistePrecedente.FlatStyle = FlatStyle.Flat
-        Button_PistePrecedente.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Button_PistePrecedente.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Button_PistePrecedente.Location = New Point(189, 114)
         Button_PistePrecedente.Name = "Button_PistePrecedente"
         Button_PistePrecedente.Size = New Size(117, 25)
@@ -129,7 +129,7 @@ Partial Class FormEditTracks
         ButtonQuitter.FlatAppearance.MouseDownBackColor = Color.Red
         ButtonQuitter.FlatAppearance.MouseOverBackColor = Color.Lime
         ButtonQuitter.FlatStyle = FlatStyle.Flat
-        ButtonQuitter.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        ButtonQuitter.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         ButtonQuitter.Location = New Point(467, 164)
         ButtonQuitter.Name = "ButtonQuitter"
         ButtonQuitter.Size = New Size(110, 35)
@@ -142,7 +142,7 @@ Partial Class FormEditTracks
         Button_EffaceTitre.FlatAppearance.MouseDownBackColor = Color.Red
         Button_EffaceTitre.FlatAppearance.MouseOverBackColor = Color.Lime
         Button_EffaceTitre.FlatStyle = FlatStyle.Flat
-        Button_EffaceTitre.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Button_EffaceTitre.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Button_EffaceTitre.Location = New Point(551, 45)
         Button_EffaceTitre.Name = "Button_EffaceTitre"
         Button_EffaceTitre.Size = New Size(33, 25)
@@ -155,7 +155,7 @@ Partial Class FormEditTracks
         Button_EffaceArtiste.FlatAppearance.MouseDownBackColor = Color.Red
         Button_EffaceArtiste.FlatAppearance.MouseOverBackColor = Color.Lime
         Button_EffaceArtiste.FlatStyle = FlatStyle.Flat
-        Button_EffaceArtiste.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Button_EffaceArtiste.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Button_EffaceArtiste.Location = New Point(551, 75)
         Button_EffaceArtiste.Name = "Button_EffaceArtiste"
         Button_EffaceArtiste.Size = New Size(33, 25)
@@ -165,7 +165,7 @@ Partial Class FormEditTracks
         ' 
         ' FormEditTracks
         ' 
-        AutoScaleDimensions = New SizeF(7F, 15F)
+        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(589, 211)
         Controls.Add(Button_EffaceArtiste)

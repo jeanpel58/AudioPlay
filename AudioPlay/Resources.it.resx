@@ -144,6 +144,9 @@
   <data name="APropos_Ligne03" xml:space="preserve">
     <value>Puoi anche inviare la tua donazione utilizzando il seguente pulsante Paypal --&gt;</value>
   </data>
+  <data name="Compressor_Converting" xml:space="preserve">
+    <value>Conversione...</value>
+  </data>
   <data name="APropos_DonTitre" xml:space="preserve">
     <value>DONAZIONE</value>
   </data>

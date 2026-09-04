@@ -115,6 +115,8 @@ Public Class CDAudioAnalyzer
     Public Shared ReadOnly Property DiagnosticsLogPath As String
         Get
             Try
+                ' Avoid creating persistent temp analysis log file by default; use in-memory diagnostics via DiagnosticWrite
+                ' Keep compatibility: return path only when explicitly requested by other tooling
                 Return System.IO.Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_AnalysisLog.txt")
             Catch
                 Return "AudioPlay_AnalysisLog.txt"
@@ -1014,6 +1016,69 @@ Public Class CDAudioAnalyzer
                         DiagnosticWrite($"Piste {track.TrackNumber} last-track: extended read exception: {ex.Message}")
                     End Try
                 End If
+
+                ' --- Si toujours rien trouvé, effectuer une recherche conservatrice dans la FIN de la piste ---
+                Try
+                    Dim finalWindowSeconds As Integer = 30
+                    Dim finalStart As Integer = Math.Max(track.StartFrame, track.EndFrame - CInt(finalWindowSeconds * 75))
+                    Dim finalEnd As Integer = track.EndFrame
+                    Dim finalFramesToAnalyze As Integer = finalEnd - finalStart + 1
+
+                    DiagnosticWrite($"Piste {track.TrackNumber} last-track: final-window fallback scan start={finalStart} end={finalEnd} ({finalWindowSeconds}s)")
+
+                    If finalFramesToAnalyze > 0 Then
+                        Using readerFinal As New CDAudioManager.CDReader(track.Drive, track.TrackNumber, track.Duration, finalStart, finalEnd)
+                            Dim bytesToReadFinal As Integer = finalFramesToAnalyze * 2352
+                            Dim bufferFinal(bytesToReadFinal - 1) As Byte
+                            Dim bytesReadFinal As Integer = readerFinal.Read(bufferFinal, 0, bytesToReadFinal)
+                            If bytesReadFinal > 0 Then
+                                Dim detectedFinalSilences As New List(Of (start As Integer, [end] As Integer))
+                                Dim consecutiveSilentFinal As Integer = 0
+                                Dim silenceStartOffsetFinal As Integer = -1
+
+                                For offset As Integer = 0 To bytesReadFinal - samplesPerSlice Step samplesPerSlice
+                                    Dim rmsFinal As Double = CalculateRMS(bufferFinal, offset, samplesPerSlice)
+                                    If rmsFinal < SilenceThreshold Then
+                                        If silenceStartOffsetFinal = -1 Then
+                                            silenceStartOffsetFinal = offset
+                                            consecutiveSilentFinal = 1
+                                        Else
+                                            consecutiveSilentFinal += 1
+                                        End If
+                                    Else
+                                        If consecutiveSilentFinal >= minConsecutiveSlices AndAlso silenceStartOffsetFinal >= 0 Then
+                                            Dim sStartFinal As Integer = finalStart + (silenceStartOffsetFinal \ 2352)
+                                            Dim sEndFinal As Integer = finalStart + (offset \ 2352)
+                                            detectedFinalSilences.Add((sStartFinal, sEndFinal))
+                                        End If
+                                        silenceStartOffsetFinal = -1
+                                        consecutiveSilentFinal = 0
+                                    End If
+                                Next
+
+                                If consecutiveSilentFinal >= minConsecutiveSlices AndAlso silenceStartOffsetFinal >= 0 Then
+                                    Dim sStartFinal As Integer = finalStart + (silenceStartOffsetFinal \ 2352)
+                                    Dim sEndFinal As Integer = finalEnd
+                                    detectedFinalSilences.Add((sStartFinal, sEndFinal))
+                                End If
+
+                                If detectedFinalSilences.Count > 0 Then
+                                    Dim selectedFinal = detectedFinalSilences.OrderByDescending(Function(s) s.[end]).First()
+                                    Dim centerFinal As Integer = ((selectedFinal.start + selectedFinal.[end]) \ 2)
+                                    Dim trimFinal As Integer = track.EndFrame - centerFinal
+                                    DiagnosticWrite($"Piste {track.TrackNumber} last-track: final-window detected silence {selectedFinal.start}-{selectedFinal.[end]} -> center {centerFinal}, trim {trimFinal} frames")
+                                    Return trimFinal
+                                Else
+                                    DiagnosticWrite($"Piste {track.TrackNumber} last-track: final-window fallback found no sustained silence")
+                                End If
+                            Else
+                                DiagnosticWrite($"Piste {track.TrackNumber} last-track: final-window fallback read 0 bytes")
+                            End If
+                        End Using
+                    End If
+                Catch exFinal As Exception
+                    DiagnosticWrite($"Piste {track.TrackNumber} last-track: final-window fallback exception: {exFinal.Message}")
+                End Try
 
                 ' Si aucun silence après TOC, rechercher un silence proche du TOC (avant) et couper si suffisamment proche
                 Dim proximityFrames As Integer = CInt(TransitionProximityWindowSeconds * 75)

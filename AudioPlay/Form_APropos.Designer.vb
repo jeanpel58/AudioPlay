@@ -46,7 +46,7 @@ Partial Class Form_APropos
         ' Label_APropos_Ligne02
         ' 
         Label_APropos_Ligne02.FlatStyle = FlatStyle.Flat
-        Label_APropos_Ligne02.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Label_APropos_Ligne02.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Label_APropos_Ligne02.Location = New Point(35, 78)
         Label_APropos_Ligne02.Name = "Label_APropos_Ligne02"
         Label_APropos_Ligne02.Size = New Size(719, 49)
@@ -56,7 +56,7 @@ Partial Class Form_APropos
         ' Label_APropos_Ligne03
         ' 
         Label_APropos_Ligne03.FlatStyle = FlatStyle.Flat
-        Label_APropos_Ligne03.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Label_APropos_Ligne03.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Label_APropos_Ligne03.Location = New Point(35, 219)
         Label_APropos_Ligne03.Name = "Label_APropos_Ligne03"
         Label_APropos_Ligne03.Size = New Size(719, 15)
@@ -84,7 +84,7 @@ Partial Class Form_APropos
         ' Label1
         ' 
         Label1.FlatStyle = FlatStyle.Flat
-        Label1.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Label1.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         Label1.Location = New Point(35, 176)
         Label1.Name = "Label1"
         Label1.Size = New Size(719, 35)
@@ -94,7 +94,7 @@ Partial Class Form_APropos
         ' Label2
         ' 
         Label2.FlatStyle = FlatStyle.Flat
-        Label2.Font = New Font("Segoe UI", 12F, FontStyle.Bold Or FontStyle.Underline, GraphicsUnit.Point, CByte(0))
+        Label2.Font = New Font("Segoe UI", 12.0F, FontStyle.Bold Or FontStyle.Underline, GraphicsUnit.Point, CByte(0))
         Label2.Location = New Point(35, 143)
         Label2.Name = "Label2"
         Label2.Size = New Size(719, 24)
@@ -104,7 +104,7 @@ Partial Class Form_APropos
         ' 
         ' Form_APropos
         ' 
-        AutoScaleDimensions = New SizeF(7F, 15F)
+        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(800, 302)
         Controls.Add(Label2)

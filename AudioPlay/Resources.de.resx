@@ -147,6 +147,9 @@
   <data name="APropos_DonTitre" xml:space="preserve">
     <value>SPENDE</value>
   </data>
+  <data name="Compressor_Converting" xml:space="preserve">
+    <value>Konvertierung...</value>
+  </data>
   <data name="APropos_DonTexte" xml:space="preserve">
     <value>Wenn Sie AudioPlay regelmäßig verwenden, wäre es sehr willkommen, wenn Sie eine kleine Spende an Jean Pelletier per Banküberweisung an folgende Adresse senden könnten --&gt; jeanpel58@gmail.com</value>
   </data>

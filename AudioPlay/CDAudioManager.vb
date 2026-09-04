@@ -187,9 +187,9 @@ Public Class CDAudioManager
                                 If progressCallback IsNot Nothing Then
                                     Try
                                         ' Trace progress callback from stdout
+                                        ' Avoid writing progress trace file to %TEMP% to prevent clutter; use DiagnosticWrite instead
                                         Try
-                                            Dim tracePath = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
-                                            System.IO.File.AppendAllText(tracePath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Track={trackNum} source=stdout pct={pct}{Environment.NewLine}")
+                                            CDAudioAnalyzer.DiagnosticWrite($"PROGRESS_TRACE: Track={trackNum} source=stdout pct={pct} Time={DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}")
                                         Catch
                                         End Try
                                         progressCallback(pct)
@@ -208,11 +208,10 @@ Public Class CDAudioManager
                 Try
                     If progressCallback IsNot Nothing Then
                         ' Trace initial 0% callback
-                        Try
-                            Dim tracePath = Path.Combine(System.IO.Path.GetTempPath(), "AudioPlay_progress_trace.txt")
-                            System.IO.File.AppendAllText(tracePath, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Track={trackNum} source=init pct=0{Environment.NewLine}")
-                        Catch
-                        End Try
+                            Try
+                                CDAudioAnalyzer.DiagnosticWrite($"PROGRESS_TRACE_INIT: Track={trackNum} source=init pct=0 Time={DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}")
+                            Catch
+                            End Try
                         progressCallback(0)
                         lastProgress = 0
                     End If

@@ -47,7 +47,7 @@ Partial Class FormSelecteurPistesCD
         ' 
         ' lblSourceLabel
         ' 
-        lblSourceLabel.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        lblSourceLabel.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         lblSourceLabel.Location = New Point(20, 55)
         lblSourceLabel.Name = "lblSourceLabel"
         lblSourceLabel.Size = New Size(60, 25)
@@ -58,7 +58,7 @@ Partial Class FormSelecteurPistesCD
         ' comboSourceMetadonnees
         ' 
         comboSourceMetadonnees.DropDownStyle = ComboBoxStyle.DropDownList
-        comboSourceMetadonnees.Font = New Font("Segoe UI", 9F)
+        comboSourceMetadonnees.Font = New Font("Segoe UI", 9.0F)
         comboSourceMetadonnees.FormattingEnabled = True
         comboSourceMetadonnees.Items.AddRange(New Object() {"GnuDB", "MusicBrainz", "Discogs", "Saisie manuelle"})
         comboSourceMetadonnees.Location = New Point(85, 53)
@@ -68,7 +68,7 @@ Partial Class FormSelecteurPistesCD
         ' 
         ' btnChargerMetadonnees
         ' 
-        btnChargerMetadonnees.Font = New Font("Segoe UI", 8F)
+        btnChargerMetadonnees.Font = New Font("Segoe UI", 8.0F)
         btnChargerMetadonnees.Location = New Point(245, 52)
         btnChargerMetadonnees.Name = "btnChargerMetadonnees"
         btnChargerMetadonnees.Size = New Size(90, 26)
@@ -79,7 +79,7 @@ Partial Class FormSelecteurPistesCD
         ' 
         ' lblChargement
         ' 
-        lblChargement.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        lblChargement.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         lblChargement.ForeColor = Color.Gray
         lblChargement.Location = New Point(20, 91)
         lblChargement.Name = "lblChargement"
@@ -92,7 +92,7 @@ Partial Class FormSelecteurPistesCD
         ' checkedListPistes
         ' 
         checkedListPistes.CheckOnClick = True
-        checkedListPistes.Font = New Font("Consolas", 9F)
+        checkedListPistes.Font = New Font("Consolas", 9.0F)
         checkedListPistes.FormattingEnabled = True
         checkedListPistes.Location = New Point(20, 136)
         checkedListPistes.Name = "checkedListPistes"
@@ -102,7 +102,7 @@ Partial Class FormSelecteurPistesCD
         ' btnOK
         ' 
         btnOK.DialogResult = DialogResult.OK
-        btnOK.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        btnOK.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         btnOK.Location = New Point(280, 553)
         btnOK.Name = "btnOK"
         btnOK.Size = New Size(100, 35)
@@ -113,7 +113,7 @@ Partial Class FormSelecteurPistesCD
         ' btnAnnuler
         ' 
         btnAnnuler.DialogResult = DialogResult.Cancel
-        btnAnnuler.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        btnAnnuler.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         btnAnnuler.Location = New Point(390, 553)
         btnAnnuler.Name = "btnAnnuler"
         btnAnnuler.Size = New Size(90, 35)
@@ -123,7 +123,7 @@ Partial Class FormSelecteurPistesCD
         ' 
         ' ButtonExtraction
         ' 
-        ButtonExtraction.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        ButtonExtraction.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         ButtonExtraction.Location = New Point(20, 486)
         ButtonExtraction.Name = "ButtonExtraction"
         ButtonExtraction.Size = New Size(460, 35)
@@ -136,7 +136,7 @@ Partial Class FormSelecteurPistesCD
         CheckBox_FSelect_SelectDeselect.AutoSize = True
         CheckBox_FSelect_SelectDeselect.Checked = True
         CheckBox_FSelect_SelectDeselect.CheckState = CheckState.Checked
-        CheckBox_FSelect_SelectDeselect.Font = New Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        CheckBox_FSelect_SelectDeselect.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         CheckBox_FSelect_SelectDeselect.Location = New Point(20, 114)
         CheckBox_FSelect_SelectDeselect.Name = "CheckBox_FSelect_SelectDeselect"
         CheckBox_FSelect_SelectDeselect.Size = New Size(288, 19)
@@ -147,7 +147,7 @@ Partial Class FormSelecteurPistesCD
         ' FormSelect
         ' 
         AcceptButton = btnOK
-        AutoScaleDimensions = New SizeF(7F, 15F)
+        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
         AutoScaleMode = AutoScaleMode.Font
         CancelButton = btnAnnuler
         ClientSize = New Size(498, 600)
