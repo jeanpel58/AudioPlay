@@ -1,18 +1,18 @@
 #define MyAppName "AudioPlay"
-#define MyAppVersion "1.26.08.20"
+#define MyAppVersion "1.26.09.04"
 #define MyAppPublisher "Jean Pelletier"
 #define MyAppExeName "AudioPlay.exe"
 
 #ifndef PublishDir
-  #define PublishDir "g:\Visual Studio Projects\Jean\AudioPlay 2026-08-20\AudioPlay\bin\Debug\net8.0-windows\"
+  #define PublishDir "g:\Visual Studio Projects\Jean\AudioPlay 2026-09-04\AudioPlay\bin\Debug\net8.0-windows\"
 #endif
 
 #ifndef OutputDir
-  #define OutputDir "G:\Visual Studio Projects\Jean\AudioPlay 2026-08-20\installer\EXE"
+  #define OutputDir "G:\Visual Studio Projects\Jean\AudioPlay 2026-09-04\installer\EXE"
 #endif
 
 [Setup]
-AppId={{A2E7F95E-58E4-4E53-8AFA-8B9AA9F7E1260820}
+AppId={{A2E7F95E-58E4-4E53-8AFA-8B9AA9F7E1260904}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
@@ -27,7 +27,7 @@ PrivilegesRequired=admin
 PrivilegesRequiredOverridesAllowed=dialog
 UsedUserAreasWarning=no
 ArchitecturesInstallIn64BitMode=x64compatible
-SetupIconFile=g:\Visual Studio Projects\Jean\AudioPlay 2026-08-20\AudioPlay\Assets\AudioPlay.ico
+SetupIconFile=g:\Visual Studio Projects\Jean\AudioPlay 2026-09-04\AudioPlay\Assets\AudioPlay.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 CloseApplications=yes
 CloseApplicationsFilter=*.exe,*.dll

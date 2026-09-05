@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <title>Hilfe — Startpositionsanpassung (Pre-roll)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{--accent:#2b7cff;--muted:#6b7280;--bg:#ffffff;--card:#f7f9ff}
+    body{font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:#222;margin:0;padding:0}
+    .header{background:linear-gradient(90deg,var(--accent),#6fb1ff);color:white;padding:18px 24px;display:flex;gap:12px;align-items:center}
+    .icon{width:48px;height:48px;flex:0 0 48px}
+    h1{font-size:18px;margin:0}
+    .container{padding:18px 24px}
+    .card{background:var(--card);border-radius:8px;padding:14px;margin:12px 0}
+    h2{color:var(--accent);font-size:15px;margin:12px 0}
+    p{margin:8px 0;color:#111}
+    ul{margin:8px 0 8px 20px}
+    .note{background:#fff6e6;border-left:4px solid #ffb020;padding:10px;margin:10px 0}
+    .row{display:flex;align-items:center;gap:12px}
+    .muted{color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="24" height="24" rx="4" fill="white" opacity="0.08"/>
+      <path d="M4 18V6h16v12H4z" fill="white" opacity="0.12"/>
+      <path d="M6 9h12v2H6V9zm0 4h8v2H6v-2z" fill="white"/>
+    </svg>
+    <div>
+      <h1>Startpositionsanpassung (Pre-roll)</h1>
+      <div class="muted">Verschiebt den Beginn der ersten Spur leicht nach hinten, um Abschneiden zu vermeiden</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="row">
+        <strong>Was ist das?</strong>
+      </div>
+      <p>Pre-roll verschiebt den Startpunkt der Spur 1 einige Sekunden vor die TOC-Position. Damit wird ein kurzes Stilleintervall wiederhergestellt und verhindert, dass die erste Note abgeschnitten wird.</p>
+    </div>
+
+    <h2>Warum verwenden?</h2>
+    <p>Bei manchen CDs markiert die TOC den Spurstart sehr nahe am ersten musikalischen Ereignis. Pre-roll bietet eine Sicherheitsmarge und verbessert die wahrgenommene Audioqualität.</p>
+
+    <h2>Wie es funktioniert</h2>
+    <p>Geben Sie einen Wert in Sekunden ein (z. B. 1.75). Der Ripper zieht diese Dauer von der TOC-Startposition der Spur 1 ab und beginnt früher mit dem Lesen.</p>
+
+    <div class="note">
+      <strong>Zulässige Werte:</strong> 0,5s bis 4,0s. Standard: 1,75s.
+    </div>
+
+    <h2>Tipps</h2>
+    <ul>
+      <li>Beginnen Sie mit 1,5–2,0s, wenn die erste Note zu nahe an der TOC liegt.</li>
+      <li>Falls die CD bereits einleitende Stille hat, wählen Sie einen kleineren Wert.</li>
+      <li>Pre-roll wird nur für die erste Spur angewendet, um die Übergangserkennung nicht zu beeinflussen.</li>
+    </ul>
+
+    <h2>Beispiel</h2>
+    <p class="muted">TOC &nbsp;|----&gt; [pre-roll] &nbsp;---&gt; tatsächlicher Spurstart</p>
+
+    <h2>Support</h2>
+    <p>Bei unerwünschten Effekten (z. B. Fade-in bei Live-Tracks) verringern Sie den Wert oder kontaktieren Sie den Support.</p>
+  </div>
+</body>
+</html>

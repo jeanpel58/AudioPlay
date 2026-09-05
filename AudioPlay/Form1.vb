@@ -234,8 +234,8 @@ Public Class Form1
 
     Private toolTipForm1 As ToolTip = Nothing
 
-    Private Version As String = "1.26.08.20"
-    Private VersionChiffre As String = "1260820"
+    Private Version As String = "1.26.09.04"
+    Private VersionChiffre As String = "1260904"
 
     ' === Volume global partagé ===
     Public Shared VolumeLecture As Integer = 50

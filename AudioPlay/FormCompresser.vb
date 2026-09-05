@@ -1632,6 +1632,20 @@ Public Class FormCompresser
         End Try
     End Sub
 
+    ''' <summary>
+    ''' Affiche le menu contextuel de la pochette sous Label3 sur clic gauche.
+    ''' </summary>
+    Private Sub Label3_MouseClick(sender As Object, e As MouseEventArgs) Handles Label3.MouseClick
+        Try
+            If e.Button = MouseButtons.Left Then
+                If ContextMenuStripPictureBox IsNot Nothing Then
+                    ContextMenuStripPictureBox.Show(Label3, New Point(0, Label3.Height))
+                End If
+            End If
+        Catch
+        End Try
+    End Sub
+
     Private Sub LanguageManager_LanguageChanged(newCulture As Globalization.CultureInfo)
         Try
             ApplyLanguageToPictureBoxMenu()
@@ -2632,6 +2646,7 @@ Public Class FormCompresser
         CheckBox_FCompress_SelectDeselect.Text = LanguageManager.GetString("Compressor_SelectDeselectAll")
         Try
             If CheckBox_Affiche_CentreSilence IsNot Nothing Then
+                ' Runtime assignment kept explicit to ensure localized text is always applied.
                 CheckBox_Affiche_CentreSilence.Text = LanguageManager.GetString("FormCompresser_ShowSilenceCenters")
             End If
         Catch
@@ -2777,6 +2792,17 @@ Public Class FormCompresser
                 Me.BeginInvoke(New Action(Sub() AppliquerTraductions()))
             Else
                 AppliquerTraductions()
+                ' Ensure the specific checkbox is refreshed (some cases Designer text remains)
+                Try
+                    If CheckBox_Affiche_CentreSilence IsNot Nothing Then
+                        Dim txt = LanguageManager.GetString("FormCompresser_ShowSilenceCenters")
+                        CheckBox_Affiche_CentreSilence.Text = txt
+                        CheckBox_Affiche_CentreSilence.Refresh()
+                        System.Diagnostics.Debug.WriteLine($"[FormCompresser] Langue changée -> CheckBox_Affiche_CentreSilence='{txt}'")
+                    End If
+                Catch ex As Exception
+                    System.Diagnostics.Debug.WriteLine($"[FormCompresser] Erreur rafraîchissement CheckBox_Affiche_CentreSilence: {ex.Message}")
+                End Try
             End If
         Catch
         End Try
@@ -5645,7 +5671,8 @@ Public Class FormCompresser
                                 End Try
 
                                 ' Always create final WAV trimmed by silence centers from the available source WAV
-                                Dim finalWavPath As String = CreateFinalWavFromSource(srcForTrim, cheminRepertoireAlbum, artisteAlbumLocal, titre, piste.TrackNumber, pisteAExtraire.StartFrame, pisteAExtraire.Duration.TotalSeconds)
+                                ' Use the per-track artist (artiste) rather than the album/PCD artist (artisteAlbumLocal)
+                                Dim finalWavPath As String = CreateFinalWavFromSource(srcForTrim, cheminRepertoireAlbum, artiste, titre, piste.TrackNumber, pisteAExtraire.StartFrame, pisteAExtraire.Duration.TotalSeconds)
 
                                 ' Immediately convert the WAV segment to the chosen format (per-track flow)
                                 Try
@@ -5658,7 +5685,8 @@ Public Class FormCompresser
                                         SafeSetLabelPisteEnCours(LanguageManager.GetString("Compressor_Converting"), True)
                                         SafeSetProgressBarMarquee(True)
                                         ' Use captured UI values for conversion to avoid cross-thread UI access
-                                        convOk2 = Await ConvertWavToMp3(finalWavPath, finalOutPath, lastExtractionQualiteIndex, Path.GetFileNameWithoutExtension(finalWavPath), artisteAlbumLocal, piste.TrackNumber.ToString(), nomAlbumLocal, artisteAlbumLocal, anneeLocal, genreLocal, commentaireLocal, pochetteLocal)
+                                        ' Pass explicit titre and artiste (track-level) to the encoder/metadata writer
+                                        convOk2 = Await ConvertWavToMp3(finalWavPath, finalOutPath, lastExtractionQualiteIndex, titre, artiste, piste.TrackNumber.ToString(), nomAlbumLocal, artisteAlbumLocal, anneeLocal, genreLocal, commentaireLocal, pochetteLocal)
                                         ' UI: restore after conversion
                                         SafeSetProgressBarMarquee(False)
                                         SafeSetLabelPisteEnCours("", False)
@@ -8553,6 +8581,60 @@ Public Class FormCompresser
             End If
         Catch ex As Exception
             System.Diagnostics.Debug.WriteLine($"[FormCompresser] Erreur MouseDoubleClick: {ex.Message}")
+        End Try
+    End Sub
+
+    ''' <summary>
+    ''' Dessine un rond rouge dans le bouton Button_CopierCDArtiste
+    ''' </summary>
+    Private Sub Button_CopierCDArtiste_Paint(sender As Object, e As PaintEventArgs) Handles Button_CopierCDArtiste.Paint
+        Try
+            e.Graphics.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
+            Dim padding As Integer = 2
+            Dim w As Integer = Math.Max(2, Button_CopierCDArtiste.Width - padding * 2)
+            Dim h As Integer = Math.Max(2, Button_CopierCDArtiste.Height - padding * 2)
+            ' Slightly reduce the circle so it appears a bit smaller
+            Dim size As Integer = Math.Max(2, Math.Min(w, h) - 2)
+            Dim rect As New Rectangle(padding + (w - size) \ 2, padding + (h - size) \ 2, size, size)
+            Using br As New SolidBrush(Color.Red)
+                e.Graphics.FillEllipse(br, rect)
+            End Using
+        Catch
+        End Try
+    End Sub
+
+    ''' <summary>
+    ''' Clique sur Button_CopierCDArtiste: confirme et copie TextBoxCDArtiste dans la colonne 'Artiste' de ListViewCompress
+    ''' </summary>
+    Private Sub Button_CopierCDArtiste_Click(sender As Object, e As EventArgs) Handles Button_CopierCDArtiste.Click
+        Try
+            Dim msg As String = LanguageManager.GetString("Confirm_CopyCDArtist_Message", "Voulez-vous vraiment copier le contenu de la case CD Artiste à toutes les cases de la fenêtre ci-bas, dans la colonne 'Artiste' ?")
+            ' Afficher la MessageBox en modal owned par cette Form pour préserver l'ordre Z (FormCompresser reste derrière)
+            ' Use custom form to ensure localized button text
+            Dim dlg As New FormConfirmCopyCDArtist(msg, LanguageManager.GetString("Confirm_Title", "Confirmation"))
+            Dim res = dlg.ShowDialog(Me)
+            If res = DialogResult.Yes Then
+                Dim value As String = If(TextBoxCDArtiste IsNot Nothing, TextBoxCDArtiste.Text, String.Empty)
+                If ListViewCompress IsNot Nothing Then
+                    For Each itm As ListViewItem In ListViewCompress.Items
+                        Try
+                            If itm.SubItems.Count <= 2 Then
+                                While itm.SubItems.Count <= 2
+                                    itm.SubItems.Add(String.Empty)
+                                End While
+                            End If
+                            itm.SubItems(2).Text = value
+                        Catch
+                        End Try
+                    Next
+                    Try
+                        ListViewCompress.Invalidate()
+                    Catch
+                    End Try
+                End If
+            End If
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"[FormCompresser] CopierCDArtiste error: {ex.Message}")
         End Try
     End Sub
 

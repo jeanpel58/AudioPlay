@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <title>Guida — Regolazione posizione di inizio (Pre-roll)</title>
+  <style>
+    body { font-family: Segoe UI, Arial, sans-serif; line-height:1.5; padding:20px; color:#222 }
+    h1 { font-size:20px; margin-bottom:8px }
+    h2 { font-size:16px; margin-top:14px }
+    p { margin:8px 0 }
+    .note { background:#f4f4f4; border-left:4px solid #888; padding:8px; margin:10px 0 }
+  </style>
+</head>
+<body>
+  <h1>Regolazione posizione di inizio (Pre-roll)</h1>
+  <p>Questa opzione (pre-roll) sposta il punto di inizio della prima traccia indietro di alcuni secondi durante l'estrazione. Aggiunge un piccolo margine prima della posizione TOC per evitare di tagliare la prima nota quando il TOC del CD è troppo vicino al contenuto audio.</p>
+
+  <h2>Perché usare il pre-roll?</h2>
+  <p>Su alcuni CD, la tabella dei contenuti (TOC) posiziona l'inizio della traccia molto vicino al primo evento musicale. Il pre-roll consente di recuperare un breve intervallo di silenzio (o spazio) prima della prima nota, migliorando la qualità percepita ed evitando tagli bruschi.</p>
+
+  <h2>Come funziona</h2>
+  <p>Il controllo "Regolazione posizione di inizio" consente di specificare una durata (in secondi) che verrà sottratta dalla posizione TOC della traccia 1. Ad esempio, un valore di 1.75s sposta il punto di inizio di 1.75 secondi prima del TOC.</p>
+
+  <div class="note">
+    <strong>Valori consentiti:</strong> 0.5s a 4.0s. Il valore predefinito è 1.75s.
+  </div>
+
+  <h2>Consigli</h2>
+  <ul>
+    <li>Inizia con 1.5–2.0s se la prima nota è troppo vicina al TOC.</li>
+    <li>Se il tuo CD contiene silenzio naturale all'inizio, un pre-roll elevato aggiungerà silenzio prima della musica.</li>
+    <li>Il pre-roll si applica solo alla prima traccia per evitare di influenzare il rilevamento delle transizioni tra tracce.</li>
+  </ul>
+
+  <h2>Supporto</h2>
+  <p>Se osservi effetti indesiderati (ad esempio tracce live con fade-in), riduci il valore o impostalo al minimo. Contatta il supporto per ulteriore assistenza.</p>
+</body>
+</html>

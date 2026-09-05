@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Help — Start Position Adjustment (Pre-roll)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{--accent:#2b7cff;--muted:#6b7280;--bg:#ffffff;--card:#f7f9ff}
+    body{font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:#222;margin:0;padding:0}
+    .header{background:linear-gradient(90deg,var(--accent),#6fb1ff);color:white;padding:18px 24px;display:flex;gap:12px;align-items:center}
+    .icon{width:48px;height:48px;flex:0 0 48px}
+    h1{font-size:18px;margin:0}
+    .container{padding:18px 24px}
+    .card{background:var(--card);border-radius:8px;padding:14px;margin:12px 0}
+    h2{color:var(--accent);font-size:15px;margin:12px 0}
+    p{margin:8px 0;color:#111}
+    ul{margin:8px 0 8px 20px}
+    .note{background:#fff6e6;border-left:4px solid #ffb020;padding:10px;margin:10px 0}
+    .row{display:flex;align-items:center;gap:12px}
+    .muted{color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="24" height="24" rx="4" fill="white" opacity="0.08"/>
+      <path d="M4 18V6h16v12H4z" fill="white" opacity="0.12"/>
+      <path d="M6 9h12v2H6V9zm0 4h8v2H6v-2z" fill="white"/>
+    </svg>
+    <div>
+      <h1>Start Position Adjustment (Pre-roll)</h1>
+      <div class="muted">Move the start of the first track slightly earlier to avoid truncation</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="row">
+        <strong>What is it?</strong>
+      </div>
+      <p>Pre-roll shifts the start point of track 1 backward by a small number of seconds before the TOC position. This recovers a short interval of silence and prevents the first note from being cut.</p>
+    </div>
+
+    <h2>Why use pre-roll?</h2>
+    <p>On some discs, the TOC marks the track start very close to the first musical event. Pre-roll provides a safety margin that improves perceived audio quality.</p>
+
+    <h2>How it works</h2>
+    <p>Enter a value in seconds (e.g. 1.75). The extractor will subtract this duration from the TOC start of track 1 and begin reading earlier.</p>
+
+    <div class="note">
+      <strong>Allowed values:</strong> 0.5s to 4.0s. Default: 1.75s.
+    </div>
+
+    <h2>Tips</h2>
+    <ul>
+      <li>Start with 1.5–2.0s if the first note is too close to the TOC.</li>
+      <li>If the disc already has leading silence, choose a smaller value.</li>
+      <li>Pre-roll applies only to the first track to avoid affecting transition detection.</li>
+    </ul>
+
+    <h2>Visual example</h2>
+    <p class="muted">TOC &nbsp;|----&gt; [pre-roll] &nbsp;---&gt; actual track start</p>
+
+    <h2>Support</h2>
+    <p>If you observe undesired side effects (e.g., live track fade-ins), reduce the value or contact support.</p>
+  </div>
+</body>
+</html>

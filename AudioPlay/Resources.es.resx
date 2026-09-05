@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="FormCompresser_ShowSilenceCenters" xml:space="preserve">
-    <value>Afficher le message des centres de silence</value>
+    <value>Mostrar mensaje de centros de silencio</value>
   </data>
   <data name="GroupBoxAnalyzerOptions_Text" xml:space="preserve">
     <value>Opciones del analizador</value>
@@ -845,8 +845,17 @@ Puede instalar FFMpeg manualmente siguiendo las instrucciones en: Tools\README_F
   <data name="Compressor_InvalidImage" xml:space="preserve">
     <value>Imagen inválida</value>
   </data>
+  <data name="Confirm_CopyCDArtist_Message" xml:space="preserve">
+    <value>¿Desea copiar realmente el contenido del campo CD Artista en la columna "Artista" para todas las pistas a continuación?</value>
+  </data>
   <data name="Compressor_Error" xml:space="preserve">
     <value>Error</value>
+  </data>
+  <data name="Confirm_Yes" xml:space="preserve">
+    <value>Sí</value>
+  </data>
+  <data name="Confirm_No" xml:space="preserve">
+    <value>No</value>
   </data>
   <data name="Menu_Size" xml:space="preserve">
     <value>Vista</value>
