@@ -3861,8 +3861,17 @@ NON = Mode SUBMIT (soumission reelle)
   <data name="Compressor_InvalidImage" xml:space="preserve">
     <value>Image invalide</value>
   </data>
+  <data name="Confirm_CopyCDArtist_Message" xml:space="preserve">
+    <value>Voulez-vous vraiment copier le contenu de la case CD Artiste à toutes les cases de la fenêtre ci‑bas, dans la colonne 'Artiste' ?</value>
+  </data>
   <data name="Compressor_Error" xml:space="preserve">
     <value>Erreur</value>
+  </data>
+  <data name="Confirm_Yes" xml:space="preserve">
+    <value>Oui</value>
+  </data>
+  <data name="Confirm_No" xml:space="preserve">
+    <value>Non</value>
   </data>
   <data name="Menu_Size" xml:space="preserve">
     <value>Affichage</value>

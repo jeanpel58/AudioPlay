@@ -1206,8 +1206,17 @@ Size: ~120 MB</value>
   <data name="Compressor_InvalidImage" xml:space="preserve">
     <value>Invalid image</value>
   </data>
+  <data name="Confirm_CopyCDArtist_Message" xml:space="preserve">
+    <value>Do you really want to copy the CD Artist field into the "Artist" column for all tracks below?</value>
+  </data>
   <data name="Compressor_Error" xml:space="preserve">
     <value>Error</value>
+  </data>
+  <data name="Confirm_Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="Confirm_No" xml:space="preserve">
+    <value>No</value>
   </data>
   <data name="Menu_Size" xml:space="preserve">
     <value>View</value>

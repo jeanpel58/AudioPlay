@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Aide — Ajustement Position Début (Pré-roll)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{--accent:#2b7cff;--muted:#6b7280;--bg:#ffffff;--card:#f7f9ff}
+    body{font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:#222;margin:0;padding:0}
+    .header{background:linear-gradient(90deg,var(--accent),#6fb1ff);color:white;padding:18px 24px;display:flex;gap:12px;align-items:center}
+    .icon{width:48px;height:48px;flex:0 0 48px}
+    h1{font-size:18px;margin:0}
+    .container{padding:18px 24px}
+    .card{background:var(--card);border-radius:8px;padding:14px;margin:12px 0}
+    h2{color:var(--accent);font-size:15px;margin:12px 0}
+    p{margin:8px 0;color:#111}
+    ul{margin:8px 0 8px 20px}
+    .note{background:#fff6e6;border-left:4px solid #ffb020;padding:10px;margin:10px 0}
+    .row{display:flex;align-items:center;gap:12px}
+    .muted{color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="24" height="24" rx="4" fill="white" opacity="0.08"/>
+      <path d="M4 18V6h16v12H4z" fill="white" opacity="0.12"/>
+      <path d="M6 9h12v2H6V9zm0 4h8v2H6v-2z" fill="white"/>
+    </svg>
+    <div>
+      <h1>Ajustement Position Début (Pré-roll)</h1>
+      <div class="muted">Décale le début de la première piste pour éviter les coupures</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="row">
+        <strong>Qu'est-ce que c'est ?</strong>
+      </div>
+      <p>Le pré-roll recule le point de départ de la piste 1 d'un petit nombre de secondes avant la position TOC. Cela permet de préserver la première note si la table des matières indique un départ trop proche du contenu musical.</p>
+    </div>
+
+    <h2>Pourquoi l'utiliser ?</h2>
+    <p>Sur certains disques, la position TOC est trop proche de la musique. Le pré-roll restaure un peu d'espace avant la première note, ce qui réduit les coupures abruptes et améliore l'écoute.</p>
+
+    <h2>Comment ça marche</h2>
+    <p>Entrez une valeur en secondes (ex. 1.75). L'application soustraira cette durée de la position TOC de la piste 1 et commencera l'extraction plus tôt.</p>
+
+    <div class="note">
+      <strong>Valeurs autorisées :</strong> 0.5s à 4.0s. Valeur par défaut : 1.75s.
+    </div>
+
+    <h2>Conseils</h2>
+    <ul>
+      <li>Commencez par 1.5–2.0s si la première note est trop proche du TOC.</li>
+      <li>Si le CD a déjà un silence significatif au début, choisissez une valeur plus faible.</li>
+      <li>Le pré-roll n'affecte que la première piste pour ne pas perturber la détection des transitions.</li>
+    </ul>
+
+    <h2>Exemples visuels</h2>
+    <p class="muted">TOC &nbsp;|----&gt; [pré-roll] &nbsp;---&gt; début réel de la piste</p>
+
+    <h2>Support</h2>
+    <p>Si vous observez des effets indésirables, réduisez la valeur ou contactez le support.</p>
+  </div>
+</body>
+</html>

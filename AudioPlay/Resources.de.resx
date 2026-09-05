@@ -1076,8 +1076,17 @@ Sie können FFMpeg manuell installieren, indem Sie den Anweisungen in: Tools\REA
   <data name="Compressor_InvalidImage" xml:space="preserve">
     <value>Ungültiges Bild</value>
   </data>
+  <data name="Confirm_CopyCDArtist_Message" xml:space="preserve">
+    <value>Möchten Sie das Feld CD-Interpret wirklich in die Spalte "Interpret" für alle nachstehenden Titel kopieren?</value>
+  </data>
   <data name="Compressor_Error" xml:space="preserve">
     <value>Fehler</value>
+  </data>
+  <data name="Confirm_Yes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="Confirm_No" xml:space="preserve">
+    <value>Nein</value>
   </data>
   <data name="Menu_Size" xml:space="preserve">
     <value>Ansicht</value>

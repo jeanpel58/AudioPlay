@@ -111,6 +111,7 @@ Partial Class FormCompresser
         ButtonHelpPreRoll = New Button()
         ToolTipPictureBox = New ToolTip(components)
         CheckBox_Affiche_CentreSilence = New CheckBox()
+        Button_CopierCDArtiste = New Button()
         CType(PictureBoxPochette, ComponentModel.ISupportInitialize).BeginInit()
         ContextMenuStripPictureBox.SuspendLayout()
         CType(NumericUpDown_DB, ComponentModel.ISupportInitialize).BeginInit()
@@ -127,9 +128,9 @@ Partial Class FormCompresser
         ComboBoxChoixLecteur.DropDownStyle = ComboBoxStyle.DropDownList
         ComboBoxChoixLecteur.FlatStyle = FlatStyle.Flat
         ComboBoxChoixLecteur.FormattingEnabled = True
-        ComboBoxChoixLecteur.Location = New Point(12, 34)
+        ComboBoxChoixLecteur.Location = New Point(17, 34)
         ComboBoxChoixLecteur.Name = "ComboBoxChoixLecteur"
-        ComboBoxChoixLecteur.Size = New Size(373, 23)
+        ComboBoxChoixLecteur.Size = New Size(368, 23)
         ComboBoxChoixLecteur.TabIndex = 0
         ' 
         ' Label_CDTitre
@@ -158,7 +159,7 @@ Partial Class FormCompresser
         TextBoxCDArtiste.Font = New Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         TextBoxCDArtiste.Location = New Point(123, 107)
         TextBoxCDArtiste.Name = "TextBoxCDArtiste"
-        TextBoxCDArtiste.Size = New Size(262, 18)
+        TextBoxCDArtiste.Size = New Size(238, 18)
         TextBoxCDArtiste.TabIndex = 4
         ' 
         ' LabelCDArtiste
@@ -987,16 +988,29 @@ Partial Class FormCompresser
         CheckBox_Affiche_CentreSilence.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         CheckBox_Affiche_CentreSilence.Location = New Point(17, 376)
         CheckBox_Affiche_CentreSilence.Name = "CheckBox_Affiche_CentreSilence"
-        CheckBox_Affiche_CentreSilence.Size = New Size(241, 19)
+        CheckBox_Affiche_CentreSilence.Size = New Size(261, 19)
         CheckBox_Affiche_CentreSilence.TabIndex = 117
-        CheckBox_Affiche_CentreSilence.Text = "Afficher Message Centre des silences..."
+        CheckBox_Affiche_CentreSilence.Text = "Afficher le message des centres de silence"
         CheckBox_Affiche_CentreSilence.UseVisualStyleBackColor = True
+        ' 
+        ' Button_CopierCDArtiste
+        ' 
+        Button_CopierCDArtiste.FlatAppearance.MouseDownBackColor = Color.Red
+        Button_CopierCDArtiste.FlatAppearance.MouseOverBackColor = Color.Lime
+        Button_CopierCDArtiste.FlatStyle = FlatStyle.Flat
+        Button_CopierCDArtiste.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        Button_CopierCDArtiste.Location = New Point(363, 103)
+        Button_CopierCDArtiste.Name = "Button_CopierCDArtiste"
+        Button_CopierCDArtiste.Size = New Size(22, 24)
+        Button_CopierCDArtiste.TabIndex = 118
+        Button_CopierCDArtiste.UseVisualStyleBackColor = True
         ' 
         ' FormCompresser
         ' 
-        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
+        AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(617, 929)
+        Controls.Add(Button_CopierCDArtiste)
         Controls.Add(CheckBox_Affiche_CentreSilence)
         Controls.Add(CheckBoxPostTraitementAuto)
         Controls.Add(LabelPreRoll)
@@ -1161,5 +1175,6 @@ Partial Class FormCompresser
     Friend WithEvents NumericWindowPreRoll As NumericUpDown
     Friend WithEvents ButtonHelpPreRoll As Button
     Friend WithEvents CheckBox_Affiche_CentreSilence As CheckBox
+    Friend WithEvents Button_CopierCDArtiste As Button
     ' ButtonCorrigerAlbum removed: no longer declared
 End Class

@@ -923,8 +923,17 @@ Puoi installare FFMpeg manualmente seguendo le istruzioni in: Tools\README_FFMPE
   <data name="Compressor_InvalidImage" xml:space="preserve">
     <value>Immagine non valida</value>
   </data>
+  <data name="Confirm_CopyCDArtist_Message" xml:space="preserve">
+    <value>Vuoi davvero copiare il contenuto del campo CD Artista nella colonna "Artista" per tutte le tracce qui sotto?</value>
+  </data>
   <data name="Compressor_Error" xml:space="preserve">
     <value>Errore</value>
+  </data>
+  <data name="Confirm_Yes" xml:space="preserve">
+    <value>Sì</value>
+  </data>
+  <data name="Confirm_No" xml:space="preserve">
+    <value>No</value>
   </data>
   <data name="Menu_Size" xml:space="preserve">
     <value>Visualizza</value>
